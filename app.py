@@ -4,12 +4,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import pickle
-import os
 import warnings
 warnings.filterwarnings('ignore')
 
 st.set_page_config(page_title="競馬AI予想", page_icon="🏇", layout="centered")
-
 st.title("🏇 競馬AI予想")
 st.caption("※ 個人利用のみ。馬券購入は自己責任でお願いします。")
 
@@ -24,13 +22,11 @@ def load_model():
         return None
 
 model = load_model()
-
 if model is None:
-    st.error("モデル読み込み失敗。ページを更新してください。")
+    st.error("モデル読み込み失敗。")
     st.stop()
 
 st.success("AIモデル読み込み完了！")
-
 HEADERS = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)"}
 
 def scrape(url):
@@ -38,6 +34,32 @@ def scrape(url):
     res.encoding = "EUC-JP"
     soup = BeautifulSoup(res.text, "html.parser")
     horses = []
+
+    # レース情報を自動取得
+    distance, surface, condition, venue = 2000, "芝", "良", "東京"
+    try:
+        race_data = soup.select_one("div.RaceData01")
+        if race_data:
+            text = race_data.text
+            m = re.search(r'(\d+)m', text)
+            if m:
+                distance = int(m.group(1))
+            if "ダート" in text:
+                surface = "ダート"
+            for c in ["良","稍重","重","不良"]:
+                if c in text:
+                    condition = c
+                    break
+        venue_tag = soup.select_one("div.RaceName_OnlyPC") or soup.select_one("h1.RaceName")
+        place_tag = soup.select_one("a.RaceKaisaiLink") or soup.select_one("span.RaceKaisaiDate")
+        if place_tag:
+            for v in ["東京","中山","阪神","京都","中京","札幌","函館","福島","新潟","小倉"]:
+                if v in place_tag.text:
+                    venue = v
+                    break
+    except:
+        pass
+
     for row in soup.select("tr.HorseList"):
         try:
             n = row.select_one("dt.Horse a") or row.select_one("td.Horse_Info a")
@@ -61,7 +83,7 @@ def scrape(url):
             horses.append({"馬名": n.text.strip(), "性別": gender, "馬齢": age, "斤量": burden, "騎手": jockey, "馬体重": weight, "体重増減": wdiff})
         except:
             continue
-    return horses
+    return horses, distance, surface, condition, venue
 
 def predict(horses, distance, surface, condition, venue):
     vmap = {"東京":0,"中山":1,"阪神":2,"京都":3,"中京":4,"札幌":5,"函館":6,"福島":7,"新潟":8,"小倉":9}
@@ -73,14 +95,6 @@ def predict(horses, distance, surface, condition, venue):
     return df.sort_values("AIスコア", ascending=False).reset_index(drop=True)
 
 race_url = st.text_input("netkeibaのレースURL", placeholder="https://race.netkeiba.com/race/shutuba.html?race_id=...")
-col1, col2, col3 = st.columns(3)
-with col1:
-    distance = st.number_input("距離(m)", value=2000, step=100)
-with col2:
-    surface = st.selectbox("コース", ["芝","ダート"])
-with col3:
-    condition = st.selectbox("馬場状態", ["良","稍重","重","不良"])
-venue = st.selectbox("競馬場", ["東京","中山","阪神","京都","中京","札幌","函館","福島","新潟","小倉"])
 
 if st.button("🤖 AI予想を実行", type="primary", use_container_width=True):
     if not race_url:
@@ -88,21 +102,21 @@ if st.button("🤖 AI予想を実行", type="primary", use_container_width=True)
     else:
         race_url = race_url.replace("race.sp.netkeiba", "race.netkeiba")
         with st.spinner("出馬表を取得中..."):
-            horses = scrape(race_url)
+            horses, distance, surface, condition, venue = scrape(race_url)
         if not horses:
             st.error("出馬表が取得できませんでした。")
         else:
+            st.info("📍 " + venue + " " + str(distance) + "m " + surface + " 馬場：" + condition)
             with st.spinner("AI分析中..."):
                 result_df = predict(horses, distance, surface, condition, venue)
-            st.success("予想完了！")
+            st.success("予想完了！" + str(len(horses)) + "頭を分析しました")
             medals = ["🥇","🥈","🥉"]
             for i, row in result_df.iterrows():
-                medal = medals[i] if i < 3 else str(i+1)+"着"
+                medal = medals[i] if i < 3 else str(i+1) + "着"
                 pct = int(row["AIスコア"] * 100)
                 st.write(medal + " " + row["馬名"] + " " + str(pct) + "pt")
             top3 = result_df.head(3)["馬名"].tolist()
             st.subheader("💡 推奨馬券")
-            c1, c2, c3 = st.columns(3)
             st.write("単勝： " + top3[0])
             st.write("馬連： " + top3[0] + " - " + top3[1])
             st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
