@@ -56,18 +56,26 @@ def scrape(url):
     except:
         pass
 
+    # デバッグ用：取得できた行数を確認
+    all_rows = soup.select("tr.HorseList")
+    st.write("デバッグ: HorseList行数 = " + str(len(all_rows)))
+
     # 出走馬取得
     horses = []
-    for row in soup.select("tr.HorseList"):
+    for i, row in enumerate(all_rows):
         try:
-            n = row.select_one("td.HorseName a") or row.select_one("dt.Horse a") or row.select_one("td.Horse_Info a")
+            # 馬名（複数パターン試す）
+            n = (row.select_one("td.HorseName a") or
+                 row.select_one("dt.Horse a") or
+                 row.select_one("td.Horse_Info a") or
+                 row.select_one("a[href*='/horse/']"))
             if not n or not n.text.strip():
                 continue
             name = n.text.strip()
 
-            # 人気取得
+            # 人気
             pop_tag = row.select_one("td.Ninki") or row.select_one("td.Popular")
-            pop = int(pop_tag.text.strip()) if pop_tag and pop_tag.text.strip().isdigit() else 9
+            pop = int(pop_tag.text.strip()) if pop_tag and pop_tag.text.strip().isdigit() else i+1
 
             j = row.select_one("td.Jockey a") or row.select_one("dd.Jockey a")
             jockey = re.sub(r'[▲△☆]', '', j.text.strip() if j else "不明").strip()
@@ -91,6 +99,7 @@ def scrape(url):
             horses.append({"馬名": name, "人気": pop, "性別": gender, "馬齢": age, "斤量": burden, "騎手": jockey, "馬体重": weight, "体重増減": wdiff})
         except:
             continue
+
     return horses, distance, surface, condition, venue
 
 def predict(horses, distance, surface, condition, venue):
@@ -98,19 +107,13 @@ def predict(horses, distance, surface, condition, venue):
     rows = []
     for h in horses:
         rows.append({
-            "馬名": h["馬名"],
-            "人気": h["人気"],
-            "馬体重": h["馬体重"],
-            "場体重増減": h["体重増減"],
-            "斤量": h["斤量"],
-            "馬齢": h["馬齢"],
-            "距離(m)": distance,
-            "競馬場コード_enc": vmap.get(venue, 0),
+            "馬名": h["馬名"], "人気": h["人気"], "馬体重": h["馬体重"],
+            "場体重増減": h["体重増減"], "斤量": h["斤量"], "馬齢": h["馬齢"],
+            "距離(m)": distance, "競馬場コード_enc": vmap.get(venue, 0),
             "芝ダート_enc": {"芝":0,"ダート":1}.get(surface, 0),
             "馬場状態_enc": {"良":0,"稍重":1,"重":2,"不良":3}.get(condition, 0),
             "性別_enc": {"牡":0,"牝":1,"せん":2}.get(h["性別"], 0),
-            "騎手勝率": 0.05,
-            "前走着順": 5
+            "騎手勝率": 0.05, "前走着順": 5
         })
     df = pd.DataFrame(rows)
     df["AIスコア"] = model.predict_proba(df[FEATURES])[:,1]
@@ -136,10 +139,13 @@ if st.button("🤖 AI予想を実行", type="primary", use_container_width=True)
                 medal = medals[i] if i < 3 else str(i+1) + "着"
                 pct = int(row["AIスコア"] * 100)
                 st.write(medal + " " + row["馬名"] + " " + str(pct) + "pt")
-            top3 = result_df.head(3)["馬名"].tolist()
+            top3 = result_df.head(min(3, len(result_df)))["馬名"].tolist()
             st.subheader("💡 推奨馬券")
-            st.write("単勝： " + top3[0])
-            st.write("馬連： " + top3[0] + " - " + top3[1])
-            st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
+            if len(top3) >= 1:
+                st.write("単勝： " + top3[0])
+            if len(top3) >= 2:
+                st.write("馬連： " + top3[0] + " - " + top3[1])
+            if len(top3) >= 3:
+                st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
 
 st.caption("馬券購入は自己責任でお願いします。")
