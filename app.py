@@ -103,11 +103,8 @@ if st.button("🤖 AI予想を実行", type="primary", use_container_width=True)
             top3 = result_df.head(3)["馬名"].tolist()
             st.subheader("💡 推奨馬券")
             c1, c2, c3 = st.columns(3)
-            with c1:
-                st.metric("単勝", top3[0])
-            with c2:
-                st.metric("馬連", top3[0] + "-" + top3[1])
-            with c3:
-                st.metric("三連複", top3[0] + "-" + top3[1] + "-" + top3[2])
+st.write("単勝： " + top3[0])
+st.write("馬連： " + top3[0] + " - " + top3[1])
+st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
 
 st.caption("馬券購入は自己責任でお願いします。")
