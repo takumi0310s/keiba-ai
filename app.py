@@ -35,7 +35,6 @@ def scrape(url):
     res.encoding = "EUC-JP"
     soup = BeautifulSoup(res.text, "html.parser")
 
-    # レース情報取得
     distance, surface, condition, venue = 2000, "芝", "良", "東京"
     try:
         data = soup.select_one(".RaceData01")
@@ -50,45 +49,35 @@ def scrape(url):
                     condition = c
                     break
         for v in ["札幌","函館","福島","新潟","東京","中山","中京","京都","阪神","小倉"]:
-            if v in res.text:
+            if v in res.text[:5000]:
                 venue = v
                 break
     except:
         pass
 
-    # デバッグ用：取得できた行数を確認
-    all_rows = soup.select("tr.HorseList")
-    st.write("デバッグ: HorseList行数 = " + str(len(all_rows)))
-
-    # 出走馬取得
     horses = []
-    for i, row in enumerate(all_rows):
+    for i, row in enumerate(soup.select("tr.HorseList")):
         try:
-            # 馬名（複数パターン試す）
-            n = (row.select_one("td.HorseName a") or
-                 row.select_one("dt.Horse a") or
-                 row.select_one("td.Horse_Info a") or
-                 row.select_one("a[href*='/horse/']"))
+            n = row.select_one("span.HorseName a")
             if not n or not n.text.strip():
                 continue
             name = n.text.strip()
 
-            # 人気
-            pop_tag = row.select_one("td.Ninki") or row.select_one("td.Popular")
+            pop_tag = row.select_one("td.Ninki")
             pop = int(pop_tag.text.strip()) if pop_tag and pop_tag.text.strip().isdigit() else i+1
 
-            j = row.select_one("td.Jockey a") or row.select_one("dd.Jockey a")
+            j = row.select_one("td.Jockey a")
             jockey = re.sub(r'[▲△☆]', '', j.text.strip() if j else "不明").strip()
 
-            b = row.select_one("td.Kinryo") or row.select_one("dd.Kinryo")
+            b = row.select_one("td.Kinryo")
             burden = float(b.text.strip()) if b else 55.0
 
-            s = row.select_one("td.Barei") or row.select_one("dd.Barei")
+            s = row.select_one("td.Barei")
             seire = s.text.strip() if s else "牡4"
             gender = seire[0] if seire else "牡"
             age = int(seire[1]) if len(seire) > 1 and seire[1].isdigit() else 4
 
-            w = row.select_one("td.Weight") or row.select_one("dd.Weight")
+            w = row.select_one("td.Weight")
             weight, wdiff = 480, 0
             if w:
                 m2 = re.search(r'(\d+)\(([+-]?\d+)\)', w.text)
@@ -99,7 +88,6 @@ def scrape(url):
             horses.append({"馬名": name, "人気": pop, "性別": gender, "馬齢": age, "斤量": burden, "騎手": jockey, "馬体重": weight, "体重増減": wdiff})
         except:
             continue
-
     return horses, distance, surface, condition, venue
 
 def predict(horses, distance, surface, condition, venue):
@@ -139,13 +127,10 @@ if st.button("🤖 AI予想を実行", type="primary", use_container_width=True)
                 medal = medals[i] if i < 3 else str(i+1) + "着"
                 pct = int(row["AIスコア"] * 100)
                 st.write(medal + " " + row["馬名"] + " " + str(pct) + "pt")
-            top3 = result_df.head(min(3, len(result_df)))["馬名"].tolist()
+            top3 = result_df.head(3)["馬名"].tolist()
             st.subheader("💡 推奨馬券")
-            if len(top3) >= 1:
-                st.write("単勝： " + top3[0])
-            if len(top3) >= 2:
-                st.write("馬連： " + top3[0] + " - " + top3[1])
-            if len(top3) >= 3:
-                st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
+            st.write("単勝： " + top3[0])
+            st.write("馬連： " + top3[0] + " - " + top3[1])
+            st.write("三連複： " + top3[0] + " - " + top3[1] + " - " + top3[2])
 
 st.caption("馬券購入は自己責任でお願いします。")
