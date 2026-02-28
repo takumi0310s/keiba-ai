@@ -45,15 +45,19 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
+    import os
+    if os.path.exists("keiba_model2.pkl"):
+        with open("keiba_model2.pkl", "rb") as f:
+            return pickle.load(f), "keiba_model2.pkl"
     with open("keiba_model.pkl", "rb") as f:
-        return pickle.load(f)
+        return pickle.load(f), "keiba_model.pkl"
 
 @st.cache_resource
 def load_jockey_wr():
     with open("jockey_wr.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
-model = load_model()
+model, model_name = load_model()
 jockey_wr = load_jockey_wr()
 
 FEATURES = [
@@ -134,75 +138,17 @@ def find_jockey_wr(name):
             return val
     return 0.05
 
-def get_odds(race_id):
-    """単勝オッズを取得。{馬番: オッズ} を返す"""
-    try:
-        # 方法1: PC版オッズページ
-        url = "https://race.netkeiba.com/odds/index.html?type=b1&race_id=" + race_id
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = "EUC-JP"
-        text = resp.text
-        odds_dict = {}
-        # JavaScript内のオッズデータをパース
-        # パターン: "1":{"umaban":"1","odds":"3.5",...}
-        matches = re.findall(r'"umaban"\s*:\s*"(\d+)".*?"odds"\s*:\s*"([\d.]+)"', text)
-        if matches:
-            for um, od in matches:
-                try:
-                    odds_dict[int(um)] = float(od)
-                except ValueError:
-                    pass
-            return odds_dict
-
-        # 方法2: HTML テーブルからパース
-        soup = BeautifulSoup(text, "html.parser")
-        # Odds_Table内のデータ
-        table = soup.find("table", id="Odds_Table") or soup.find("table", class_="RaceOdds_HorseList_Table")
-        if table:
-            for row in table.find_all("tr"):
-                tds = row.find_all("td")
-                if len(tds) >= 2:
-                    for idx_um in range(len(tds)):
-                        um_text = tds[idx_um].get_text(strip=True)
-                        if um_text.isdigit() and 1 <= int(um_text) <= 18:
-                            for idx_od in range(idx_um + 1, len(tds)):
-                                od_text = tds[idx_od].get_text(strip=True).replace(',', '')
-                                try:
-                                    od_val = float(od_text)
-                                    if 1.0 <= od_val <= 9999:
-                                        odds_dict[int(um_text)] = od_val
-                                        break
-                                except ValueError:
-                                    continue
-                            break
-
-        # 方法3: SP版オッズページ
-        if not odds_dict:
-            sp_url = "https://race.sp.netkeiba.com/?pid=odds&race_id=" + race_id
-            resp2 = requests.get(sp_url, headers=HEADERS, timeout=10)
-            resp2.encoding = "EUC-JP"
-            sp_matches = re.findall(r'(\d+)番.*?(\d+\.\d+)倍', resp2.text)
-            for um, od in sp_matches:
-                try:
-                    odds_dict[int(um)] = float(od)
-                except ValueError:
-                    pass
-
-        return odds_dict
-    except Exception:
-        return {}
-
 def get_horse_stats(horse_id, target_distance, target_surface):
-    """前走着順 + 距離適性 + 馬場適性をPC版テーブルから取得"""
+    """前走着順 + 距離適性 + 馬場適性 + 人気傾向を取得"""
     last_finish = 5
     dist_results = []
     surf_results = []
+    popularity_list = []
     try:
         url = "https://db.netkeiba.com/horse/result/" + horse_id + "/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
-
         table = soup.find("table", class_="db_h_race_results")
         if table:
             tbody = table.find("tbody")
@@ -212,65 +158,58 @@ def get_horse_stats(horse_id, target_distance, target_surface):
                     tds = row.find_all("td")
                     if len(tds) < 15:
                         continue
-                    # 着順 (11列目, 0-indexed)
+                    # 着順 (11列目)
                     finish_text = tds[11].get_text(strip=True)
                     if not finish_text.isdigit():
                         continue
                     finish = int(finish_text)
-
-                    # 前走着順 (最初の行)
                     if row_idx == 0:
                         last_finish = finish
-
+                    # 人気 (10列目)
+                    pop_text = tds[10].get_text(strip=True)
+                    if pop_text.isdigit():
+                        popularity_list.append(int(pop_text))
                     # 距離情報 (14列目): "芝1600" or "ダ1200"
                     dist_col = tds[14].get_text(strip=True)
                     dm = re.match(r'([芝ダ障])(\d+)', dist_col)
                     if dm:
                         surf_ch = dm.group(1)
                         dist_val = int(dm.group(2))
-
-                        # 距離適性: 今回の距離±200m以内の成績
                         if target_distance > 0 and abs(dist_val - target_distance) <= 200:
                             dist_results.append(finish)
-
-                        # 馬場適性: 同じ芝/ダートの成績
                         surf_name = '芝' if surf_ch == '芝' else 'ダ'
                         if surf_name == target_surface:
                             surf_results.append(finish)
-
-                    # 最大10走分のみ分析
                     if row_idx >= 9:
                         break
-
-        # SP版フォールバック（前走着順のみ）
         if last_finish == 5:
             all_text = soup.get_text()
             m = re.search(r'(\d{1,2})\(\d+人気\)', all_text)
             if m:
                 last_finish = int(m.group(1))
-
     except Exception:
         pass
-
-    # 適性スコア計算
+    # 適性スコア
     dist_apt = 0.5
     surf_apt = 0.5
     if dist_results:
         avg = sum(dist_results) / len(dist_results)
-        # 平均着順1→1.0, 9→0.5, 18→0.0
         dist_apt = max(0.0, min(1.0, 1.0 - (avg - 1) / 17.0))
     if surf_results:
         avg = sum(surf_results) / len(surf_results)
         surf_apt = max(0.0, min(1.0, 1.0 - (avg - 1) / 17.0))
-
-    return last_finish, dist_apt, surf_apt
+    # 人気スコア (平均人気1→1.0, 9→0.5, 18→0.0)
+    pop_score = 0.5
+    if popularity_list:
+        avg_pop = sum(popularity_list) / len(popularity_list)
+        pop_score = max(0.0, min(1.0, 1.0 - (avg_pop - 1) / 17.0))
+    return last_finish, dist_apt, surf_apt, pop_score
 
 def parse_shutuba(race_id):
     url = "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
     resp = requests.get(url, headers=HEADERS, timeout=10)
     resp.encoding = "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
-
     race_name = "レース"
     tag = soup.find("div", class_="RaceName")
     if tag and tag.get_text(strip=True):
@@ -286,18 +225,15 @@ def parse_shutuba(race_id):
                 m = re.search(r'(\S+\d+R)', title_text)
                 if m:
                     race_name = m.group(1)
-
     race_data01 = soup.find("div", class_="RaceData01")
     data01_text = race_data01.get_text(strip=True) if race_data01 else ""
     if not data01_text:
         data01_text = soup.get_text()
-
     dist_match = re.search(r'(\d{4})m', data01_text)
     distance = int(dist_match.group(1)) if dist_match else 0
     surface = '芝' if '芝' in data01_text else ('ダ' if 'ダ' in data01_text else '芝')
     cond_match = re.search(r'馬場:(\S+)', data01_text)
     condition = cond_match.group(1) if cond_match else '良'
-
     race_data02 = soup.find("div", class_="RaceData02")
     data02_text = race_data02.get_text(strip=True) if race_data02 else data01_text
     course_name = ""
@@ -305,12 +241,10 @@ def parse_shutuba(race_id):
         if cname in data02_text:
             course_name = cname
             break
-
     race_info = dict(distance=distance, surface=surface, condition=condition, course=course_name)
     rows = soup.select("tr.HorseList")
     horses = []
     horse_ids = []
-
     for row in rows:
         row_class = row.get("class", [])
         if "Cancel" in row_class:
@@ -322,7 +256,6 @@ def parse_shutuba(race_id):
         href = name_tag.get("href", "")
         hid_match = re.search(r'/horse/(\d+)', href)
         horse_id = hid_match.group(1) if hid_match else None
-
         info_tag = row.select_one("td.Barei") or row.select_one("span.Barei")
         if info_tag:
             sex_age_text = info_tag.get_text(strip=True)
@@ -336,7 +269,6 @@ def parse_shutuba(race_id):
                     break
         sex = sex_age_text[0] if sex_age_text else '牡'
         age = int(sex_age_text[1:]) if sex_age_text and sex_age_text[1:].isdigit() else 3
-
         kinryo = 55.0
         tds = row.find_all("td")
         for td in tds:
@@ -348,17 +280,8 @@ def parse_shutuba(race_id):
                     break
             except ValueError:
                 continue
-
         jockey_tag = row.select_one("td.Jockey a") or row.select_one("a[href*='jockey']")
         jockey_name = jockey_tag.get_text(strip=True) if jockey_tag else ""
-
-        umaban = 0
-        umaban_tag = row.select_one("td.Umaban")
-        if umaban_tag:
-            ut = umaban_tag.get_text(strip=True)
-            if ut.isdigit():
-                umaban = int(ut)
-
         horse_weight = 480
         weight_diff = 0
         for td in tds:
@@ -370,9 +293,8 @@ def parse_shutuba(race_id):
                     horse_weight = w
                     weight_diff = int(bw_match.group(2))
                     break
-
         horses.append({
-            '馬名': horse_name, '馬番': umaban,
+            '馬名': horse_name,
             '馬体重': horse_weight, '場体重増減': weight_diff,
             '斤量': kinryo, '馬齢': age,
             '距離(m)': distance,
@@ -386,7 +308,7 @@ def parse_shutuba(race_id):
         horse_ids.append(horse_id)
     return race_name, horses, horse_ids, race_info
 
-def render_top3(rank, name, jockey, finish, score, max_score, odds_str, apt_str):
+def render_top3(rank, name, jockey, finish, score, max_score, pop_label, apt_str):
     medal_map = {1: '🥇', 2: '🥈', 3: '🥉'}
     color_map = {1: 'gold', 2: 'silver', 3: 'bronze'}
     medal = medal_map.get(rank, '')
@@ -399,8 +321,7 @@ def render_top3(rank, name, jockey, finish, score, max_score, odds_str, apt_str)
     html += '<div class="horse-name-card">' + name + '</div>'
     html += '<div class="details-card">騎手: ' + jockey
     html += '｜前走: ' + str(finish) + '着'
-    if odds_str:
-        html += '｜' + odds_str
+    html += '｜人気: ' + pop_label
     html += '｜適性: ' + apt_str
     html += '｜スコア: ' + str(round(score, 3)) + '</div>'
     html += '</div></div>'
@@ -419,6 +340,16 @@ def apt_label(d, s):
     else:
         return '✕'
 
+def pop_label(score):
+    if score >= 0.8:
+        return '★★★'
+    elif score >= 0.6:
+        return '★★'
+    elif score >= 0.4:
+        return '★'
+    else:
+        return '-'
+
 # ===== メイン =====
 st.markdown("# 🏇 競馬AI予想")
 url_input = st.text_input("netkeibaの出馬表URLを入力")
@@ -430,110 +361,72 @@ if st.button("🔍 予想する") and url_input:
         st.error("URLからrace_idを取得できませんでした")
         st.stop()
     race_id = rid_match.group(1)
-
     with st.spinner("出馬表を取得中..."):
         race_name, horses, horse_ids, race_info = parse_shutuba(race_id)
     if not horses:
         st.error("馬データを取得できませんでした。URLを確認してください。")
         st.stop()
-
-    # レース情報ヘッダー
     surf = '🟢 芝' if race_info['surface'] == '芝' else '🟤 ダート'
     hdr = '<div class="race-hdr">'
     hdr += '<h2>' + race_info['course'] + ' ' + race_name + '</h2>'
     hdr += '<p>' + surf + ' ' + str(race_info['distance']) + 'm ｜ 馬場: '
-    hdr += race_info['condition'] + ' ｜ ' + str(len(horses)) + '頭立て</p>'
+    hdr += race_info['condition'] + ' ｜ ' + str(len(horses)) + '頭立て'
+    hdr += '｜🤖 ' + model_name + '</p>'
     hdr += '</div>'
     st.markdown(hdr, unsafe_allow_html=True)
-
-    # オッズ取得
-    with st.spinner("オッズを取得中..."):
-        odds_dict = get_odds(race_id)
-
-    # 前走着順 + 距離適性 + 馬場適性取得 (PC版テーブルパース)
     with st.spinner("各馬の成績を分析中..."):
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                lf, d_apt, s_apt = get_horse_stats(
+                lf, d_apt, s_apt, p_score = get_horse_stats(
                     hid, race_info['distance'], race_info['surface']
                 )
                 horse['前走着順'] = lf
                 horse['距離適性'] = d_apt
                 horse['馬場適性'] = s_apt
+                horse['人気傾向'] = p_score
             else:
                 horse['前走着順'] = 5
                 horse['距離適性'] = 0.5
                 horse['馬場適性'] = 0.5
-            umaban = horse.get('馬番', 0)
-            if umaban in odds_dict:
-                horse['単勝オッズ'] = odds_dict[umaban]
-            else:
-                horse['単勝オッズ'] = 0.0
+                horse['人気傾向'] = 0.5
             progress_bar.progress((i + 1) / len(horses))
             if i < len(horses) - 1:
                 time.sleep(0.5)
         progress_bar.empty()
-
     df = pd.DataFrame(horses)
-
-    # AIモデルスコア
     X = df[FEATURES].values
     proba = model.predict_proba(X)
     if proba.shape[1] == 2:
         ai_scores = proba[:, 1]
     else:
         ai_scores = proba[:, :3].sum(axis=1) if proba.shape[1] >= 3 else proba[:, 0]
-
-    # オッズスコア
-    odds_vals = df['単勝オッズ'].values
-    has_odds = any(o > 0 for o in odds_vals)
-    if has_odds:
-        odds_scores = np.array([1.0 / o if o > 0 else 0 for o in odds_vals])
-        if odds_scores.max() > 0:
-            odds_scores = odds_scores / odds_scores.max()
-    else:
-        odds_scores = np.zeros(len(df))
-
-    # 適性スコア
     apt_scores = (df['距離適性'].values + df['馬場適性'].values) / 2.0
-
-    # 最終スコア
-    if has_odds:
-        final_scores = ai_scores * 0.50 + odds_scores * 0.30 + apt_scores * 0.20
-    else:
-        final_scores = ai_scores * 0.65 + apt_scores * 0.35
-
-    df['AIスコア'] = ai_scores
+    pop_scores = df['人気傾向'].values
+    # 最終スコア: AI 50% + 人気傾向 25% + 適性 25%
+    final_scores = ai_scores * 0.50 + pop_scores * 0.25 + apt_scores * 0.25
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
     df['適性'] = df.apply(lambda r: apt_label(r['距離適性'], r['馬場適性']), axis=1)
-
+    df['人気'] = df['人気傾向'].map(pop_label)
     # TOP3
     st.markdown("### 🏆 AI推奨 TOP3")
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
-        odds_str = ''
-        if row['単勝オッズ'] > 0:
-            odds_str = '単勝 ' + str(row['単勝オッズ']) + '倍'
         render_top3(
             int(row['AI順位']), row['馬名'], row['騎手名'],
             int(row['前走着順']), row['スコア'], max_score,
-            odds_str, row['適性']
+            row['人気'], row['適性']
         )
-
-    # スコアグラフ
+    # グラフ
     st.markdown("### 📊 全馬スコア")
     chart_df = df[['馬名', 'スコア']].copy()
     chart_df = chart_df.set_index('馬名')
     st.bar_chart(chart_df, color='#FFD700')
-
-    # 全馬テーブル
+    # テーブル
     st.markdown("### 📋 全馬データ")
-    display_cols = ['AI順位', '馬名', '騎手名', '前走着順', '適性', '騎手勝率', 'スコア']
-    if has_odds:
-        display_cols.insert(4, '単勝オッズ')
+    display_cols = ['AI順位', '馬名', '騎手名', '前走着順', '人気', '適性', '騎手勝率', 'スコア']
     result_df = df[display_cols].copy()
     result_df['スコア'] = result_df['スコア'].map(lambda x: str(round(x, 3)))
     result_df['騎手勝率'] = result_df['騎手勝率'].map(lambda x: str(round(x, 3)))
