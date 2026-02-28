@@ -45,8 +45,6 @@ def get_last_finish(horse_id):
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
-
-        # PC版: table.db_h_race_results の最初の行
         table = soup.find("table", class_="db_h_race_results")
         if table:
             tbody = table.find("tbody")
@@ -58,13 +56,10 @@ def get_last_finish(horse_id):
                         finish_text = tds[11].get_text(strip=True)
                         if finish_text.isdigit():
                             return int(finish_text)
-
-        # SP版/フォールバック: "N(M人気)" パターン
         all_text = soup.get_text()
         m = re.search(r'(\d{1,2})\(\d+人気\)', all_text)
         if m:
             return int(m.group(1))
-
         return 5
     except Exception:
         return 5
@@ -224,6 +219,16 @@ if st.button("予想する") and url_input:
             if i < len(horses) - 1:
                 time.sleep(0.5)
         progress_bar.empty()
+
+    # デバッグ: 騎手名の比較
+    with st.expander("デバッグ: 騎手名の照合"):
+        jwr_keys = list(jockey_wr.keys())[:10]
+        st.text(f"jockey_wr.jsonのキー例: {jwr_keys}")
+        for h in horses[:3]:
+            name = h['騎手名']
+            found = name in jockey_wr
+            st.text(f"出馬表: [{name}] → 辞書に{'あり' if found else 'なし'}")
+
     df = pd.DataFrame(horses)
     X = df[FEATURES].values
     proba = model.predict_proba(X)
