@@ -45,6 +45,10 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
+    import os, gzip
+    if os.path.exists("keiba_model.pkl.gz"):
+        with gzip.open("keiba_model.pkl.gz", "rb") as f:
+            return pickle.load(f)
     with open("keiba_model.pkl", "rb") as f:
         return pickle.load(f)
 
