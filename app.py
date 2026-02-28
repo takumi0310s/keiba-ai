@@ -60,15 +60,29 @@ def scrape(url):
         pass
 
     horses = []
+    pop_counter = 1
     for i, row in enumerate(soup.select("tr.HorseList")):
         try:
+            # 取消・除外馬をスキップ
+            row_classes = row.get("class", [])
+            if "Cancel" in row_classes:
+                continue
+            if row.select_one("td.Cancel_Txt"):
+                continue
+
             n = row.select_one("span.HorseName a")
             if not n or not n.text.strip():
                 continue
             name = n.text.strip()
 
+            # 人気取得
             pop_tag = row.select_one("td.Ninki")
-            pop = int(pop_tag.text.strip()) if pop_tag and pop_tag.text.strip().isdigit() else i+1
+            pop_text = pop_tag.text.strip() if pop_tag else ""
+            if pop_text.isdigit():
+                pop = int(pop_text)
+            else:
+                pop = pop_counter
+            pop_counter += 1
 
             j = row.select_one("td.Jockey a")
             jockey = re.sub(r'[▲△☆]', '', j.text.strip() if j else "不明").strip()
