@@ -39,45 +39,58 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-def get_last_finish(horse_id):
+def get_last_finish(horse_id, debug=False):
+    debug_info = []
     try:
         url = f"https://db.netkeiba.com/horse/{horse_id}/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        debug_info.append(f"URL: {resp.url}")
+        debug_info.append(f"Status: {resp.status_code}")
+
         # PC版: table.db_h_race_results
         table = soup.find("table", class_="db_h_race_results")
+        debug_info.append(f"PC table found: {table is not None}")
+
         if table:
             tbody = table.find("tbody")
             if tbody:
                 first_row = tbody.find("tr")
                 if first_row:
                     tds = first_row.find_all("td")
+                    debug_info.append(f"TD count: {len(tds)}")
                     if len(tds) > 11:
                         finish_text = tds[11].get_text(strip=True)
+                        debug_info.append(f"TD[11]: {finish_text}")
                         if finish_text.isdigit():
-                            return int(finish_text)
+                            return int(finish_text), debug_info
 
-        # SP版フォールバック: 直近レースの着順を探す
-        # SP版では "2(3人気)" のような形式
-        result_items = soup.select("li a, div.Result, span.Result")
-        for item in result_items:
-            text = item.get_text(strip=True)
-            m = re.match(r'^(\d{1,2})\(', text)
-            if m:
-                return int(m.group(1))
-
-        # 更に別パターン: 着順が単独で入っている場合
+        # SP版: "N(M人気)" パターンを全テキストから探す
         all_text = soup.get_text()
-        # "着順" の後の数字を探す
         m = re.search(r'(\d{1,2})\(\d+人気\)', all_text)
+        debug_info.append(f"SP pattern found: {m is not None}")
         if m:
-            return int(m.group(1))
+            debug_info.append(f"SP match: {m.group(0)}")
+            return int(m.group(1)), debug_info
 
-        return 5
-    except Exception:
-        return 5
+        # タイトルからヒント
+        title = soup.find("title")
+        if title:
+            debug_info.append(f"Title: {title.get_text(strip=True)[:50]}")
+
+        # 全テーブルを探す
+        tables = soup.find_all("table")
+        debug_info.append(f"Total tables: {len(tables)}")
+        for i, t in enumerate(tables[:3]):
+            cls = t.get("class", [])
+            debug_info.append(f"Table[{i}] class: {cls}")
+
+        return 5, debug_info
+    except Exception as e:
+        debug_info.append(f"Error: {str(e)}")
+        return 5, debug_info
 
 def parse_shutuba(race_id):
     url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
@@ -85,34 +98,26 @@ def parse_shutuba(race_id):
     resp.encoding = "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
 
-    # レース名を複数パターンで取得
     race_name = "レース名取得失敗"
-    # パターン1: PC版 div.RaceName
     tag = soup.find("div", class_="RaceName")
     if tag and tag.get_text(strip=True):
         race_name = tag.get_text(strip=True)
     else:
-        # パターン2: h1タグ
         tag = soup.find("h1")
         if tag and tag.get_text(strip=True):
             race_name = tag.get_text(strip=True)
         else:
-            # パターン3: title タグからレース名を取得
             tag = soup.find("title")
             if tag:
                 title_text = tag.get_text(strip=True)
-                # "出馬表 | 2026年2月28日 中山1R" のようなパターン
                 m = re.search(r'(\S+\d+R)', title_text)
                 if m:
                     race_name = m.group(1)
                 else:
                     race_name = title_text[:30]
 
-    # レース情報
     race_data01 = soup.find("div", class_="RaceData01")
     data01_text = race_data01.get_text(strip=True) if race_data01 else ""
-
-    # data01が空の場合、ページ全体から距離などを探す
     if not data01_text:
         all_text = soup.get_text()
         data01_text = all_text
@@ -141,9 +146,7 @@ def parse_shutuba(race_id):
             course_name = name
             break
 
-    # 馬リスト: PC版
     rows = soup.select("tr.HorseList")
-
     horses = []
     horse_ids = []
 
@@ -151,12 +154,10 @@ def parse_shutuba(race_id):
         row_class = row.get("class", [])
         if "Cancel" in row_class:
             continue
-
         name_tag = row.select_one("span.HorseName a")
         if name_tag is None:
             continue
         horse_name = name_tag.get_text(strip=True)
-
         href = name_tag.get("href", "")
         hid_match = re.search(r'/horse/(\d+)', href)
         horse_id = hid_match.group(1) if hid_match else None
@@ -172,7 +173,6 @@ def parse_shutuba(race_id):
                 if re.match(r'^[牡牝セ騸]\d+$', t):
                     sex_age_text = t
                     break
-
         sex = sex_age_text[0] if sex_age_text else '牡'
         age = int(sex_age_text[1:]) if sex_age_text and sex_age_text[1:].isdigit() else 3
 
@@ -236,18 +236,30 @@ if st.button("予想する") and url_input:
         st.error("馬データを取得できませんでした。URLを確認してください。")
         st.stop()
     st.subheader(race_name)
+
+    # デバッグ: 最初の1頭だけ詳細表示
+    debug_result = None
     with st.spinner(f"前走着順を取得中...（{len(horses)}頭）"):
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                last_finish = get_last_finish(hid)
+                last_finish, dbg = get_last_finish(hid, debug=True)
                 horse['前走着順'] = last_finish
+                if i == 0:
+                    debug_result = dbg
             else:
                 horse['前走着順'] = 5
             progress_bar.progress((i + 1) / len(horses))
             if i < len(horses) - 1:
                 time.sleep(0.5)
         progress_bar.empty()
+
+    # デバッグ情報表示（1頭目）
+    if debug_result:
+        with st.expander("デバッグ情報（1頭目）"):
+            for line in debug_result:
+                st.text(line)
+
     df = pd.DataFrame(horses)
     X = df[FEATURES].values
     proba = model.predict_proba(X)
