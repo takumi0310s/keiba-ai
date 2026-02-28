@@ -10,66 +10,47 @@ import time
 
 st.set_page_config(page_title="競馬AI予想", page_icon="🏇", layout="wide")
 
-# カスタムCSS
-st.markdown("""
+CSS = """
 <style>
-.top-card {
+.top-card-gold {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 16px;
     padding: 20px;
     margin: 10px 0;
-    border-left: 5px solid;
+    border-left: 5px solid #FFD700;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
-.top-card.gold { border-left-color: #FFD700; }
-.top-card.silver { border-left-color: #C0C0C0; }
-.top-card.bronze { border-left-color: #CD7F32; }
-.top-card .rank {
-    font-size: 2.0em;
-    font-weight: bold;
-    margin-right: 10px;
+.top-card-silver {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 10px 0;
+    border-left: 5px solid #C0C0C0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
-.top-card .rank.gold { color: #FFD700; }
-.top-card .rank.silver { color: #C0C0C0; }
-.top-card .rank.bronze { color: #CD7F32; }
-.top-card .horse-name {
-    font-size: 1.4em;
-    font-weight: bold;
-    color: #ffffff;
+.top-card-bronze {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 10px 0;
+    border-left: 5px solid #CD7F32;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
-.top-card .details {
-    color: #aaaaaa;
-    font-size: 0.95em;
-    margin-top: 5px;
-}
-.top-card .score-bar-bg {
-    background: #333;
-    border-radius: 10px;
-    height: 12px;
-    margin-top: 8px;
-    overflow: hidden;
-}
-.top-card .score-bar {
-    height: 12px;
-    border-radius: 10px;
-}
-.score-bar.gold { background: linear-gradient(90deg, #FFD700, #FFA500); }
-.score-bar.silver { background: linear-gradient(90deg, #C0C0C0, #A0A0A0); }
-.score-bar.bronze { background: linear-gradient(90deg, #CD7F32, #A0522D); }
-.race-header {
-    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-    border-radius: 12px;
-    padding: 15px 20px;
-    margin: 15px 0;
-    text-align: center;
-}
-.race-header h2 {
-    color: #e0e0e0;
-    margin: 0;
-    font-size: 1.6em;
-}
+.rank-gold { font-size: 2.0em; font-weight: bold; color: #FFD700; margin-right: 10px; }
+.rank-silver { font-size: 2.0em; font-weight: bold; color: #C0C0C0; margin-right: 10px; }
+.rank-bronze { font-size: 2.0em; font-weight: bold; color: #CD7F32; margin-right: 10px; }
+.horse-name-card { font-size: 1.4em; font-weight: bold; color: #ffffff; }
+.details-card { color: #aaaaaa; font-size: 0.95em; margin-top: 5px; }
+.bar-bg { background: #333; border-radius: 10px; height: 12px; margin-top: 8px; overflow: hidden; }
+.bar-gold { height: 12px; border-radius: 10px; background: linear-gradient(90deg, #FFD700, #FFA500); }
+.bar-silver { height: 12px; border-radius: 10px; background: linear-gradient(90deg, #C0C0C0, #A0A0A0); }
+.bar-bronze { height: 12px; border-radius: 10px; background: linear-gradient(90deg, #CD7F32, #A0522D); }
+.race-hdr { background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); border-radius: 12px; padding: 15px 20px; margin: 15px 0; text-align: center; }
+.race-hdr h2 { color: #e0e0e0; margin: 0; font-size: 1.6em; }
+.race-hdr p { color: #aaa; margin: 5px 0 0 0; }
 </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
@@ -173,7 +154,7 @@ def find_jockey_wr(name):
 
 def get_last_finish(horse_id):
     try:
-        url = f"https://db.netkeiba.com/horse/result/{horse_id}/"
+        url = "https://db.netkeiba.com/horse/result/" + horse_id + "/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -197,12 +178,12 @@ def get_last_finish(horse_id):
         return 5
 
 def parse_shutuba(race_id):
-    url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+    url = "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
     resp = requests.get(url, headers=HEADERS, timeout=10)
     resp.encoding = "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
 
-    race_name = "レース名取得失敗"
+    race_name = "レース"
     tag = soup.find("div", class_="RaceName")
     if tag and tag.get_text(strip=True):
         race_name = tag.get_text(strip=True)
@@ -217,8 +198,6 @@ def parse_shutuba(race_id):
                 m = re.search(r'(\S+\d+R)', title_text)
                 if m:
                     race_name = m.group(1)
-                else:
-                    race_name = title_text[:30]
 
     race_data01 = soup.find("div", class_="RaceData01")
     data01_text = race_data01.get_text(strip=True) if race_data01 else ""
@@ -227,35 +206,19 @@ def parse_shutuba(race_id):
 
     dist_match = re.search(r'(\d{4})m', data01_text)
     distance = int(dist_match.group(1)) if dist_match else 0
-
-    if '芝' in data01_text:
-        surface = '芝'
-    elif 'ダ' in data01_text:
-        surface = 'ダ'
-    else:
-        surface = '芝'
-
+    surface = '芝' if '芝' in data01_text else ('ダ' if 'ダ' in data01_text else '芝')
     cond_match = re.search(r'馬場:(\S+)', data01_text)
     condition = cond_match.group(1) if cond_match else '良'
 
     race_data02 = soup.find("div", class_="RaceData02")
-    data02_text = race_data02.get_text(strip=True) if race_data02 else ""
-    if not data02_text:
-        data02_text = data01_text
-
+    data02_text = race_data02.get_text(strip=True) if race_data02 else data01_text
     course_name = ""
-    for name in COURSE_MAP.keys():
-        if name in data02_text:
-            course_name = name
+    for cname in COURSE_MAP.keys():
+        if cname in data02_text:
+            course_name = cname
             break
 
-    race_info = {
-        'distance': distance,
-        'surface': surface,
-        'condition': condition,
-        'course': course_name,
-    }
-
+    race_info = dict(distance=distance, surface=surface, condition=condition, course=course_name)
     rows = soup.select("tr.HorseList")
     horses = []
     horse_ids = []
@@ -330,26 +293,23 @@ def parse_shutuba(race_id):
         horse_ids.append(horse_id)
     return race_name, horses, horse_ids, race_info
 
-def render_top3_card(rank, horse_name, jockey, last_finish, score, max_score):
-    colors = {1: 'gold', 2: 'silver', 3: 'bronze'}
-    medals = {1: '🥇', 2: '🥈', 3: '🥉'}
-    color = colors.get(rank, 'bronze')
-    medal = medals.get(rank, '')
-    bar_width = int((score / max_score) * 100) if max_score > 0 else 0
-    st.markdown(f"""
-    <div class="top-card {color}">
-        <div style="display:flex; align-items:center;">
-            <span class="rank {color}">{medal}</span>
-            <div>
-                <div class="horse-name">{horse_name}</div>
-                <div class="details">騎手: {jockey}｜前走: {last_finish}着｜スコア: {score:.3f}</div>
-            </div>
-        </div>
-        <div class="score-bar-bg">
-            <div class="score-bar {color}" style="width:{bar_width}%"></div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+def render_top3(rank, name, jockey, finish, score, max_score):
+    medal_map = {1: '🥇', 2: '🥈', 3: '🥉'}
+    color_map = {1: 'gold', 2: 'silver', 3: 'bronze'}
+    medal = medal_map.get(rank, '')
+    color = color_map.get(rank, 'bronze')
+    bw = int((score / max_score) * 100) if max_score > 0 else 0
+    html = '<div class="top-card-' + color + '">'
+    html += '<div style="display:flex;align-items:center;">'
+    html += '<span class="rank-' + color + '">' + medal + '</span>'
+    html += '<div>'
+    html += '<div class="horse-name-card">' + name + '</div>'
+    html += '<div class="details-card">騎手: ' + jockey
+    html += '｜前走: ' + str(finish) + '着｜スコア: ' + f"{score:.3f}" + '</div>'
+    html += '</div></div>'
+    html += '<div class="bar-bg"><div class="bar-' + color + '" style="width:' + str(bw) + '%"></div></div>'
+    html += '</div>'
+    st.markdown(html, unsafe_allow_html=True)
 
 # ===== メイン =====
 st.markdown("# 🏇 競馬AI予想")
@@ -369,21 +329,19 @@ if st.button("🔍 予想する") and url_input:
         st.stop()
 
     # レース情報ヘッダー
-    surf_label = {'芝': '🟢 芝', 'ダ': '🟤 ダート'}.get(race_info['surface'], race_info['surface'])
-    cond_label = race_info['condition']
-    st.markdown(f"""
-    <div class="race-header">
-        <h2>📍 {race_info['course']} {race_name}</h2>
-        <p style="color:#aaa; margin:5px 0 0 0;">{surf_label} {race_info['distance']}m ｜ 馬場: {cond_label} ｜ {len(horses)}頭立て</p>
-    </div>
-    """, unsafe_allow_html=True)
+    surf = '🟢 芝' if race_info['surface'] == '芝' else '🟤 ダート'
+    hdr = '<div class="race-hdr">'
+    hdr += '<h2>' + race_info['course'] + ' ' + race_name + '</h2>'
+    hdr += '<p>' + surf + ' ' + str(race_info['distance']) + 'm ｜ 馬場: '
+    hdr += race_info['condition'] + ' ｜ ' + str(len(horses)) + '頭立て</p>'
+    hdr += '</div>'
+    st.markdown(hdr, unsafe_allow_html=True)
 
-    with st.spinner(f"前走着順を取得中...（{len(horses)}頭）"):
+    with st.spinner("前走着順を取得中..."):
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                last_finish = get_last_finish(hid)
-                horse['前走着順'] = last_finish
+                horse['前走着順'] = get_last_finish(hid)
             else:
                 horse['前走着順'] = 5
             progress_bar.progress((i + 1) / len(horses))
@@ -406,13 +364,9 @@ if st.button("🔍 予想する") and url_input:
     st.markdown("### 🏆 AI推奨 TOP3")
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
-        render_top3_card(
-            int(row['AI順位']),
-            row['馬名'],
-            row['騎手名'],
-            int(row['前走着順']),
-            row['スコア'],
-            max_score
+        render_top3(
+            int(row['AI順位']), row['馬名'], row['騎手名'],
+            int(row['前走着順']), row['スコア'], max_score
         )
 
     # スコアグラフ
@@ -421,13 +375,11 @@ if st.button("🔍 予想する") and url_input:
     chart_df = chart_df.set_index('馬名')
     st.bar_chart(chart_df, color='#FFD700')
 
-    # 全馬データテーブル（馬名途切れ対策）
+    # 全馬データ
     st.markdown("### 📋 全馬データ")
     display_cols = ['AI順位', '馬名', '騎手名', '前走着順', '騎手勝率', 'スコア']
     result_df = df[display_cols].copy()
     result_df['スコア'] = result_df['スコア'].map(lambda x: f"{x:.3f}")
     result_df['騎手勝率'] = result_df['騎手勝率'].map(lambda x: f"{x:.3f}")
     result_df = result_df.reset_index(drop=True)
-
-    # st.tableで馬名途切れを防止
     st.table(result_df)
