@@ -45,34 +45,37 @@ def get_last_finish(horse_id):
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
+
+        # PC版: table.db_h_race_results
         table = soup.find("table", class_="db_h_race_results")
-        if table is None:
-            return 5
-        tbody = table.find("tbody")
-        if tbody is None:
-            return 5
-        first_row = tbody.find("tr")
-        if first_row is None:
-            return 5
-        tds = first_row.find_all("td")
-        if len(tds) < 1:
-            return 5
-        thead = table.find("thead")
-        finish_idx = 11
-        if thead:
-            ths = thead.find_all("th")
-            for idx, th in enumerate(ths):
-                if th.get_text(strip=True) == "着順":
-                    finish_idx = idx
-                    break
-        if len(tds) > finish_idx:
-            finish_text = tds[finish_idx].get_text(strip=True)
-        else:
-            finish_text = tds[0].get_text(strip=True)
-        if finish_text.isdigit():
-            return int(finish_text)
-        else:
-            return 5
+        if table:
+            tbody = table.find("tbody")
+            if tbody:
+                first_row = tbody.find("tr")
+                if first_row:
+                    tds = first_row.find_all("td")
+                    if len(tds) > 11:
+                        finish_text = tds[11].get_text(strip=True)
+                        if finish_text.isdigit():
+                            return int(finish_text)
+
+        # SP版フォールバック: 直近レースの着順を探す
+        # SP版では "2(3人気)" のような形式
+        result_items = soup.select("li a, div.Result, span.Result")
+        for item in result_items:
+            text = item.get_text(strip=True)
+            m = re.match(r'^(\d{1,2})\(', text)
+            if m:
+                return int(m.group(1))
+
+        # 更に別パターン: 着順が単独で入っている場合
+        all_text = soup.get_text()
+        # "着順" の後の数字を探す
+        m = re.search(r'(\d{1,2})\(\d+人気\)', all_text)
+        if m:
+            return int(m.group(1))
+
+        return 5
     except Exception:
         return 5
 
@@ -81,41 +84,83 @@ def parse_shutuba(race_id):
     resp = requests.get(url, headers=HEADERS, timeout=10)
     resp.encoding = "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
-    race_name_tag = soup.find("div", class_="RaceName")
-    race_name = race_name_tag.get_text(strip=True) if race_name_tag else "レース名取得失敗"
+
+    # レース名を複数パターンで取得
+    race_name = "レース名取得失敗"
+    # パターン1: PC版 div.RaceName
+    tag = soup.find("div", class_="RaceName")
+    if tag and tag.get_text(strip=True):
+        race_name = tag.get_text(strip=True)
+    else:
+        # パターン2: h1タグ
+        tag = soup.find("h1")
+        if tag and tag.get_text(strip=True):
+            race_name = tag.get_text(strip=True)
+        else:
+            # パターン3: title タグからレース名を取得
+            tag = soup.find("title")
+            if tag:
+                title_text = tag.get_text(strip=True)
+                # "出馬表 | 2026年2月28日 中山1R" のようなパターン
+                m = re.search(r'(\S+\d+R)', title_text)
+                if m:
+                    race_name = m.group(1)
+                else:
+                    race_name = title_text[:30]
+
+    # レース情報
     race_data01 = soup.find("div", class_="RaceData01")
     data01_text = race_data01.get_text(strip=True) if race_data01 else ""
+
+    # data01が空の場合、ページ全体から距離などを探す
+    if not data01_text:
+        all_text = soup.get_text()
+        data01_text = all_text
+
     dist_match = re.search(r'(\d{4})m', data01_text)
     distance = int(dist_match.group(1)) if dist_match else 0
+
     if '芝' in data01_text:
         surface = '芝'
     elif 'ダ' in data01_text:
         surface = 'ダ'
     else:
         surface = '芝'
+
     cond_match = re.search(r'馬場:(\S+)', data01_text)
     condition = cond_match.group(1) if cond_match else '良'
+
     race_data02 = soup.find("div", class_="RaceData02")
     data02_text = race_data02.get_text(strip=True) if race_data02 else ""
+    if not data02_text:
+        data02_text = data01_text
+
     course_name = ""
     for name in COURSE_MAP.keys():
         if name in data02_text:
             course_name = name
             break
+
+    # 馬リスト: PC版
     rows = soup.select("tr.HorseList")
+
     horses = []
     horse_ids = []
+
     for row in rows:
         row_class = row.get("class", [])
         if "Cancel" in row_class:
             continue
+
         name_tag = row.select_one("span.HorseName a")
         if name_tag is None:
             continue
         horse_name = name_tag.get_text(strip=True)
+
         href = name_tag.get("href", "")
         hid_match = re.search(r'/horse/(\d+)', href)
         horse_id = hid_match.group(1) if hid_match else None
+
         info_tag = row.select_one("td.Barei") or row.select_one("span.Barei")
         if info_tag:
             sex_age_text = info_tag.get_text(strip=True)
@@ -127,8 +172,10 @@ def parse_shutuba(race_id):
                 if re.match(r'^[牡牝セ騸]\d+$', t):
                     sex_age_text = t
                     break
+
         sex = sex_age_text[0] if sex_age_text else '牡'
         age = int(sex_age_text[1:]) if sex_age_text and sex_age_text[1:].isdigit() else 3
+
         kinryo = 55.0
         tds = row.find_all("td")
         for td in tds:
@@ -140,8 +187,10 @@ def parse_shutuba(race_id):
                     break
             except ValueError:
                 continue
+
         jockey_tag = row.select_one("td.Jockey a") or row.select_one("a[href*='jockey']")
         jockey_name = jockey_tag.get_text(strip=True) if jockey_tag else ""
+
         horse_weight = 480
         weight_diff = 0
         for td in tds:
@@ -153,6 +202,7 @@ def parse_shutuba(race_id):
                     horse_weight = w
                     weight_diff = int(bw_match.group(2))
                     break
+
         horses.append({
             '馬名': horse_name,
             '馬体重': horse_weight,
