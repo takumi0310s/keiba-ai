@@ -5,26 +5,22 @@ import pickle, json, re
 from bs4 import BeautifulSoup
 import requests
 
-# ––––– 定数 –––––
-
 MODEL_PATH = “keiba_model.pkl”
 JOCKEY_PATH = “jockey_wr.json”
 
 FEATURES = [
-‘馬体重’,‘場体重増減’,‘斤量’,‘馬齢’,‘距離(m)’,
-‘競馬場コード_enc’,‘芝ダート_enc’,‘馬場状態_enc’,
-‘性別_enc’,‘騎手勝率’,‘前走着順’
+“馬体重”,“場体重増減”,“斤量”,“馬齢”,“距離(m)”,
+“競馬場コード_enc”,“芝ダート_enc”,“馬場状態_enc”,
+“性別_enc”,“騎手勝率”,“前走着順”
 ]
 
 COURSE_MAP = {
-‘札幌’:0,‘函館’:1,‘福島’:2,‘新潟’:3,‘東京’:4,
-‘中山’:5,‘中京’:6,‘京都’:7,‘阪神’:8,‘小倉’:9
+“札幌”:0,“函館”:1,“福島”:2,“新潟”:3,“東京”:4,
+“中山”:5,“中京”:6,“京都”:7,“阪神”:8,“小倉”:9
 }
-SURFACE_MAP  = {‘芝’:0, ‘ダート’:1}
-CONDITN_MAP  = {‘良’:0, ‘稍重’:1, ‘重’:2, ‘不良’:3}
-SEX_MAP      = {‘牡’:0, ‘牝’:1, ‘セ’:2}
-
-# ––––– モデル / 騎手辞書の読み込み –––––
+SURFACE_MAP = {“芝”:0, “ダート”:1}
+CONDITN_MAP = {“良”:0, “稍重”:1, “重”:2, “不良”:3}
+SEX_MAP = {“牡”:0, “牝”:1, “セ”:2}
 
 @st.cache_resource
 def load_model():
@@ -39,57 +35,45 @@ return json.load(f)
 model = load_model()
 jockey_dict = load_jockey()
 
-# ––––– スクレイピング –––––
-
-def scrape(race_url: str):
-“”“netkeiba のレースページから出馬表を取得”””
+def scrape(race_url):
 res = requests.get(race_url, timeout=10)
 res.encoding = res.apparent_encoding
 soup = BeautifulSoup(res.text, “html.parser”)
 
 ```
-# レース情報
 race_name = soup.select_one("h1.RaceName").text.strip() if soup.select_one("h1.RaceName") else ""
 
-# レース詳細（距離・馬場など）
 race_data_el = soup.select_one("div.RaceData01")
 race_data_text = race_data_el.text.strip() if race_data_el else ""
 
-# 距離
-dist_m = re.search(r'(\d{4})m', race_data_text)
+dist_m = re.search(r"(\d{4})m", race_data_text)
 distance = int(dist_m.group(1)) if dist_m else 0
 
-# 芝・ダート
-if 'ダート' in race_data_text:
-    surface = 'ダート'
+if "ダート" in race_data_text:
+    surface = "ダート"
 else:
-    surface = '芝'
+    surface = "芝"
 
-# 馬場状態
-condition = '良'
-for cond in ['不良','重','稍重','良']:
+condition = "良"
+for cond in ["不良","重","稍重","良"]:
     if cond in race_data_text:
         condition = cond
         break
 
-# 競馬場
-course_name = ''
+course_name = ""
 for name in COURSE_MAP:
     if name in race_data_text or name in race_name:
         course_name = name
         break
-# URLからも取得を試みる
 if not course_name:
     for name in COURSE_MAP:
         if name in race_url:
             course_name = name
             break
 
-# 出馬テーブル
 horses = []
 rows = soup.select("table.Shutuba_Table tr.HorseList")
 for row in rows:
-    # 取消馬を除外
     row_class = row.get("class", [])
     if "Cancel" in row_class:
         continue
@@ -99,29 +83,22 @@ for row in rows:
         continue
 
     try:
-        # 馬番
         umaban = tds[1].text.strip()
-        # 馬名
         horse_name_el = row.select_one("span.HorseName a")
         horse_name = horse_name_el.text.strip() if horse_name_el else tds[3].text.strip()
-        # 性別・馬齢
         sex_age = tds[4].text.strip()
-        sex = sex_age[0] if sex_age else '牡'
+        sex = sex_age[0] if sex_age else "牡"
         age = int(sex_age[1:]) if len(sex_age) > 1 and sex_age[1:].isdigit() else 3
-        # 斤量
         kinryo = float(tds[5].text.strip()) if tds[5].text.strip() else 55.0
-        # 騎手
         jockey_el = row.select_one("td.Jockey a")
         jockey = jockey_el.text.strip() if jockey_el else tds[6].text.strip()
-        # 馬体重
         weight_text = tds[8].text.strip() if len(tds) > 8 else ""
-        bw_match = re.search(r'(\d+)\(([\+\-]?\d+)\)', weight_text)
+        bw_match = re.search(r"(\d+)\(([\+\-]?\d+)\)", weight_text)
         if bw_match:
             body_weight = int(bw_match.group(1))
             weight_diff = int(bw_match.group(2))
         else:
-            # 馬体重がまだ発表されていない場合
-            bw_only = re.search(r'(\d+)', weight_text)
+            bw_only = re.search(r"(\d+)", weight_text)
             body_weight = int(bw_only.group(1)) if bw_only else 480
             weight_diff = 0
 
@@ -148,9 +125,7 @@ return {
 }
 ```
 
-# ––––– 予測 –––––
-
-def predict(race_info: dict):
+def predict(race_info):
 rows = []
 for h in race_info[“horses”]:
 jwr = jockey_dict.get(h[“騎手”], 0.05)
@@ -165,7 +140,7 @@ row = {
 “馬場状態_enc”: CONDITN_MAP.get(race_info[“condition”], 0),
 “性別_enc”: SEX_MAP.get(h[“性別”], 0),
 “騎手勝率”: jwr,
-“前走着順”: 5,  # 暫定固定値
+“前走着順”: 5,
 }
 rows.append(row)
 
@@ -174,8 +149,6 @@ df = pd.DataFrame(rows)[FEATURES]
 proba = model.predict_proba(df)[:, 1]
 return proba
 ```
-
-# ––––– UI –––––
 
 st.set_page_config(page_title=“競馬AI予想”, layout=“wide”)
 st.title(“🏇 競馬AI予想アプリ”)
