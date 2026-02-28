@@ -48,16 +48,23 @@ def load_model():
     import os
     if os.path.exists("keiba_model2.pkl"):
         with open("keiba_model2.pkl", "rb") as f:
-            return pickle.load(f), "keiba_model2.pkl"
+            return pickle.load(f)
     with open("keiba_model.pkl", "rb") as f:
-        return pickle.load(f), "keiba_model.pkl"
+        return pickle.load(f)
+
+def get_model_name():
+    import os
+    if os.path.exists("keiba_model2.pkl"):
+        return "keiba_model2"
+    return "keiba_model"
 
 @st.cache_resource
 def load_jockey_wr():
     with open("jockey_wr.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
-model, model_name = load_model()
+model = load_model()
+model_name = get_model_name()
 jockey_wr = load_jockey_wr()
 
 FEATURES = [
