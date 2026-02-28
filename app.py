@@ -45,18 +45,8 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_resource
 def load_model():
-    import os
-    if os.path.exists("keiba_model2.pkl"):
-        with open("keiba_model2.pkl", "rb") as f:
-            return pickle.load(f)
     with open("keiba_model.pkl", "rb") as f:
         return pickle.load(f)
-
-def get_model_name():
-    import os
-    if os.path.exists("keiba_model2.pkl"):
-        return "keiba_model2"
-    return "keiba_model"
 
 @st.cache_resource
 def load_jockey_wr():
@@ -64,7 +54,6 @@ def load_jockey_wr():
         return json.load(f)
 
 model = load_model()
-model_name = get_model_name()
 jockey_wr = load_jockey_wr()
 
 FEATURES = [
@@ -377,8 +366,7 @@ if st.button("🔍 予想する") and url_input:
     hdr = '<div class="race-hdr">'
     hdr += '<h2>' + race_info['course'] + ' ' + race_name + '</h2>'
     hdr += '<p>' + surf + ' ' + str(race_info['distance']) + 'm ｜ 馬場: '
-    hdr += race_info['condition'] + ' ｜ ' + str(len(horses)) + '頭立て'
-    hdr += '｜🤖 ' + model_name + '</p>'
+    hdr += race_info['condition'] + ' ｜ ' + str(len(horses)) + '頭立て</p>'
     hdr += '</div>'
     st.markdown(hdr, unsafe_allow_html=True)
     with st.spinner("各馬の成績を分析中..."):
