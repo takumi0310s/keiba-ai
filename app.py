@@ -1,155 +1,224 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle, json, re
-from bs4 import BeautifulSoup
+import pickle
+import json
 import requests
-
-MODEL_PATH = "keiba_model.pkl"
-JOCKEY_PATH = "jockey_wr.json"
-
-FEATURES = [
-    "馬体重","場体重増減","斤量","馬齢","距離(m)",
-    "競馬場コード_enc","芝ダート_enc","馬場状態_enc",
-    "性別_enc","騎手勝率","前走着順"
-]
-
-COURSE_MAP = {
-    "札幌":0,"函館":1,"福島":2,"新潟":3,"東京":4,
-    "中山":5,"中京":6,"京都":7,"阪神":8,"小倉":9
-}
-SURFACE_MAP = {"芝":0, "ダート":1}
-CONDITN_MAP = {"良":0, "稍重":1, "重":2, "不良":3}
-SEX_MAP = {"牡":0, "牝":1, "セ":2}
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-}
+from bs4 import BeautifulSoup
+import re
+import time
 
 @st.cache_resource
 def load_model():
-    with open(MODEL_PATH, "rb") as f:
+    with open("keiba_model.pkl", "rb") as f:
         return pickle.load(f)
 
 @st.cache_resource
-def load_jockey():
-    with open(JOCKEY_PATH, "r", encoding="utf-8") as f:
+def load_jockey_wr():
+    with open("jockey_wr.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
 model = load_model()
-jockey_dict = load_jockey()
+jockey_wr = load_jockey_wr()
 
-def normalize_url(url):
-    url = url.replace("race.sp.netkeiba.com", "race.netkeiba.com")
-    url = re.sub(r"&rf=.*", "", url)
-    return url
+FEATURES = [
+    '馬体重', '場体重増減', '斤量', '馬齢', '距離(m)',
+    '競馬場コード_enc', '芝ダート_enc', '馬場状態_enc',
+    '性別_enc', '騎手勝率', '前走着順'
+]
 
-def scrape(race_url):
-    race_url = normalize_url(race_url)
-    res = requests.get(race_url, headers=HEADERS, timeout=10)
-    res.encoding = "EUC-JP"
-    soup = BeautifulSoup(res.content, "html.parser")
-    race_name = soup.select_one("h1.RaceName")
-    race_name = race_name.text.strip() if race_name else ""
-    race_data_el = soup.select_one("div.RaceData01")
-    race_data_text = race_data_el.text.strip() if race_data_el else ""
-    dist_m = re.search(r"(\d{4})m", race_data_text)
-    distance = int(dist_m.group(1)) if dist_m else 0
-    if "ダート" in race_data_text:
-        surface = "ダート"
+COURSE_MAP = {
+    '札幌': 0, '函館': 1, '福島': 2, '新潟': 3, '東京': 4,
+    '中山': 5, '中京': 6, '京都': 7, '阪神': 8, '小倉': 9
+}
+SURFACE_MAP = {'芝': 0, 'ダ': 1, '障': 2}
+COND_MAP = {'良': 0, '稍': 1, '稍重': 1, '重': 2, '不': 3, '不良': 3}
+SEX_MAP = {'牡': 0, '牝': 1, 'セ': 2, '騸': 2}
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) "
+                  "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 "
+                  "Mobile/15E148 Safari/604.1"
+}
+
+def get_last_finish(horse_id):
+    try:
+        url = f"https://db.netkeiba.com/horse/{horse_id}/"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        table = soup.find("table", class_="db_h_race_results")
+        if table is None:
+            return 5
+        tbody = table.find("tbody")
+        if tbody is None:
+            return 5
+        first_row = tbody.find("tr")
+        if first_row is None:
+            return 5
+        tds = first_row.find_all("td")
+        if len(tds) < 1:
+            return 5
+        thead = table.find("thead")
+        finish_idx = 11
+        if thead:
+            ths = thead.find_all("th")
+            for idx, th in enumerate(ths):
+                if th.get_text(strip=True) == "着順":
+                    finish_idx = idx
+                    break
+        if len(tds) > finish_idx:
+            finish_text = tds[finish_idx].get_text(strip=True)
+        else:
+            finish_text = tds[0].get_text(strip=True)
+        if finish_text.isdigit():
+            return int(finish_text)
+        else:
+            return 5
+    except Exception:
+        return 5
+
+def parse_shutuba(race_id):
+    url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+    resp = requests.get(url, headers=HEADERS, timeout=10)
+    resp.encoding = "EUC-JP"
+    soup = BeautifulSoup(resp.text, "html.parser")
+    race_name_tag = soup.find("div", class_="RaceName")
+    race_name = race_name_tag.get_text(strip=True) if race_name_tag else "レース名取得失敗"
+    race_data01 = soup.find("div", class_="RaceData01")
+    data01_text = race_data01.get_text(strip=True) if race_data01 else ""
+    dist_match = re.search(r'(\d{4})m', data01_text)
+    distance = int(dist_match.group(1)) if dist_match else 0
+    if '芝' in data01_text:
+        surface = '芝'
+    elif 'ダ' in data01_text:
+        surface = 'ダ'
     else:
-        surface = "芝"
-    condition = "良"
-    for cond in ["不良","重","稍重","良"]:
-        if cond in race_data_text:
-            condition = cond
-            break
+        surface = '芝'
+    cond_match = re.search(r'馬場:(\S+)', data01_text)
+    condition = cond_match.group(1) if cond_match else '良'
+    race_data02 = soup.find("div", class_="RaceData02")
+    data02_text = race_data02.get_text(strip=True) if race_data02 else ""
     course_name = ""
-    race_data2 = soup.select_one("div.RaceData02")
-    race_data2_text = race_data2.text.strip() if race_data2 else ""
-    for name in COURSE_MAP:
-        if name in race_data2_text or name in race_name:
+    for name in COURSE_MAP.keys():
+        if name in data02_text:
             course_name = name
             break
-    if not course_name:
-        for name in COURSE_MAP:
-            if name in race_url:
-                course_name = name
-                break
-    horses = []
     rows = soup.select("tr.HorseList")
+    horses = []
+    horse_ids = []
     for row in rows:
-        row_class = " ".join(row.get("class", []))
+        row_class = row.get("class", [])
         if "Cancel" in row_class:
             continue
-        tds = row.select("td")
-        if len(tds) < 8:
+        name_tag = row.select_one("span.HorseName a")
+        if name_tag is None:
             continue
-        try:
-            umaban = tds[1].text.strip()
-            horse_name_el = row.select_one("span.HorseName a")
-            horse_name = horse_name_el.text.strip() if horse_name_el else ""
-            if not horse_name:
+        horse_name = name_tag.get_text(strip=True)
+        href = name_tag.get("href", "")
+        hid_match = re.search(r'/horse/(\d+)', href)
+        horse_id = hid_match.group(1) if hid_match else None
+        info_tag = row.select_one("td.Barei") or row.select_one("span.Barei")
+        if info_tag:
+            sex_age_text = info_tag.get_text(strip=True)
+        else:
+            tds_all = row.find_all("td")
+            sex_age_text = ""
+            for td in tds_all:
+                t = td.get_text(strip=True)
+                if re.match(r'^[牡牝セ騸]\d+$', t):
+                    sex_age_text = t
+                    break
+        sex = sex_age_text[0] if sex_age_text else '牡'
+        age = int(sex_age_text[1:]) if sex_age_text and sex_age_text[1:].isdigit() else 3
+        kinryo = 55.0
+        tds = row.find_all("td")
+        for td in tds:
+            t = td.get_text(strip=True)
+            try:
+                val = float(t)
+                if 48.0 <= val <= 62.0:
+                    kinryo = val
+                    break
+            except ValueError:
                 continue
-            barei = row.select_one("td.Barei")
-            sex_age = barei.text.strip() if barei else ""
-            sex = sex_age[0] if sex_age else "牡"
-            age = int(sex_age[1:]) if len(sex_age) > 1 and sex_age[1:].isdigit() else 3
-            kinryo_tds = row.select("td.Txt_C")
-            kinryo = 55.0
-            for kt in kinryo_tds:
-                try:
-                    kinryo = float(kt.text.strip())
-                    if 40 < kinryo < 70:
-                        break
-                except:
-                    continue
-            jockey_el = row.select_one("td.Jockey a")
-            jockey = jockey_el.text.strip() if jockey_el else ""
-            weight_td = row.select_one("td.Weight")
-            weight_text = weight_td.text.strip() if weight_td else ""
-            bw_match = re.search(r"(\d+)\(([\+\-]?\d+)\)", weight_text)
+        jockey_tag = row.select_one("td.Jockey a") or row.select_one("a[href*='jockey']")
+        jockey_name = jockey_tag.get_text(strip=True) if jockey_tag else ""
+        horse_weight = 480
+        weight_diff = 0
+        for td in tds:
+            bw_text = td.get_text(strip=True)
+            bw_match = re.search(r'(\d{3,})\(([\+\-]?\d+)\)', bw_text)
             if bw_match:
-                body_weight = int(bw_match.group(1))
-                weight_diff = int(bw_match.group(2))
-            else:
-                bw_only = re.search(r"(\d+)", weight_text)
-                body_weight = int(bw_only.group(1)) if bw_only else 480
-                weight_diff = 0
-            horses.append({"馬番": umaban, "馬名": horse_name, "性別": sex, "馬齢": age, "斤量": kinryo, "騎手": jockey, "馬体重": body_weight, "場体重増減": weight_diff})
-        except Exception:
-            continue
-    return {"race_name": race_name, "distance": distance, "surface": surface, "condition": condition, "course": course_name, "horses": horses}
+                w = int(bw_match.group(1))
+                if 350 <= w <= 600:
+                    horse_weight = w
+                    weight_diff = int(bw_match.group(2))
+                    break
+        horses.append({
+            '馬名': horse_name,
+            '馬体重': horse_weight,
+            '場体重増減': weight_diff,
+            '斤量': kinryo,
+            '馬齢': age,
+            '距離(m)': distance,
+            '競馬場コード_enc': COURSE_MAP.get(course_name, 4),
+            '芝ダート_enc': SURFACE_MAP.get(surface, 0),
+            '馬場状態_enc': COND_MAP.get(condition, 0),
+            '性別_enc': SEX_MAP.get(sex, 0),
+            '騎手勝率': jockey_wr.get(jockey_name, 0.05),
+            '騎手名': jockey_name,
+        })
+        horse_ids.append(horse_id)
+    return race_name, horses, horse_ids
 
-def predict(race_info):
-    rows = []
-    for h in race_info["horses"]:
-        jwr = jockey_dict.get(h["騎手"], 0.05)
-        row = {"馬体重": h["馬体重"], "場体重増減": h["場体重増減"], "斤量": h["斤量"], "馬齢": h["馬齢"], "距離(m)": race_info["distance"], "競馬場コード_enc": COURSE_MAP.get(race_info["course"], 4), "芝ダート_enc": SURFACE_MAP.get(race_info["surface"], 0), "馬場状態_enc": CONDITN_MAP.get(race_info["condition"], 0), "性別_enc": SEX_MAP.get(h["性別"], 0), "騎手勝率": jwr, "前走着順": 5}
-        rows.append(row)
-    df = pd.DataFrame(rows)[FEATURES]
-    proba = model.predict_proba(df)[:, 1]
-    return proba
+st.title("🏇 競馬AI予想")
+url_input = st.text_input("netkeibaの出馬表URLを入力")
 
-st.set_page_config(page_title="競馬AI予想", layout="wide")
-st.title("🏇 競馬AI予想アプリ")
-url = st.text_input("netkeibaのレースURL（出馬表）を入力してください")
-if st.button("予測する") and url:
-    with st.spinner("データ取得中..."):
-        try:
-            race = scrape(url)
-        except Exception as e:
-            st.error(f"スクレイピングに失敗しました: {e}")
-            st.stop()
-    if not race["horses"]:
-        st.warning("出馬データを取得できませんでした。URLを確認してください。")
+if st.button("予想する") and url_input:
+    url_input = url_input.replace("race.sp.netkeiba.com", "race.netkeiba.com")
+    rid_match = re.search(r'race_id=(\d+)', url_input)
+    if not rid_match:
+        st.error("URLからrace_idを取得できませんでした")
         st.stop()
-    st.subheader(race["race_name"])
-    st.write(f"{race['course']}  {race['surface']}{race['distance']}m  馬場: {race['condition']}")
-    with st.spinner("AI予測中..."):
-        proba = predict(race)
-    result = pd.DataFrame({"馬番": [h["馬番"] for h in race["horses"]], "馬名": [h["馬名"] for h in race["horses"]], "騎手": [h["騎手"] for h in race["horses"]], "AI勝率(%)": np.round(proba * 100, 2)})
-    result = result.sort_values("AI勝率(%)", ascending=False).reset_index(drop=True)
-    result.index = result.index + 1
-    result.index.name = "AI順位"
-    st.dataframe(result, use_container_width=True)
+    race_id = rid_match.group(1)
+    with st.spinner("出馬表を取得中..."):
+        race_name, horses, horse_ids = parse_shutuba(race_id)
+    if not horses:
+        st.error("馬データを取得できませんでした。URLを確認してください。")
+        st.stop()
+    st.subheader(race_name)
+    with st.spinner(f"前走着順を取得中...（{len(horses)}頭）"):
+        progress_bar = st.progress(0)
+        for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
+            if hid:
+                last_finish = get_last_finish(hid)
+                horse['前走着順'] = last_finish
+            else:
+                horse['前走着順'] = 5
+            progress_bar.progress((i + 1) / len(horses))
+            if i < len(horses) - 1:
+                time.sleep(0.5)
+        progress_bar.empty()
+    df = pd.DataFrame(horses)
+    X = df[FEATURES].values
+    proba = model.predict_proba(X)
+    if proba.shape[1] == 2:
+        scores = proba[:, 1]
+    else:
+        scores = proba[:, :3].sum(axis=1) if proba.shape[1] >= 3 else proba[:, 0]
+    df['スコア'] = scores
+    df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
+    df = df.sort_values('AI順位')
+    display_cols = ['AI順位', '馬名', '騎手名', '前走着順', '騎手勝率', 'スコア']
+    result_df = df[display_cols].copy()
+    result_df['スコア'] = result_df['スコア'].map(lambda x: f"{x:.3f}")
+    result_df['騎手勝率'] = result_df['騎手勝率'].map(lambda x: f"{x:.3f}")
+    result_df = result_df.reset_index(drop=True)
+    st.dataframe(result_df, use_container_width=True)
+    top3 = df.head(3)
+    st.markdown("### 🏆 AI推奨 TOP3")
+    for _, row in top3.iterrows():
+        st.write(f"**{int(row['AI順位'])}位: {row['馬名']}** "
+                 f"（騎手: {row['騎手名']}｜前走{int(row['前走着順'])}着｜"
+                 f"スコア: {row['スコア']:.3f}）")
