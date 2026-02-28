@@ -36,9 +36,7 @@ COND_MAP = {'良': 0, '稍': 1, '稍重': 1, '重': 2, '不': 3, '不良': 3}
 SEX_MAP = {'牡': 0, '牝': 1, 'セ': 2, '騸': 2}
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) "
-                  "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 "
-                  "Mobile/15E148 Safari/604.1"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
 def get_last_finish(horse_id):
