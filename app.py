@@ -39,58 +39,35 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-def get_last_finish(horse_id, debug=False):
-    debug_info = []
+def get_last_finish(horse_id):
     try:
-        url = f"https://db.netkeiba.com/horse/{horse_id}/"
+        url = f"https://db.netkeiba.com/horse/result/{horse_id}/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        debug_info.append(f"URL: {resp.url}")
-        debug_info.append(f"Status: {resp.status_code}")
-
-        # PC版: table.db_h_race_results
+        # PC版: table.db_h_race_results の最初の行
         table = soup.find("table", class_="db_h_race_results")
-        debug_info.append(f"PC table found: {table is not None}")
-
         if table:
             tbody = table.find("tbody")
             if tbody:
                 first_row = tbody.find("tr")
                 if first_row:
                     tds = first_row.find_all("td")
-                    debug_info.append(f"TD count: {len(tds)}")
                     if len(tds) > 11:
                         finish_text = tds[11].get_text(strip=True)
-                        debug_info.append(f"TD[11]: {finish_text}")
                         if finish_text.isdigit():
-                            return int(finish_text), debug_info
+                            return int(finish_text)
 
-        # SP版: "N(M人気)" パターンを全テキストから探す
+        # SP版/フォールバック: "N(M人気)" パターン
         all_text = soup.get_text()
         m = re.search(r'(\d{1,2})\(\d+人気\)', all_text)
-        debug_info.append(f"SP pattern found: {m is not None}")
         if m:
-            debug_info.append(f"SP match: {m.group(0)}")
-            return int(m.group(1)), debug_info
+            return int(m.group(1))
 
-        # タイトルからヒント
-        title = soup.find("title")
-        if title:
-            debug_info.append(f"Title: {title.get_text(strip=True)[:50]}")
-
-        # 全テーブルを探す
-        tables = soup.find_all("table")
-        debug_info.append(f"Total tables: {len(tables)}")
-        for i, t in enumerate(tables[:3]):
-            cls = t.get("class", [])
-            debug_info.append(f"Table[{i}] class: {cls}")
-
-        return 5, debug_info
-    except Exception as e:
-        debug_info.append(f"Error: {str(e)}")
-        return 5, debug_info
+        return 5
+    except Exception:
+        return 5
 
 def parse_shutuba(race_id):
     url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
@@ -119,8 +96,7 @@ def parse_shutuba(race_id):
     race_data01 = soup.find("div", class_="RaceData01")
     data01_text = race_data01.get_text(strip=True) if race_data01 else ""
     if not data01_text:
-        all_text = soup.get_text()
-        data01_text = all_text
+        data01_text = soup.get_text()
 
     dist_match = re.search(r'(\d{4})m', data01_text)
     distance = int(dist_match.group(1)) if dist_match else 0
@@ -236,30 +212,18 @@ if st.button("予想する") and url_input:
         st.error("馬データを取得できませんでした。URLを確認してください。")
         st.stop()
     st.subheader(race_name)
-
-    # デバッグ: 最初の1頭だけ詳細表示
-    debug_result = None
     with st.spinner(f"前走着順を取得中...（{len(horses)}頭）"):
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                last_finish, dbg = get_last_finish(hid, debug=True)
+                last_finish = get_last_finish(hid)
                 horse['前走着順'] = last_finish
-                if i == 0:
-                    debug_result = dbg
             else:
                 horse['前走着順'] = 5
             progress_bar.progress((i + 1) / len(horses))
             if i < len(horses) - 1:
                 time.sleep(0.5)
         progress_bar.empty()
-
-    # デバッグ情報表示（1頭目）
-    if debug_result:
-        with st.expander("デバッグ情報（1頭目）"):
-            for line in debug_result:
-                st.text(line)
-
     df = pd.DataFrame(horses)
     X = df[FEATURES].values
     proba = model.predict_proba(X)
