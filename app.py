@@ -139,12 +139,14 @@ def find_jockey_wr(name):
     return 0.05
 
 def get_horse_stats(horse_id, target_distance, target_surface, target_course=""):
-    """前走着順 + 距離適性 + 馬場適性 + 人気傾向 + コース適性を取得"""
+    """前走着順 + 距離適性 + 馬場適性 + 人気傾向 + コース適性 + 間隔 + 前走騎手"""
     last_finish = 5
     dist_results = []
     surf_results = []
     popularity_list = []
     course_results = []
+    race_dates = []
+    prev_jockey = ""
     try:
         url = "https://db.netkeiba.com/horse/result/" + horse_id + "/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
@@ -165,6 +167,19 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                     finish = int(finish_text)
                     if row_idx == 0:
                         last_finish = finish
+                    # 日付取得 (tds[0])
+                    date_text = tds[0].get_text(strip=True)
+                    date_m = re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})', date_text)
+                    if date_m:
+                        try:
+                            from datetime import datetime
+                            rd = datetime(int(date_m.group(1)), int(date_m.group(2)), int(date_m.group(3)))
+                            race_dates.append(rd)
+                        except:
+                            pass
+                    # 前走騎手 (tds[12])
+                    if row_idx == 0 and len(tds) > 12:
+                        prev_jockey = tds[12].get_text(strip=True)
                     pop_text = tds[10].get_text(strip=True)
                     if pop_text.isdigit():
                         popularity_list.append(int(pop_text))
@@ -208,7 +223,15 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
     if course_results:
         avg = sum(course_results) / len(course_results)
         course_apt = max(0.0, min(1.0, 1.0 - (avg - 1) / 17.0))
-    return last_finish, dist_apt, surf_apt, pop_score, course_apt
+    # 前走間隔（日数）
+    interval_days = 30
+    if len(race_dates) >= 1:
+        from datetime import datetime
+        today = datetime.now()
+        diff = (today - race_dates[0]).days
+        if diff > 0:
+            interval_days = diff
+    return last_finish, dist_apt, surf_apt, pop_score, course_apt, interval_days, prev_jockey
 
 def parse_shutuba(race_id):
     url = "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
@@ -396,7 +419,7 @@ if st.button("🔍 予想する") and url_input:
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                lf, d_apt, s_apt, p_score, c_apt = get_horse_stats(
+                lf, d_apt, s_apt, p_score, c_apt, interval, prev_j = get_horse_stats(
                     hid, race_info['distance'], race_info['surface'], race_info['course']
                 )
                 horse['前走着順'] = lf
@@ -404,12 +427,16 @@ if st.button("🔍 予想する") and url_input:
                 horse['馬場適性'] = s_apt
                 horse['人気傾向'] = p_score
                 horse['コース適性'] = c_apt
+                horse['前走間隔'] = interval
+                horse['前走騎手'] = prev_j
             else:
                 horse['前走着順'] = 5
                 horse['距離適性'] = 0.5
                 horse['馬場適性'] = 0.5
                 horse['人気傾向'] = 0.5
                 horse['コース適性'] = 0.5
+                horse['前走間隔'] = 30
+                horse['前走騎手'] = ""
             progress_bar.progress((i + 1) / len(horses))
             if i < len(horses) - 1:
                 time.sleep(0.5)
@@ -442,8 +469,63 @@ if st.button("🔍 予想する") and url_input:
             ws = 0.5
         waku_scores.append(ws)
     waku_scores = np.array(waku_scores)
-    # 最終スコア: AI 40% + 人気傾向 20% + 適性 15% + コース適性 15% + 枠番 10%
-    final_scores = ai_scores * 0.40 + pop_scores * 0.20 + apt_scores * 0.15 + course_scores * 0.15 + waku_scores * 0.10
+    # 前走間隔スコア: 中2-4週がベスト、休み明け・連闘はマイナス
+    interval_scores = []
+    for _, h in df.iterrows():
+        days = h.get('前走間隔', 30)
+        if 14 <= days <= 35:
+            iscore = 0.7
+        elif 7 <= days < 14:
+            iscore = 0.5
+        elif 35 < days <= 90:
+            iscore = 0.5
+        elif days > 90:
+            iscore = 0.3
+        else:
+            iscore = 0.4
+        interval_scores.append(iscore)
+    interval_scores = np.array(interval_scores)
+    # 馬体重変動スコア: ±0-4kgが安定、±10kg超はマイナス
+    weight_scores = []
+    for _, h in df.iterrows():
+        wd = abs(h.get('場体重増減', 0))
+        if wd <= 4:
+            wscore = 0.7
+        elif wd <= 8:
+            wscore = 0.5
+        elif wd <= 14:
+            wscore = 0.3
+        else:
+            wscore = 0.2
+        weight_scores.append(wscore)
+    weight_scores = np.array(weight_scores)
+    # 斤量相対スコア: レース平均より軽ければ有利
+    avg_kinryo = df['斤量'].mean()
+    kinryo_scores = np.clip(1.0 - (df['斤量'].values - avg_kinryo) / 10.0, 0.0, 1.0) * 0.5 + 0.25
+    # 騎手乗り替わりスコア
+    jchange_scores = []
+    for _, h in df.iterrows():
+        cur_j = h.get('騎手名', '')
+        prev_j = h.get('前走騎手', '')
+        if not prev_j or not cur_j:
+            jscore = 0.5
+        elif prev_j in cur_j or cur_j in prev_j:
+            jscore = 0.6
+        else:
+            cur_wr = find_jockey_wr(cur_j)
+            prev_wr = find_jockey_wr(prev_j)
+            if cur_wr > prev_wr + 0.02:
+                jscore = 0.7
+            elif cur_wr < prev_wr - 0.02:
+                jscore = 0.3
+            else:
+                jscore = 0.5
+        jchange_scores.append(jscore)
+    jchange_scores = np.array(jchange_scores)
+    # 最終スコア: AI 35% + 人気 15% + 適性 10% + コース 10% + 枠番 8% + 間隔 8% + 体重 6% + 斤量 4% + 騎手替 4%
+    final_scores = (ai_scores * 0.35 + pop_scores * 0.15 + apt_scores * 0.10
+                    + course_scores * 0.10 + waku_scores * 0.08 + interval_scores * 0.08
+                    + weight_scores * 0.06 + kinryo_scores * 0.04 + jchange_scores * 0.04)
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
