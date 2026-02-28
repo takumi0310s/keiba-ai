@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import pickle
+import json
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -17,16 +18,19 @@ FEATURES = ['人気','馬体重','場体重増減','斤量','馬齢','距離(m)'
 def load_model():
     try:
         with open("keiba_model.pkl", "rb") as f:
-            return pickle.load(f)
-    except:
-        return None
+            model = pickle.load(f)
+        with open("jockey_wr.json", "r", encoding="utf-8") as f:
+            jockey_wr = json.load(f)
+        return model, jockey_wr
+    except Exception as e:
+        st.error("読み込みエラー: " + str(e))
+        return None, {}
 
-model = load_model()
+model, jockey_wr = load_model()
 if model is None:
-    st.error("モデル読み込み失敗。")
     st.stop()
 
-st.success("AIモデル読み込み完了！")
+st.success("AIモデル読み込み完了！騎手データ " + str(len(jockey_wr)) + "人")
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"}
 
 def scrape(url):
@@ -94,6 +98,7 @@ def predict(horses, distance, surface, condition, venue):
     vmap = {"東京":0,"中山":1,"阪神":2,"京都":3,"中京":4,"札幌":5,"函館":6,"福島":7,"新潟":8,"小倉":9}
     rows = []
     for h in horses:
+        wr = jockey_wr.get(h["騎手"], 0.05)
         rows.append({
             "馬名": h["馬名"], "人気": h["人気"], "馬体重": h["馬体重"],
             "場体重増減": h["体重増減"], "斤量": h["斤量"], "馬齢": h["馬齢"],
@@ -101,7 +106,7 @@ def predict(horses, distance, surface, condition, venue):
             "芝ダート_enc": {"芝":0,"ダート":1}.get(surface, 0),
             "馬場状態_enc": {"良":0,"稍重":1,"重":2,"不良":3}.get(condition, 0),
             "性別_enc": {"牡":0,"牝":1,"せん":2}.get(h["性別"], 0),
-            "騎手勝率": 0.05, "前走着順": 5
+            "騎手勝率": wr, "前走着順": 5
         })
     df = pd.DataFrame(rows)
     df["AIスコア"] = model.predict_proba(df[FEATURES])[:,1]
