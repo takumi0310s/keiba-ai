@@ -138,8 +138,60 @@ def find_jockey_wr(name):
             return val
     return 0.05
 
+# 種牡馬の距離・馬場適性辞書
+SIRE_APTITUDE = {
+    'ディープインパクト': {'turf': 1.0, 'dirt': 0.3, 'sprint': 0.5, 'mile': 0.9, 'mid': 1.0, 'long': 0.8},
+    'キングカメハメハ': {'turf': 0.8, 'dirt': 0.7, 'sprint': 0.6, 'mile': 0.8, 'mid': 0.9, 'long': 0.7},
+    'ロードカナロア': {'turf': 0.9, 'dirt': 0.5, 'sprint': 1.0, 'mile': 0.8, 'mid': 0.5, 'long': 0.2},
+    'ドゥラメンテ': {'turf': 0.9, 'dirt': 0.5, 'sprint': 0.4, 'mile': 0.8, 'mid': 1.0, 'long': 0.8},
+    'エピファネイア': {'turf': 0.9, 'dirt': 0.4, 'sprint': 0.3, 'mile': 0.7, 'mid': 1.0, 'long': 0.9},
+    'ハーツクライ': {'turf': 0.9, 'dirt': 0.3, 'sprint': 0.2, 'mile': 0.6, 'mid': 0.9, 'long': 1.0},
+    'キタサンブラック': {'turf': 0.9, 'dirt': 0.4, 'sprint': 0.3, 'mile': 0.7, 'mid': 0.9, 'long': 1.0},
+    'モーリス': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.5, 'mile': 0.9, 'mid': 0.8, 'long': 0.5},
+    'サトノクラウン': {'turf': 0.7, 'dirt': 0.5, 'sprint': 0.3, 'mile': 0.7, 'mid': 0.9, 'long': 0.8},
+    'オルフェーヴル': {'turf': 0.8, 'dirt': 0.6, 'sprint': 0.3, 'mile': 0.6, 'mid': 0.9, 'long': 1.0},
+    'ゴールドシップ': {'turf': 0.8, 'dirt': 0.4, 'sprint': 0.2, 'mile': 0.5, 'mid': 0.8, 'long': 1.0},
+    'ヘニーヒューズ': {'turf': 0.2, 'dirt': 1.0, 'sprint': 1.0, 'mile': 0.7, 'mid': 0.4, 'long': 0.1},
+    'ダイワメジャー': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.7, 'mile': 1.0, 'mid': 0.6, 'long': 0.3},
+    'スクリーンヒーロー': {'turf': 0.7, 'dirt': 0.6, 'sprint': 0.3, 'mile': 0.7, 'mid': 1.0, 'long': 0.8},
+    'ルーラーシップ': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.3, 'mile': 0.7, 'mid': 0.9, 'long': 0.9},
+    'ジャスタウェイ': {'turf': 0.8, 'dirt': 0.4, 'sprint': 0.4, 'mile': 0.9, 'mid': 0.9, 'long': 0.6},
+    'シルバーステート': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.4, 'mile': 0.8, 'mid': 0.9, 'long': 0.7},
+    'サトノダイヤモンド': {'turf': 0.8, 'dirt': 0.4, 'sprint': 0.2, 'mile': 0.6, 'mid': 0.9, 'long': 1.0},
+    'ミッキーアイル': {'turf': 0.8, 'dirt': 0.4, 'sprint': 0.9, 'mile': 0.9, 'mid': 0.5, 'long': 0.2},
+    'リアルスティール': {'turf': 0.8, 'dirt': 0.4, 'sprint': 0.3, 'mile': 0.8, 'mid': 0.9, 'long': 0.7},
+    'ホッコータルマエ': {'turf': 0.2, 'dirt': 1.0, 'sprint': 0.7, 'mile': 0.9, 'mid': 0.8, 'long': 0.4},
+    'シニスターミニスター': {'turf': 0.1, 'dirt': 1.0, 'sprint': 0.8, 'mile': 0.9, 'mid': 0.6, 'long': 0.3},
+    'パイロ': {'turf': 0.1, 'dirt': 1.0, 'sprint': 0.9, 'mile': 0.8, 'mid': 0.5, 'long': 0.2},
+    'コントレイル': {'turf': 0.9, 'dirt': 0.3, 'sprint': 0.3, 'mile': 0.7, 'mid': 1.0, 'long': 0.9},
+    'イスラボニータ': {'turf': 0.7, 'dirt': 0.5, 'sprint': 0.4, 'mile': 0.9, 'mid': 0.8, 'long': 0.5},
+    'ドレフォン': {'turf': 0.5, 'dirt': 0.8, 'sprint': 0.8, 'mile': 0.8, 'mid': 0.6, 'long': 0.3},
+    'マインドユアビスケッツ': {'turf': 0.3, 'dirt': 0.9, 'sprint': 0.9, 'mile': 0.7, 'mid': 0.4, 'long': 0.1},
+    'サウスヴィグラス': {'turf': 0.1, 'dirt': 1.0, 'sprint': 1.0, 'mile': 0.6, 'mid': 0.2, 'long': 0.0},
+    'ブリックスアンドモルタル': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.4, 'mile': 0.8, 'mid': 0.9, 'long': 0.7},
+    'サートゥルナーリア': {'turf': 0.9, 'dirt': 0.4, 'sprint': 0.3, 'mile': 0.7, 'mid': 1.0, 'long': 0.8},
+    'スワーヴリチャード': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.3, 'mile': 0.7, 'mid': 0.9, 'long': 0.9},
+    'レイデオロ': {'turf': 0.8, 'dirt': 0.5, 'sprint': 0.3, 'mile': 0.7, 'mid': 0.9, 'long': 0.8},
+}
+
+def calc_sire_score(father, surface, distance):
+    """血統スコア: 父馬の距離・馬場適性"""
+    apt = SIRE_APTITUDE.get(father, None)
+    if not apt:
+        return 0.5
+    surf_score = apt.get('turf', 0.5) if surface == '芝' else apt.get('dirt', 0.5)
+    if distance <= 1400:
+        dist_score = apt.get('sprint', 0.5)
+    elif distance <= 1800:
+        dist_score = apt.get('mile', 0.5)
+    elif distance <= 2200:
+        dist_score = apt.get('mid', 0.5)
+    else:
+        dist_score = apt.get('long', 0.5)
+    return (surf_score * 0.5 + dist_score * 0.5)
+
 def get_horse_stats(horse_id, target_distance, target_surface, target_course=""):
-    """前走着順 + 距離適性 + 馬場適性 + 人気傾向 + コース適性 + 間隔 + 前走騎手"""
+    """全要素取得: 前走着順/適性/人気/コース/間隔/騎手/脚質/上がり3F/着差/連対率/血統/休み明け"""
     last_finish = 5
     dist_results = []
     surf_results = []
@@ -147,16 +199,38 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
     course_results = []
     race_dates = []
     prev_jockey = ""
+    passing_positions = []
+    agari3f_list = []
+    margin_text = ""
+    finish_list = []
+    rest_finishes = []
+    father_name = ""
     try:
         url = "https://db.netkeiba.com/horse/result/" + horse_id + "/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
+        # 父名取得（血統テーブルから）
+        prof_table = soup.find("table", class_="db_prof_table")
+        if prof_table:
+            tds_prof = prof_table.find_all("td")
+            for td in tds_prof:
+                a_tag = td.find("a", href=re.compile(r"/horse/sire/"))
+                if a_tag:
+                    father_name = a_tag.get_text(strip=True)
+                    break
+        if not father_name:
+            blood_table = soup.find("table", summary=re.compile(".*血統.*"))
+            if blood_table:
+                a_tags = blood_table.find_all("a", href=re.compile(r"/horse/"))
+                if a_tags:
+                    father_name = a_tags[0].get_text(strip=True)
         table = soup.find("table", class_="db_h_race_results")
         if table:
             tbody = table.find("tbody")
             if tbody:
                 rows = tbody.find_all("tr")
+                prev_date = None
                 for row_idx, row in enumerate(rows):
                     tds = row.find_all("td")
                     if len(tds) < 15:
@@ -165,21 +239,32 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                     if not finish_text.isdigit():
                         continue
                     finish = int(finish_text)
+                    finish_list.append(finish)
                     if row_idx == 0:
                         last_finish = finish
                     # 日付取得 (tds[0])
                     date_text = tds[0].get_text(strip=True)
                     date_m = re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})', date_text)
+                    cur_date = None
                     if date_m:
                         try:
                             from datetime import datetime
-                            rd = datetime(int(date_m.group(1)), int(date_m.group(2)), int(date_m.group(3)))
-                            race_dates.append(rd)
+                            cur_date = datetime(int(date_m.group(1)), int(date_m.group(2)), int(date_m.group(3)))
+                            race_dates.append(cur_date)
                         except:
                             pass
+                    # 休み明け成績（前走との間隔が60日以上なら休み明け）
+                    if prev_date and cur_date:
+                        gap = (prev_date - cur_date).days
+                        if gap >= 60:
+                            rest_finishes.append(finish_list[-2] if len(finish_list) >= 2 else finish)
+                    prev_date = cur_date
                     # 前走騎手 (tds[12])
                     if row_idx == 0 and len(tds) > 12:
                         prev_jockey = tds[12].get_text(strip=True)
+                    # 前走着差 (tds[18])
+                    if row_idx == 0 and len(tds) > 18:
+                        margin_text = tds[18].get_text(strip=True)
                     pop_text = tds[10].get_text(strip=True)
                     if pop_text.isdigit():
                         popularity_list.append(int(pop_text))
@@ -193,11 +278,26 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                         surf_name = '芝' if surf_ch == '芝' else 'ダ'
                         if surf_name == target_surface:
                             surf_results.append(finish)
-                    # コース適性（同じ競馬場での成績）
+                    # コース適性
                     if target_course and len(tds) > 1:
                         course_text = tds[1].get_text(strip=True)
                         if target_course in course_text:
                             course_results.append(finish)
+                    # 通過順位 (tds[20])
+                    if len(tds) > 20:
+                        pass_text = tds[20].get_text(strip=True)
+                        pass_nums = re.findall(r'\d+', pass_text)
+                        if pass_nums:
+                            passing_positions.append(int(pass_nums[0]))
+                    # 上がり3F (tds[22])
+                    if len(tds) > 22:
+                        agari_text = tds[22].get_text(strip=True)
+                        try:
+                            agari_val = float(agari_text)
+                            if 30.0 < agari_val < 45.0:
+                                agari3f_list.append(agari_val)
+                        except:
+                            pass
                     if row_idx >= 9:
                         break
         if last_finish == 5:
@@ -207,6 +307,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                 last_finish = int(m.group(1))
     except Exception:
         pass
+    # 適性スコア
     dist_apt = 0.5
     surf_apt = 0.5
     if dist_results:
@@ -223,7 +324,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
     if course_results:
         avg = sum(course_results) / len(course_results)
         course_apt = max(0.0, min(1.0, 1.0 - (avg - 1) / 17.0))
-    # 前走間隔（日数）
+    # 前走間隔
     interval_days = 30
     if len(race_dates) >= 1:
         from datetime import datetime
@@ -231,7 +332,64 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         diff = (today - race_dates[0]).days
         if diff > 0:
             interval_days = diff
-    return last_finish, dist_apt, surf_apt, pop_score, course_apt, interval_days, prev_jockey
+    # 脚質判定
+    running_style = 0
+    if passing_positions:
+        avg_pass = sum(passing_positions) / len(passing_positions)
+        if avg_pass <= 2.0:
+            running_style = 1
+        elif avg_pass <= 5.0:
+            running_style = 2
+        elif avg_pass <= 10.0:
+            running_style = 3
+        else:
+            running_style = 4
+    # 上がり3F平均
+    avg_agari = 35.5
+    if agari3f_list:
+        avg_agari = sum(agari3f_list) / len(agari3f_list)
+    # 前走着差スコア (ハナ/クビ/アタマ→僅差、大差→離された)
+    margin_score = 0.5
+    if margin_text:
+        if margin_text in ['ハナ', 'クビ', 'アタマ', '同着']:
+            margin_score = 0.8 if last_finish <= 3 else 0.4
+        elif re.match(r'^[\d\.\/]+$', margin_text):
+            try:
+                parts = margin_text.replace('/', '.').split('.')
+                val = float(parts[0])
+                if val <= 0.5:
+                    margin_score = 0.7 if last_finish <= 3 else 0.4
+                elif val <= 1.0:
+                    margin_score = 0.6 if last_finish <= 5 else 0.4
+                else:
+                    margin_score = 0.3
+            except:
+                pass
+        elif '大' in margin_text:
+            margin_score = 0.2
+    # 連対率・複勝率
+    rentai_rate = 0.0
+    fukusho_rate = 0.0
+    if finish_list:
+        rentai_rate = sum(1 for f in finish_list if f <= 2) / len(finish_list)
+        fukusho_rate = sum(1 for f in finish_list if f <= 3) / len(finish_list)
+    # 休み明け適性
+    rest_apt = 0.5
+    if rest_finishes:
+        avg_rest = sum(rest_finishes) / len(rest_finishes)
+        rest_apt = max(0.0, min(1.0, 1.0 - (avg_rest - 1) / 17.0))
+    return {
+        'last_finish': last_finish,
+        'dist_apt': dist_apt,
+        'surf_apt': surf_apt,
+        'pop_score': pop_score,
+        'course_apt': course_apt,
+        'interval_days': interval_days,
+        'prev_jockey': prev_jockey,
+        'running_style': running_style,
+        'avg_agari': avg_agari,
+        'margin_score': margin_score,
+    }
 
 def parse_shutuba(race_id):
     url = "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
@@ -419,16 +577,26 @@ if st.button("🔍 予想する") and url_input:
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                lf, d_apt, s_apt, p_score, c_apt, interval, prev_j = get_horse_stats(
+                stats = get_horse_stats(
                     hid, race_info['distance'], race_info['surface'], race_info['course']
                 )
-                horse['前走着順'] = lf
-                horse['距離適性'] = d_apt
-                horse['馬場適性'] = s_apt
-                horse['人気傾向'] = p_score
-                horse['コース適性'] = c_apt
-                horse['前走間隔'] = interval
-                horse['前走騎手'] = prev_j
+                horse['前走着順'] = stats['last_finish']
+                horse['距離適性'] = stats['dist_apt']
+                horse['馬場適性'] = stats['surf_apt']
+                horse['人気傾向'] = stats['pop_score']
+                horse['コース適性'] = stats['course_apt']
+                horse['前走間隔'] = stats['interval_days']
+                horse['前走騎手'] = stats['prev_jockey']
+                horse['脚質'] = stats['running_style']
+                horse['上がり3F'] = stats['avg_agari']
+                horse['着差スコア'] = stats['margin_score']
+                horse['連対率'] = stats['rentai_rate']
+                horse['複勝率'] = stats['fukusho_rate']
+                horse['休み明け適性'] = stats['rest_apt']
+                horse['父'] = stats['father']
+                horse['血統スコア'] = calc_sire_score(
+                    stats['father'], race_info['surface'], race_info['distance']
+                )
             else:
                 horse['前走着順'] = 5
                 horse['距離適性'] = 0.5
@@ -437,6 +605,14 @@ if st.button("🔍 予想する") and url_input:
                 horse['コース適性'] = 0.5
                 horse['前走間隔'] = 30
                 horse['前走騎手'] = ""
+                horse['脚質'] = 0
+                horse['上がり3F'] = 35.5
+                horse['着差スコア'] = 0.5
+                horse['連対率'] = 0.0
+                horse['複勝率'] = 0.0
+                horse['休み明け適性'] = 0.5
+                horse['父'] = ""
+                horse['血統スコア'] = 0.5
             progress_bar.progress((i + 1) / len(horses))
             if i < len(horses) - 1:
                 time.sleep(0.5)
@@ -451,7 +627,7 @@ if st.button("🔍 予想する") and url_input:
     apt_scores = (df['距離適性'].values + df['馬場適性'].values) / 2.0
     pop_scores = df['人気傾向'].values
     course_scores = df['コース適性'].values
-    # 枠番スコア: 短距離(~1400m)は内枠有利、長距離(2000m~)は影響小
+    # 枠番スコア
     num_horses = len(horses)
     waku_scores = []
     for _, h in df.iterrows():
@@ -469,7 +645,7 @@ if st.button("🔍 予想する") and url_input:
             ws = 0.5
         waku_scores.append(ws)
     waku_scores = np.array(waku_scores)
-    # 前走間隔スコア: 中2-4週がベスト、休み明け・連闘はマイナス
+    # 前走間隔スコア
     interval_scores = []
     for _, h in df.iterrows():
         days = h.get('前走間隔', 30)
@@ -485,7 +661,7 @@ if st.button("🔍 予想する") and url_input:
             iscore = 0.4
         interval_scores.append(iscore)
     interval_scores = np.array(interval_scores)
-    # 馬体重変動スコア: ±0-4kgが安定、±10kg超はマイナス
+    # 馬体重変動スコア
     weight_scores = []
     for _, h in df.iterrows():
         wd = abs(h.get('場体重増減', 0))
@@ -499,7 +675,7 @@ if st.button("🔍 予想する") and url_input:
             wscore = 0.2
         weight_scores.append(wscore)
     weight_scores = np.array(weight_scores)
-    # 斤量相対スコア: レース平均より軽ければ有利
+    # 斤量相対スコア
     avg_kinryo = df['斤量'].mean()
     kinryo_scores = np.clip(1.0 - (df['斤量'].values - avg_kinryo) / 10.0, 0.0, 1.0) * 0.5 + 0.25
     # 騎手乗り替わりスコア
@@ -522,10 +698,79 @@ if st.button("🔍 予想する") and url_input:
                 jscore = 0.5
         jchange_scores.append(jscore)
     jchange_scores = np.array(jchange_scores)
-    # 最終スコア: AI 35% + 人気 15% + 適性 10% + コース 10% + 枠番 8% + 間隔 8% + 体重 6% + 斤量 4% + 騎手替 4%
-    final_scores = (ai_scores * 0.35 + pop_scores * 0.15 + apt_scores * 0.10
-                    + course_scores * 0.10 + waku_scores * 0.08 + interval_scores * 0.08
-                    + weight_scores * 0.06 + kinryo_scores * 0.04 + jchange_scores * 0.04)
+    # 脚質展開スコア
+    pace_scores = []
+    for _, h in df.iterrows():
+        rs = h.get('脚質', 0)
+        dist = h['距離(m)']
+        cond = race_info.get('condition', '良')
+        nh = num_horses
+        if rs == 0:
+            pscore = 0.5
+        elif rs == 1:
+            pscore = 0.6
+            if nh <= 10: pscore += 0.1
+            if cond in ['重', '不良']: pscore += 0.05
+            if dist <= 1400: pscore += 0.05
+            if nh >= 16: pscore -= 0.1
+        elif rs == 2:
+            pscore = 0.65
+            if nh <= 12: pscore += 0.05
+            if cond in ['重', '不良']: pscore += 0.05
+        elif rs == 3:
+            pscore = 0.5
+            if nh >= 14: pscore += 0.1
+            if dist >= 2000: pscore += 0.05
+        else:
+            pscore = 0.35
+            if nh >= 16: pscore += 0.1
+            if dist >= 2400: pscore += 0.1
+        pace_scores.append(min(1.0, max(0.0, pscore)))
+    pace_scores = np.array(pace_scores)
+    # 上がり3Fスコア (速いほど高い: 33秒台=1.0, 37秒台=0.3)
+    agari_scores = np.clip(1.0 - (df['上がり3F'].values - 33.0) / 5.0, 0.0, 1.0)
+    # 着差スコア
+    margin_scores = df['着差スコア'].values
+    # 連対率・複勝率スコア
+    rentai_scores = df['連対率'].values
+    fukusho_scores = df['複勝率'].values
+    # 血統スコア
+    sire_scores = df['血統スコア'].values
+    # 休み明け適性（休み明けの場合のみ適用）
+    rest_scores = []
+    for _, h in df.iterrows():
+        days = h.get('前走間隔', 30)
+        if days >= 60:
+            rest_scores.append(h.get('休み明け適性', 0.5))
+        else:
+            rest_scores.append(0.5)
+    rest_scores = np.array(rest_scores)
+    # 季節補正
+    from datetime import datetime
+    month = datetime.now().month
+    season_scores = []
+    for _, h in df.iterrows():
+        ss = 0.5
+        bw = h.get('馬体重', 480)
+        if month in [12, 1, 2]:
+            if bw >= 500: ss = 0.6
+            if h.get('脚質', 0) in [1, 2]: ss += 0.05
+        elif month in [6, 7, 8]:
+            if bw <= 470: ss = 0.6
+        season_scores.append(min(1.0, ss))
+    season_scores = np.array(season_scores)
+    # === 最終スコア (15要素) ===
+    # AI 25% + 人気 10% + 適性 7% + コース 7% + 脚質 7% + 上がり 7%
+    # + 血統 6% + 複勝率 6% + 枠番 5% + 間隔 5% + 着差 4%
+    # + 体重 3% + 騎手替 3% + 斤量 2% + 季節 2% + 休み明け 1%
+    final_scores = (
+        ai_scores * 0.25 + pop_scores * 0.10 + apt_scores * 0.07
+        + course_scores * 0.07 + pace_scores * 0.07 + agari_scores * 0.07
+        + sire_scores * 0.06 + fukusho_scores * 0.06 + waku_scores * 0.05
+        + interval_scores * 0.05 + margin_scores * 0.04
+        + weight_scores * 0.03 + jchange_scores * 0.03 + kinryo_scores * 0.02
+        + season_scores * 0.02 + rest_scores * 0.01
+    )
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
