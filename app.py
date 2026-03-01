@@ -138,6 +138,31 @@ def find_jockey_wr(name):
             return val
     return 0.05
 
+TRAINER_WR = {
+    '国枝栄': 0.150, '堀宣行': 0.145, '藤沢和雄': 0.140, '木村哲也': 0.135,
+    '中内田充': 0.140, '友道康夫': 0.135, '矢作芳人': 0.130, '手塚貴久': 0.125,
+    '池江泰寿': 0.120, '須貝尚介': 0.115, '西村真幸': 0.110, '武幸四郎': 0.115,
+    '斎藤崇史': 0.110, '田中博康': 0.105, '萩原清': 0.100, '鹿戸雄一': 0.100,
+    '高柳瑞樹': 0.095, '高野友和': 0.100, '音無秀孝': 0.095, '松永幹夫': 0.090,
+    '池添学': 0.095, '安田隆行': 0.090, '清水久詞': 0.085, '尾関知人': 0.090,
+    '杉山晴紀': 0.090, '宮田敬介': 0.100, '黒岩陽一': 0.085, '加藤征弘': 0.085,
+    '栗田徹': 0.085, '美浦田中博': 0.080, '藤岡健一': 0.085, '大竹正博': 0.085,
+    '奥村武': 0.080, '田村康仁': 0.080, '小島茂之': 0.080, '武井亮': 0.080,
+    '和田正一': 0.075, '相沢郁': 0.075, '伊坂重信': 0.070, '小手川準': 0.075,
+    '古賀慎明': 0.080, '上原博之': 0.075, '小桧山悟': 0.070, '竹内正洋': 0.070,
+    '勢司和浩': 0.065, '小野次郎': 0.065, '菊沢隆徳': 0.070, '牧浦充徳': 0.080,
+    '中竹和也': 0.075, '松下武士': 0.085, '岩戸孝樹': 0.075, '伊坂': 0.070,
+    '美浦・田坂': 0.070, '美浦・鈴木': 0.070, '栗東・松永': 0.090,
+}
+
+def find_trainer_wr(name):
+    if name in TRAINER_WR:
+        return TRAINER_WR[name]
+    for key, val in TRAINER_WR.items():
+        if key in name or name in key:
+            return val
+    return 0.06
+
 # 種牡馬の距離・馬場適性辞書
 SIRE_APTITUDE = {
     'ディープインパクト': {'turf': 1.0, 'dirt': 0.3, 'sprint': 0.5, 'mile': 0.9, 'mid': 1.0, 'long': 0.8},
@@ -505,6 +530,11 @@ def parse_shutuba(race_id):
             '枠番': waku,
             '馬番': umaban,
         })
+        # 調教師名を取得（別途）
+        trainer_tag = row.select_one("td.Trainer a") or row.select_one("a[href*='trainer']")
+        trainer_name = trainer_tag.get_text(strip=True) if trainer_tag else ""
+        horses[-1]['調教師'] = trainer_name
+        horses[-1]['調教師勝率'] = find_trainer_wr(trainer_name)
         horse_ids.append(horse_id)
     return race_name, horses, horse_ids, race_info
 
@@ -577,26 +607,43 @@ if st.button("🔍 予想する") and url_input:
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
-                stats = get_horse_stats(
-                    hid, race_info['distance'], race_info['surface'], race_info['course']
-                )
-                horse['前走着順'] = stats['last_finish']
-                horse['距離適性'] = stats['dist_apt']
-                horse['馬場適性'] = stats['surf_apt']
-                horse['人気傾向'] = stats['pop_score']
-                horse['コース適性'] = stats['course_apt']
-                horse['前走間隔'] = stats['interval_days']
-                horse['前走騎手'] = stats['prev_jockey']
-                horse['脚質'] = stats['running_style']
-                horse['上がり3F'] = stats['avg_agari']
-                horse['着差スコア'] = stats['margin_score']
-                horse['連対率'] = stats['rentai_rate']
-                horse['複勝率'] = stats['fukusho_rate']
-                horse['休み明け適性'] = stats['rest_apt']
-                horse['父'] = stats['father']
-                horse['血統スコア'] = calc_sire_score(
-                    stats['father'], race_info['surface'], race_info['distance']
-                )
+                try:
+                    stats = get_horse_stats(
+                        hid, race_info['distance'], race_info['surface'], race_info['course']
+                    )
+                    horse['前走着順'] = stats.get('last_finish', 5)
+                    horse['距離適性'] = stats.get('dist_apt', 0.5)
+                    horse['馬場適性'] = stats.get('surf_apt', 0.5)
+                    horse['人気傾向'] = stats.get('pop_score', 0.5)
+                    horse['コース適性'] = stats.get('course_apt', 0.5)
+                    horse['前走間隔'] = stats.get('interval_days', 30)
+                    horse['前走騎手'] = stats.get('prev_jockey', '')
+                    horse['脚質'] = stats.get('running_style', 0)
+                    horse['上がり3F'] = stats.get('avg_agari', 35.5)
+                    horse['着差スコア'] = stats.get('margin_score', 0.5)
+                    horse['連対率'] = stats.get('rentai_rate', 0.0)
+                    horse['複勝率'] = stats.get('fukusho_rate', 0.0)
+                    horse['休み明け適性'] = stats.get('rest_apt', 0.5)
+                    horse['父'] = stats.get('father', '')
+                    horse['血統スコア'] = calc_sire_score(
+                        stats.get('father', ''), race_info['surface'], race_info['distance']
+                    )
+                except Exception:
+                    horse['前走着順'] = 5
+                    horse['距離適性'] = 0.5
+                    horse['馬場適性'] = 0.5
+                    horse['人気傾向'] = 0.5
+                    horse['コース適性'] = 0.5
+                    horse['前走間隔'] = 30
+                    horse['前走騎手'] = ""
+                    horse['脚質'] = 0
+                    horse['上がり3F'] = 35.5
+                    horse['着差スコア'] = 0.5
+                    horse['連対率'] = 0.0
+                    horse['複勝率'] = 0.0
+                    horse['休み明け適性'] = 0.5
+                    horse['父'] = ""
+                    horse['血統スコア'] = 0.5
             else:
                 horse['前走着順'] = 5
                 horse['距離適性'] = 0.5
@@ -760,16 +807,79 @@ if st.button("🔍 予想する") and url_input:
         season_scores.append(min(1.0, ss))
     season_scores = np.array(season_scores)
     # === 最終スコア (15要素) ===
-    # AI 25% + 人気 10% + 適性 7% + コース 7% + 脚質 7% + 上がり 7%
-    # + 血統 6% + 複勝率 6% + 枠番 5% + 間隔 5% + 着差 4%
-    # + 体重 3% + 騎手替 3% + 斤量 2% + 季節 2% + 休み明け 1%
+    # 調教師勝率スコア
+    trainer_scores = []
+    for _, h in df.iterrows():
+        twr = h.get('調教師勝率', 0.06)
+        tscore = min(1.0, twr / 0.15)
+        trainer_scores.append(tscore)
+    trainer_scores = np.array(trainer_scores)
+    # 枠順×脚質コンボスコア
+    combo_scores = []
+    for _, h in df.iterrows():
+        ub = h.get('馬番', 0)
+        rs = h.get('脚質', 0)
+        if ub == 0 or rs == 0 or num_horses == 0:
+            combo_scores.append(0.5)
+            continue
+        pos = ub / num_horses
+        inner = pos <= 0.35
+        outer = pos >= 0.65
+        if rs == 1 and inner:
+            cs = 0.8
+        elif rs == 1 and outer:
+            cs = 0.4
+        elif rs == 2 and inner:
+            cs = 0.7
+        elif rs == 2:
+            cs = 0.6
+        elif rs == 3 and outer:
+            cs = 0.55
+        elif rs == 3:
+            cs = 0.5
+        elif rs == 4 and outer:
+            cs = 0.45
+        elif rs == 4:
+            cs = 0.35
+        else:
+            cs = 0.5
+        combo_scores.append(cs)
+    combo_scores = np.array(combo_scores)
+    # トラックバイアス推定（馬場状態から内外有利を推定）
+    bias_scores = []
+    cond = race_info.get('condition', '良')
+    surf = race_info.get('surface', '芝')
+    for _, h in df.iterrows():
+        ub = h.get('馬番', 0)
+        if ub == 0 or num_horses == 0:
+            bias_scores.append(0.5)
+            continue
+        pos = ub / num_horses
+        inner = pos <= 0.35
+        if surf == '芝' and cond in ['良', '稍', '稍重']:
+            bs = 0.6 if inner else 0.45
+        elif surf == '芝' and cond in ['重', '不良', '不']:
+            bs = 0.5
+        elif surf != '芝' and cond in ['良']:
+            bs = 0.55 if inner else 0.45
+        elif surf != '芝' and cond in ['重', '不良', '不']:
+            bs = 0.55 if inner else 0.5
+        else:
+            bs = 0.5
+        bias_scores.append(bs)
+    bias_scores = np.array(bias_scores)
+    # AI 23% + 人気 9% + 適性 6% + コース 6% + 脚質 6% + 上がり 6%
+    # + 血統 5% + 複勝率 5% + 枠番 4% + 間隔 4% + 着差 4%
+    # + 調教師 4% + 枠脚質コンボ 4% + トラックバイアス 3%
+    # + 体重 3% + 騎手替 2% + 斤量 2% + 季節 2% + 休み明け 1% + 連対率 1%
     final_scores = (
-        ai_scores * 0.25 + pop_scores * 0.10 + apt_scores * 0.07
-        + course_scores * 0.07 + pace_scores * 0.07 + agari_scores * 0.07
-        + sire_scores * 0.06 + fukusho_scores * 0.06 + waku_scores * 0.05
-        + interval_scores * 0.05 + margin_scores * 0.04
-        + weight_scores * 0.03 + jchange_scores * 0.03 + kinryo_scores * 0.02
-        + season_scores * 0.02 + rest_scores * 0.01
+        ai_scores * 0.23 + pop_scores * 0.09 + apt_scores * 0.06
+        + course_scores * 0.06 + pace_scores * 0.06 + agari_scores * 0.06
+        + sire_scores * 0.05 + fukusho_scores * 0.05 + waku_scores * 0.04
+        + interval_scores * 0.04 + margin_scores * 0.04
+        + trainer_scores * 0.04 + combo_scores * 0.04 + bias_scores * 0.03
+        + weight_scores * 0.03 + jchange_scores * 0.02 + kinryo_scores * 0.02
+        + season_scores * 0.02 + rest_scores * 0.01 + rentai_scores * 0.01
     )
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
