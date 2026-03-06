@@ -928,9 +928,10 @@ def render_buy_section(df, race_info, rank_map):
     html += '<div class="buy-card buy-hiroku"><div class="buy-header">'
     html += '<span class="buy-type bt-hir">&#9889; 手広く</span>'
     html += '<span class="buy-conf">信頼度 ★★★</span></div>'
-    html += f'<div class="buy-row"><span class="buy-lbl">3連複</span><span class="buy-horses">{horse_num(t1)} ― {horse_num(t2)},{horse_num(t3)} ― {",".join(himo)}</span></div>'
-    pt = len(himo) * 2 if himo else 3
-    html += f'<div class="buy-note">軸{t1["馬名"]}固定。2着候補にTOP2-3、3着候補にTOP4-6。計{pt}点</div></div>'
+    himo_plus = [horse_num(t2), horse_num(t3)] + himo
+    html += f'<div class="buy-row"><span class="buy-lbl">3連複</span><span class="buy-horses">{horse_num(t1)} ― {horse_num(t2)},{horse_num(t3)} ― {",".join(himo_plus)}</span></div>'
+    pt = len(himo) * 2 + 1 if himo else 3
+    html += f'<div class="buy-note">軸{t1["馬名"]}固定。2着候補にTOP2-3、3着候補にTOP2-6。計{pt}点（TOP1-2-3含む）</div></div>'
     ana_horse = None
     for i in range(5, min(len(sorted_df), 12)):
         h = sorted_df.iloc[i]
