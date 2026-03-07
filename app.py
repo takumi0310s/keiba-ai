@@ -7,9 +7,129 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
+import sqlite3
+import os
 from datetime import datetime
+from itertools import combinations
 
 st.set_page_config(page_title="KEIBA AI", page_icon="🏇", layout="wide")
+
+# ===== SQLite DB =====
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""CREATE TABLE IF NOT EXISTS predictions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        race_id TEXT, race_name TEXT, race_date TEXT,
+        course TEXT, distance INTEGER, surface TEXT, condition TEXT,
+        horse_name TEXT, horse_num INTEGER, ai_rank INTEGER,
+        ai_score REAL, odds REAL, predicted_at TEXT,
+        actual_finish INTEGER DEFAULT NULL,
+        is_top3_pred INTEGER DEFAULT 0
+    )""")
+    c.execute("""CREATE TABLE IF NOT EXISTS race_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        race_id TEXT UNIQUE, race_name TEXT,
+        predicted_at TEXT, result_updated_at TEXT DEFAULT NULL,
+        num_horses INTEGER, top1_name TEXT, top1_score REAL,
+        hit_tansho INTEGER DEFAULT NULL,
+        hit_fukusho INTEGER DEFAULT NULL,
+        hit_wide INTEGER DEFAULT NULL,
+        hit_sanrenpuku INTEGER DEFAULT NULL
+    )""")
+    conn.commit()
+    conn.close()
+
+def save_prediction(race_id, race_name, race_info, df_sorted):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 同一race_idの既存予測を削除（最新予測のみ保持）
+    c.execute("DELETE FROM predictions WHERE race_id = ?", (race_id,))
+    c.execute("DELETE FROM race_results WHERE race_id = ?", (race_id,))
+    for _, row in df_sorted.iterrows():
+        c.execute("""INSERT INTO predictions
+            (race_id, race_name, race_date, course, distance, surface, condition,
+             horse_name, horse_num, ai_rank, ai_score, odds, predicted_at, is_top3_pred)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (race_id, race_name, now[:10], race_info.get('course',''),
+             race_info.get('distance',0), race_info.get('surface',''),
+             race_info.get('condition',''), row['馬名'], int(row['馬番']),
+             int(row['AI順位']), float(row['スコア']),
+             float(row.get('単勝オッズ', 0)), now,
+             1 if int(row['AI順位']) <= 3 else 0))
+    top1 = df_sorted.iloc[0]
+    c.execute("""INSERT INTO race_results
+        (race_id, race_name, predicted_at, num_horses, top1_name, top1_score)
+        VALUES (?, ?, ?, ?, ?, ?)""",
+        (race_id, race_name, now, len(df_sorted), top1['馬名'], float(top1['スコア'])))
+    conn.commit()
+    conn.close()
+
+def update_actual_results(race_id, results_dict):
+    """results_dict: {馬番: 着順}"""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for horse_num, finish in results_dict.items():
+        c.execute("UPDATE predictions SET actual_finish = ? WHERE race_id = ? AND horse_num = ?",
+                  (finish, race_id, horse_num))
+    # 的中判定
+    c.execute("SELECT horse_num, ai_rank, actual_finish FROM predictions WHERE race_id = ? ORDER BY ai_rank", (race_id,))
+    rows = c.fetchall()
+    if rows:
+        top1_num = rows[0][0]
+        top3_nums = [r[0] for r in rows[:3]]
+        finishes = {r[0]: r[2] for r in rows if r[2] is not None}
+        hit_tansho = 1 if finishes.get(top1_num) == 1 else 0
+        hit_fukusho = 1 if finishes.get(top1_num, 99) <= 3 else 0
+        # ワイド: TOP1-TOP3が共に3着以内
+        hit_wide = 0
+        for n in top3_nums[1:]:
+            if finishes.get(top1_num, 99) <= 3 and finishes.get(n, 99) <= 3:
+                hit_wide = 1
+                break
+        # 3連複: TOP3全員が3着以内
+        hit_sanren = 1 if all(finishes.get(n, 99) <= 3 for n in top3_nums) else 0
+        c.execute("""UPDATE race_results SET result_updated_at=?, hit_tansho=?,
+                     hit_fukusho=?, hit_wide=?, hit_sanrenpuku=? WHERE race_id=?""",
+                  (now, hit_tansho, hit_fukusho, hit_wide, hit_sanren, race_id))
+    conn.commit()
+    conn.close()
+
+def get_dashboard_stats():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    stats = {}
+    c.execute("SELECT COUNT(*) FROM race_results")
+    stats['total_races'] = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM race_results WHERE hit_tansho IS NOT NULL")
+    stats['settled_races'] = c.fetchone()[0]
+    if stats['settled_races'] > 0:
+        c.execute("SELECT SUM(hit_tansho), SUM(hit_fukusho), SUM(hit_wide), SUM(hit_sanrenpuku) FROM race_results WHERE hit_tansho IS NOT NULL")
+        row = c.fetchone()
+        stats['hit_tansho'] = row[0] or 0
+        stats['hit_fukusho'] = row[1] or 0
+        stats['hit_wide'] = row[2] or 0
+        stats['hit_sanrenpuku'] = row[3] or 0
+        stats['rate_tansho'] = stats['hit_tansho'] / stats['settled_races']
+        stats['rate_fukusho'] = stats['hit_fukusho'] / stats['settled_races']
+        stats['rate_wide'] = stats['hit_wide'] / stats['settled_races']
+        stats['rate_sanrenpuku'] = stats['hit_sanrenpuku'] / stats['settled_races']
+    else:
+        stats['hit_tansho'] = stats['hit_fukusho'] = stats['hit_wide'] = stats['hit_sanrenpuku'] = 0
+        stats['rate_tansho'] = stats['rate_fukusho'] = stats['rate_wide'] = stats['rate_sanrenpuku'] = 0.0
+    # 直近10レース
+    c.execute("""SELECT race_name, predicted_at, top1_name, top1_score,
+                 hit_tansho, hit_fukusho, hit_sanrenpuku
+              FROM race_results ORDER BY predicted_at DESC LIMIT 10""")
+    stats['recent'] = c.fetchall()
+    conn.close()
+    return stats
+
+init_db()
 
 # ===== CSS =====
 CSS = """
@@ -219,6 +339,29 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
     background: rgba(255,64,96,0.06); border: 1px solid rgba(255,64,96,0.15);
     font-size: 0.7em; color: #6a6a80 !important; text-align: center;
 }
+
+/* EV Table */
+.ev-card {
+    background: #12121c; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+}
+.ev-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04); }
+.ev-row:last-child { border-bottom: none; }
+.ev-lbl { font-size: 0.85em; color: #b0b8c8 !important; }
+.ev-val { font-family: 'Oswald', sans-serif; font-size: 1.1em; font-weight: 700; }
+.ev-hot { color: #2ecc40 !important; }
+.ev-warm { color: #f0c040 !important; }
+.ev-cold { color: #6a6a80 !important; }
+
+/* Dashboard */
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.dash-item {
+    text-align: center; padding: 12px 6px; border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+}
+.dash-num { font-family: 'Oswald', sans-serif; font-size: 1.6em; font-weight: 700; }
+.dash-lbl { font-size: 0.7em; color: #6a6a80 !important; margin-top: 2px; }
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -646,6 +789,75 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         pass
     return result
 
+# ===== Fetch Realtime Odds =====
+def fetch_realtime_odds(race_id, is_nar=False):
+    """netkeibaから単勝リアルタイムオッズを取得。{馬番: オッズ} を返す"""
+    odds_dict = {}
+    try:
+        # 方法1: オッズAPIエンドポイント
+        if is_nar:
+            url = f"https://nar.netkeiba.com/api/api_get_nar_odds.html?race_id={race_id}&type=1"
+        else:
+            url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "utf-8"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # APIレスポンスはHTML断片（テーブル）
+        for row in soup.find_all("tr"):
+            tds = row.find_all("td")
+            if len(tds) < 2:
+                continue
+            # 馬番を探す
+            umaban = None
+            odds_val = None
+            for td in tds:
+                text = td.get_text(strip=True)
+                cls = " ".join(td.get("class", []))
+                if umaban is None and text.isdigit() and 1 <= int(text) <= 18:
+                    umaban = int(text)
+                elif umaban is not None and odds_val is None:
+                    try:
+                        v = float(text.replace(',', ''))
+                        if 1.0 <= v <= 9999.9:
+                            odds_val = v
+                    except:
+                        pass
+            if umaban and odds_val:
+                odds_dict[umaban] = odds_val
+        if odds_dict:
+            return odds_dict
+        # 方法2: オッズページを直接スクレイピング
+        if is_nar:
+            url2 = f"https://nar.netkeiba.com/odds/index.html?race_id={race_id}&type=b1"
+        else:
+            url2 = f"https://race.netkeiba.com/odds/index.html?race_id={race_id}&type=b1"
+        resp2 = requests.get(url2, headers=HEADERS, timeout=10)
+        resp2.encoding = "EUC-JP"
+        soup2 = BeautifulSoup(resp2.text, "html.parser")
+        for row in soup2.select("tr"):
+            tds = row.find_all("td")
+            umaban = None
+            odds_val = None
+            for td in tds:
+                text = td.get_text(strip=True)
+                cls = " ".join(td.get("class", []))
+                if ("Num" in cls or "Umaban" in cls or "num" in cls) and text.isdigit():
+                    umaban = int(text)
+                if "Odds" in cls or "odds" in cls:
+                    m = re.search(r'[\d,]+\.?\d*', text)
+                    if m:
+                        try:
+                            v = float(m.group().replace(',', ''))
+                            if 1.0 <= v <= 9999.9:
+                                odds_val = v
+                        except:
+                            pass
+            if umaban and odds_val:
+                odds_dict[umaban] = odds_val
+    except Exception:
+        pass
+    return odds_dict
+
 # ===== Parse Shutuba =====
 def parse_shutuba(race_id, is_nar=False):
     if is_nar:
@@ -881,6 +1093,10 @@ def render_horse_card(rank, h, max_score, rank_map):
     html += f'<div class="sitem"><div class="slbl">間隔</div><div class="sval {interval_cls(h.get("前走間隔",30))}">{interval_text(h.get("前走間隔",30))}</div></div>'
     html += f'<div class="sitem"><div class="slbl">体重</div><div class="sval">{weight_html(h.get("場体重増減",0))}</div></div>'
     html += f'<div class="sitem"><div class="slbl">上がり</div><div class="sval">{h.get("上がり3F",35.5):.1f}</div></div>'
+    odds = h.get('単勝オッズ', 0.0)
+    if odds > 0:
+        odds_color = '#ff4060' if odds <= 3.0 else ('#f0c040' if odds <= 10.0 else ('#b0b8c8' if odds <= 30.0 else '#6a6a80'))
+        html += f'<div class="sitem"><div class="slbl">単勝</div><div class="sval" style="color:{odds_color} !important">{odds:.1f}</div></div>'
     html += '</div>'
     html += '<div class="tagrow">'
     if father: html += f'<span class="tag tag-sire">父: {father}</span>'
@@ -894,6 +1110,176 @@ def render_horse_card(rank, h, max_score, rank_map):
         html += f'<span class="tag" style="border:1px solid rgba(240,192,64,0.3);color:#f0c040 !important">⏱ {bt_dist}m {bt_str}{date_display}</span>'
     html += '</div>'
     html += f'<div class="sbar-w"><div class="sbar sbar-{c}" style="width:{pct}%"></div></div></div>'
+    return html
+
+def calc_expected_values(df_sorted, realtime_odds):
+    """各買い目の期待値を計算。AI順位上位の的中確率 × オッズで期待値を出す。"""
+    ev_list = []
+    if not realtime_odds:
+        return ev_list
+    n = len(df_sorted)
+    scores = df_sorted['スコア'].values
+    score_sum = scores.sum()
+    if score_sum <= 0:
+        return ev_list
+    # 各馬の3着以内確率をスコアから推定
+    probs = scores / score_sum
+    top6 = df_sorted.head(6)
+    # 単勝期待値
+    for _, h in top6.iterrows():
+        umaban = int(h['馬番'])
+        odds = h.get('単勝オッズ', 0)
+        if odds <= 0:
+            continue
+        rank = int(h['AI順位'])
+        # 1着確率 = スコア比率 × 補正
+        win_prob = probs[rank - 1] * 1.5  # 上位ほど1着確率は高め
+        win_prob = min(win_prob, 0.6)
+        ev = win_prob * odds
+        ev_list.append({
+            'type': '単勝', 'horses': f"{umaban} {h['馬名'][:5]}",
+            'odds': odds, 'prob': win_prob, 'ev': ev,
+            'umaban': [umaban]
+        })
+    # ワイド期待値（TOP3の組み合わせ）
+    top3 = df_sorted.head(3)
+    for i, j in combinations(range(len(top3)), 2):
+        h1, h2 = top3.iloc[i], top3.iloc[j]
+        r1, r2 = int(h1['AI順位']), int(h2['AI順位'])
+        # 両方3着以内の確率
+        p1 = min(probs[r1-1] * 3.0, 0.85)
+        p2 = min(probs[r2-1] * 3.0, 0.85)
+        wide_prob = p1 * p2 * 0.8  # 独立ではないので補正
+        ev_list.append({
+            'type': 'ワイド',
+            'horses': f"{int(h1['馬番'])}-{int(h2['馬番'])}",
+            'odds': 0, 'prob': wide_prob, 'ev': 0,
+            'umaban': [int(h1['馬番']), int(h2['馬番'])]
+        })
+    # 三連複期待値（TOP1軸 ― TOP2,3 ― TOP2-6）
+    top1 = df_sorted.iloc[0]
+    for i in range(1, min(3, len(df_sorted))):
+        for j in range(i+1, min(6, len(df_sorted))):
+            h2 = df_sorted.iloc[i]
+            h3 = df_sorted.iloc[j]
+            r1 = int(top1['AI順位'])
+            r2 = int(h2['AI順位'])
+            r3 = int(h3['AI順位'])
+            p1 = min(probs[r1-1] * 3.0, 0.85)
+            p2 = min(probs[r2-1] * 3.0, 0.85)
+            p3 = min(probs[r3-1] * 3.0, 0.85)
+            trio_prob = p1 * p2 * p3 * 0.6
+            ev_list.append({
+                'type': '三連複',
+                'horses': f"{int(top1['馬番'])}-{int(h2['馬番'])}-{int(h3['馬番'])}",
+                'odds': 0, 'prob': trio_prob, 'ev': 0,
+                'umaban': sorted([int(top1['馬番']), int(h2['馬番']), int(h3['馬番'])])
+            })
+    return ev_list
+
+def fetch_trio_odds(race_id, is_nar=False):
+    """三連複オッズを取得。{(n1,n2,n3): odds} を返す"""
+    trio_odds = {}
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/api/api_get_nar_odds.html?race_id={race_id}&type=6"
+        else:
+            url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=6"
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.encoding = "utf-8"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for row in soup.find_all("tr"):
+            tds = row.find_all("td")
+            if len(tds) < 2:
+                continue
+            # 組み合わせとオッズを探す
+            combo_text = tds[0].get_text(strip=True)
+            nums = re.findall(r'\d+', combo_text)
+            if len(nums) == 3:
+                key = tuple(sorted(int(n) for n in nums))
+                for td in tds[1:]:
+                    try:
+                        v = float(td.get_text(strip=True).replace(',', ''))
+                        if v >= 1.0:
+                            trio_odds[key] = v
+                            break
+                    except:
+                        continue
+    except Exception:
+        pass
+    return trio_odds
+
+def render_ev_section(ev_list):
+    """期待値セクションをHTML描画"""
+    if not ev_list:
+        return '<div class="ev-card"><div class="ev-row"><span class="ev-lbl">オッズ未取得のため期待値計算不可</span></div></div>'
+    # 期待値でソート（EVが計算できたもの優先、高い順）
+    ev_with_val = [e for e in ev_list if e['ev'] > 0]
+    ev_with_val.sort(key=lambda x: x['ev'], reverse=True)
+    if not ev_with_val:
+        return '<div class="ev-card"><div class="ev-row"><span class="ev-lbl">期待値データなし</span></div></div>'
+    html = '<div class="ev-card">'
+    for e in ev_with_val[:10]:
+        ev = e['ev']
+        if ev >= 1.5:
+            ev_cls = 'ev-hot'
+            ev_icon = '&#128293;'
+        elif ev >= 1.0:
+            ev_cls = 'ev-warm'
+            ev_icon = '&#9733;'
+        else:
+            ev_cls = 'ev-cold'
+            ev_icon = ''
+        prob_pct = e['prob'] * 100
+        html += f'<div class="ev-row">'
+        html += f'<span class="ev-lbl">{e["type"]} {e["horses"]}</span>'
+        html += f'<span class="ev-lbl">({prob_pct:.0f}% x {e["odds"]:.1f})</span>'
+        html += f'<span class="ev-val {ev_cls}">{ev_icon} EV {ev:.2f}</span>'
+        html += '</div>'
+    html += '</div>'
+    # 期待値1.0以上のサマリー
+    hot_bets = [e for e in ev_with_val if e['ev'] >= 1.0]
+    if hot_bets:
+        html += f'<div style="margin-top:8px;padding:10px;background:#1a3a1a;border:1px solid #2ecc40;border-radius:8px;color:#2ecc40 !important;text-align:center;font-weight:bold;">'
+        html += f'&#128176; 期待値1.0超の買い目: {len(hot_bets)}点</div>'
+    return html
+
+def render_dashboard():
+    """成績ダッシュボードをHTML描画"""
+    stats = get_dashboard_stats()
+    if stats['total_races'] == 0:
+        return ''
+    html = '<div class="ev-card">'
+    html += '<div class="dash-grid">'
+    html += f'<div class="dash-item"><div class="dash-num">{stats["total_races"]}</div><div class="dash-lbl">予測レース</div></div>'
+    html += f'<div class="dash-item"><div class="dash-num">{stats["settled_races"]}</div><div class="dash-lbl">結果確定</div></div>'
+    sr = stats['settled_races']
+    if sr > 0:
+        fc = '#2ecc40' if stats['rate_fukusho'] >= 0.5 else ('#f0c040' if stats['rate_fukusho'] >= 0.3 else '#ff4060')
+        html += f'<div class="dash-item"><div class="dash-num" style="color:{fc} !important">{stats["rate_fukusho"]*100:.0f}%</div><div class="dash-lbl">複勝的中率</div></div>'
+        tc = '#2ecc40' if stats['rate_tansho'] >= 0.2 else '#f0c040'
+        html += f'<div class="dash-item"><div class="dash-num" style="color:{tc} !important">{stats["rate_tansho"]*100:.0f}%</div><div class="dash-lbl">単勝的中率</div></div>'
+    else:
+        html += '<div class="dash-item"><div class="dash-num">-</div><div class="dash-lbl">複勝的中率</div></div>'
+        html += '<div class="dash-item"><div class="dash-num">-</div><div class="dash-lbl">単勝的中率</div></div>'
+    html += '</div>'
+    # 直近レース結果
+    if stats['recent']:
+        html += '<div style="margin-top:12px;font-size:0.8em;">'
+        for r in stats['recent'][:5]:
+            name, date, top1, score, ht, hf, hs = r
+            date_short = date[:10] if date else ''
+            if ht is not None:
+                result_icon = '&#9989;' if hf else '&#10060;'
+                html += f'<div class="ev-row"><span class="ev-lbl">{date_short} {name[:12]}</span>'
+                html += f'<span class="ev-lbl">TOP1: {top1[:5]}</span>'
+                html += f'<span>{result_icon}</span></div>'
+            else:
+                html += f'<div class="ev-row"><span class="ev-lbl">{date_short} {name[:12]}</span>'
+                html += f'<span class="ev-lbl">TOP1: {top1[:5]}</span>'
+                html += f'<span style="color:#6a6a80">&#8987; 未確定</span></div>'
+        html += '</div>'
+    html += '</div>'
     return html
 
 def render_buy_section(df, race_info, rank_map):
@@ -922,7 +1308,9 @@ def render_buy_section(df, race_info, rank_map):
     html += f'<div class="buy-row"><span class="buy-lbl">馬連</span><span class="buy-horses">{n1} ― {n2}</span></div>'
     s1_style = STYLE_NAMES.get(int(t1.get('脚質', 0)), '不明')
     s1_match = rank_map.get(int(t1.get('脚質', 0)), ('△','fair',''))[0]
-    html += f'<div class="buy-note">TOP1 {t1["馬名"]}は{s1_style}({s1_match})で展開向き。前走{int(t1["前走着順"])}着の安定感。</div>'
+    t1_odds = t1.get('単勝オッズ', 0)
+    odds_note = f' 単勝{t1_odds:.1f}倍' if t1_odds > 0 else ''
+    html += f'<div class="buy-note">TOP1 {t1["馬名"]}は{s1_style}({s1_match})で展開向き。前走{int(t1["前走着順"])}着の安定感。{odds_note}</div>'
     html += '</div>'
     himo = []
     if t4 is not None: himo.append(horse_num(t4))
@@ -954,7 +1342,9 @@ def render_buy_section(df, race_info, rank_map):
         html += '<span class="buy-conf">信頼度 ★★</span></div>'
         html += f'<div class="buy-row"><span class="buy-lbl">単勝</span><span class="buy-horses" style="color:#ff4060">{ana_num} {ana_name}</span></div>'
         html += f'<div class="buy-row"><span class="buy-lbl">ワイド</span><span class="buy-horses">{ana_num} ― {horse_num(t1)},{horse_num(t3)}</span></div>'
-        html += f'<div class="buy-note">{ana_style}({ana_match})で展開◎。人気薄で妙味あり。</div></div>'
+        ana_odds = ana_horse.get('単勝オッズ', 0)
+        ana_odds_note = f' 単勝{ana_odds:.1f}倍で妙味あり。' if ana_odds > 0 else ' 人気薄で妙味あり。'
+        html += f'<div class="buy-note">{ana_style}({ana_match})で展開◎。{ana_odds_note}</div></div>'
     html += '<div style="margin-top:14px"><div class="pace-title">&#128176; INVESTMENT BALANCE</div>'
     html += '<div class="inv-bar"><div class="inv-seg inv-hon" style="width:50%">50%</div>'
     html += '<div class="inv-seg inv-hir" style="width:30%">30%</div>'
@@ -974,7 +1364,7 @@ def render_buy_section(df, race_info, rank_map):
 
 def render_table(df, rank_map):
     sorted_df = df.sort_values('AI順位')
-    html = '<table class="htable"><tr><th>#</th><th>馬名</th><th>騎手</th><th>脚質</th><th>前走</th><th>間隔</th><th>体重</th><th>⏱ Best</th><th>SCORE</th></tr>'
+    html = '<table class="htable"><tr><th>#</th><th>馬名</th><th>騎手</th><th>脚質</th><th>前走</th><th>単勝</th><th>間隔</th><th>体重</th><th>⏱ Best</th><th>SCORE</th></tr>'
     for _, h in sorted_df.iterrows():
         rank = int(h['AI順位'])
         rc = '#f0c040' if rank == 1 else ('#b0b8c8' if rank == 2 else ('#c87840' if rank == 3 else '#e8e8f0'))
@@ -992,6 +1382,12 @@ def render_table(df, rank_map):
         html += f'<td>{h["騎手名"][:3]}</td>'
         html += f'<td><span class="stag {style_css}">{style_name}</span>{pm}</td>'
         html += f'<td class="{finish_cls(int(h["前走着順"]))}">{int(h["前走着順"])}着</td>'
+        odds = h.get('単勝オッズ', 0.0)
+        if odds > 0:
+            odds_color = '#ff4060' if odds <= 3.0 else ('#f0c040' if odds <= 10.0 else ('#b0b8c8' if odds <= 30.0 else '#6a6a80'))
+            html += f'<td style="font-family:Oswald;color:{odds_color} !important">{odds:.1f}</td>'
+        else:
+            html += '<td>-</td>'
         html += f'<td class="{interval_cls(h.get("前走間隔",30))}">{interval_text(h.get("前走間隔",30))}</td>'
         html += f'<td>{weight_html(int(h.get("場体重増減",0)))}</td>'
         html += f'<td style="font-family:Oswald;font-size:0.82em">{bt_display}</td>'
@@ -1024,6 +1420,16 @@ if st.button("🔍 予想する") and url_input:
     if not horses:
         st.error("馬データを取得できませんでした")
         st.stop()
+    # Fetch realtime odds
+    with st.spinner("オッズを取得中..."):
+        realtime_odds = fetch_realtime_odds(race_id, is_nar=is_nar)
+    for horse in horses:
+        umaban = horse.get('馬番', 0)
+        if umaban in realtime_odds:
+            horse['単勝オッズ'] = realtime_odds[umaban]
+        else:
+            horse['単勝オッズ'] = 0.0  # 取得できなかった場合
+    odds_available = len(realtime_odds) > 0
     # Race card
     surf_badge = 'badge-turf' if race_info['surface'] == '芝' else 'badge-dirt'
     surf_icon = '🟢 TURF' if race_info['surface'] == '芝' else '🟤 DIRT'
@@ -1033,7 +1439,10 @@ if st.button("🔍 予想する") and url_input:
     rc_html += f'<div class="race-meta"><span>📏 {race_info["distance"]}m</span>'
     rc_html += f'<span>🏟️ {race_info["course"]}</span>'
     rc_html += f'<span>💧 {race_info["condition"]}</span>'
-    rc_html += f'<span>🐎 {num_horses}頭</span></div>'
+    rc_html += f'<span>🐎 {num_horses}頭</span>'
+    if odds_available:
+        rc_html += f'<span>💰 オッズ取得済</span>'
+    rc_html += '</div>'
     rank_map, pace_scores_map = calc_pace_advantage(
         race_info['distance'], race_info['surface'], race_info['condition'], num_horses, is_nar=is_nar
     )
@@ -1225,6 +1634,19 @@ if st.button("🔍 予想する") and url_input:
         df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
         df['weight_diff_abs'] = 0
 
+    # === リアルタイムオッズ特徴量 ===
+    if odds_available and '単勝オッズ' in df.columns:
+        df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
+        # リアルタイムオッズがある場合、前走オッズの代わりに使う
+        has_odds = df['単勝オッズ'] > 0
+        if has_odds.any():
+            if 'prev_odds_log' in df.columns:
+                df.loc[has_odds, 'prev_odds_log'] = df.loc[has_odds, 'odds_log']
+            if '前走オッズlog' in df.columns:
+                df.loc[has_odds, '前走オッズlog'] = df.loc[has_odds, 'odds_log']
+    else:
+        df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
+
     # === 特徴量のデフォルト値を保証 ===
     for f in FEATURES:
         if f not in df.columns:
@@ -1266,42 +1688,60 @@ if st.button("🔍 予想する") and url_input:
         time_scores = np.full(len(times), 0.5)
     time_scores = np.clip(time_scores, 0.0, 1.0)
 
+    # Odds scores（オッズが低いほど高スコア）
+    if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
+        odds_vals = df['単勝オッズ'].replace(0, df['単勝オッズ'][df['単勝オッズ'] > 0].median() if (df['単勝オッズ'] > 0).any() else 15.0)
+        odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
+    else:
+        odds_scores = pop_scores  # オッズ未取得時は人気傾向で代替
+
     # ===== FINAL SCORE =====
     if is_nar:
-        final_scores = (
-            ai_scores * 0.27 + pop_scores * 0.13 + pace_scores * 0.18
-            + agari_scores * 0.08 + jockey_scores * 0.10 + apt_scores * 0.08
-            + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
-        )
+        if odds_available:
+            final_scores = (
+                ai_scores * 0.27 + odds_scores * 0.10 + pop_scores * 0.03 + pace_scores * 0.18
+                + agari_scores * 0.08 + jockey_scores * 0.10 + apt_scores * 0.08
+                + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
+            )
+        else:
+            final_scores = (
+                ai_scores * 0.27 + pop_scores * 0.13 + pace_scores * 0.18
+                + agari_scores * 0.08 + jockey_scores * 0.10 + apt_scores * 0.08
+                + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
+            )
     else:
         if model_version == 'v3':
-            # v3: AIモデルの精度が高いので比重を上げる
             final_scores = (
                 ai_scores * 0.55 + pop_scores * 0.10 + apt_scores * 0.08
                 + pace_scores * 0.08 + agari_scores * 0.08 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
         elif model_version == 'v5':
-            # v5: 最高精度モデル - AI比重を最大化
             final_scores = (
                 ai_scores * 0.60 + pop_scores * 0.08 + apt_scores * 0.07
                 + pace_scores * 0.07 + agari_scores * 0.07 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
         elif model_version == 'v6':
-            # v6: 中央+地方統合モデル - AI比重を最大化
             final_scores = (
                 ai_scores * 0.65 + pop_scores * 0.06 + apt_scores * 0.06
                 + pace_scores * 0.06 + agari_scores * 0.06 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
         elif model_version == 'v8':
-            # v8: 過去3走特徴量込み - AI比重をさらに最大化
-            final_scores = (
-                ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
-                + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
-                + other_scores * 0.03
-            )
+            # v8: 過去3走特徴量込み - リアルタイムオッズ反映
+            if odds_available:
+                final_scores = (
+                    ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
+                    + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
+                    + other_scores * 0.03 + pop_scores * 0.03
+                )
+            else:
+                final_scores = (
+                    ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
+                    + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
+                    + other_scores * 0.03
+                )
         else:
             final_scores = (
                 ai_scores * 0.45 + pop_scores * 0.15 + apt_scores * 0.10
@@ -1319,6 +1759,26 @@ if st.button("🔍 予想する") and url_input:
     # Buy section
     st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(render_buy_section(df, race_info, rank_map), unsafe_allow_html=True)
+    # Expected Value Section
+    if odds_available:
+        st.markdown('<div class="sec-title">💰 期待値分析<span class="sec-line"></span></div>', unsafe_allow_html=True)
+        ev_list = calc_expected_values(df, realtime_odds)
+        # 三連複オッズ取得して期待値に反映
+        with st.spinner("三連複オッズを取得中..."):
+            trio_odds = fetch_trio_odds(race_id, is_nar=is_nar)
+        if trio_odds:
+            for e in ev_list:
+                if e['type'] == '三連複':
+                    key = tuple(sorted(e['umaban']))
+                    if key in trio_odds:
+                        e['odds'] = trio_odds[key]
+                        e['ev'] = e['prob'] * e['odds']
+        # ワイドはオッズ未取得なので単勝のみ表示
+        ev_display = [e for e in ev_list if e['ev'] > 0]
+        st.markdown(render_ev_section(ev_display), unsafe_allow_html=True)
+    # Save prediction to SQLite
+    save_prediction(race_id, race_name, race_info, df)
+    st.success(f"予測結果をDBに保存しました ({race_name})")
     # Chart
     st.markdown('<div class="sec-title">📊 全馬スコア<span class="sec-line"></span></div>', unsafe_allow_html=True)
     chart_df = df[['馬名', 'スコア']].copy().set_index('馬名')
@@ -1328,3 +1788,30 @@ if st.button("🔍 予想する") and url_input:
     st.markdown(render_table(df, rank_map), unsafe_allow_html=True)
     # Disclaimer
     st.markdown('<div class="disclaimer">&#9888;&#65039; 本予想はAIによる統計分析です。馬券の購入は自己責任でお願いします。</div>', unsafe_allow_html=True)
+
+# ===== Dashboard & Results Update =====
+dash_html = render_dashboard()
+if dash_html:
+    st.markdown('<div class="sec-title">📈 TRACK RECORD<span class="sec-line"></span></div>', unsafe_allow_html=True)
+    st.markdown(dash_html, unsafe_allow_html=True)
+
+# Results update section
+with st.expander("📝 レース結果を入力（的中率集計用）"):
+    result_race_id = st.text_input("結果を入力するrace_id", key="result_race_id")
+    result_text = st.text_area("着順を入力（馬番:着順 形式、カンマ区切り）\n例: 1:3,2:1,3:5,4:2", key="result_text")
+    if st.button("結果を保存") and result_race_id and result_text:
+        try:
+            results_dict = {}
+            for pair in result_text.split(","):
+                pair = pair.strip()
+                if ":" in pair:
+                    num, finish = pair.split(":")
+                    results_dict[int(num.strip())] = int(finish.strip())
+            if results_dict:
+                update_actual_results(result_race_id, results_dict)
+                st.success(f"結果を保存しました（{len(results_dict)}頭）")
+                st.rerun()
+            else:
+                st.warning("有効な結果データがありません")
+        except Exception as e:
+            st.error(f"入力形式エラー: {e}")
