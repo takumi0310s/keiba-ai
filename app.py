@@ -858,6 +858,46 @@ def fetch_realtime_odds(race_id, is_nar=False):
         pass
     return odds_dict
 
+# ===== Fetch Race Results =====
+def fetch_race_results(race_id, is_nar=False):
+    """netkeibaのレース結果ページから着順を取得。{馬番: 着順} を返す"""
+    results = {}
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/race/result.html?race_id={race_id}"
+        else:
+            url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # 結果テーブルの行を取得
+        rows = soup.select("tr.HorseList") or soup.select("table.RaceTable01 tr")
+        if not rows:
+            table = soup.find("table", class_=re.compile(r"Result|Race"))
+            if table:
+                rows = table.find_all("tr")
+        for row in rows:
+            tds = row.find_all("td")
+            if len(tds) < 3:
+                continue
+            # 着順（1列目）
+            finish_text = tds[0].get_text(strip=True)
+            if not finish_text.isdigit():
+                continue
+            finish = int(finish_text)
+            # 馬番（2列目 or 3列目）
+            umaban = None
+            for td in tds[1:4]:
+                text = td.get_text(strip=True)
+                if text.isdigit() and 1 <= int(text) <= 18:
+                    umaban = int(text)
+                    break
+            if umaban and 1 <= finish <= 30:
+                results[umaban] = finish
+    except Exception:
+        pass
+    return results
+
 # ===== Parse Shutuba =====
 def parse_shutuba(race_id, is_nar=False):
     if is_nar:
@@ -1796,22 +1836,29 @@ if dash_html:
     st.markdown(dash_html, unsafe_allow_html=True)
 
 # Results update section
-with st.expander("📝 レース結果を入力（的中率集計用）"):
-    result_race_id = st.text_input("結果を入力するrace_id", key="result_race_id")
-    result_text = st.text_area("着順を入力（馬番:着順 形式、カンマ区切り）\n例: 1:3,2:1,3:5,4:2", key="result_text")
-    if st.button("結果を保存") and result_race_id and result_text:
-        try:
-            results_dict = {}
-            for pair in result_text.split(","):
-                pair = pair.strip()
-                if ":" in pair:
-                    num, finish = pair.split(":")
-                    results_dict[int(num.strip())] = int(finish.strip())
+with st.expander("📝 レース結果を登録（的中率集計用）"):
+    result_url = st.text_input(
+        "netkeibaの結果ページURLを貼り付け",
+        placeholder="https://race.netkeiba.com/race/result.html?race_id=...",
+        key="result_url"
+    )
+    if st.button("結果を取得・保存") and result_url:
+        is_nar_result = "nar" in result_url
+        rid_match = re.search(r'race_id=(\d+)', result_url)
+        if not rid_match:
+            st.error("URLからrace_idを取得できませんでした")
+        else:
+            result_race_id = rid_match.group(1)
+            with st.spinner("レース結果を取得中..."):
+                results_dict = fetch_race_results(result_race_id, is_nar=is_nar_result)
             if results_dict:
+                # 取得結果をプレビュー表示
+                preview_df = pd.DataFrame([
+                    {"馬番": k, "着順": v} for k, v in sorted(results_dict.items(), key=lambda x: x[1])
+                ])
+                st.dataframe(preview_df, hide_index=True, use_container_width=True)
                 update_actual_results(result_race_id, results_dict)
                 st.success(f"結果を保存しました（{len(results_dict)}頭）")
                 st.rerun()
             else:
-                st.warning("有効な結果データがありません")
-        except Exception as e:
-            st.error(f"入力形式エラー: {e}")
+                st.warning("結果を取得できませんでした（レースがまだ確定していない可能性があります）")
