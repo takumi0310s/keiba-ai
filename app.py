@@ -104,10 +104,11 @@ def update_actual_results(race_id, results_dict, trio_payout=0):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 各馬の着順を更新
     for horse_num, finish in results_dict.items():
         c.execute("UPDATE predictions SET actual_finish = ? WHERE race_id = ? AND horse_num = ?",
                   (finish, race_id, horse_num))
-    # 3着以内の馬番を取得（同着考慮: 3着以内の馬が3頭以上の場合も対応）
+    # 3着以内の馬番を取得（同着考慮）
     top3_nums = set(n for n, f in results_dict.items() if f <= 3)
     # DBから三連複7点を取得
     c.execute("SELECT trio_bets FROM race_results WHERE race_id = ?", (race_id,))
@@ -115,19 +116,29 @@ def update_actual_results(race_id, results_dict, trio_payout=0):
     hit_trio = 0
     hit_combo = None
     payout = 0
-    if row and row[0]:
-        trio_bets = json.loads(row[0])
-        for bet in trio_bets:
-            bet_set = set(bet)
-            # 三連複の3頭全員が3着以内に入っていれば的中
-            if bet_set.issubset(top3_nums):
-                hit_trio = 1
-                hit_combo = json.dumps(sorted(bet))
-                payout = trio_payout
-                break
-    c.execute("""UPDATE race_results SET result_updated_at=?, hit_trio=?,
-                 hit_combo=?, payout=? WHERE race_id=?""",
-              (now, hit_trio, hit_combo, payout, race_id))
+    if row:
+        trio_bets_raw = row[0]
+        if trio_bets_raw:
+            trio_bets = json.loads(trio_bets_raw)
+            if trio_bets:  # 空リストでない場合のみ照合
+                for bet in trio_bets:
+                    bet_set = set(bet)
+                    if bet_set.issubset(top3_nums):
+                        hit_trio = 1
+                        hit_combo = json.dumps(sorted(bet))
+                        payout = trio_payout
+                        break
+        c.execute("""UPDATE race_results SET result_updated_at=?, hit_trio=?,
+                     hit_combo=?, payout=? WHERE race_id=?""",
+                  (now, hit_trio, hit_combo, payout, race_id))
+    else:
+        # 予測データがないレースでも結果は記録する
+        c.execute("""INSERT OR IGNORE INTO race_results
+            (race_id, race_name, predicted_at, num_horses, top1_name, top1_score,
+             trio_bets, hit_trio, hit_combo, payout, result_updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (race_id, '(結果のみ)', now, len(results_dict), '', 0.0,
+             None, hit_trio, hit_combo, payout, now))
     conn.commit()
     conn.close()
 
@@ -1763,81 +1774,110 @@ def run_system_checks():
 # ===== Fetch Race Results =====
 def fetch_race_results(race_id, is_nar=False):
     """netkeibaのレース結果ページから着順と三連複払戻金を取得。
+    race.netkeiba.com（新形式）と db.netkeiba.com（旧形式）の両方に対応。
     返り値: (results_dict={馬番:着順}, trio_payout=三連複払戻金)"""
     results = {}
     trio_payout = 0
-    try:
-        if is_nar:
-            url = f"https://nar.netkeiba.com/race/result.html?race_id={race_id}"
-        else:
-            url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = "EUC-JP"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        # 着順テーブル: td[0]=着順(Result_Num), td[1]=枠番(Waku), td[2]=馬番(Txt_C)
-        rows = soup.select("tr.HorseList")
-        if not rows:
-            rows = soup.select("table.RaceTable01 tr")
-        if not rows:
-            table = soup.find("table", class_=re.compile(r"Result|Race"))
-            if table:
-                rows = table.find_all("tr")
-        for row in rows:
-            tds = row.find_all("td")
-            if len(tds) < 3:
+    # 新形式（race.netkeiba.com）と旧形式（db.netkeiba.com）の両方を試す
+    urls = []
+    if is_nar:
+        urls.append(f"https://nar.netkeiba.com/race/result.html?race_id={race_id}")
+    else:
+        urls.append(f"https://race.netkeiba.com/race/result.html?race_id={race_id}")
+    urls.append(f"https://db.netkeiba.com/race/{race_id}/")  # 旧形式フォールバック
+    for url in urls:
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+            resp.encoding = "EUC-JP"
+            if resp.status_code != 200:
                 continue
-            # 着順: Result_Numクラスか最初のtd
-            finish_td = row.select_one("td.Result_Num")
-            finish_text = finish_td.get_text(strip=True) if finish_td else tds[0].get_text(strip=True)
-            if not finish_text.isdigit():
-                continue
-            finish = int(finish_text)
-            # 馬番: Txt_Cクラスのtd（枠番はWakuクラス）
-            umaban = None
-            umaban_td = None
-            for td in tds:
-                cls = " ".join(td.get("class", []))
-                if "Txt_C" in cls and "Horse" not in cls:
-                    text = td.get_text(strip=True)
+            soup = BeautifulSoup(resp.text, "html.parser")
+            is_old_format = "db.netkeiba.com" in url
+            # ===== 着順取得 =====
+            if is_old_format:
+                # 旧形式: table.race_table_01 → td[0]=着順, td[1]=枠番, td[2]=馬番
+                table = soup.find("table", class_="race_table_01")
+                rows = table.find_all("tr") if table else []
+            else:
+                # 新形式: tr.HorseList → td.Result_Num, td.Txt_C
+                rows = soup.select("tr.HorseList")
+                if not rows:
+                    rows = soup.select("table.RaceTable01 tr")
+                if not rows:
+                    table = soup.find("table", class_=re.compile(r"Result|Race"))
+                    if table:
+                        rows = table.find_all("tr")
+            for row in rows:
+                tds = row.find_all("td")
+                if len(tds) < 3:
+                    continue
+                # 着順
+                if is_old_format:
+                    finish_text = tds[0].get_text(strip=True)
+                else:
+                    finish_td = row.select_one("td.Result_Num")
+                    finish_text = finish_td.get_text(strip=True) if finish_td else tds[0].get_text(strip=True)
+                if not finish_text.isdigit():
+                    continue
+                finish = int(finish_text)
+                # 馬番
+                umaban = None
+                if is_old_format:
+                    # 旧形式: td[2]が馬番
+                    text = tds[2].get_text(strip=True)
                     if text.isdigit() and 1 <= int(text) <= 18:
                         umaban = int(text)
+                else:
+                    # 新形式: Txt_Cクラスのtd（Horse除外）
+                    for td in tds:
+                        cls = " ".join(td.get("class", []))
+                        if "Txt_C" in cls and "Horse" not in cls:
+                            text = td.get_text(strip=True)
+                            if text.isdigit() and 1 <= int(text) <= 18:
+                                umaban = int(text)
+                                break
+                # フォールバック: 3番目のtd
+                if umaban is None and len(tds) >= 3:
+                    text = tds[2].get_text(strip=True)
+                    if text.isdigit() and 1 <= int(text) <= 18:
+                        umaban = int(text)
+                if umaban and 1 <= finish <= 30:
+                    results[umaban] = finish
+            # ===== 三連複払戻金取得 =====
+            if is_old_format:
+                # 旧形式: table.pay_table_01
+                payout_tables = soup.find_all("table", class_="pay_table_01")
+            else:
+                # 新形式: table.Payout_Detail_Table
+                payout_tables = soup.select("table.Payout_Detail_Table")
+            if not payout_tables:
+                payout_tables = soup.find_all("table")
+            for table in payout_tables:
+                for row in table.find_all("tr"):
+                    th = row.find("th")
+                    if not th:
+                        continue
+                    th_text = th.get_text(strip=True)
+                    if '3連複' in th_text or '三連複' in th_text:
+                        tds_p = row.find_all("td")
+                        payout_td = row.select_one("td.Payout")
+                        if payout_td:
+                            text = payout_td.get_text(strip=True)
+                        elif len(tds_p) >= 2:
+                            text = tds_p[1].get_text(strip=True)
+                        else:
+                            text = ''
+                        text = text.replace(',', '').replace('円', '').replace('¥', '')
+                        m = re.search(r'(\d{3,})', text)
+                        if m:
+                            trio_payout = int(m.group(1))
                         break
-            # フォールバック: 3番目のtd（td[0]=着順, td[1]=枠番, td[2]=馬番）
-            if umaban is None and len(tds) >= 3:
-                text = tds[2].get_text(strip=True)
-                if text.isdigit() and 1 <= int(text) <= 18:
-                    umaban = int(text)
-            if umaban and 1 <= finish <= 30:
-                results[umaban] = finish
-        # 三連複払戻金を取得
-        # Payout_Detail_Table: th=券種名, td[0]=Result(組番号), td[1]=Payout(金額), td[2]=Ninki
-        payout_tables = soup.select("table.Payout_Detail_Table")
-        if not payout_tables:
-            payout_tables = soup.find_all("table")
-        for table in payout_tables:
-            for row in table.find_all("tr"):
-                th = row.find("th")
-                if not th:
-                    continue
-                th_text = th.get_text(strip=True)
-                # 「3連複」にマッチ（「3連単」は除外）
-                if '3連複' in th_text or '三連複' in th_text:
-                    payout_td = row.select_one("td.Payout")
-                    if payout_td:
-                        text = payout_td.get_text(strip=True)
-                    else:
-                        tds = row.find_all("td")
-                        text = tds[1].get_text(strip=True) if len(tds) >= 2 else ''
-                    # 「2,140円」→ 2140
-                    text = text.replace(',', '').replace('円', '').replace('¥', '')
-                    m = re.search(r'(\d{3,})', text)
-                    if m:
-                        trio_payout = int(m.group(1))
+                if trio_payout > 0:
                     break
-            if trio_payout > 0:
-                break
-    except Exception:
-        pass
+            if results:
+                break  # 結果取得成功、次のURLを試す必要なし
+        except Exception:
+            continue
     return results, trio_payout
 
 # ===== 開催日レース一覧取得 =====
@@ -2630,6 +2670,8 @@ if st.button("🔍 予想する") and url_input:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {ab_css}">MODEL {active_version.upper()}{ab_auc}</span>{type_badge}</div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
+        rid_match = re.search(r'/race/(\d{10,12})/?', url_input)
+    if not rid_match:
         st.error("URLからrace_idを取得できませんでした")
         st.stop()
     race_id = rid_match.group(1)
@@ -3394,47 +3436,62 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
 with st.expander("📝 レース結果を登録（的中率集計用）"):
     result_url = st.text_input(
         "netkeibaの結果ページURLを貼り付け",
-        placeholder="https://race.netkeiba.com/race/result.html?race_id=...",
+        placeholder="https://race.netkeiba.com/race/result.html?race_id=... または https://db.netkeiba.com/race/XXXX/",
         key="result_url"
     )
     if st.button("結果を取得・保存") and result_url:
         is_nar_result = "nar" in result_url
         rid_match = re.search(r'race_id=(\d+)', result_url)
         if not rid_match:
-            st.error("URLからrace_idを取得できませんでした")
+            # db.netkeiba.com/race/XXXX/ 形式のURL対応
+            rid_match = re.search(r'/race/(\d{10,12})/?', result_url)
+        if not rid_match:
+            st.error("URLからrace_idを取得できませんでした。対応URL形式:\n- `https://race.netkeiba.com/race/result.html?race_id=XXXX`\n- `https://db.netkeiba.com/race/XXXX/`")
         else:
             result_race_id = rid_match.group(1)
-            with st.spinner("レース結果・払戻金を取得中..."):
-                results_dict, trio_payout = fetch_race_results(result_race_id, is_nar=is_nar_result)
+            st.info(f"race_id: {result_race_id} ({'NAR' if is_nar_result else 'JRA'})")
+            try:
+                with st.spinner("レース結果・払戻金を取得中..."):
+                    results_dict, trio_payout = fetch_race_results(result_race_id, is_nar=is_nar_result)
+            except Exception as e:
+                results_dict, trio_payout = {}, 0
+                st.error(f"結果取得中にエラー: {e}")
             if results_dict:
-                # 着順プレビュー
+                st.markdown(f"**{len(results_dict)}頭の着順を取得しました**")
+                # 着順プレビュー（上位5頭 + 全頭数表示）
+                sorted_results = sorted(results_dict.items(), key=lambda x: x[1])
                 preview_df = pd.DataFrame([
-                    {"馬番": k, "着順": v} for k, v in sorted(results_dict.items(), key=lambda x: x[1])
+                    {"馬番": k, "着順": v} for k, v in sorted_results
                 ])
-                st.dataframe(preview_df, hide_index=True, width="stretch")
+                st.dataframe(preview_df, hide_index=True)
                 if trio_payout > 0:
                     st.info(f"三連複 払戻金: **{trio_payout:,}円**")
+                else:
+                    st.warning("三連複払戻金を取得できませんでした（払戻金0円として記録）")
                 # DBの三連複7点と照合
                 conn = sqlite3.connect(DB_PATH)
                 c = conn.cursor()
                 c.execute("SELECT trio_bets FROM race_results WHERE race_id = ?", (result_race_id,))
                 row = c.fetchone()
                 conn.close()
+                top3_nums = set(n for n, f in results_dict.items() if f <= 3)
+                st.markdown(f"**実際の3着以内:** {'-'.join(str(n) for n in sorted(top3_nums))}")
                 if row and row[0]:
                     trio_bets = json.loads(row[0])
-                    top3_nums = set(n for n, f in results_dict.items() if f <= 3)
                     hit = any(set(b).issubset(top3_nums) for b in trio_bets)
                     st.markdown(f"**AI三連複7点:** {', '.join('-'.join(str(n) for n in b) for b in trio_bets)}")
-                    st.markdown(f"**実際の3着以内:** {'-'.join(str(n) for n in sorted(top3_nums))}")
                     if hit:
                         profit = trio_payout - INVESTMENT_PER_RACE
                         st.success(f"🎉 的中！ 払戻 {trio_payout:,}円 - 投資 {INVESTMENT_PER_RACE}円 = **+{profit:,}円**")
                     else:
                         st.error(f"❌ ハズレ（投資 -{INVESTMENT_PER_RACE}円）")
                 else:
-                    st.warning("このレースのAI予測データがDBにありません（先に予測を実行してください）")
-                update_actual_results(result_race_id, results_dict, trio_payout)
-                st.success(f"結果を保存しました（{len(results_dict)}頭）")
-                st.rerun()
+                    st.warning("このレースのAI予測データがDBにありません（先に予測を実行してください）。着順のみ記録します。")
+                # DB更新
+                try:
+                    update_actual_results(result_race_id, results_dict, trio_payout)
+                    st.success(f"✅ 結果をDBに保存しました（{len(results_dict)}頭 / 三連複 {trio_payout:,}円）")
+                except Exception as e:
+                    st.error(f"DB保存エラー: {e}")
             else:
-                st.warning("結果を取得できませんでした（レースがまだ確定していない可能性があります）")
+                st.error("着順データを取得できませんでした。考えられる原因:\n- レースがまだ確定していない\n- URLが正しくない\n- netkeiba接続エラー")
