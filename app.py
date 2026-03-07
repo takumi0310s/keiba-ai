@@ -850,25 +850,53 @@ def fetch_realtime_odds(race_id, is_nar=False):
     """netkeibaから単勝リアルタイムオッズを取得。{馬番: オッズ} を返す"""
     odds_dict = {}
     try:
-        # 方法1: オッズAPIエンドポイント
+        # 方法1: オッズJSON APIエンドポイント
         if is_nar:
             url = f"https://nar.netkeiba.com/api/api_get_nar_odds.html?race_id={race_id}&type=1"
         else:
             url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1"
         resp = requests.get(url, headers=HEADERS, timeout=10)
+        try:
+            data = resp.json()
+            if isinstance(data, dict) and 'data' in data and isinstance(data['data'], dict):
+                odds_data = data['data'].get('odds', data['data'])
+                if isinstance(odds_data, dict):
+                    # 単勝オッズ: key '1' の中に馬番->オッズ
+                    tansho = odds_data.get('1', odds_data)
+                    if isinstance(tansho, dict):
+                        for umaban_str, vals in tansho.items():
+                            if not umaban_str.isdigit():
+                                continue
+                            umaban = int(umaban_str)
+                            if isinstance(vals, list) and len(vals) >= 1:
+                                try:
+                                    odds_val = float(str(vals[0]).replace(',', ''))
+                                    if 1.0 <= odds_val <= 9999.9:
+                                        odds_dict[umaban] = odds_val
+                                except (ValueError, TypeError):
+                                    pass
+                            elif isinstance(vals, (int, float, str)):
+                                try:
+                                    odds_val = float(str(vals).replace(',', ''))
+                                    if 1.0 <= odds_val <= 9999.9:
+                                        odds_dict[umaban] = odds_val
+                                except (ValueError, TypeError):
+                                    pass
+        except (ValueError, KeyError):
+            pass
+        if odds_dict:
+            return odds_dict
+        # 方法2: APIレスポンスをHTML断片として解析（フォールバック）
         resp.encoding = "utf-8"
         soup = BeautifulSoup(resp.text, "html.parser")
-        # APIレスポンスはHTML断片（テーブル）
         for row in soup.find_all("tr"):
             tds = row.find_all("td")
             if len(tds) < 2:
                 continue
-            # 馬番を探す
             umaban = None
             odds_val = None
             for td in tds:
                 text = td.get_text(strip=True)
-                cls = " ".join(td.get("class", []))
                 if umaban is None and text.isdigit() and 1 <= int(text) <= 18:
                     umaban = int(text)
                 elif umaban is not None and odds_val is None:
@@ -882,7 +910,7 @@ def fetch_realtime_odds(race_id, is_nar=False):
                 odds_dict[umaban] = odds_val
         if odds_dict:
             return odds_dict
-        # 方法2: オッズページを直接スクレイピング
+        # 方法3: オッズページを直接スクレイピング
         if is_nar:
             url2 = f"https://nar.netkeiba.com/odds/index.html?race_id={race_id}&type=b1"
         else:
