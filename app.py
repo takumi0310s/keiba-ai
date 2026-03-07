@@ -895,6 +895,62 @@ def fetch_realtime_odds(race_id, is_nar=False):
         pass
     return odds_dict
 
+# ===== Fetch Training (Oikiri) Data =====
+def fetch_training_data(race_id, is_nar=False):
+    """netkeibaの追い切りページから各馬の調教評価を取得。
+    返り値: {馬番: {'rank': 'A'/'B'/'C'/'D', 'evaluation': '好調教', 'label': '◎良化'/'○平凡'/'△不安'}}
+    """
+    training_dict = {}
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/race/oikiri.html?race_id={race_id}"
+        else:
+            url = f"https://race.netkeiba.com/race/oikiri.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        wrapper = soup.find("div", class_="OikiriAllWrapper")
+        if not wrapper:
+            return training_dict
+        rows = wrapper.select("tr")
+        for row in rows:
+            # 馬番
+            td_umaban = row.select_one("td.Umaban")
+            if not td_umaban:
+                continue
+            try:
+                umaban = int(td_umaban.get_text(strip=True))
+            except (ValueError, TypeError):
+                continue
+            # 評価テキスト（好調教、上々、まずまず、変わり身など）
+            td_critic = row.select_one("td.Training_Critic")
+            evaluation = td_critic.get_text(strip=True) if td_critic else ""
+            # ランク（A/B/C/D）- クラスが Rank_A, Rank_B 等
+            rank = ""
+            for td in row.find_all("td"):
+                cls_list = td.get("class", [])
+                for cls in cls_list:
+                    if cls.startswith("Rank_"):
+                        rank = cls.replace("Rank_", "")
+                        break
+                if rank:
+                    break
+            # ラベル変換
+            if rank == "A":
+                label = "◎良化"
+            elif rank == "B":
+                label = "○平凡"
+            else:
+                label = "△不安" if rank in ("C", "D") else ""
+            training_dict[umaban] = {
+                'rank': rank,
+                'evaluation': evaluation,
+                'label': label,
+            }
+    except Exception:
+        pass
+    return training_dict
+
 # ===== Fetch Race Results =====
 def fetch_race_results(race_id, is_nar=False):
     """netkeibaのレース結果ページから着順と三連複払戻金を取得。
@@ -1215,6 +1271,24 @@ def render_horse_card(rank, h, max_score, rank_map):
         odds_color = '#ff4060' if odds <= 3.0 else ('#f0c040' if odds <= 10.0 else ('#b0b8c8' if odds <= 30.0 else '#6a6a80'))
         html += f'<div class="sitem"><div class="slbl">単勝</div><div class="sval" style="color:{odds_color} !important">{odds:.1f}</div></div>'
     html += '</div>'
+    # 調教評価
+    train_label = h.get('調教ラベル', '')
+    train_eval = h.get('調教評価', '')
+    train_rank = h.get('調教ランク', '')
+    if train_label:
+        if train_rank == 'A':
+            train_color = '#4ade80'  # green
+            train_border = 'rgba(74,222,128,0.4)'
+        elif train_rank == 'B':
+            train_color = '#f0c040'  # yellow
+            train_border = 'rgba(240,192,64,0.3)'
+        else:
+            train_color = '#ff6080'  # red
+            train_border = 'rgba(255,96,128,0.3)'
+        train_text = train_label
+        if train_eval:
+            train_text += f' {train_eval}'
+        html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {train_border};color:{train_color} !important;background:rgba(0,0,0,0.2)">🏋️ {train_text}</span></div>'
     html += '<div class="tagrow">'
     if father: html += f'<span class="tag tag-sire">父: {father}</span>'
     if fr > 0: html += f'<span class="tag">複勝率 {int(fr*100)}%</span>'
@@ -1599,12 +1673,24 @@ if st.button("🔍 予想する") and url_input:
     # Fetch realtime odds
     with st.spinner("オッズを取得中..."):
         realtime_odds = fetch_realtime_odds(race_id, is_nar=is_nar)
+    # Fetch training (oikiri) data
+    with st.spinner("調教データを取得中..."):
+        training_data = fetch_training_data(race_id, is_nar=is_nar)
     for horse in horses:
         umaban = horse.get('馬番', 0)
         if umaban in realtime_odds:
             horse['単勝オッズ'] = realtime_odds[umaban]
         else:
             horse['単勝オッズ'] = 0.0  # 取得できなかった場合
+        # 調教データ
+        if umaban in training_data:
+            horse['調教ランク'] = training_data[umaban]['rank']
+            horse['調教評価'] = training_data[umaban]['evaluation']
+            horse['調教ラベル'] = training_data[umaban]['label']
+        else:
+            horse['調教ランク'] = ''
+            horse['調教評価'] = ''
+            horse['調教ラベル'] = ''
     odds_available = len(realtime_odds) > 0
     # Race card
     surf_badge = 'badge-turf' if race_info['surface'] == '芝' else 'badge-dirt'
