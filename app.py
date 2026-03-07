@@ -107,8 +107,8 @@ def update_actual_results(race_id, results_dict, trio_payout=0):
     for horse_num, finish in results_dict.items():
         c.execute("UPDATE predictions SET actual_finish = ? WHERE race_id = ? AND horse_num = ?",
                   (finish, race_id, horse_num))
-    # 3着以内の馬番を取得
-    top3_finish = tuple(sorted(n for n, f in results_dict.items() if f <= 3))
+    # 3着以内の馬番を取得（同着考慮: 3着以内の馬が3頭以上の場合も対応）
+    top3_nums = set(n for n, f in results_dict.items() if f <= 3)
     # DBから三連複7点を取得
     c.execute("SELECT trio_bets FROM race_results WHERE race_id = ?", (race_id,))
     row = c.fetchone()
@@ -118,9 +118,11 @@ def update_actual_results(race_id, results_dict, trio_payout=0):
     if row and row[0]:
         trio_bets = json.loads(row[0])
         for bet in trio_bets:
-            if tuple(sorted(bet)) == top3_finish:
+            bet_set = set(bet)
+            # 三連複の3頭全員が3着以内に入っていれば的中
+            if bet_set.issubset(top3_nums):
                 hit_trio = 1
-                hit_combo = json.dumps(bet)
+                hit_combo = json.dumps(sorted(bet))
                 payout = trio_payout
                 break
     c.execute("""UPDATE race_results SET result_updated_at=?, hit_trio=?,
@@ -907,8 +909,10 @@ def fetch_race_results(race_id, is_nar=False):
         resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
-        # 着順テーブル
-        rows = soup.select("tr.HorseList") or soup.select("table.RaceTable01 tr")
+        # 着順テーブル: td[0]=着順(Result_Num), td[1]=枠番(Waku), td[2]=馬番(Txt_C)
+        rows = soup.select("tr.HorseList")
+        if not rows:
+            rows = soup.select("table.RaceTable01 tr")
         if not rows:
             table = soup.find("table", class_=re.compile(r"Result|Race"))
             if table:
@@ -917,44 +921,54 @@ def fetch_race_results(race_id, is_nar=False):
             tds = row.find_all("td")
             if len(tds) < 3:
                 continue
-            finish_text = tds[0].get_text(strip=True)
+            # 着順: Result_Numクラスか最初のtd
+            finish_td = row.select_one("td.Result_Num")
+            finish_text = finish_td.get_text(strip=True) if finish_td else tds[0].get_text(strip=True)
             if not finish_text.isdigit():
                 continue
             finish = int(finish_text)
+            # 馬番: Txt_Cクラスのtd（枠番はWakuクラス）
             umaban = None
-            for td in tds[1:4]:
-                text = td.get_text(strip=True)
+            umaban_td = None
+            for td in tds:
+                cls = " ".join(td.get("class", []))
+                if "Txt_C" in cls and "Horse" not in cls:
+                    text = td.get_text(strip=True)
+                    if text.isdigit() and 1 <= int(text) <= 18:
+                        umaban = int(text)
+                        break
+            # フォールバック: 3番目のtd（td[0]=着順, td[1]=枠番, td[2]=馬番）
+            if umaban is None and len(tds) >= 3:
+                text = tds[2].get_text(strip=True)
                 if text.isdigit() and 1 <= int(text) <= 18:
                     umaban = int(text)
-                    break
             if umaban and 1 <= finish <= 30:
                 results[umaban] = finish
         # 三連複払戻金を取得
-        # 払戻テーブルから「3連複」行を探す
-        payout_tables = soup.select("table.Payout_Detail_Table, table.pay_table_01")
+        # Payout_Detail_Table: th=券種名, td[0]=Result(組番号), td[1]=Payout(金額), td[2]=Ninki
+        payout_tables = soup.select("table.Payout_Detail_Table")
         if not payout_tables:
             payout_tables = soup.find_all("table")
         for table in payout_tables:
             for row in table.find_all("tr"):
                 th = row.find("th")
-                tds = row.find_all("td")
-                row_text = row.get_text(strip=True)
-                if th:
-                    th_text = th.get_text(strip=True)
-                else:
-                    th_text = row_text
+                if not th:
+                    continue
+                th_text = th.get_text(strip=True)
+                # 「3連複」にマッチ（「3連単」は除外）
                 if '3連複' in th_text or '三連複' in th_text:
-                    for td in tds:
-                        text = td.get_text(strip=True).replace(',', '').replace('円', '').replace('¥', '')
-                        # 払戻金額（数字のみの大きな値）を探す
-                        m = re.search(r'(\d{3,})', text)
-                        if m:
-                            val = int(m.group(1))
-                            if val >= 100:  # 100円以上なら払戻金
-                                trio_payout = val
-                                break
-                    if trio_payout > 0:
-                        break
+                    payout_td = row.select_one("td.Payout")
+                    if payout_td:
+                        text = payout_td.get_text(strip=True)
+                    else:
+                        tds = row.find_all("td")
+                        text = tds[1].get_text(strip=True) if len(tds) >= 2 else ''
+                    # 「2,140円」→ 2140
+                    text = text.replace(',', '').replace('円', '').replace('¥', '')
+                    m = re.search(r'(\d{3,})', text)
+                    if m:
+                        trio_payout = int(m.group(1))
+                    break
             if trio_payout > 0:
                 break
     except Exception:
@@ -1999,10 +2013,10 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
                 conn.close()
                 if row and row[0]:
                     trio_bets = json.loads(row[0])
-                    top3_finish = tuple(sorted(n for n, f in results_dict.items() if f <= 3))
-                    hit = any(tuple(sorted(b)) == top3_finish for b in trio_bets)
+                    top3_nums = set(n for n, f in results_dict.items() if f <= 3)
+                    hit = any(set(b).issubset(top3_nums) for b in trio_bets)
                     st.markdown(f"**AI三連複7点:** {', '.join('-'.join(str(n) for n in b) for b in trio_bets)}")
-                    st.markdown(f"**実際の3着以内:** {'-'.join(str(n) for n in top3_finish)}")
+                    st.markdown(f"**実際の3着以内:** {'-'.join(str(n) for n in sorted(top3_nums))}")
                     if hit:
                         profit = trio_payout - INVESTMENT_PER_RACE
                         st.success(f"🎉 的中！ 払戻 {trio_payout:,}円 - 投資 {INVESTMENT_PER_RACE}円 = **+{profit:,}円**")
