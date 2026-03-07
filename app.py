@@ -445,6 +445,12 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 }
 .dash-num { font-family: 'Oswald', sans-serif; font-size: 1.6em; font-weight: 700; }
 .dash-lbl { font-size: 0.7em; color: #6a6a80 !important; margin-top: 2px; }
+
+/* System Check */
+.sys-ok { background: rgba(46,204,64,0.08); border: 1px solid rgba(46,204,64,0.25); border-radius: 10px;
+    padding: 10px 16px; margin-bottom: 12px; text-align: center; }
+.sys-warn { background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.25); border-radius: 10px;
+    padding: 10px 16px; margin-bottom: 12px; }
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -1178,6 +1184,381 @@ def adjust_scores_for_track(df, condition, original_condition, surface, rank_map
 
     return df, updated_rank_map, True
 
+# ===== 展開予測モデル =====
+def predict_race_pace(df, distance, surface, num_horses):
+    """レース全体の展開を予測。各馬の脚質分布からペースを推定し、脚質別の有利不利を返す。
+    Returns: (pace_label, pace_reason, pace_advantage_dict)
+    pace: 'high'/'middle'/'slow'
+    pace_advantage: {脚質コード: スコア補正値}
+    """
+    if '脚質' not in df.columns or len(df) == 0:
+        return 'middle', 'データ不足', {1: 0, 2: 0, 3: 0, 4: 0}
+    styles = df['脚質'].value_counts().to_dict()
+    nige = styles.get(1, 0)
+    senk = styles.get(2, 0)
+    sasi = styles.get(3, 0)
+    oiko = styles.get(4, 0)
+    front_runners = nige + senk
+    front_ratio = front_runners / max(num_horses, 1)
+    # ペース判定
+    pace = 'middle'
+    reason = ''
+    if nige >= 3 or (nige >= 2 and front_ratio >= 0.55):
+        pace = 'high'
+        reason = f'逃げ{nige}頭+先行{senk}頭で先行争い激化'
+    elif nige >= 2 and distance <= 1400:
+        pace = 'high'
+        reason = f'短距離で逃げ{nige}頭 ハイペース濃厚'
+    elif nige <= 1 and front_ratio <= 0.35:
+        pace = 'slow'
+        reason = f'逃げ{nige}頭のみ スローペース濃厚'
+    elif nige == 0:
+        pace = 'slow'
+        reason = f'逃げ馬不在 超スローの可能性'
+    else:
+        pace = 'middle'
+        reason = f'逃げ{nige} 先行{senk} 差し{sasi} 追込{oiko}'
+    # 距離補正
+    if distance >= 2400 and pace == 'middle' and nige <= 1:
+        pace = 'slow'
+        reason += ' 長距離でペース落ち'
+    elif distance <= 1200 and pace == 'middle' and nige >= 2:
+        pace = 'high'
+        reason += ' スプリント戦で流れる'
+    # 脚質別補正値
+    if pace == 'high':
+        adv = {1: -0.025, 2: -0.010, 3: 0.020, 4: 0.025}
+    elif pace == 'slow':
+        adv = {1: 0.025, 2: 0.020, 3: -0.010, 4: -0.025}
+    else:
+        adv = {1: 0.005, 2: 0.010, 3: 0.005, 4: -0.010}
+    return pace, reason, adv
+
+def render_pace_prediction(pace, reason, adv):
+    """展開予測パネルのHTML生成"""
+    pace_labels = {'high': 'HIGH PACE', 'middle': 'MIDDLE PACE', 'slow': 'SLOW PACE'}
+    pace_colors = {'high': '#ff4060', 'middle': '#f0c040', 'slow': '#00d4ff'}
+    pace_icons = {'high': '🔥', 'middle': '⚖️', 'slow': '🧊'}
+    label = pace_labels.get(pace, 'MIDDLE')
+    color = pace_colors.get(pace, '#f0c040')
+    icon = pace_icons.get(pace, '')
+    html = f'<div style="margin:10px 0;padding:14px;background:linear-gradient(135deg,rgba({",".join(str(int(color.lstrip("#")[i:i+2],16)) for i in (0,2,4))},0.08),transparent);border:1px solid {color}30;border-radius:12px;">'
+    html += f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#8890a0 !important;">PACE PREDICTION</span>'
+    html += f'<span style="font-family:Oswald;font-weight:700;font-size:1.1em;color:{color} !important;letter-spacing:1px;">{icon} {label}</span></div>'
+    html += f'<div style="font-size:0.8em;color:#a0a8b8 !important;margin-bottom:8px;">{reason}</div>'
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">'
+    style_names = {1: '逃げ', 2: '先行', 3: '差し', 4: '追込'}
+    for sid in [1, 2, 3, 4]:
+        v = adv.get(sid, 0)
+        if v > 0.015:
+            vc, vl = '#00e87b', '◎有利'
+        elif v > 0:
+            vc, vl = '#f0c040', '○やや有利'
+        elif v > -0.015:
+            vc, vl = '#b0b8c8', '△普通'
+        else:
+            vc, vl = '#ff4060', '×不利'
+        html += f'<div style="text-align:center;padding:6px 2px;background:rgba(255,255,255,0.03);border-radius:6px;">'
+        html += f'<div style="font-size:0.75em;color:#8890a0 !important;">{style_names[sid]}</div>'
+        html += f'<div style="font-weight:700;color:{vc} !important;font-size:0.85em;">{vl}</div></div>'
+    html += '</div></div>'
+    return html
+
+# ===== 馬場バイアス自動検出 =====
+def fetch_today_bias(race_id, course_name, is_nar=False):
+    """当日の同競馬場の前レース結果から馬場バイアスを検出。
+    race_id(12桁)の末尾2桁がレース番号。1R〜(現在R-1)の結果を取得して分析。
+    Returns: bias_info dict
+    """
+    bias_info = {
+        'front_bias': 0.0, 'inner_bias': 0.0,
+        'front_desc': '', 'inner_desc': '',
+        'analyzed_races': 0, 'details': [],
+    }
+    try:
+        if len(race_id) < 4:
+            return bias_info
+        current_race_num = int(race_id[-2:])
+        base_id = race_id[:-2]
+        if current_race_num <= 1:
+            return bias_info
+        front_finishes = []  # (通過順位, 着順, 枠番) のリスト
+        all_entries = []
+        races_analyzed = 0
+        # 最大5レース分（直近を優先）
+        start_r = max(1, current_race_num - 5)
+        for r_num in range(start_r, current_race_num):
+            rid = f"{base_id}{r_num:02d}"
+            try:
+                if is_nar:
+                    url = f"https://nar.netkeiba.com/race/result.html?race_id={rid}"
+                else:
+                    url = f"https://race.netkeiba.com/race/result.html?race_id={rid}"
+                resp = requests.get(url, headers=HEADERS, timeout=8)
+                resp.encoding = "EUC-JP"
+                soup = BeautifulSoup(resp.text, "html.parser")
+                rows = soup.select("tr.HorseList")
+                if not rows:
+                    continue
+                races_analyzed += 1
+                for row in rows:
+                    tds = row.find_all("td")
+                    if len(tds) < 5:
+                        continue
+                    # 着順
+                    finish_td = row.select_one("td.Result_Num")
+                    ft = finish_td.get_text(strip=True) if finish_td else tds[0].get_text(strip=True)
+                    if not ft.isdigit():
+                        continue
+                    finish = int(ft)
+                    # 枠番
+                    waku = 0
+                    waku_td = row.select_one("td.Waku span")
+                    if waku_td:
+                        wt = waku_td.get_text(strip=True)
+                        if wt.isdigit():
+                            waku = int(wt)
+                    # 馬番
+                    umaban = 0
+                    for td in tds:
+                        cls = " ".join(td.get("class", []))
+                        if "Txt_C" in cls and "Horse" not in cls:
+                            t = td.get_text(strip=True)
+                            if t.isdigit() and 1 <= int(t) <= 18:
+                                umaban = int(t)
+                                break
+                    # 通過順位
+                    pass_pos = 0
+                    for td in tds:
+                        txt = td.get_text(strip=True).replace(' ','').replace('－','-').replace('-','-')
+                        pn = re.findall(r'\d+', txt)
+                        if len(pn) >= 2 and re.match(r'^\d{1,2}-\d{1,2}', txt):
+                            pass_pos = int(pn[0])
+                            break
+                    num_h = len([r for r in rows if r.select_one("td.Result_Num") and r.select_one("td.Result_Num").get_text(strip=True).isdigit()])
+                    all_entries.append({
+                        'finish': finish, 'waku': waku, 'umaban': umaban,
+                        'pass_pos': pass_pos, 'num_horses': num_h,
+                    })
+                time.sleep(0.3)
+            except Exception:
+                continue
+        bias_info['analyzed_races'] = races_analyzed
+        if not all_entries or races_analyzed == 0:
+            return bias_info
+        # === 前残りバイアス分析 ===
+        front_horses = [e for e in all_entries if 1 <= e['pass_pos'] <= 3]
+        back_horses = [e for e in all_entries if e['pass_pos'] >= 6]
+        if front_horses:
+            front_avg_finish = sum(e['finish'] for e in front_horses) / len(front_horses)
+            front_top3_rate = sum(1 for e in front_horses if e['finish'] <= 3) / len(front_horses)
+        else:
+            front_avg_finish = 5.0
+            front_top3_rate = 0.3
+        if back_horses:
+            back_avg_finish = sum(e['finish'] for e in back_horses) / len(back_horses)
+            back_top3_rate = sum(1 for e in back_horses if e['finish'] <= 3) / len(back_horses)
+        else:
+            back_avg_finish = 5.0
+            back_top3_rate = 0.3
+        # 前残りスコア: -1(差し有利) 〜 +1(前残り)
+        front_bias = 0.0
+        if front_horses and back_horses:
+            finish_diff = back_avg_finish - front_avg_finish
+            rate_diff = front_top3_rate - back_top3_rate
+            front_bias = np.clip(finish_diff * 0.1 + rate_diff * 0.5, -1.0, 1.0)
+        bias_info['front_bias'] = front_bias
+        if front_bias > 0.3:
+            bias_info['front_desc'] = f'前残り傾向 (先行3着内率{front_top3_rate:.0%})'
+        elif front_bias < -0.3:
+            bias_info['front_desc'] = f'差し有利 (後方3着内率{back_top3_rate:.0%})'
+        else:
+            bias_info['front_desc'] = 'フラット'
+        # === 枠バイアス分析 ===
+        inner = [e for e in all_entries if 1 <= e['waku'] <= 3]
+        outer = [e for e in all_entries if e['waku'] >= 6]
+        if inner and outer:
+            inner_avg = sum(e['finish'] for e in inner) / len(inner)
+            outer_avg = sum(e['finish'] for e in outer) / len(outer)
+            inner_top3 = sum(1 for e in inner if e['finish'] <= 3) / len(inner)
+            outer_top3 = sum(1 for e in outer if e['finish'] <= 3) / len(outer)
+            inner_bias = np.clip((outer_avg - inner_avg) * 0.1 + (inner_top3 - outer_top3) * 0.5, -1.0, 1.0)
+        else:
+            inner_bias = 0.0
+            inner_top3 = 0.0
+            outer_top3 = 0.0
+        bias_info['inner_bias'] = inner_bias
+        if inner_bias > 0.3:
+            bias_info['inner_desc'] = f'内枠有利 (内3着内率{inner_top3:.0%})'
+        elif inner_bias < -0.3:
+            bias_info['inner_desc'] = f'外枠有利 (外3着内率{outer_top3:.0%})'
+        else:
+            bias_info['inner_desc'] = 'フラット'
+    except Exception:
+        pass
+    return bias_info
+
+def apply_bias_adjustment(df, bias_info, rank_map):
+    """馬場バイアスに基づいてスコアを補正（最大±10%）。
+    前残りバイアス: 逃げ・先行UP、差し・追込DOWN
+    枠バイアス: 内枠UP or 外枠UP
+    """
+    if not bias_info or bias_info.get('analyzed_races', 0) == 0:
+        return df, rank_map
+    front_b = bias_info.get('front_bias', 0.0)
+    inner_b = bias_info.get('inner_bias', 0.0)
+    if '脚質' in df.columns and abs(front_b) > 0.15:
+        # 前残りバイアス補正（最大±5%）
+        style_adj = {
+            1: front_b * 0.04,   # 逃げ
+            2: front_b * 0.03,   # 先行
+            3: -front_b * 0.02,  # 差し
+            4: -front_b * 0.04,  # 追込
+        }
+        for style, adj in style_adj.items():
+            mask = df['脚質'] == style
+            df.loc[mask, 'スコア'] = df.loc[mask, 'スコア'] * (1.0 + adj)
+    if '枠番' in df.columns and abs(inner_b) > 0.15:
+        # 枠バイアス補正（最大±5%）
+        max_waku = df['枠番'].max() if len(df) > 0 else 8
+        mid = max_waku / 2.0
+        for idx in df.index:
+            waku = df.at[idx, '枠番']
+            # 内枠有利(inner_b>0): 内枠ほどプラス
+            pos = (mid - waku) / mid  # -1(外) ~ +1(内)
+            adj = inner_b * pos * 0.04
+            df.at[idx, 'スコア'] = df.at[idx, 'スコア'] * (1.0 + adj)
+    # 再ランキング
+    df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
+    df = df.sort_values('AI順位')
+    # rank_map更新
+    if abs(front_b) > 0.3:
+        updated = dict(rank_map)
+        if front_b > 0:
+            for s in [1, 2]:
+                if s in updated:
+                    lbl, css, r = updated[s]
+                    if lbl in ['△', '×']:
+                        updated[s] = ('○', 'good', r + ' 当日前残り傾向')
+            if 4 in updated:
+                lbl, css, r = updated[4]
+                if lbl in ['◎', '○']:
+                    updated[4] = ('△', 'fair', r + ' 当日前残り傾向')
+        else:
+            for s in [3, 4]:
+                if s in updated:
+                    lbl, css, r = updated[s]
+                    if lbl in ['△', '×']:
+                        updated[s] = ('○', 'good', r + ' 当日差し有利')
+        rank_map = updated
+    return df, rank_map
+
+def render_bias_panel(bias_info, course_name):
+    """馬場バイアスパネルのHTML生成"""
+    n = bias_info.get('analyzed_races', 0)
+    if n == 0:
+        return ''
+    fb = bias_info.get('front_bias', 0)
+    ib = bias_info.get('inner_bias', 0)
+    fd = bias_info.get('front_desc', 'フラット')
+    ind = bias_info.get('inner_desc', 'フラット')
+    # 全体色
+    if abs(fb) > 0.3 or abs(ib) > 0.3:
+        border_c = '#e67e22'
+        bg = 'rgba(230,126,34,0.06)'
+    else:
+        border_c = '#3498db'
+        bg = 'rgba(52,152,219,0.06)'
+    html = f'<div style="margin:10px 0;padding:14px;background:{bg};border:1px solid {border_c}30;border-radius:12px;">'
+    html += f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#8890a0 !important;">TRACK BIAS ({course_name} 本日{n}R分析)</span></div>'
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    # 前残りバイアス
+    if fb > 0.3:
+        fc, fi = '#ff4060', '⬆️'
+    elif fb < -0.3:
+        fc, fi = '#00d4ff', '⬇️'
+    else:
+        fc, fi = '#b0b8c8', '➡️'
+    html += f'<div style="padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;text-align:center;">'
+    html += f'<div style="font-size:0.7em;color:#8890a0 !important;">脚質傾向</div>'
+    html += f'<div style="font-weight:700;color:{fc} !important;font-size:0.9em;">{fi} {fd}</div></div>'
+    # 枠バイアス
+    if ib > 0.3:
+        ic, ii = '#2ecc71', '⬅️'
+    elif ib < -0.3:
+        ic, ii = '#e67e22', '➡️'
+    else:
+        ic, ii = '#b0b8c8', '↔️'
+    html += f'<div style="padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;text-align:center;">'
+    html += f'<div style="font-size:0.7em;color:#8890a0 !important;">枠傾向</div>'
+    html += f'<div style="font-weight:700;color:{ic} !important;font-size:0.9em;">{ii} {ind}</div></div>'
+    html += '</div></div>'
+    return html
+
+# ===== 起動時自動チェック =====
+@st.cache_data(ttl=300)
+def run_system_checks():
+    """全システムの動作確認。返り値: [(name, ok, detail), ...]"""
+    checks = []
+    # 1. モデルファイル確認
+    model_files = ["keiba_model_v8.pkl", "keiba_model_v8.pkl.gz"]
+    found = any(os.path.exists(f) for f in model_files)
+    checks.append(('モデルファイル', found, 'keiba_model_v8.pkl 検出' if found else 'モデルファイルが見つかりません'))
+    # 2. 特徴量チェック
+    try:
+        test_features = FEATURES if FEATURES else FEATURES_V1
+        checks.append(('特徴量定義', len(test_features) > 0, f'{len(test_features)}個の特徴量'))
+    except Exception as e:
+        checks.append(('特徴量定義', False, str(e)[:50]))
+    # 3. netkeiba接続確認
+    try:
+        r = requests.get("https://race.netkeiba.com/", headers=HEADERS, timeout=8)
+        ok = r.status_code == 200
+        checks.append(('netkeiba接続', ok, f'HTTP {r.status_code}'))
+    except Exception as e:
+        checks.append(('netkeiba接続', False, str(e)[:50]))
+    # 4. オッズ取得テスト（軽量チェック - APIエンドポイントの応答確認）
+    try:
+        r = requests.get("https://race.netkeiba.com/api/api_get_jra_odds.html?race_id=000000000000&type=1",
+                        headers=HEADERS, timeout=8)
+        checks.append(('オッズAPI', r.status_code in [200, 404], f'API応答あり (HTTP {r.status_code})'))
+    except Exception as e:
+        checks.append(('オッズAPI', False, str(e)[:50]))
+    # 5. 調教データ取得テスト
+    try:
+        r = requests.get("https://race.netkeiba.com/race/oikiri.html?race_id=000000000000",
+                        headers=HEADERS, timeout=8)
+        checks.append(('調教データ', r.status_code in [200, 404], f'応答あり (HTTP {r.status_code})'))
+    except Exception as e:
+        checks.append(('調教データ', False, str(e)[:50]))
+    # 6. DB整合性確認
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM race_results")
+        cnt = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM predictions")
+        pcnt = c.fetchone()[0]
+        conn.close()
+        checks.append(('DB整合性', True, f'race_results: {cnt}件, predictions: {pcnt}件'))
+    except Exception as e:
+        checks.append(('DB整合性', False, str(e)[:50]))
+    # 7. 騎手データ確認
+    try:
+        jwr_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jockey_wr.json")
+        if os.path.exists(jwr_path):
+            mtime = os.path.getmtime(jwr_path)
+            days_ago = (datetime.now() - datetime.fromtimestamp(mtime)).days
+            ok = days_ago <= 30
+            checks.append(('騎手データ', ok, f'最終更新: {days_ago}日前' + ('' if ok else ' (30日超過)')))
+        else:
+            checks.append(('騎手データ', False, 'jockey_wr.json が見つかりません'))
+    except Exception as e:
+        checks.append(('騎手データ', False, str(e)[:50]))
+    return checks
+
 # ===== Fetch Race Results =====
 def fetch_race_results(race_id, is_nar=False):
     """netkeibaのレース結果ページから着順と三連複払戻金を取得。
@@ -1563,6 +1944,22 @@ def render_horse_card(rank, h, max_score, rank_map):
         if train_eval:
             train_text += f' {train_eval}'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {train_border};color:{train_color} !important;background:rgba(0,0,0,0.2)">🏋️ {train_text}</span></div>'
+    # 展開適性バッジ
+    pace_adv_data = st.session_state.get('pred_pace_adv', {})
+    horse_style = int(h.get('脚質', 0))
+    if horse_style > 0 and pace_adv_data:
+        padv = pace_adv_data.get(horse_style, 0)
+        pace_label = st.session_state.get('pred_pace', 'middle')
+        pace_disp = {'high': 'H', 'middle': 'M', 'slow': 'S'}.get(pace_label, 'M')
+        if padv > 0.015:
+            p_color, p_border, p_text = '#00e87b', 'rgba(0,232,123,0.4)', f'展開◎ ({pace_disp}ペース向き)'
+        elif padv > 0:
+            p_color, p_border, p_text = '#f0c040', 'rgba(240,192,64,0.3)', f'展開○ ({pace_disp}ペース)'
+        elif padv > -0.015:
+            p_color, p_border, p_text = '#b0b8c8', 'rgba(176,184,200,0.3)', f'展開△ ({pace_disp}ペース)'
+        else:
+            p_color, p_border, p_text = '#ff4060', 'rgba(255,64,96,0.3)', f'展開× ({pace_disp}ペース不利)'
+        html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {p_border};color:{p_color} !important;background:rgba(0,0,0,0.2)">🔄 {p_text}</span></div>'
     # 馬場適性警告
     if h.get('馬場警告'):
         html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#ff4060 !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
@@ -1929,6 +2326,19 @@ auc_text = f' AUC {model_auc:.4f}' if model_auc > 0 else ''
 leak_text = ' LEAK-FREE' if model_leak_free else ''
 st.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
+# ===== 起動時自動チェック =====
+sys_checks = run_system_checks()
+all_ok = all(c[1] for c in sys_checks)
+if all_ok:
+    st.markdown('<div class="sys-ok"><span style="color:#2ecc40 !important;font-weight:bold;">&#9989; 全システム正常</span></div>', unsafe_allow_html=True)
+else:
+    warn_html = '<div class="sys-warn">'
+    for name, ok, detail in sys_checks:
+        if not ok:
+            warn_html += f'<div style="color:#ff4060 !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
+    warn_html += '</div>'
+    st.markdown(warn_html, unsafe_allow_html=True)
+
 url_input = st.text_input("netkeibaの出馬表URLを入力（中央・地方対応）")
 
 if st.button("🔍 予想する") and url_input:
@@ -1970,6 +2380,9 @@ if st.button("🔍 予想する") and url_input:
             horse['調教評価'] = ''
             horse['調教ラベル'] = ''
     odds_available = len(realtime_odds) > 0
+    # Fetch track bias (当日前レース結果分析)
+    with st.spinner("馬場バイアスを分析中..."):
+        bias_info = fetch_today_bias(race_id, race_info.get('course', ''), is_nar=is_nar)
     # Race card
     surf_badge = 'badge-turf' if race_info['surface'] == '芝' else 'badge-dirt'
     surf_icon = '🟢 TURF' if race_info['surface'] == '芝' else '🟤 DIRT'
@@ -2333,6 +2746,25 @@ if st.button("🔍 予想する") and url_input:
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
+    # ===== 展開予測補正 =====
+    pace_pred, pace_reason, pace_adv = predict_race_pace(
+        df, race_info['distance'], race_info['surface'], num_horses
+    )
+    # 展開予測に基づくスコア補正
+    if '脚質' in df.columns:
+        for style, adj in pace_adv.items():
+            mask = df['脚質'] == style
+            df.loc[mask, 'スコア'] = df.loc[mask, 'スコア'] + adj
+        df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
+        df = df.sort_values('AI順位')
+    # 展開予測結果を保存
+    st.session_state['pred_pace'] = pace_pred
+    st.session_state['pred_pace_reason'] = pace_reason
+    st.session_state['pred_pace_adv'] = pace_adv
+    # ===== 馬場バイアス補正 =====
+    if bias_info.get('analyzed_races', 0) > 0:
+        df, rank_map = apply_bias_adjustment(df, bias_info, rank_map)
+    st.session_state['pred_bias_info'] = bias_info
     # 馬場警告フラグ初期化
     df['馬場警告'] = False
     # ===== 馬場変化リアルタイム補正 =====
@@ -2377,6 +2809,15 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     is_nar = st.session_state.get('last_is_nar', False)
 
     st.markdown(rc_html, unsafe_allow_html=True)
+    # 展開予測パネル
+    p_pace = st.session_state.get('pred_pace', 'middle')
+    p_reason = st.session_state.get('pred_pace_reason', '')
+    p_adv = st.session_state.get('pred_pace_adv', {1:0,2:0,3:0,4:0})
+    st.markdown(render_pace_prediction(p_pace, p_reason, p_adv), unsafe_allow_html=True)
+    # 馬場バイアスパネル（前レース結果がある場合）
+    p_bias = st.session_state.get('pred_bias_info', {})
+    if p_bias.get('analyzed_races', 0) > 0:
+        st.markdown(render_bias_panel(p_bias, race_info.get('course', '')), unsafe_allow_html=True)
     # 馬場変化アラート
     if st.session_state.get('pred_track_changed'):
         orig_cond = race_info.get('condition_original', '良')
