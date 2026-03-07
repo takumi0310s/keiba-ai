@@ -199,6 +199,174 @@ def get_all_race_records():
     conn.close()
     return rows
 
+def get_weekly_analysis():
+    """週次分析データを取得。直近4週分のデータをコース/距離/馬場/頭数別に分析"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("""
+        SELECT p.race_id, p.race_name, p.race_date, p.course, p.distance, p.surface, p.condition,
+               p.horse_name, p.horse_num, p.ai_rank, p.ai_score, p.odds, p.actual_finish,
+               r.hit_trio, r.payout, r.is_nar, r.num_horses
+        FROM predictions p
+        LEFT JOIN race_results r ON p.race_id = r.race_id
+        WHERE r.hit_trio IS NOT NULL
+        ORDER BY p.race_date DESC
+    """)
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    if not rows:
+        return None
+    from datetime import timedelta
+    today = datetime.now().date()
+    last_monday = today - timedelta(days=today.weekday())
+    weeks = {}
+    for i in range(4):
+        week_start = last_monday - timedelta(weeks=i)
+        week_end = week_start + timedelta(days=6)
+        week_key = week_start.strftime('%m/%d') + '-' + week_end.strftime('%m/%d')
+        weeks[week_key] = {'start': week_start, 'end': week_end, 'races': set(), 'hits': 0, 'investment': 0, 'payout': 0}
+    race_data = {}
+    for r in rows:
+        rid = r['race_id']
+        if rid not in race_data:
+            race_data[rid] = r
+    for rid, r in race_data.items():
+        rd = r.get('race_date', '')[:10]
+        try:
+            race_date = datetime.strptime(rd, '%Y-%m-%d').date()
+        except:
+            continue
+        for wk, wd in weeks.items():
+            if wd['start'] <= race_date <= wd['end']:
+                wd['races'].add(rid)
+                if r.get('hit_trio') == 1:
+                    wd['hits'] += 1
+                wd['investment'] += INVESTMENT_PER_RACE
+                wd['payout'] += r.get('payout', 0) or 0
+                break
+    analysis = {'weeks': {}, 'by_course': {}, 'by_distance': {}, 'by_condition': {}, 'by_field_size': {}}
+    for wk, wd in weeks.items():
+        n = len(wd['races'])
+        analysis['weeks'][wk] = {
+            'races': n, 'hits': wd['hits'],
+            'hit_rate': wd['hits'] / n if n > 0 else 0,
+            'investment': wd['investment'], 'payout': wd['payout'],
+            'roi': wd['payout'] / wd['investment'] * 100 if wd['investment'] > 0 else 0,
+        }
+    for rid, r in race_data.items():
+        course = r.get('course', '不明') or '不明'
+        if course not in analysis['by_course']:
+            analysis['by_course'][course] = {'races': 0, 'hits': 0, 'investment': 0, 'payout': 0}
+        d = analysis['by_course'][course]
+        d['races'] += 1
+        if r.get('hit_trio') == 1: d['hits'] += 1
+        d['investment'] += INVESTMENT_PER_RACE
+        d['payout'] += r.get('payout', 0) or 0
+    for rid, r in race_data.items():
+        dist = r.get('distance', 0)
+        if dist <= 1200: cat = '短距離(~1200)'
+        elif dist <= 1600: cat = 'マイル(1201-1600)'
+        elif dist <= 2000: cat = '中距離(1601-2000)'
+        elif dist <= 2400: cat = '中長距離(2001-2400)'
+        else: cat = '長距離(2401~)'
+        if cat not in analysis['by_distance']:
+            analysis['by_distance'][cat] = {'races': 0, 'hits': 0, 'investment': 0, 'payout': 0}
+        d = analysis['by_distance'][cat]
+        d['races'] += 1
+        if r.get('hit_trio') == 1: d['hits'] += 1
+        d['investment'] += INVESTMENT_PER_RACE
+        d['payout'] += r.get('payout', 0) or 0
+    for rid, r in race_data.items():
+        cond = r.get('condition', '不明') or '不明'
+        if cond not in analysis['by_condition']:
+            analysis['by_condition'][cond] = {'races': 0, 'hits': 0, 'investment': 0, 'payout': 0}
+        d = analysis['by_condition'][cond]
+        d['races'] += 1
+        if r.get('hit_trio') == 1: d['hits'] += 1
+        d['investment'] += INVESTMENT_PER_RACE
+        d['payout'] += r.get('payout', 0) or 0
+    for rid, r in race_data.items():
+        nh = r.get('num_horses', 0) or 0
+        if nh <= 8: cat = '少頭数(~8頭)'
+        elif nh <= 12: cat = '中頭数(9-12頭)'
+        elif nh <= 16: cat = '多頭数(13-16頭)'
+        else: cat = '大頭数(17頭~)'
+        if cat not in analysis['by_field_size']:
+            analysis['by_field_size'][cat] = {'races': 0, 'hits': 0, 'investment': 0, 'payout': 0}
+        d = analysis['by_field_size'][cat]
+        d['races'] += 1
+        if r.get('hit_trio') == 1: d['hits'] += 1
+        d['investment'] += INVESTMENT_PER_RACE
+        d['payout'] += r.get('payout', 0) or 0
+    return analysis
+
+def render_weekly_report(analysis):
+    """週次分析レポートをHTML描画"""
+    if not analysis:
+        return '<div class="ev-card"><span class="ev-lbl">分析データがありません。レース結果を登録してください。</span></div>'
+    html = '<div class="ev-card">'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">WEEKLY TREND</div>'
+    for wk, wd in analysis['weeks'].items():
+        if wd['races'] == 0:
+            continue
+        hr = wd['hit_rate'] * 100
+        roi = wd['roi']
+        profit = wd['payout'] - wd['investment']
+        profit_color = '#2ecc40' if profit >= 0 else '#ff4060'
+        roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+        html += f'<div class="ev-row">'
+        html += f'<span class="ev-lbl">{wk} ({wd["races"]}R)</span>'
+        html += f'<span style="font-family:Oswald;font-size:0.85em;">的中{wd["hits"]}R ({hr:.0f}%)</span>'
+        html += f'<span style="font-family:Oswald;color:{roi_color} !important;">ROI {roi:.0f}%</span>'
+        html += f'<span style="font-family:Oswald;color:{profit_color} !important;">{profit:+,}円</span>'
+        html += '</div>'
+    def render_category(data, title):
+        if not data:
+            return ''
+        h = f'<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
+        h += f'<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">{title}</div>'
+        sorted_items = sorted(data.items(), key=lambda x: x[1]['races'], reverse=True)
+        for name, d in sorted_items:
+            if d['races'] == 0:
+                continue
+            roi = d['payout'] / d['investment'] * 100 if d['investment'] > 0 else 0
+            profit = d['payout'] - d['investment']
+            pc = '#2ecc40' if profit >= 0 else '#ff4060'
+            rc = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+            bar_w = min(d['races'] * 8, 100)
+            bar_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+            h += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:0.85em;">'
+            h += f'<span style="min-width:100px;color:#b0b8c8 !important;">{name}</span>'
+            h += f'<div style="flex:1;height:14px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
+            h += f'<div style="width:{bar_w}%;height:100%;background:{bar_color};border-radius:3px;"></div></div>'
+            h += f'<span style="font-family:Oswald;font-size:0.82em;min-width:40px;color:{rc} !important;">{roi:.0f}%</span>'
+            h += f'<span style="font-family:Oswald;font-size:0.82em;min-width:55px;color:{pc} !important;">{profit:+,}</span>'
+            h += '</div>'
+        h += '</div>'
+        return h
+    html += render_category(analysis['by_course'], 'BY COURSE')
+    html += render_category(analysis['by_distance'], 'BY DISTANCE')
+    html += render_category(analysis['by_condition'], 'BY CONDITION')
+    html += render_category(analysis['by_field_size'], 'BY FIELD SIZE')
+    worst_cats = []
+    for cat_name, cat_data in [('コース', analysis['by_course']), ('距離', analysis['by_distance']),
+                                 ('馬場', analysis['by_condition']), ('頭数', analysis['by_field_size'])]:
+        for name, d in cat_data.items():
+            if d['races'] >= 2 and d['investment'] > 0:
+                roi = d['payout'] / d['investment'] * 100
+                if roi < 50:
+                    worst_cats.append((f'{cat_name}:{name}', d['races'], roi))
+    if worst_cats:
+        worst_cats.sort(key=lambda x: x[2])
+        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#ff4060 !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN</div>'
+        for name, races, roi in worst_cats[:5]:
+            html += f'<div style="font-size:0.82em;color:#ff4060 !important;margin-bottom:2px;">&#9888; {name} ({races}R / ROI {roi:.0f}%) — 見送り推奨</div>'
+        html += '</div>'
+    html += '</div>'
+    return html
+
 init_db()
 
 # ===== CSS =====
@@ -415,6 +583,9 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 .badge-v3 { background: rgba(0,232,123,0.15); color: #00e87b !important; border: 1px solid rgba(0,232,123,0.3); }
 .badge-v2 { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.3); }
 .badge-v8 { background: rgba(0,232,123,0.2); color: #00e87b !important; border: 1px solid rgba(0,232,123,0.5); font-weight:700; }
+.badge-v9 { background: rgba(168,85,247,0.2); color: #a855f7 !important; border: 1px solid rgba(168,85,247,0.5); font-weight:700; }
+.badge-central { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.4); font-weight:700; margin-left:4px; }
+.badge-nar { background: rgba(230,126,34,0.15); color: #e67e22 !important; border: 1px solid rgba(230,126,34,0.4); font-weight:700; margin-left:4px; }
 .badge-v1 { background: rgba(255,255,255,0.08); color: #6a6a80 !important; }
 
 .disclaimer {
@@ -487,6 +658,20 @@ def load_model():
     except:
         return None
 
+@st.cache_resource(ttl=3600)
+def load_v9_models():
+    """v9中央/地方モデルを読み込み"""
+    import os
+    models = {'central': None, 'nar': None}
+    for key, fname in [('central', 'keiba_model_v9_central.pkl'), ('nar', 'keiba_model_v9_nar.pkl')]:
+        if os.path.exists(fname):
+            try:
+                with open(fname, 'rb') as f:
+                    models[key] = pickle.load(f)
+            except:
+                pass
+    return models
+
 @st.cache_resource
 def load_jockey_wr():
     try:
@@ -512,6 +697,19 @@ else:
     bms_map = {}
     model_auc = 0.0
     model_leak_free = False
+
+# v9中央/地方モデル
+_v9_models = load_v9_models()
+
+def get_model_for_race(is_nar=False):
+    """レースタイプに応じたモデルを返す。v9モデルがあれば使い分け、なければv8を使う"""
+    v9_key = 'nar' if is_nar else 'central'
+    v9_data = _v9_models.get(v9_key)
+    if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
+        return v9_data, v9_key
+    # v9がなければデフォルトモデル
+    return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
+
 jockey_wr = load_jockey_wr()
 
 # ===== 騎手データ自動更新（7日経過で自動実行） =====
@@ -1505,7 +1703,10 @@ def run_system_checks():
     # 1. モデルファイル確認
     model_files = ["keiba_model_v8.pkl", "keiba_model_v8.pkl.gz"]
     found = any(os.path.exists(f) for f in model_files)
-    checks.append(('モデルファイル', found, 'keiba_model_v8.pkl 検出' if found else 'モデルファイルが見つかりません'))
+    v9c = os.path.exists("keiba_model_v9_central.pkl")
+    v9n = os.path.exists("keiba_model_v9_nar.pkl")
+    v9_text = f' / v9: {"中央" if v9c else ""}{"・地方" if v9n else ""}' if (v9c or v9n) else ''
+    checks.append(('モデルファイル', found, f'v8検出{v9_text}' if found else 'モデルファイルが見つかりません'))
     # 2. 特徴量チェック
     try:
         test_features = FEATURES if FEATURES else FEATURES_V1
@@ -1638,6 +1839,67 @@ def fetch_race_results(race_id, is_nar=False):
     except Exception:
         pass
     return results, trio_payout
+
+# ===== 開催日レース一覧取得 =====
+def fetch_race_list(date_str=None, is_nar=False):
+    """netkeibaから指定日の全レースURLを取得。date_str: 'YYYYMMDD' or None(今日)
+    返り値: [{'race_id': str, 'race_name': str, 'course': str, 'race_num': str, 'time': str}]
+    """
+    races = []
+    if date_str is None:
+        date_str = datetime.now().strftime('%Y%m%d')
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+        else:
+            url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # レースリンクを取得
+        race_links = soup.find_all("a", href=re.compile(r'race_id=\d+'))
+        seen = set()
+        for link in race_links:
+            href = link.get("href", "")
+            rid_m = re.search(r'race_id=(\d+)', href)
+            if not rid_m:
+                continue
+            rid = rid_m.group(1)
+            if rid in seen:
+                continue
+            seen.add(rid)
+            text = link.get_text(strip=True)
+            # レース番号とレース名を推定
+            num_m = re.search(r'(\d{1,2})R', text)
+            race_num = num_m.group(0) if num_m else ''
+            race_name = text if text else f'{race_num}'
+            races.append({
+                'race_id': rid,
+                'race_name': race_name,
+                'race_num': race_num,
+            })
+        # 開催場所ごとにグループ化されている場合、コース名を取得
+        course_sections = soup.find_all("div", class_=re.compile(r'RaceList_DataTitle|Race_Course'))
+        if course_sections:
+            current_course = ''
+            for elem in soup.find_all(True):
+                cls = ' '.join(elem.get('class', []))
+                if 'RaceList_DataTitle' in cls or 'Race_Course' in cls:
+                    current_course = elem.get_text(strip=True)
+                    # コース名からマッチ
+                    for cn in COURSE_MAP:
+                        if cn in current_course:
+                            current_course = cn
+                            break
+                if elem.name == 'a' and 'race_id=' in elem.get('href', ''):
+                    rid_m = re.search(r'race_id=(\d+)', elem.get('href', ''))
+                    if rid_m:
+                        for r in races:
+                            if r['race_id'] == rid_m.group(1) and 'course' not in r:
+                                r['course'] = current_course
+    except Exception:
+        pass
+    return races
 
 # ===== Parse Shutuba =====
 def parse_shutuba(race_id, is_nar=False):
@@ -2320,11 +2582,15 @@ def render_table(df, rank_map):
 # ===== MAIN =====
 st.markdown('<div class="site-header"><div class="site-logo">KEIBA AI</div><div class="site-sub">PREDICTION SYSTEM</div></div>', unsafe_allow_html=True)
 
-# Model version badge
+# Model version badge (default, updated after race type detection)
 badge_css = f'badge-{model_version}'
 auc_text = f' AUC {model_auc:.4f}' if model_auc > 0 else ''
 leak_text = ' LEAK-FREE' if model_leak_free else ''
-st.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
+# v9モデル利用可能状況
+v9_avail = _v9_models.get('central') is not None or _v9_models.get('nar') is not None
+v9_note = ' <span class="model-badge badge-v9">V9 READY</span>' if v9_avail else ''
+model_badge_placeholder = st.empty()
+model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span>{v9_note}</div>', unsafe_allow_html=True)
 
 # ===== 起動時自動チェック =====
 sys_checks = run_system_checks()
@@ -2345,6 +2611,23 @@ if st.button("🔍 予想する") and url_input:
     is_nar = "nar" in url_input
     url_input = url_input.replace("nar.sp.netkeiba.com", "nar.netkeiba.com")
     url_input = url_input.replace("race.sp.netkeiba.com", "race.netkeiba.com")
+    # v9モデル自動切替
+    active_model_data, active_model_type = get_model_for_race(is_nar)
+    active_model = active_model_data.get('model', model)
+    active_features = active_model_data.get('features', model_features)
+    active_version = active_model_data.get('version', model_version)
+    active_auc = active_model_data.get('auc', 0.0)
+    active_sire_map = active_model_data.get('sire_map', sire_map)
+    active_bms_map = active_model_data.get('bms_map', bms_map)
+    # バッジ更新
+    type_badge = ''
+    if active_model_type == 'central':
+        type_badge = '<span class="model-badge badge-central">CENTRAL MODEL</span>'
+    elif active_model_type == 'nar':
+        type_badge = '<span class="model-badge badge-nar">NAR MODEL</span>'
+    ab_css = f'badge-{active_version}'
+    ab_auc = f' AUC {active_auc:.4f}' if active_auc > 0 else (f' AUC {model_auc:.4f}' if model_auc > 0 else '')
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {ab_css}">MODEL {active_version.upper()}{ab_auc}</span>{type_badge}</div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
         st.error("URLからrace_idを取得できませんでした")
@@ -2494,7 +2777,8 @@ if st.button("🔍 予想する") and url_input:
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # === v3専用特徴量 ===
-    if model_version == 'v3':
+    use_version = active_version
+    if use_version == 'v3':
         # 父馬_enc: sire_mapを使ってエンコード
         df['父馬_enc'] = df['父'].apply(lambda x: sire_map.get(x, 50) if sire_map else 50)
 
@@ -2522,11 +2806,13 @@ if st.button("🔍 予想する") and url_input:
         df['前走通過順4'] = df['通過順4'].fillna(8)
 
     # === v5専用特徴量 ===
-    if model_version in ('v5', 'v6', 'v8'):
-        n_top = _loaded.get('n_top_encode', 80) if _loaded else 80
-        # Sire/BMS encoding
-        df['sire_enc'] = df['父'].apply(lambda x: sire_map.get(x, n_top) if sire_map else n_top)
-        df['bms_enc'] = df['母の父'].apply(lambda x: bms_map.get(x, n_top) if bms_map else n_top)
+    if use_version in ('v5', 'v6', 'v8', 'v9'):
+        n_top = active_model_data.get('n_top_encode', _loaded.get('n_top_encode', 80) if isinstance(_loaded, dict) else 80)
+        # Sire/BMS encoding (v9モデル時はそのモデルのマップを使用)
+        use_sire_map = active_sire_map if active_sire_map else sire_map
+        use_bms_map = active_bms_map if active_bms_map else bms_map
+        df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
+        df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
         # Location encoding（地方対応）
         def enc_loc(loc):
@@ -2642,18 +2928,19 @@ if st.button("🔍 予想する") and url_input:
     else:
         df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
 
-    # === 特徴量のデフォルト値を保証 ===
-    for f in FEATURES:
+    # 使用する特徴量リスト（v9モデル時はそのモデルの特徴量を使用）
+    use_features = active_features if active_features else FEATURES
+    for f in use_features:
         if f not in df.columns:
             df[f] = 0
         df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
-
-    X = df[FEATURES].values
-    if hasattr(model, 'predict_proba'):
-        proba = model.predict_proba(X)
+    X = df[use_features].values
+    use_model = active_model if active_model_type != 'default' else model
+    if hasattr(use_model, 'predict_proba'):
+        proba = use_model.predict_proba(X)
         ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
     else:
-        ai_scores = model.predict(X)
+        ai_scores = use_model.predict(X)
     pop_scores = df['人気傾向'].values
     apt_scores = (df['距離適性'].values + df['馬場適性'].values) / 2.0
     # Pace scores
@@ -2705,26 +2992,26 @@ if st.button("🔍 予想する") and url_input:
                 + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
             )
     else:
-        if model_version == 'v3':
+        if use_version == 'v3':
             final_scores = (
                 ai_scores * 0.55 + pop_scores * 0.10 + apt_scores * 0.08
                 + pace_scores * 0.08 + agari_scores * 0.08 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
-        elif model_version == 'v5':
+        elif use_version == 'v5':
             final_scores = (
                 ai_scores * 0.60 + pop_scores * 0.08 + apt_scores * 0.07
                 + pace_scores * 0.07 + agari_scores * 0.07 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
-        elif model_version == 'v6':
+        elif use_version == 'v6':
             final_scores = (
                 ai_scores * 0.65 + pop_scores * 0.06 + apt_scores * 0.06
                 + pace_scores * 0.06 + agari_scores * 0.06 + course_scores * 0.04
                 + other_scores * 0.04 + time_scores * 0.03
             )
-        elif model_version == 'v8':
-            # v8: 過去3走特徴量込み - リアルタイムオッズ反映
+        elif use_version in ('v8', 'v9'):
+            # v8/v9: 過去3走特徴量込み - リアルタイムオッズ反映
             if odds_available:
                 final_scores = (
                     ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
@@ -2795,6 +3082,9 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_realtime_odds'] = realtime_odds
     st.session_state['pred_rc_html'] = rc_html
     st.session_state['pred_track_changed'] = track_changed
+    st.session_state['pred_model_type'] = active_model_type
+    st.session_state['pred_model_version'] = active_version
+    st.session_state['pred_model_auc'] = active_auc
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -2808,6 +3098,18 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     race_id = st.session_state.get('last_race_id', '')
     is_nar = st.session_state.get('last_is_nar', False)
 
+    # モデルバッジ更新（キャッシュ表示時）
+    p_model_type = st.session_state.get('pred_model_type', 'default')
+    p_model_ver = st.session_state.get('pred_model_version', model_version)
+    p_model_auc = st.session_state.get('pred_model_auc', model_auc)
+    p_type_badge = ''
+    if p_model_type == 'central':
+        p_type_badge = '<span class="model-badge badge-central">CENTRAL MODEL</span>'
+    elif p_model_type == 'nar':
+        p_type_badge = '<span class="model-badge badge-nar">NAR MODEL</span>'
+    p_badge_css = f'badge-{p_model_ver}'
+    p_auc_text = f' AUC {p_model_auc:.4f}' if p_model_auc > 0 else ''
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {p_badge_css}">MODEL {p_model_ver.upper()}{p_auc_text}</span>{p_type_badge}</div>', unsafe_allow_html=True)
     st.markdown(rc_html, unsafe_allow_html=True)
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
@@ -2831,12 +3133,31 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     # Buy section
     st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(render_buy_section(df, race_info, rank_map), unsafe_allow_html=True)
-    # Expected Value Section
+    # Expected Value Section (with trio odds integration)
     if odds_available:
         st.markdown('<div class="sec-title">💰 期待値分析<span class="sec-line"></span></div>', unsafe_allow_html=True)
         ev_list = calc_expected_values(df, realtime_odds)
+        # 三連複オッズを取得してEVを更新
+        trio_odds = fetch_trio_odds(race_id, is_nar=is_nar)
+        if trio_odds:
+            for e in ev_list:
+                if e['type'] == '三連複' and e['ev'] == 0:
+                    key = tuple(sorted(e['umaban']))
+                    if key in trio_odds:
+                        e['odds'] = trio_odds[key]
+                        e['ev'] = e['prob'] * trio_odds[key]
         ev_display = [e for e in ev_list if e['ev'] > 0]
         st.markdown(render_ev_section(ev_display), unsafe_allow_html=True)
+        # EV>=1.0の三連複買い目をハイライト
+        hot_trio = [e for e in ev_display if e['type'] == '三連複' and e['ev'] >= 1.0]
+        if hot_trio:
+            hot_html = '<div style="margin:8px 0;padding:12px;background:linear-gradient(135deg,#1a3a1a,#0a2a0a);border:1px solid #2ecc40;border-radius:10px;">'
+            hot_html += '<div style="color:#2ecc40 !important;font-weight:bold;margin-bottom:6px;">🎯 高期待値の三連複買い目</div>'
+            for e in sorted(hot_trio, key=lambda x: x['ev'], reverse=True):
+                ev_tag = '<span style="color:#ff4060 !important;font-weight:bold;">🔥 HOT</span>' if e['ev'] >= 1.5 else '<span style="color:#f0c040 !important;">★</span>'
+                hot_html += f'<div style="padding:4px 0;font-size:0.9em;">{ev_tag} {e["horses"]} (EV {e["ev"]:.2f} / {e["odds"]:.1f}倍)</div>'
+            hot_html += '</div>'
+            st.markdown(hot_html, unsafe_allow_html=True)
     st.success(f"予測結果をDBに保存しました ({race_name})")
     # Chart - カラフルな横棒グラフ（HTML）
     st.markdown('<div class="sec-title">📊 全馬スコア<span class="sec-line"></span></div>', unsafe_allow_html=True)
@@ -2880,6 +3201,51 @@ dash_html = render_dashboard()
 if dash_html:
     st.markdown('<div class="sec-title">📈 TRACK RECORD<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(dash_html, unsafe_allow_html=True)
+
+# ===== モデル情報・特徴量重要度 =====
+with st.expander("🤖 モデル情報・特徴量重要度"):
+    st.markdown(f"**現行モデル:** {model_version.upper()} (AUC: {model_auc:.4f})")
+    if _v9_models.get('central'):
+        v9c = _v9_models['central']
+        st.markdown(f"**v9 中央:** AUC {v9c.get('auc', 0):.4f}")
+    if _v9_models.get('nar'):
+        v9n = _v9_models['nar']
+        st.markdown(f"**v9 地方:** AUC {v9n.get('auc', 0):.4f}")
+    # Feature importance (top 20)
+    fi_model = None
+    fi_features = None
+    for src_name, src_data in [('v9 central', _v9_models.get('central')), ('v9 nar', _v9_models.get('nar')), ('v8', _loaded)]:
+        if src_data and isinstance(src_data, dict) and 'model' in src_data:
+            m = src_data['model']
+            if hasattr(m, 'feature_importances_'):
+                fi_model = m
+                fi_features = src_data.get('features') or FEATURES
+                st.markdown(f"**特徴量重要度 ({src_name}): TOP 20**")
+                importances = fi_model.feature_importances_
+                pairs = sorted(zip(fi_features, importances), key=lambda x: x[1], reverse=True)[:20]
+                fi_html = '<div style="font-size:0.85em;">'
+                max_imp = pairs[0][1] if pairs else 1
+                for fname, imp in pairs:
+                    bar_w = imp / max_imp * 100 if max_imp > 0 else 0
+                    fi_html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">'
+                    fi_html += f'<span style="min-width:120px;color:#b0b8c8 !important;font-size:0.82em;">{fname}</span>'
+                    fi_html += f'<div style="flex:1;height:12px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
+                    fi_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2898d8,#00e87b);border-radius:3px;"></div></div>'
+                    fi_html += f'<span style="font-family:Oswald;font-size:0.75em;min-width:60px;color:#6a6a80 !important;">{imp:.0f}</span>'
+                    fi_html += '</div>'
+                fi_html += '</div>'
+                st.markdown(fi_html, unsafe_allow_html=True)
+                break
+    if fi_model is None:
+        st.info("特徴量重要度はLightGBMモデルの読み込み時に表示されます。")
+
+# ===== 週次分析レポート =====
+with st.expander("📊 週次分析レポート"):
+    weekly = get_weekly_analysis()
+    if weekly:
+        st.markdown(render_weekly_report(weekly), unsafe_allow_html=True)
+    else:
+        st.info("分析データがありません。レース結果を登録すると、コース/距離/馬場/頭数別の的中率・回収率を自動分析します。")
 
 # TRACK RECORD 管理（削除機能）
 with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
@@ -2928,6 +3294,101 @@ with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）")
                 delete_race_records(selected_ids)
                 st.success(f"{len(selected_ids)} 件のレコードを削除しました。")
                 st.rerun()
+
+# ===== 複数レース一括予測 =====
+with st.expander("🏇 複数レース一括予測（開催日全レース）"):
+    batch_col1, batch_col2 = st.columns([2, 1])
+    with batch_col1:
+        batch_date = st.date_input("開催日を選択", value=datetime.now().date(), key="batch_date")
+    with batch_col2:
+        batch_type = st.selectbox("対象", ["JRA（中央）", "NAR（地方）"], key="batch_type")
+    if st.button("📋 レース一覧を取得", key="fetch_batch"):
+        batch_is_nar = batch_type == "NAR（地方）"
+        date_str = batch_date.strftime('%Y%m%d')
+        with st.spinner("レース一覧を取得中..."):
+            race_list = fetch_race_list(date_str, is_nar=batch_is_nar)
+        if race_list:
+            st.session_state['batch_races'] = race_list
+            st.session_state['batch_is_nar'] = batch_is_nar
+            st.success(f"{len(race_list)}レースを取得しました")
+        else:
+            st.warning("レースが見つかりませんでした（開催日を確認してください）")
+    # レース選択UI
+    if 'batch_races' in st.session_state:
+        batch_races = st.session_state['batch_races']
+        st.markdown(f"**{len(batch_races)}レース検出**")
+        selected_batch = []
+        for r in batch_races:
+            label = f"{r.get('course','')} {r.get('race_num','')} {r['race_name'][:15]}"
+            if st.checkbox(label, value=True, key=f"batch_{r['race_id']}"):
+                selected_batch.append(r)
+        if selected_batch and st.button(f"🚀 {len(selected_batch)}レースを一括予測", key="run_batch"):
+            st.session_state['batch_results'] = []
+            batch_is_nar = st.session_state.get('batch_is_nar', False)
+            progress = st.progress(0)
+            for idx, race in enumerate(selected_batch):
+                rid = race['race_id']
+                try:
+                    rn, horses, hids, rinfo = parse_shutuba(rid, is_nar=batch_is_nar)
+                    if not horses:
+                        continue
+                    ro = fetch_realtime_odds(rid, is_nar=batch_is_nar)
+                    for h in horses:
+                        ub = h.get('馬番', 0)
+                        h['単勝オッズ'] = ro.get(ub, 0.0)
+                    num_h = len(horses)
+                    for hi, (h, hid) in enumerate(zip(horses, hids)):
+                        if hid:
+                            try:
+                                stats = get_horse_stats(hid, rinfo['distance'], rinfo['surface'], rinfo['course'])
+                                h['前走着順'] = stats.get('last_finish', 5)
+                                h['距離適性'] = stats.get('dist_apt', 0.5)
+                                h['馬場適性'] = stats.get('surf_apt', 0.5)
+                                h['人気傾向'] = stats.get('pop_score', 0.5)
+                                h['コース適性'] = stats.get('course_apt', 0.5)
+                                h['前走間隔'] = stats.get('interval_days', 30)
+                                h['脚質'] = stats.get('running_style', 0)
+                                h['上がり3F'] = stats.get('avg_agari', 35.5)
+                                h['複勝率'] = stats.get('fukusho_rate', 0.0)
+                                h['父'] = stats.get('father', '')
+                                h['母の父'] = stats.get('mother_father', '')
+                                h['血統スコア'] = calc_sire_score(stats.get('father',''), rinfo['surface'], rinfo['distance'])
+                                h['騎手勝率'] = h.get('騎手勝率', 0.05)
+                            except:
+                                pass
+                        time.sleep(0.3)
+                    # 簡易スコア計算（バッチ用）
+                    bdf = pd.DataFrame(horses)
+                    if len(bdf) > 0:
+                        top1 = bdf.iloc[0]['馬名'] if len(bdf) > 0 else '?'
+                        # 人気傾向とオッズから簡易EV計算
+                        top1_odds = bdf.iloc[0].get('単勝オッズ', 0) if '単勝オッズ' in bdf.columns else 0
+                        has_odds = '単勝オッズ' in bdf.columns and (bdf['単勝オッズ'] > 0).any()
+                        avg_score = bdf['人気傾向'].mean() if '人気傾向' in bdf.columns else 0.5
+                        st.session_state['batch_results'].append({
+                            'race_id': rid, 'race_name': rn, 'course': rinfo.get('course',''),
+                            'distance': rinfo.get('distance', 0), 'surface': rinfo.get('surface',''),
+                            'num_horses': num_h, 'race_num': race.get('race_num',''),
+                            'has_odds': has_odds,
+                        })
+                        save_prediction(rid, rn, rinfo, bdf.assign(
+                            スコア=bdf.get('人気傾向', pd.Series([0.5]*len(bdf))),
+                            AI順位=range(1, len(bdf)+1)
+                        ), is_nar=batch_is_nar)
+                except Exception as e:
+                    pass
+                progress.progress((idx + 1) / len(selected_batch))
+                time.sleep(0.5)
+            progress.empty()
+            st.success(f"✅ {len(st.session_state.get('batch_results', []))}レースの予測を完了")
+    # バッチ結果表示
+    if st.session_state.get('batch_results'):
+        results = st.session_state['batch_results']
+        st.markdown("### 一括予測結果")
+        for r in results:
+            label = f"**{r.get('course','')} {r.get('race_num','')}** {r['race_name'][:12]} ({r['surface']}{r['distance']}m / {r['num_horses']}頭)"
+            odds_tag = "💰" if r.get('has_odds') else ""
+            st.markdown(f"- {label} {odds_tag}")
 
 # Results update section
 with st.expander("📝 レース結果を登録（的中率集計用）"):
