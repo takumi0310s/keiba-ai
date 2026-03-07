@@ -619,6 +619,13 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         'margin_text': '', 'weight_diff': 0, 'prev_jockey': '',
         'avg_pass_pos': 8.0, 'last_pass4': 8, 'last_odds': 15.0, 'last_pop': 8,
         'trainer_loc': '',
+        # 過去5走lag特徴量
+        'prev2_finish': 5, 'prev3_finish': 5, 'prev4_finish': 5, 'prev5_finish': 5,
+        'avg_finish_3r': 5.0, 'avg_finish_5r': 5.0,
+        'best_finish_3r': 5, 'best_finish_5r': 5,
+        'top3_count_3r': 0, 'top3_count_5r': 0,
+        'finish_trend': 0,
+        'prev2_last3f': 35.5,
     }
     try:
         url = "https://db.netkeiba.com/horse/result/" + horse_id + "/"
@@ -832,6 +839,30 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
             result['avg_agari'] = sum(agari_list) / len(agari_list)
         if finish_list:
             result['fukusho_rate'] = sum(1 for f in finish_list if f <= 3) / len(finish_list)
+            # 過去5走lag特徴量
+            fl = finish_list  # newest first
+            if len(fl) >= 2: result['prev2_finish'] = fl[1]
+            if len(fl) >= 3: result['prev3_finish'] = fl[2]
+            if len(fl) >= 4: result['prev4_finish'] = fl[3]
+            if len(fl) >= 5: result['prev5_finish'] = fl[4]
+            # 3走平均・最高・3着以内回数
+            fl3 = fl[:min(3, len(fl))]
+            result['avg_finish_3r'] = sum(fl3) / len(fl3)
+            result['best_finish_3r'] = min(fl3)
+            result['top3_count_3r'] = sum(1 for f in fl3 if f <= 3)
+            # 5走平均・最高・3着以内回数
+            fl5 = fl[:min(5, len(fl))]
+            result['avg_finish_5r'] = sum(fl5) / len(fl5)
+            result['best_finish_5r'] = min(fl5)
+            result['top3_count_5r'] = sum(1 for f in fl5 if f <= 3)
+            # 着順トレンド（直近が良いほど正）
+            if len(fl) >= 3:
+                result['finish_trend'] = fl[2] - fl[0]  # prev3 - prev1: positive = improving
+            elif len(fl) >= 2:
+                result['finish_trend'] = fl[1] - fl[0]
+        # 2走前の上がり3F
+        if len(agari_list) >= 2:
+            result['prev2_last3f'] = agari_list[1]
         result['best_time'] = best_time_sec if best_time_sec < 999.0 else 0.0
         result['best_time_str'] = best_time_str
         result['best_time_date'] = best_time_date
@@ -1892,12 +1923,28 @@ if st.button("🔍 予想する") and url_input:
                     horse['前走オッズ'] = stats.get('last_odds', 15.0)
                     horse['前走人気'] = stats.get('last_pop', 8)
                     horse['所属地'] = stats.get('trainer_loc', '')
+                    # 過去5走lag特徴量
+                    horse['prev2_finish'] = stats.get('prev2_finish', 5)
+                    horse['prev3_finish'] = stats.get('prev3_finish', 5)
+                    horse['prev4_finish'] = stats.get('prev4_finish', 5)
+                    horse['prev5_finish'] = stats.get('prev5_finish', 5)
+                    horse['avg_finish_3r'] = stats.get('avg_finish_3r', 5.0)
+                    horse['avg_finish_5r'] = stats.get('avg_finish_5r', 5.0)
+                    horse['best_finish_3r'] = stats.get('best_finish_3r', 5)
+                    horse['best_finish_5r'] = stats.get('best_finish_5r', 5)
+                    horse['top3_count_3r'] = stats.get('top3_count_3r', 0)
+                    horse['top3_count_5r'] = stats.get('top3_count_5r', 0)
+                    horse['finish_trend'] = stats.get('finish_trend', 0)
+                    horse['prev2_last3f'] = stats.get('prev2_last3f', 35.5)
                 except Exception:
                     horse.update({'前走着順':5,'距離適性':0.5,'馬場適性':0.5,'人気傾向':0.5,
                                   'コース適性':0.5,'前走間隔':30,'脚質':0,'上がり3F':35.5,
                                   '複勝率':0.0,'父':'','母の父':'','血統スコア':0.5,'持ちタイム':0.0,
                                   'タイム表示':'','タイム日付':'','タイム距離':0,
-                                  '通過順平均':8.0,'通過順4':8,'前走オッズ':15.0,'前走人気':8,'所属地':''})
+                                  '通過順平均':8.0,'通過順4':8,'前走オッズ':15.0,'前走人気':8,'所属地':'',
+                                  'prev2_finish':5,'prev3_finish':5,'prev4_finish':5,'prev5_finish':5,
+                                  'avg_finish_3r':5.0,'avg_finish_5r':5.0,'best_finish_3r':5,'best_finish_5r':5,
+                                  'top3_count_3r':0,'top3_count_5r':0,'finish_trend':0,'prev2_last3f':35.5})
             else:
                 horse.update({'前走着順':5,'距離適性':0.5,'馬場適性':0.5,'人気傾向':0.5,
                               'コース適性':0.5,'前走間隔':30,'脚質':0,'上がり3F':35.5,
@@ -1960,7 +2007,7 @@ if st.button("🔍 予想する") and url_input:
         df['前走通過順4'] = df['通過順4'].fillna(8)
 
     # === v5専用特徴量 ===
-    if model_version in ('v5', 'v6'):
+    if model_version in ('v5', 'v6', 'v8'):
         n_top = _loaded.get('n_top_encode', 80) if _loaded else 80
         # Sire/BMS encoding
         df['sire_enc'] = df['父'].apply(lambda x: sire_map.get(x, n_top) if sire_map else n_top)
@@ -2011,12 +2058,20 @@ if st.button("🔍 予想する") and url_input:
         df['prev_margin'] = 0
         df['prev_prize'] = 0
 
-        # Aggregated (use available data, default for missing)
-        df['avg_finish_3r'] = df['前走着順'].fillna(5)
-        df['avg_finish_5r'] = df['前走着順'].fillna(5)
+        # 過去5走lag特徴量（netkeibaから取得した実データ）
+        df['prev2_finish'] = df['prev2_finish'].fillna(5)
+        df['prev3_finish'] = df['prev3_finish'].fillna(5)
+        df['prev4_finish'] = df['prev4_finish'].fillna(5)
+        df['prev5_finish'] = df['prev5_finish'].fillna(5)
+        df['prev2_last3f'] = df['prev2_last3f'].fillna(35.5)
+        df['avg_finish_3r'] = df['avg_finish_3r'].fillna(5.0)
+        df['avg_finish_5r'] = df['avg_finish_5r'].fillna(5.0)
         df['avg_last3f_3r'] = df['上がり3F'].fillna(35.5)
-        df['best_finish_5r'] = df['前走着順'].fillna(5)
-        df['finish_trend'] = 0
+        df['best_finish_3r'] = df['best_finish_3r'].fillna(5)
+        df['best_finish_5r'] = df['best_finish_5r'].fillna(5)
+        df['top3_count_3r'] = df['top3_count_3r'].fillna(0)
+        df['top3_count_5r'] = df['top3_count_5r'].fillna(0)
+        df['finish_trend'] = df['finish_trend'].fillna(0)
         df['dist_change'] = 0
         df['dist_change_abs'] = 0
         df['rest_days'] = df.get('interval_days', pd.Series([30]*len(df))).fillna(30)
@@ -2047,6 +2102,17 @@ if st.button("🔍 予想する") and url_input:
         df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
         df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
         df['weight_diff_abs'] = 0
+
+        # v8用追加特徴量
+        df['surface_enc'] = df['芝ダート_enc']
+        df['jockey_wr_calc'] = df['騎手勝率']
+        df['jockey_course_wr_calc'] = df['騎手勝率']
+        df['trainer_top3_calc'] = df['trainer_top3']
+        df['weight_cat_dist'] = df['weight_cat'] * 10 + df['dist_cat']
+        df['surface_dist_enc'] = df['芝ダート_enc'] * 10 + df['dist_cat']
+        df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
+        df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
+        df['is_nar'] = 1 if is_nar else 0
 
     # === リアルタイムオッズ特徴量 ===
     if odds_available and '単勝オッズ' in df.columns:
