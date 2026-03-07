@@ -166,13 +166,46 @@ def get_dashboard_stats():
     }
     return stats
 
+def delete_race_records(race_ids):
+    """指定されたrace_idリストのレコードを削除"""
+    if not race_ids:
+        return 0
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    placeholders = ','.join('?' for _ in race_ids)
+    c.execute(f"DELETE FROM predictions WHERE race_id IN ({placeholders})", race_ids)
+    c.execute(f"DELETE FROM race_results WHERE race_id IN ({placeholders})", race_ids)
+    deleted = c.rowcount
+    conn.commit()
+    conn.close()
+    return deleted
+
+def delete_all_race_records():
+    """全レコードを削除"""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM predictions")
+    c.execute("DELETE FROM race_results")
+    conn.commit()
+    conn.close()
+
+def get_all_race_records():
+    """全レース結果を取得（削除UI用）"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT race_id, race_name, predicted_at, hit_trio, payout, is_nar FROM race_results ORDER BY predicted_at DESC")
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    return rows
+
 init_db()
 
 # ===== CSS =====
 CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=Noto+Sans+JP:wght@300;500;700;900&display=swap');
-[data-testid="stAppViewContainer"] { background: #0a0a0f; }
+[data-testid="stAppViewContainer"] { background: #10141c; }
 [data-testid="stHeader"] { background: transparent; }
 [data-testid="stToolbar"] { display: none; }
 section[data-testid="stSidebar"] { display: none; }
@@ -197,10 +230,20 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 
 /* Race Card */
 .race-card {
-    background: linear-gradient(135deg, #0f2847 0%, #0a1628 60%, #12082a 100%);
+    background: linear-gradient(135deg, #142a4a 0%, #101c30 60%, #160e2e 100%);
     border-radius: 16px; padding: 22px; margin: 16px 0;
-    border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.10); position: relative; overflow: hidden;
 }
+.grade-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 6px; font-family: 'Oswald';
+    font-size: 0.78em; font-weight: 700; letter-spacing: 1px; margin-right: 6px; vertical-align: middle;
+}
+.grade-g1 { background: linear-gradient(90deg, #c8a030, #f0d060); color: #000 !important; }
+.grade-g2 { background: linear-gradient(90deg, #2070c0, #40a0f0); color: #fff !important; }
+.grade-g3 { background: linear-gradient(90deg, #1a8a50, #2ecc71); color: #fff !important; }
+.grade-op { background: rgba(168,85,247,0.25); color: #c090ff !important; border: 1px solid rgba(168,85,247,0.4); }
+.grade-list { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.3); }
+.race-num { font-family: 'Oswald'; font-size: 0.85em; color: #8890a0 !important; margin-right: 6px; }
 .race-badge {
     display: inline-block; padding: 4px 14px; border-radius: 20px;
     font-family: 'Oswald', sans-serif; font-size: 0.8em; letter-spacing: 2px; margin-bottom: 10px;
@@ -246,12 +289,15 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 
 /* Horse Card */
 .hcard {
-    background: #12121c; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.04); position: relative; overflow: hidden;
+    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
 }
 .hcard::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; }
+.hcard-g { background: linear-gradient(135deg, #1e1a10 0%, #161a24 60%); border: 1px solid rgba(240,192,64,0.15); }
 .hcard-g::before { background: linear-gradient(180deg, #f0c040, #c89020); }
+.hcard-s { background: linear-gradient(135deg, #181a1e 0%, #161a24 60%); border: 1px solid rgba(176,184,200,0.12); }
 .hcard-s::before { background: linear-gradient(180deg, #b0b8c8, #808898); }
+.hcard-b { background: linear-gradient(135deg, #1c1610 0%, #161a24 60%); border: 1px solid rgba(200,120,64,0.12); }
 .hcard-b::before { background: linear-gradient(180deg, #c87840, #905020); }
 .hcard-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .hrank {
@@ -313,8 +359,8 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 
 /* Buy Section */
 .buy-card {
-    background: #12121c; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.04); position: relative; overflow: hidden;
+    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
 }
 .buy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
 .buy-honmei::before { background: linear-gradient(90deg, #f0c040, #00e87b); }
@@ -353,7 +399,7 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 /* Table */
 .htable { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
 .htable th { font-size: 0.62em; color: #6a6a80 !important; letter-spacing: 1px; padding: 6px 3px; text-align: center; font-weight: 500; }
-.htable td { background: #12121c; padding: 9px 5px; text-align: center; font-size: 0.78em; }
+.htable td { background: #161a24; padding: 9px 5px; text-align: center; font-size: 0.78em; }
 .htable tr td:first-child { border-radius: 8px 0 0 8px; }
 .htable tr td:last-child { border-radius: 0 8px 8px 0; }
 .trank { font-family: 'Oswald'; font-weight: 700; font-size: 1.05em; }
@@ -379,8 +425,8 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 
 /* EV Table */
 .ev-card {
-    background: #12121c; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.04);
+    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 .ev-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0;
     border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -395,7 +441,7 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
 .dash-item {
     text-align: center; padding: 12px 6px; border-radius: 10px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(255,255,255,0.05);
 }
 .dash-num { font-family: 'Oswald', sans-serif; font-size: 1.6em; font-weight: 700; }
 .dash-lbl { font-size: 0.7em; color: #6a6a80 !important; margin-top: 2px; }
@@ -1222,14 +1268,57 @@ def parse_shutuba(race_id, is_nar=False):
     resp.encoding = "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
     race_name = "レース"
+    race_num = ""
+    race_grade = ""
     tag = soup.find("div", class_="RaceName")
     if tag and tag.get_text(strip=True):
         race_name = tag.get_text(strip=True)
+        # グレードアイコンを検出 (Icon_GradeType1=G1, 2=G2, 3=G3, 5=OP, 15=Listed, etc.)
+        grade_span = tag.find("span", class_=re.compile(r'Icon_GradeType'))
+        if grade_span:
+            grade_cls = " ".join(grade_span.get("class", []))
+            if "GradeType1" in grade_cls or "GradeType16" in grade_cls:
+                race_grade = "G1"
+            elif "GradeType2" in grade_cls or "GradeType17" in grade_cls:
+                race_grade = "G2"
+            elif "GradeType3" in grade_cls or "GradeType18" in grade_cls:
+                race_grade = "G3"
+            elif "GradeType5" in grade_cls:
+                race_grade = "OP"
+            elif "GradeType15" in grade_cls:
+                race_grade = "L"
+        if not race_grade:
+            grade_img = tag.find("img")
+            if grade_img:
+                alt = grade_img.get("alt", "")
+                for g in ["G1", "G2", "G3", "GI", "GII", "GIII"]:
+                    if g in alt.upper():
+                        race_grade = g[:2].replace("GI", "G1").replace("GI", "G2") if len(g) > 2 else g
+                        break
+        # グレード文字列をレース名から除去（重複防止）
+        race_name = re.sub(r'\s*\(G[I123]+\)\s*', '', race_name).strip()
+        race_name = re.sub(r'\s*G[I123]+\s*$', '', race_name).strip()
     else:
         tag = soup.find("title")
         if tag:
             m = re.search(r'(\S+\d+R)', tag.get_text(strip=True))
             if m: race_name = m.group(1)
+    # レース番号 (例: "11R")
+    num_tag = soup.find("span", class_="RaceNum")
+    if num_tag:
+        race_num = num_tag.get_text(strip=True)
+    if not race_num:
+        nm = re.search(r'(\d{1,2})R', race_name)
+        if nm:
+            race_num = nm.group(0)
+    # テキストからグレード検出（フォールバック）
+    if not race_grade:
+        full_text = soup.get_text()
+        gm = re.search(r'[\(（](G[I1][I1I]*|G[123])[\)）]', full_text[:3000])
+        if gm:
+            g = gm.group(1).replace("GI", "G1").replace("GII", "G2").replace("GIII", "G3")
+            if g in ("G1", "G2", "G3"):
+                race_grade = g
     d01 = soup.find("div", class_="RaceData01")
     d01t = d01.get_text(strip=True) if d01 else soup.get_text()
     dm = re.search(r'(\d{3,4})m', d01t)
@@ -1255,7 +1344,8 @@ def parse_shutuba(race_id, is_nar=False):
                 if cn in tt:
                     course_name = cn
                     break
-    race_info = dict(distance=distance, surface=surface, condition=condition, course=course_name)
+    race_info = dict(distance=distance, surface=surface, condition=condition, course=course_name,
+                     grade=race_grade, race_num=race_num)
     rows = soup.select("tr.HorseList")
     horses, horse_ids = [], []
     for row in rows:
@@ -1428,7 +1518,7 @@ def finish_cls(f):
 
 def render_horse_card(rank, h, max_score, rank_map):
     colors = {1: ('g', 'gold'), 2: ('s', 'silver'), 3: ('b', 'bronze')}
-    c, _ = colors.get(rank, ('b', 'bronze'))
+    c, _ = colors.get(rank, ('', 'default'))
     style_name = STYLE_NAMES.get(h.get('脚質', 0), '不明')
     style_css = STYLE_CSS.get(h.get('脚質', 0), 'st-senk')
     pm_html = get_pace_match_html(h.get('脚質', 0), rank_map)
@@ -1436,11 +1526,14 @@ def render_horse_card(rank, h, max_score, rank_map):
     sex_age = h.get('性別', '牡') + str(h.get('馬齢', 3))
     fr = h.get('複勝率', 0)
     father = h.get('父', '')
-    html = f'<div class="hcard hcard-{c}"><div class="hcard-top">'
-    html += f'<div class="hrank hrank-{c}">{rank}</div>'
+    card_cls = f'hcard-{c}' if c else ''
+    html = f'<div class="hcard {card_cls}"><div class="hcard-top">'
+    rank_cls = f'hrank-{c}' if c else ''
+    html += f'<div class="hrank {rank_cls}">{rank}</div>'
     html += f'<div style="flex:1"><div class="hname">{h["馬名"]}</div>'
     html += f'<div class="hjockey">🏇 {h["騎手名"]} ｜ {sex_age} ｜ {h["斤量"]}kg</div></div>'
-    html += f'<div class="hscore hscore-{c}">{h["スコア"]:.3f}</div></div>'
+    score_cls = f'hscore-{c}' if c else ''
+    html += f'<div class="hscore {score_cls}">{h["スコア"]:.3f}</div></div>'
     html += '<div class="sgrid">'
     html += f'<div class="sitem"><div class="slbl">前走</div><div class="sval {finish_cls(h["前走着順"])}">{h["前走着順"]}着</div></div>'
     html += f'<div class="sitem"><div class="slbl">脚質</div><div class="sval"><span class="stag {style_css}">{style_name}</span>{pm_html}</div></div>'
@@ -1484,7 +1577,8 @@ def render_horse_card(rank, h, max_score, rank_map):
         date_display = f' ({date_short})' if date_short else ''
         html += f'<span class="tag" style="border:1px solid rgba(240,192,64,0.3);color:#f0c040 !important">⏱ {bt_dist}m {bt_str}{date_display}</span>'
     html += '</div>'
-    html += f'<div class="sbar-w"><div class="sbar sbar-{c}" style="width:{pct}%"></div></div></div>'
+    bar_cls = f'sbar-{c}' if c else 'sbar-b'
+    html += f'<div class="sbar-w"><div class="sbar {bar_cls}" style="width:{pct}%"></div></div></div>'
     return html
 
 def calc_expected_values(df_sorted, realtime_odds):
@@ -1881,7 +1975,15 @@ if st.button("🔍 予想する") and url_input:
     surf_icon = '🟢 TURF' if race_info['surface'] == '芝' else '🟤 DIRT'
     num_horses = len(horses)
     rc_html = f'<div class="race-card"><span class="race-badge {surf_badge}">{surf_icon}</span>'
-    rc_html += f'<div class="race-name">{race_info["course"]} {race_name}</div>'
+    # グレードバッジとレース番号
+    grade = race_info.get('grade', '')
+    race_num_str = race_info.get('race_num', '')
+    grade_html = ''
+    if grade:
+        gcss = {'G1':'grade-g1','G2':'grade-g2','G3':'grade-g3','OP':'grade-op','L':'grade-list'}.get(grade, 'grade-op')
+        grade_html = f'<span class="grade-badge {gcss}">{grade}</span>'
+    num_html = f'<span class="race-num">{race_num_str}</span>' if race_num_str else ''
+    rc_html += f'<div class="race-name">{num_html}{grade_html}{race_info["course"]} {race_name}</div>'
     rc_html += f'<div class="race-meta"><span>📏 {race_info["distance"]}m</span>'
     rc_html += f'<span>🏟️ {race_info["course"]}</span>'
     rc_html += f'<span>💧 {race_info["condition"]}</span>'
@@ -2295,10 +2397,37 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         ev_display = [e for e in ev_list if e['ev'] > 0]
         st.markdown(render_ev_section(ev_display), unsafe_allow_html=True)
     st.success(f"予測結果をDBに保存しました ({race_name})")
-    # Chart
+    # Chart - カラフルな横棒グラフ（HTML）
     st.markdown('<div class="sec-title">📊 全馬スコア<span class="sec-line"></span></div>', unsafe_allow_html=True)
-    chart_df = df[['馬名', 'スコア']].copy().set_index('馬名')
-    st.bar_chart(chart_df, color='#f0c040')
+    chart_html = '<div style="padding:12px 0;">'
+    sorted_chart = df.sort_values('AI順位')
+    chart_max = sorted_chart['スコア'].max()
+    for _, row in sorted_chart.iterrows():
+        r = int(row['AI順位'])
+        pct = row['スコア'] / chart_max * 100 if chart_max > 0 else 0
+        if r == 1:
+            bar_bg = 'linear-gradient(90deg, #c89020, #f0c040)'
+            lbl_c = '#f0c040'
+        elif r == 2:
+            bar_bg = 'linear-gradient(90deg, #808898, #b0b8c8)'
+            lbl_c = '#b0b8c8'
+        elif r == 3:
+            bar_bg = 'linear-gradient(90deg, #905020, #c87840)'
+            lbl_c = '#c87840'
+        elif r <= 6:
+            bar_bg = 'linear-gradient(90deg, #1a5080, #2898d8)'
+            lbl_c = '#60b0e0'
+        else:
+            bar_bg = 'linear-gradient(90deg, #303848, #485068)'
+            lbl_c = '#8890a0'
+        chart_html += f'<div style="display:flex;align-items:center;margin-bottom:4px;gap:6px;">'
+        chart_html += f'<span style="font-size:0.75em;width:60px;text-align:right;color:{lbl_c} !important;white-space:nowrap;overflow:hidden;">{row["馬名"][:5]}</span>'
+        chart_html += f'<div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden;">'
+        chart_html += f'<div style="width:{pct:.0f}%;height:100%;background:{bar_bg};border-radius:4px;"></div></div>'
+        chart_html += f'<span style="font-family:Oswald;font-size:0.78em;width:44px;color:{lbl_c} !important;">{row["スコア"]:.3f}</span>'
+        chart_html += '</div>'
+    chart_html += '</div>'
+    st.markdown(chart_html, unsafe_allow_html=True)
     # Table
     st.markdown('<div class="sec-title">📋 ALL HORSES<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(render_table(df, rank_map), unsafe_allow_html=True)
@@ -2310,6 +2439,54 @@ dash_html = render_dashboard()
 if dash_html:
     st.markdown('<div class="sec-title">📈 TRACK RECORD<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(dash_html, unsafe_allow_html=True)
+
+# TRACK RECORD 管理（削除機能）
+with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
+    all_records = get_all_race_records()
+    if not all_records:
+        st.info("記録されたレースはありません。")
+    else:
+        st.markdown(f"**登録レース数: {len(all_records)}件**")
+        # 全件削除ボタン
+        col_del_all, col_spacer = st.columns([1, 2])
+        with col_del_all:
+            if st.button("⚠️ 全件削除", key="delete_all_btn"):
+                st.session_state['confirm_delete_all'] = True
+        if st.session_state.get('confirm_delete_all'):
+            st.warning("本当に全レコードを削除しますか？この操作は取り消せません。")
+            col_yes, col_no, _ = st.columns([1, 1, 2])
+            with col_yes:
+                if st.button("はい、全件削除", key="confirm_yes"):
+                    delete_all_race_records()
+                    st.session_state['confirm_delete_all'] = False
+                    st.success("全レコードを削除しました。")
+                    st.rerun()
+            with col_no:
+                if st.button("キャンセル", key="confirm_no"):
+                    st.session_state['confirm_delete_all'] = False
+                    st.rerun()
+        # チェックボックスで個別選択
+        selected_ids = []
+        for rec in all_records:
+            rid = rec.get('race_id', '')
+            name = rec.get('race_name', '')[:12]
+            date = (rec.get('predicted_at', '') or '')[:10]
+            hit = rec.get('hit_trio')
+            payout = rec.get('payout', 0) or 0
+            is_nar_r = rec.get('is_nar', 0)
+            tag = "NAR" if is_nar_r else "JRA"
+            if hit is not None:
+                status = f"✅ +¥{payout - INVESTMENT_PER_RACE:,}" if hit == 1 else f"❌ -¥{INVESTMENT_PER_RACE}"
+            else:
+                status = "⏳ 未確定"
+            label = f"[{tag}] {date} {name} {status}"
+            if st.checkbox(label, key=f"del_{rid}"):
+                selected_ids.append(rid)
+        if selected_ids:
+            if st.button(f"🗑️ 選択した {len(selected_ids)} 件を削除", key="delete_selected_btn"):
+                delete_race_records(selected_ids)
+                st.success(f"{len(selected_ids)} 件のレコードを削除しました。")
+                st.rerun()
 
 # Results update section
 with st.expander("📝 レース結果を登録（的中率集計用）"):
