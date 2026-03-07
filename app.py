@@ -462,6 +462,25 @@ else:
     model_leak_free = False
 jockey_wr = load_jockey_wr()
 
+# ===== 騎手データ自動更新（7日経過で自動実行） =====
+def auto_update_jockey_wr():
+    """前回更新から7日以上経過していたら騎手データを自動更新"""
+    try:
+        from update_jockey_wr import needs_update, update_jockey_wr as do_update
+        if needs_update(days=7):
+            do_update()
+            # 更新後に再読み込み
+            return load_jockey_wr()
+    except Exception:
+        pass
+    return None
+
+if 'jockey_wr_checked' not in st.session_state:
+    st.session_state['jockey_wr_checked'] = True
+    updated = auto_update_jockey_wr()
+    if updated:
+        jockey_wr = updated
+
 FEATURES_V1 = [
     '馬体重', '場体重増減', '斤量', '馬齢', '距離(m)',
     '競馬場コード_enc', '芝ダート_enc', '馬場状態_enc',
@@ -951,6 +970,109 @@ def fetch_training_data(race_id, is_nar=False):
         pass
     return training_dict
 
+# ===== Fetch Realtime Track Condition =====
+def fetch_track_condition(race_id, is_nar=False):
+    """netkeibaから当日の馬場状態をリアルタイム取得。
+    返り値: {'surface': '芝'/'ダ', 'condition': '良'/'稍重'/'重'/'不良', 'changed': bool}
+    """
+    result = {'condition': None, 'changed': False}
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/race/shutuba.html?race_id={race_id}"
+        else:
+            url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # RaceData01から馬場状態を取得
+        d01 = soup.find("div", class_="RaceData01")
+        if d01:
+            text = d01.get_text(strip=True)
+            cm = re.search(r'馬場:(\S+)', text)
+            if not cm:
+                cm = re.search(r'(良|稍重|稍|重|不良)', text)
+            if cm:
+                result['condition'] = cm.group(1)
+        # 天候情報
+        weather_tag = soup.find("span", class_="Weather")
+        if weather_tag:
+            weather_icon = weather_tag.find("img")
+            if weather_icon:
+                alt = weather_icon.get("alt", "")
+                result['weather'] = alt
+            else:
+                result['weather'] = weather_tag.get_text(strip=True)
+    except Exception:
+        pass
+    return result
+
+
+def adjust_scores_for_track(df, condition, original_condition, surface, rank_map):
+    """馬場悪化時にスコアを補正する。
+    - 馬場悪化: 逃げ・先行有利度UP、追込有利度DOWN
+    - ダート馬場悪化: パワー型・先行有利
+    - 各馬の馬場適性を考慮
+    """
+    if not condition or condition == original_condition:
+        return df, rank_map, False
+
+    cond_level = {'良': 0, '稍': 1, '稍重': 1, '重': 2, '不': 3, '不良': 3}
+    orig_lv = cond_level.get(original_condition, 0)
+    new_lv = cond_level.get(condition, 0)
+
+    if new_lv <= orig_lv:
+        return df, rank_map, False  # 馬場改善 or 変化なし
+
+    # 馬場悪化度合い
+    delta = new_lv - orig_lv  # 1-3
+
+    # 脚質別スコア補正
+    style_adj = {
+        1: 0.015 * delta,   # 逃げ: UP
+        2: 0.020 * delta,   # 先行: UP
+        3: -0.005 * delta,  # 差し: やや DOWN
+        4: -0.020 * delta,  # 追込: DOWN
+    }
+
+    if 'スコア' in df.columns and '脚質' in df.columns:
+        for style, adj in style_adj.items():
+            mask = df['脚質'] == style
+            df.loc[mask, 'スコア'] = df.loc[mask, 'スコア'] + adj
+
+        # 馬場適性が低い馬はペナルティ
+        if '馬場適性' in df.columns:
+            # 馬場適性が0.3以下の馬は悪化でさらに不利
+            low_apt = df['馬場適性'] < 0.3
+            df.loc[low_apt, 'スコア'] = df.loc[low_apt, 'スコア'] - 0.01 * delta
+            df.loc[low_apt, '馬場警告'] = True
+
+        # スコア再順位付け
+        df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
+        df = df.sort_values('AI順位')
+
+    # rank_mapも更新（逃げ先行の有利度を上げる）
+    updated_rank_map = dict(rank_map)
+    # 先行の評価を上げる
+    for style in [1, 2]:
+        if style in updated_rank_map:
+            lbl, css, reason = updated_rank_map[style]
+            if lbl in ['△', '×']:
+                if delta >= 2:
+                    updated_rank_map[style] = ('○', 'good', reason + " 馬場悪化で前有利")
+                else:
+                    updated_rank_map[style] = ('△', 'fair', reason + " 馬場悪化傾向")
+            elif lbl == '○':
+                updated_rank_map[style] = ('◎', 'best', reason + " 馬場悪化で前有利")
+    # 追込の評価を下げる
+    if 4 in updated_rank_map:
+        lbl, css, reason = updated_rank_map[4]
+        if lbl in ['◎', '○']:
+            updated_rank_map[4] = ('△', 'fair', reason + " 馬場悪化で届かず")
+        elif lbl == '△':
+            updated_rank_map[4] = ('×', 'bad', reason + " 馬場悪化で届かず")
+
+    return df, updated_rank_map, True
+
 # ===== Fetch Race Results =====
 def fetch_race_results(race_id, is_nar=False):
     """netkeibaのレース結果ページから着順と三連複払戻金を取得。
@@ -1289,6 +1411,9 @@ def render_horse_card(rank, h, max_score, rank_map):
         if train_eval:
             train_text += f' {train_eval}'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {train_border};color:{train_color} !important;background:rgba(0,0,0,0.2)">🏋️ {train_text}</span></div>'
+    # 馬場適性警告
+    if h.get('馬場警告'):
+        html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#ff4060 !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
     html += '<div class="tagrow">'
     if father: html += f'<span class="tag tag-sire">父: {father}</span>'
     if fr > 0: html += f'<span class="tag">複勝率 {int(fr*100)}%</span>'
@@ -2012,6 +2137,25 @@ if st.button("🔍 予想する") and url_input:
     df['スコア'] = final_scores
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
+    # 馬場警告フラグ初期化
+    df['馬場警告'] = False
+    # ===== 馬場変化リアルタイム補正 =====
+    track_changed = False
+    track_info = fetch_track_condition(race_id, is_nar=is_nar)
+    original_condition = race_info.get('condition', '良')
+    live_condition = track_info.get('condition')
+    if live_condition and live_condition != original_condition:
+        df, rank_map, track_changed = adjust_scores_for_track(
+            df, live_condition, original_condition, race_info['surface'], rank_map
+        )
+        if track_changed:
+            race_info['condition_original'] = original_condition
+            race_info['condition'] = live_condition
+            # race card HTMLを更新
+            rc_html = rc_html.replace(
+                f'💧 {original_condition}',
+                f'💧 {live_condition} ⚠️馬場変化'
+            )
     # Save prediction to SQLite
     save_prediction(race_id, race_name, race_info, df, is_nar=is_nar)
     # 予測結果をsession_stateに保存
@@ -2022,6 +2166,7 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_odds_available'] = odds_available
     st.session_state['pred_realtime_odds'] = realtime_odds
     st.session_state['pred_rc_html'] = rc_html
+    st.session_state['pred_track_changed'] = track_changed
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -2036,6 +2181,11 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     is_nar = st.session_state.get('last_is_nar', False)
 
     st.markdown(rc_html, unsafe_allow_html=True)
+    # 馬場変化アラート
+    if st.session_state.get('pred_track_changed'):
+        orig_cond = race_info.get('condition_original', '良')
+        new_cond = race_info.get('condition', '良')
+        st.markdown(f'<div style="margin:8px 0;padding:12px;background:linear-gradient(90deg,#3a1a0a,#2a1a1a);border:1px solid #e67e22;border-radius:10px;text-align:center;color:#e67e22 !important;font-weight:bold;">⚠️ 馬場変化検知: {orig_cond} → {new_cond}　スコア自動補正済（前残り有利に調整）</div>', unsafe_allow_html=True)
     # Render TOP3
     st.markdown('<div class="sec-title">🏆 AI TOP 3<span class="sec-line"></span></div>', unsafe_allow_html=True)
     max_score = df['スコア'].max()
