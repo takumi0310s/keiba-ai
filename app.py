@@ -2238,7 +2238,7 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
                 preview_df = pd.DataFrame([
                     {"馬番": k, "着順": v} for k, v in sorted(results_dict.items(), key=lambda x: x[1])
                 ])
-                st.dataframe(preview_df, hide_index=True, use_container_width=True)
+                st.dataframe(preview_df, hide_index=True, width="stretch")
                 if trio_payout > 0:
                     st.info(f"三連複 払戻金: **{trio_payout:,}円**")
                 # DBの三連複7点と照合
