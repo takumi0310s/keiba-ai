@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-08 09:31:01",
+  "generated_at": "2026-03-08 11:26:08",
   "central_results": [
     {
       "race_id": "07255505",
@@ -40507,6 +40507,122 @@
       "umaren_investment": 20000,
       "umaren_payout": 5160,
       "umaren_roi": 25.8
+    }
+  },
+  "nar_condition_v8": {
+    "A": {
+      "n": 47,
+      "hit": 8,
+      "hit_rate": 17.02127659574468,
+      "investment": 32900,
+      "payout": 13110,
+      "roi": 39.848024316109424,
+      "bet_type": "trio",
+      "recommended": false
+    },
+    "B": {
+      "n": 42,
+      "hit": 14,
+      "hit_rate": 33.33333333333333,
+      "investment": 8400,
+      "payout": 5710,
+      "roi": 67.97619047619048,
+      "bet_type": "wide",
+      "recommended": false
+    },
+    "C": {
+      "n": 1,
+      "hit": 0,
+      "hit_rate": 0.0,
+      "investment": 200,
+      "payout": 0,
+      "roi": 0.0,
+      "bet_type": "wide",
+      "recommended": false
+    },
+    "D": {
+      "n": 0,
+      "hit": 0,
+      "roi": 0,
+      "recommended": false
+    },
+    "E": {
+      "n": 9,
+      "hit": 2,
+      "hit_rate": 22.22222222222222,
+      "investment": 1800,
+      "payout": 950,
+      "roi": 52.77777777777778,
+      "bet_type": "umaren",
+      "recommended": false
+    },
+    "X": {
+      "n": 1,
+      "hit": 0,
+      "hit_rate": 0.0,
+      "investment": 200,
+      "payout": 0,
+      "roi": 0.0,
+      "bet_type": "wide",
+      "recommended": false
+    }
+  },
+  "nar_condition_v9": {
+    "A": {
+      "n": 47,
+      "hit": 3,
+      "hit_rate": 6.382978723404255,
+      "investment": 32900,
+      "payout": 5990,
+      "roi": 18.206686930091184,
+      "bet_type": "trio",
+      "recommended": false
+    },
+    "B": {
+      "n": 42,
+      "hit": 6,
+      "hit_rate": 14.285714285714285,
+      "investment": 8400,
+      "payout": 3080,
+      "roi": 36.666666666666664,
+      "bet_type": "wide",
+      "recommended": false
+    },
+    "C": {
+      "n": 1,
+      "hit": 0,
+      "hit_rate": 0.0,
+      "investment": 200,
+      "payout": 0,
+      "roi": 0.0,
+      "bet_type": "wide",
+      "recommended": false
+    },
+    "D": {
+      "n": 0,
+      "hit": 0,
+      "roi": 0,
+      "recommended": false
+    },
+    "E": {
+      "n": 9,
+      "hit": 2,
+      "hit_rate": 22.22222222222222,
+      "investment": 1800,
+      "payout": 950,
+      "roi": 52.77777777777778,
+      "bet_type": "umaren",
+      "recommended": false
+    },
+    "X": {
+      "n": 1,
+      "hit": 0,
+      "hit_rate": 0.0,
+      "investment": 200,
+      "payout": 0,
+      "roi": 0.0,
+      "bet_type": "wide",
+      "recommended": false
     }
   }
 }

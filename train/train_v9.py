@@ -36,7 +36,7 @@ COL = {
     'prize': 36, 'horse_id': 37, 'jockey_id': 38, 'trainer_id': 39,
     'race_horse_key': 40, 'father': 41, 'mother': 42, 'bms': 43,
     'sire_sire': 44, 'col45': 45, 'origin': 46, 'birthday': 47,
-    'odds': 48, 'empty1': 49, 'empty2': 50, 'col51': 51,
+    'odds': 48, 'empty1': 49, 'empty2': 50, 'training_time': 51,  # 調教4Fタイム
 }
 
 COURSE_MAP = {
@@ -292,6 +292,15 @@ def build_features(df):
     df['course_surface'] = df['course_enc'] * 10 + df['surface_enc']
     df['is_nar'] = 0  # This data is JRA only
 
+    # 調教タイム特徴量
+    df['training_time'] = pd.to_numeric(df['training_time'], errors='coerce').fillna(0)
+    df['has_training'] = (df['training_time'] > 0).astype(int)
+    # 調教タイムが0のものは平均で埋める
+    mean_tt = df.loc[df['training_time'] > 0, 'training_time'].mean()
+    df['training_time_filled'] = df['training_time'].replace(0, mean_tt).fillna(mean_tt)
+    # レース距離との比率（短距離は速い調教タイムが有利）
+    df['training_per_dist'] = df['training_time_filled'] / (df['distance'] / 200).clip(1)
+
     return df
 
 
@@ -308,8 +317,15 @@ FEATURES_V9 = [
     'age_season', 'horse_num_ratio', 'bracket_pos', 'carry_diff',
     'weight_cat_dist', 'age_group', 'surface_dist_enc', 'cond_surface',
     'course_surface', 'location_enc', 'is_nar',
-    'odds_log',  # NEW: current race odds (log-transformed)
+    'odds_log',  # current race odds (log-transformed)
     'prev_odds_log',  # previous race odds
+]
+
+# v9.1 feature list (v9 + training data)
+FEATURES_V9_1 = FEATURES_V9 + [
+    'training_time_filled',  # 調教4Fタイム
+    'has_training',  # 調教データの有無
+    'training_per_dist',  # 調教タイム/距離比
 ]
 
 # Feature names matching v8 pkl format
@@ -326,6 +342,10 @@ FEATURES_V9_PKL = [
     'weight_cat_dist', 'age_group', 'surface_dist_enc', 'cond_surface',
     'course_surface', 'location_enc', 'is_nar',
     'odds_log', 'prev_odds_log',
+]
+
+FEATURES_V9_1_PKL = FEATURES_V9_PKL + [
+    'training_time_filled', 'has_training', 'training_per_dist',
 ]
 
 
@@ -528,6 +548,48 @@ def main():
     ensemble_auc = roc_auc_score(y_valid, ensemble_pred)
     print(f"  Ensemble AUC: {ensemble_auc:.4f}")
 
+    # ===== v9.1: Train with training (oikiri) data =====
+    print("\n" + "="*60)
+    print("  Training v9.1 (with oikiri/training data)")
+    print("="*60)
+
+    feature_cols_v91 = FEATURES_V9_1
+    for f in feature_cols_v91:
+        if f not in df.columns:
+            df[f] = 0
+        df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
+
+    X_v91 = df[feature_cols_v91].values
+    X_v91_train, X_v91_valid = X_v91[train_mask], X_v91[valid_mask]
+
+    lgb_model_v91 = train_lgb(X_v91_train, y_train, X_v91_valid, y_valid, feature_cols_v91)
+    lgb_v91_pred = lgb_model_v91.predict(X_v91_valid)
+    lgb_v91_auc = roc_auc_score(y_valid, lgb_v91_pred)
+    print(f"\n  v9.1 LightGBM AUC: {lgb_v91_auc:.4f}")
+
+    fi_v91 = show_feature_importance(lgb_model_v91, feature_cols_v91, "v9.1 Feature Importance (with Training Data)")
+
+    # v9.1 XGBoost
+    xgb_model_v91 = train_xgb(X_v91_train, y_train, X_v91_valid, y_valid)
+    xgb_v91_pred = xgb_model_v91.predict(xgb.DMatrix(X_v91_valid))
+    xgb_v91_auc = roc_auc_score(y_valid, xgb_v91_pred)
+    print(f"  v9.1 XGBoost AUC: {xgb_v91_auc:.4f}")
+
+    # v9.1 Ensemble
+    total_v91 = lgb_v91_auc + xgb_v91_auc
+    w91_lgb = lgb_v91_auc / total_v91
+    w91_xgb = xgb_v91_auc / total_v91
+    v91_ensemble_pred = lgb_v91_pred * w91_lgb + xgb_v91_pred * w91_xgb
+    v91_ensemble_auc = roc_auc_score(y_valid, v91_ensemble_pred)
+    print(f"  v9.1 Ensemble AUC: {v91_ensemble_auc:.4f}")
+
+    # Training feature importance
+    print(f"\n  Training data features:")
+    for feat in ['training_time_filled', 'has_training', 'training_per_dist']:
+        idx = feature_cols_v91.index(feat)
+        imp = lgb_model_v91.feature_importance(importance_type='gain')[idx]
+        print(f"    {feat}: importance={imp:.1f}")
+
     # ===== Compare with v8 =====
     v8_path = os.path.join(OUTPUT_DIR, 'keiba_model_v8.pkl')
     v8_auc = 0.0
@@ -548,18 +610,56 @@ def main():
     print(f"  v9 XGBoost:      AUC {xgb_auc:.4f}")
     print(f"  v9 MLP:          AUC {mlp_auc:.4f}")
     print(f"  v9 Ensemble:     AUC {ensemble_auc:.4f}")
+    print(f"  v9.1 LGB+oikiri: AUC {lgb_v91_auc:.4f}")
+    print(f"  v9.1 XGB+oikiri: AUC {xgb_v91_auc:.4f}")
+    print(f"  v9.1 Ensemble:   AUC {v91_ensemble_auc:.4f}")
+
+    # Determine best model
+    use_v91 = v91_ensemble_auc > ensemble_auc
+    if use_v91:
+        print(f"\n  >>> v9.1 ({v91_ensemble_auc:.4f}) > v9 ({ensemble_auc:.4f}) - Using v9.1 with training data")
+        best_lgb = lgb_model_v91
+        best_xgb = xgb_model_v91
+        best_ensemble_auc = v91_ensemble_auc
+        best_pkl_features = [rename_map.get(f, f) for f in feature_cols_v91]
+        best_weights = {'lgb': w91_lgb, 'xgb': w91_xgb, 'mlp': 0}
+        best_mlp = None
+        best_scaler = None
+    else:
+        print(f"\n  >>> v9 ({ensemble_auc:.4f}) >= v9.1 ({v91_ensemble_auc:.4f}) - Keeping v9 without training data")
 
     # ===== Save models =====
     from datetime import datetime
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Central model (LightGBM as primary, with ensemble info)
+    if use_v91:
+        save_lgb = best_lgb
+        save_xgb = best_xgb
+        save_mlp = best_mlp
+        save_scaler = best_scaler
+        save_features = best_pkl_features
+        save_weights = best_weights
+        save_version = 'v9.1'
+        save_auc = lgb_v91_auc
+        save_ensemble_auc = best_ensemble_auc
+    else:
+        save_lgb = lgb_model
+        save_xgb = xgb_model
+        save_mlp = mlp_model
+        save_scaler = mlp_scaler
+        save_features = pkl_features
+        save_weights = {'lgb': w_lgb, 'xgb': w_xgb, 'mlp': w_mlp}
+        save_version = 'v9'
+        save_auc = lgb_auc
+        save_ensemble_auc = ensemble_auc
+
+    # Central model
     central_pkl = {
-        'model': lgb_model,
-        'features': pkl_features,
-        'version': 'v9',
-        'auc': lgb_auc,
-        'ensemble_auc': ensemble_auc,
+        'model': save_lgb,
+        'features': save_features,
+        'version': save_version,
+        'auc': save_auc,
+        'ensemble_auc': save_ensemble_auc,
         'leak_free': True,
         'sire_map': sire_map,
         'bms_map': bms_map,
@@ -568,36 +668,33 @@ def main():
         'n_train': len(X_train),
         'n_valid': len(X_valid),
         'model_type': 'central',
-        'xgb_model': xgb_model,
-        'mlp_model': mlp_model,
-        'mlp_scaler': mlp_scaler,
-        'ensemble_weights': {'lgb': w_lgb, 'xgb': w_xgb, 'mlp': w_mlp},
+        'xgb_model': save_xgb,
+        'mlp_model': save_mlp,
+        'mlp_scaler': save_scaler,
+        'ensemble_weights': save_weights,
     }
     central_path = os.path.join(OUTPUT_DIR, 'keiba_model_v9_central.pkl')
     with open(central_path, 'wb') as f:
         pickle.dump(central_pkl, f)
-    print(f"\n  Saved: {central_path}")
+    print(f"\n  Saved: {central_path} ({save_version})")
 
-    # NAR model (same architecture, but with is_nar=1 and adjusted)
-    # Since we don't have NAR-specific training data, we create a copy
-    # with adjusted parameters for NAR usage
+    # NAR model
     nar_pkl = dict(central_pkl)
     nar_pkl['model_type'] = 'nar'
-    nar_pkl['auc'] = lgb_auc  # Same model, different usage context
     nar_path = os.path.join(OUTPUT_DIR, 'keiba_model_v9_nar.pkl')
     with open(nar_path, 'wb') as f:
         pickle.dump(nar_pkl, f)
     print(f"  Saved: {nar_path}")
 
     # Update v8 if ensemble is better
-    if ensemble_auc > v8_auc:
-        print(f"\n  v9 Ensemble ({ensemble_auc:.4f}) > v8 ({v8_auc:.4f})")
-        print(f"  Updating keiba_model_v8.pkl with v9 model")
+    if save_ensemble_auc > v8_auc:
+        print(f"\n  {save_version} Ensemble ({save_ensemble_auc:.4f}) > v8 ({v8_auc:.4f})")
+        print(f"  Updating keiba_model_v8.pkl with {save_version} model")
         v8_update = {
-            'model': lgb_model,
-            'features': pkl_features,
-            'version': 'v9',
-            'auc': ensemble_auc,
+            'model': save_lgb,
+            'features': save_features,
+            'version': save_version,
+            'auc': save_ensemble_auc,
             'leak_free': True,
             'sire_map': sire_map,
             'bms_map': bms_map,
@@ -610,7 +707,7 @@ def main():
             pickle.dump(v8_update, f)
         print(f"  Updated: {v8_path}")
     else:
-        print(f"\n  v9 ({best_auc:.4f}) <= v8 ({v8_auc:.4f}), keeping v8 as primary")
+        print(f"\n  {save_version} ({save_ensemble_auc:.4f}) <= v8 ({v8_auc:.4f}), keeping v8 as primary")
 
     print("\n  Training complete!")
     return ensemble_auc, fi_df
