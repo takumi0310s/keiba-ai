@@ -3968,16 +3968,16 @@ if dash_html:
 
 # ===== モデル情報・特徴量重要度 =====
 with st.expander("🤖 モデル情報・特徴量重要度"):
-    st.markdown(f"**V8 (ベースライン):** AUC {model_auc:.4f}")
     if _v9_models.get('central'):
         v9c = _v9_models['central']
         v9c_ver = v9c.get('version', 'v9').upper()
         v9c_auc = v9c.get('auc', 0)
         v9c_ens = v9c.get('ensemble_auc', v9c_auc)
-        st.markdown(f"**{v9c_ver} 中央 (本番):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
+        st.markdown(f"**CENTRAL {v9c_ver} (本番):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
+    else:
+        st.markdown(f"**V8 (フォールバック):** AUC {model_auc:.4f}")
     if _v9_models.get('nar'):
-        v9n = _v9_models['nar']
-        st.markdown(f"**地方:** V8使用 (参考のみ・買い非推奨 / NAR全条件ROI<80%)")
+        st.markdown(f"**NAR:** V8使用 AUC {model_auc:.4f} (参考のみ・買い非推奨 / 全条件ROI<80%)")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
