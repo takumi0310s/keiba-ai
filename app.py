@@ -17,30 +17,103 @@ st.set_page_config(page_title="KEIBA AI", page_icon="🏇", layout="wide")
 # ===== SQLite DB =====
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
 
-INVESTMENT_PER_RACE = 700  # ワイド2点 × 350円
+INVESTMENT_PER_RACE = 700
+
+# 条件別買い目ロジック (5年バックテスト実績ベース)
+CONDITION_PROFILES = {
+    'A': {
+        'label': '条件A',
+        'desc': '8-14頭 / 1600m+ / 良〜稍重',
+        'bet_type': 'trio',
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'investment': 700,
+        'roi': 86.4,
+        'hit_rate': 42.2,
+        'recommended': True,
+    },
+    'B': {
+        'label': '条件B',
+        'desc': '8-14頭 / 1600m+ / 重〜不良',
+        'bet_type': 'wide',
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 119.8,
+        'hit_rate': 22.2,
+        'recommended': True,
+    },
+    'C': {
+        'label': '条件C',
+        'desc': '15頭+ / 1600m+ / 良〜稍重',
+        'bet_type': 'wide',
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 83.0,
+        'hit_rate': 26.4,
+        'recommended': True,
+    },
+    'D': {
+        'label': '条件D',
+        'desc': '1400m以下（スプリント）',
+        'bet_type': 'none',
+        'bet_label': '買い非推奨',
+        'bet_detail': '的中率低下',
+        'investment': 0,
+        'roi': 0,
+        'hit_rate': 0,
+        'recommended': False,
+    },
+    'E': {
+        'label': '条件E',
+        'desc': '7頭以下（少頭数）',
+        'bet_type': 'umaren',
+        'bet_label': '馬連1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 142.5,
+        'hit_rate': 50.0,
+        'recommended': True,
+    },
+    'X': {
+        'label': '条件外',
+        'desc': '15頭+ / 重〜不良',
+        'bet_type': 'wide',
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 86.5,
+        'hit_rate': 45.0,
+        'recommended': True,
+    },
+}
 
 
-def check_buy_recommendation(race_info, num_horses, is_nar=False):
-    """バックテスト結果に基づく買い推奨判定。
-    中央: 14頭以下・1600m以上・良/稍重 → 推奨
-    地方: 常に推奨（V8で運用）
-    Returns: (is_recommended: bool, reason: str)
+def classify_race_condition(race_info, num_horses, is_nar=False):
+    """レース条件を分類してプロファイルを返す。
+    Returns: (condition_key, profile_dict)
     """
     if is_nar:
-        return True, "NAR V8"
+        return 'A', {**CONDITION_PROFILES['A'], 'label': 'NAR', 'desc': 'NAR V8',
+                     'bet_type': 'trio', 'bet_label': '三連複7点'}
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
-    cond_ok = any(c in cond for c in ['良', '稍'])
-    reasons = []
-    if num_horses > 14:
-        reasons.append(f"頭数{num_horses}頭(14頭以下推奨)")
-    if dist < 1600:
-        reasons.append(f"距離{dist}m(1600m以上推奨)")
-    if not cond_ok:
-        reasons.append(f"馬場:{cond}(良/稍重推奨)")
-    if reasons:
-        return False, " / ".join(reasons)
-    return True, "条件クリア"
+    good_track = any(c in cond for c in ['良', '稍'])
+    heavy_track = any(c in cond for c in ['重', '不'])
+
+    if num_horses <= 7:
+        return 'E', CONDITION_PROFILES['E']
+    if dist <= 1400:
+        return 'D', CONDITION_PROFILES['D']
+    if 8 <= num_horses <= 14 and dist >= 1600 and good_track:
+        return 'A', CONDITION_PROFILES['A']
+    if 8 <= num_horses <= 14 and dist >= 1600 and heavy_track:
+        return 'B', CONDITION_PROFILES['B']
+    if num_horses >= 15 and dist >= 1600 and good_track:
+        return 'C', CONDITION_PROFILES['C']
+    # 15+ heavy or other
+    return 'X', CONDITION_PROFILES['X']
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -75,6 +148,9 @@ def init_db():
         "ALTER TABLE race_results ADD COLUMN hit_wide INTEGER DEFAULT NULL",
         "ALTER TABLE race_results ADD COLUMN wide_payout INTEGER DEFAULT 0",
         "ALTER TABLE race_results ADD COLUMN buy_recommended INTEGER DEFAULT 1",
+        "ALTER TABLE race_results ADD COLUMN bet_condition TEXT DEFAULT NULL",
+        "ALTER TABLE race_results ADD COLUMN bet_type TEXT DEFAULT NULL",
+        "ALTER TABLE race_results ADD COLUMN umaren_bets TEXT DEFAULT NULL",
     ]:
         try:
             c.execute(col_sql)
@@ -106,10 +182,33 @@ def generate_wide_bets(df_sorted):
         return []
     nums = [int(df_sorted.iloc[i]['馬番']) for i in range(min(3, len(df_sorted)))]
     bets = [sorted([nums[0], nums[1]]), sorted([nums[0], nums[2]])]
-    # 重複除去
     if bets[0] == bets[1]:
         return [bets[0]]
     return bets
+
+
+def generate_umaren_bets(df_sorted):
+    """AI順位TOP1軸 - TOP2,TOP3 の馬連1軸2流し(2点)を生成"""
+    if len(df_sorted) < 3:
+        return []
+    nums = [int(df_sorted.iloc[i]['馬番']) for i in range(min(3, len(df_sorted)))]
+    bets = [sorted([nums[0], nums[1]]), sorted([nums[0], nums[2]])]
+    if bets[0] == bets[1]:
+        return [bets[0]]
+    return bets
+
+
+def generate_bets_for_condition(df_sorted, cond_key, profile):
+    """条件に応じた買い目を生成"""
+    bet_type = profile['bet_type']
+    if bet_type == 'trio':
+        return generate_trio_bets(df_sorted), 'trio'
+    elif bet_type == 'wide':
+        return generate_wide_bets(df_sorted), 'wide'
+    elif bet_type == 'umaren':
+        return generate_umaren_bets(df_sorted), 'umaren'
+    return [], 'none'
+
 
 def save_prediction(race_id, race_name, race_info, df_sorted, is_nar=False):
     conn = sqlite3.connect(DB_PATH)
@@ -131,14 +230,16 @@ def save_prediction(race_id, race_name, race_info, df_sorted, is_nar=False):
     top1 = df_sorted.iloc[0]
     trio_bets = generate_trio_bets(df_sorted)
     wide_bets = generate_wide_bets(df_sorted)
-    buy_rec, _ = check_buy_recommendation(race_info, len(df_sorted), is_nar=is_nar)
+    umaren_bets = generate_umaren_bets(df_sorted)
+    cond_key, profile = classify_race_condition(race_info, len(df_sorted), is_nar=is_nar)
+    buy_rec = profile['recommended']
     c.execute("""INSERT INTO race_results
         (race_id, race_name, predicted_at, num_horses, top1_name, top1_score,
-         trio_bets, wide_bets, is_nar, buy_recommended)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+         trio_bets, wide_bets, umaren_bets, is_nar, buy_recommended, bet_condition, bet_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (race_id, race_name, now, len(df_sorted), top1['馬名'], float(top1['スコア']),
-         json.dumps(trio_bets), json.dumps(wide_bets),
-         1 if is_nar else 0, 1 if buy_rec else 0))
+         json.dumps(trio_bets), json.dumps(wide_bets), json.dumps(umaren_bets),
+         1 if is_nar else 0, 1 if buy_rec else 0, cond_key, profile['bet_type']))
     conn.commit()
     conn.close()
 
@@ -443,14 +544,59 @@ def load_backtest_5year():
     except:
         return None
 
+def _classify_bt_race(r):
+    """バックテスト結果の1レースを条件分類"""
+    n = r.get('num_horses', 0)
+    dist = r.get('distance', 0)
+    cond = str(r.get('condition', ''))
+    good = any(c in cond for c in ['良', '稍'])
+    heavy = any(c in cond for c in ['重', '不'])
+    if n <= 7:
+        return 'E'
+    if dist <= 1400:
+        return 'D'
+    if 8 <= n <= 14 and dist >= 1600 and good:
+        return 'A'
+    if 8 <= n <= 14 and dist >= 1600 and heavy:
+        return 'B'
+    if n >= 15 and dist >= 1600 and good:
+        return 'C'
+    return 'X'
+
+
+def _compute_condition_roi(results):
+    """条件別ROIを集計"""
+    from collections import defaultdict
+    stats = defaultdict(lambda: {
+        'count': 0, 'trio_hit': 0, 'trio_payout': 0,
+        'wide_hit': 0, 'wide_payout': 0,
+        'umaren_hit': 0, 'umaren_payout': 0,
+    })
+    for r in results:
+        cat = _classify_bt_race(r)
+        s = stats[cat]
+        s['count'] += 1
+        if r.get('v9_trio_hit'):
+            s['trio_hit'] += 1
+            s['trio_payout'] += r.get('payouts', {}).get('trio', 0) if isinstance(r.get('payouts'), dict) else 0
+        if r.get('v9_wide_hits'):
+            s['wide_hit'] += 1
+            s['wide_payout'] += r.get('v9_wide_payout') or 0
+        if r.get('v9_umaren_hits'):
+            s['umaren_hit'] += 1
+            s['umaren_payout'] += r.get('v9_umaren_payout') or 0
+    return dict(stats)
+
+
 def render_5year_report(bt5):
-    """5年分バックテスト結果をHTML描画"""
+    """5年分バックテスト結果をHTML描画（条件別ROI＋年別ROIグラフ付き）"""
     if not bt5:
         return '<div class="ev-card"><span class="ev-lbl">5年バックテスト未実施</span></div>'
 
     generated = bt5.get('generated_at', '')
     summary = bt5.get('central_5year_summary', {})
     yearly = bt5.get('yearly_summaries', {})
+    results = bt5.get('central_results_5year', [])
 
     html = '<div class="ev-card">'
     html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">'
@@ -488,23 +634,122 @@ def render_5year_report(bt5):
             html += '</tr>'
         html += '</table>'
 
-    # Yearly breakdown (V9 trio only for readability)
+    # ===== 条件別ROI表 =====
+    if results:
+        cond_stats = _compute_condition_roi(results)
+        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;padding-top:10px;">'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">CONDITION-BASED ROI (V9)</div>'
+
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.8em;margin-bottom:10px;">'
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
+        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;">COND</th>'
+        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;">DESC</th>'
+        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">RACES</th>'
+        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">BET</th>'
+        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">HIT%</th>'
+        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">ROI</th>'
+        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">REC</th>'
+        html += '</tr>'
+
+        cond_order = [
+            ('A', '8-14頭/1600m+/良稍', 'trio'),
+            ('B', '8-14頭/1600m+/重不', 'wide'),
+            ('C', '15頭+/1600m+/良稍', 'wide'),
+            ('D', '1400m以下', 'none'),
+            ('E', '7頭以下', 'umaren'),
+            ('X', '15頭+/重不', 'wide'),
+        ]
+        for ck, desc, best_bet in cond_order:
+            s = cond_stats.get(ck)
+            if not s or s['count'] == 0:
+                continue
+            n = s['count']
+            if best_bet == 'trio':
+                hit = s['trio_hit']
+                inv = n * 700
+                pay = s['trio_payout']
+                bet_lbl = 'Trio'
+            elif best_bet == 'wide':
+                hit = s['wide_hit']
+                inv = n * 200
+                pay = s['wide_payout']
+                bet_lbl = 'Wide'
+            elif best_bet == 'umaren':
+                hit = s['umaren_hit']
+                inv = n * 200
+                pay = s['umaren_payout']
+                bet_lbl = 'Umaren'
+            else:
+                hit = s['trio_hit']
+                inv = n * 700
+                pay = s['trio_payout']
+                bet_lbl = '-'
+
+            hit_rate = hit / n * 100 if n > 0 else 0
+            roi = pay / inv * 100 if inv > 0 else 0
+            is_rec = roi >= 80 and best_bet != 'none'
+
+            hit_c = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
+            roi_c = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 80 else '#ff4060')
+            rec_icon = '<span style="color:#2ecc40 !important;">&#9745;</span>' if is_rec else '<span style="color:#ff4060 !important;">&#9746;</span>'
+
+            html += f'<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+            html += f'<td style="padding:4px 6px;font-family:Oswald;color:#f0c040 !important;">{ck}</td>'
+            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;font-size:0.9em;">{desc}</td>'
+            html += f'<td style="text-align:center;padding:4px;font-family:Oswald;">{n}</td>'
+            html += f'<td style="text-align:center;padding:4px;font-family:Oswald;">{bet_lbl}</td>'
+            html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_c} !important;">{hit_rate:.1f}%</td>'
+            html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{roi_c} !important;">{roi:.1f}%</td>'
+            html += f'<td style="text-align:center;padding:4px;">{rec_icon}</td>'
+            html += '</tr>'
+        html += '</table>'
+        html += '</div>'
+
+    # ===== 年別ROIグラフ =====
     if yearly:
-        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin:10px 0 6px;">V9 TRIO HIT RATE BY YEAR</div>'
+        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;padding-top:10px;">'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">V9 YEARLY ROI CHART</div>'
+
         for year in sorted(yearly.keys(), key=lambda x: int(x)):
             ys = yearly[year]
             v9d = ys.get('v9', {})
             n = v9d.get('n_races', 0)
             trio_rate = v9d.get('trio_hit_rate', 0)
+            trio_roi = v9d.get('trio_roi', 0)
             wide_rate = v9d.get('wide_hit_rate', 0)
-            bar_w = min(trio_rate * 2, 100)
-            color = '#2ecc40' if trio_rate >= 30 else ('#f0c040' if trio_rate >= 15 else '#ff4060')
-            html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:0.85em;">'
-            html += f'<span style="min-width:40px;color:#b0b8c8 !important;font-family:Oswald;">{year}</span>'
-            html += f'<div style="flex:1;height:14px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
-            html += f'<div style="width:{bar_w}%;height:100%;background:{color};border-radius:3px;"></div></div>'
-            html += f'<span style="font-family:Oswald;font-size:0.9em;min-width:120px;color:{color} !important;">Trio {trio_rate:.0f}% Wide {wide_rate:.0f}% ({n}R)</span>'
+            wide_roi = v9d.get('wide_roi', 0)
+
+            # Trio ROI bar
+            trio_bar_w = min(trio_roi / 1.5, 100)
+            trio_c = '#2ecc40' if trio_roi >= 100 else ('#f0c040' if trio_roi >= 80 else '#ff4060')
+            # Wide ROI bar
+            wide_bar_w = min(wide_roi / 1.5, 100)
+            wide_c = '#2ecc40' if wide_roi >= 100 else ('#f0c040' if wide_roi >= 80 else '#ff4060')
+
+            html += f'<div style="margin-bottom:8px;">'
+            html += f'<div style="font-family:Oswald;font-size:0.85em;color:#b0b8c8 !important;margin-bottom:3px;">{year} ({n}R)</div>'
+            # Trio bar
+            html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;font-size:0.82em;">'
+            html += f'<span style="min-width:45px;color:#6a6a80 !important;">Trio</span>'
+            html += f'<div style="flex:1;height:16px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;position:relative;">'
+            html += f'<div style="width:{trio_bar_w}%;height:100%;background:{trio_c};border-radius:3px;"></div>'
+            # 100% line
+            html += f'<div style="position:absolute;left:66.7%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.3);"></div>'
+            html += f'</div>'
+            html += f'<span style="font-family:Oswald;min-width:110px;color:{trio_c} !important;">ROI {trio_roi:.0f}% / HIT {trio_rate:.0f}%</span>'
             html += '</div>'
+            # Wide bar
+            html += f'<div style="display:flex;align-items:center;gap:6px;font-size:0.82em;">'
+            html += f'<span style="min-width:45px;color:#6a6a80 !important;">Wide</span>'
+            html += f'<div style="flex:1;height:16px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;position:relative;">'
+            html += f'<div style="width:{wide_bar_w}%;height:100%;background:{wide_c};border-radius:3px;"></div>'
+            html += f'<div style="position:absolute;left:66.7%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.3);"></div>'
+            html += f'</div>'
+            html += f'<span style="font-family:Oswald;min-width:110px;color:{wide_c} !important;">ROI {wide_roi:.0f}% / HIT {wide_rate:.0f}%</span>'
+            html += '</div>'
+            html += '</div>'
+
+        html += '</div>'
 
     html += '</div>'
     return html
@@ -3424,36 +3669,67 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
-    # Buy recommendation filter
+    # 条件別買い目自動切替
     is_nar_pred = st.session_state.get('pred_is_nar', False)
-    buy_rec, buy_reason = check_buy_recommendation(race_info, len(df), is_nar=is_nar_pred)
-    if buy_rec:
-        wide_bets = generate_wide_bets(df)
+    cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
+    bets_list, bet_type = generate_bets_for_condition(df, cond_key, cond_profile)
+    is_recommended = cond_profile['recommended'] and cond_profile['roi'] >= 80
+
+    if is_recommended and len(df) >= 3:
         top3 = df.head(3)
         n1_name = top3.iloc[0]['馬名'][:5]
         n1_num = int(top3.iloc[0]['馬番'])
         n2_num = int(top3.iloc[1]['馬番'])
         n3_num = int(top3.iloc[2]['馬番'])
-        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#0a2a1a,#1a3a2a);border:2px solid #2ecc40;border-radius:12px;">
-<div style="font-family:Oswald;font-size:1.1em;color:#2ecc40 !important;margin-bottom:8px;">BUY RECOMMENDED</div>
-<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:10px;">条件クリア: 頭数{len(df)}頭 / {race_info.get("distance",0)}m / {race_info.get("condition","良")}</div>
-<div style="font-family:Oswald;font-size:0.95em;color:#f0c040 !important;margin-bottom:4px;">WIDE 1-AXIS 2-FLOW</div>
-<div style="font-size:1.05em;padding:6px 0;">
+
+        # 買い目の詳細表示
+        if bet_type == 'trio':
+            type_label = 'TRIO 7-BET (三連複7点)'
+            bets_html = '<div style="font-size:0.95em;padding:6px 0;">'
+            for b in bets_list:
+                bets_html += f'<span style="font-family:Oswald;">{b[0]}-{b[1]}-{b[2]}</span> (100円)<br>'
+            bets_html += '</div>'
+            total_label = 'TOTAL: 700 YEN (100 x 7)'
+        elif bet_type == 'wide':
+            type_label = 'WIDE 1-AXIS 2-FLOW (ワイド1軸2流し)'
+            bets_html = f'''<div style="font-size:1.05em;padding:6px 0;">
 <span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
 <span style="color:#6a6a80 !important;"> - </span>
-<span style="font-family:Oswald;">{n2_num}</span> (350円)
-<br>
+<span style="font-family:Oswald;">{n2_num}</span> (350円)<br>
 <span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
 <span style="color:#6a6a80 !important;"> - </span>
 <span style="font-family:Oswald;">{n3_num}</span> (350円)
+</div>'''
+            total_label = 'TOTAL: 700 YEN (350 x 2)'
+        else:  # umaren
+            type_label = 'UMAREN 1-AXIS 2-FLOW (馬連1軸2流し)'
+            bets_html = f'''<div style="font-size:1.05em;padding:6px 0;">
+<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
+<span style="color:#6a6a80 !important;"> - </span>
+<span style="font-family:Oswald;">{n2_num}</span> (350円)<br>
+<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
+<span style="color:#6a6a80 !important;"> - </span>
+<span style="font-family:Oswald;">{n3_num}</span> (350円)
+</div>'''
+            total_label = 'TOTAL: 700 YEN (350 x 2)'
+
+        roi_color = '#2ecc40' if cond_profile['roi'] >= 100 else '#f0c040'
+        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#0a2a1a,#1a3a2a);border:2px solid #2ecc40;border-radius:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+<div style="font-family:Oswald;font-size:1.1em;color:#2ecc40 !important;">BUY RECOMMENDED</div>
+<div style="font-family:Oswald;font-size:0.85em;padding:2px 10px;border:1px solid {roi_color};border-radius:4px;color:{roi_color} !important;">
+{cond_profile["label"]} / ROI {cond_profile["roi"]:.1f}% / HIT {cond_profile["hit_rate"]:.1f}%</div>
 </div>
-<div style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;margin-top:6px;">TOTAL: 700 YEN (350 x 2)</div>
+<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:10px;">{cond_profile["desc"]} : 頭数{len(df)}頭 / {race_info.get("distance",0)}m / {race_info.get("condition","良")}</div>
+<div style="font-family:Oswald;font-size:0.95em;color:#f0c040 !important;margin-bottom:4px;">{type_label}</div>
+{bets_html}
+<div style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;margin-top:6px;">{total_label}</div>
 </div>''', unsafe_allow_html=True)
     else:
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
 <div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
-<div style="font-size:0.9em;color:#ff4060 !important;">{buy_reason}</div>
-<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">バックテスト結果: この条件では的中率・ROIが大幅に低下。見送りまたは少額投資推奨。</div>
+<div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
+<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。</div>
 </div>''', unsafe_allow_html=True)
     # Buy section (detailed)
     st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
