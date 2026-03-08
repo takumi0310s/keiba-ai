@@ -378,6 +378,134 @@ def render_weekly_report(analysis):
     html += '</div>'
     return html
 
+def load_backtest_report():
+    """backtest_results.jsonからバックテスト結果を読み込む"""
+    bt_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backtest_results.json")
+    if not os.path.exists(bt_path):
+        return None
+    try:
+        with open(bt_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        return None
+
+
+def render_backtest_report(bt_data):
+    """V8/V9バックテスト比較レポートをHTML描画"""
+    if not bt_data:
+        return '<div class="ev-card"><span class="ev-lbl">バックテスト未実施</span></div>'
+
+    generated = bt_data.get('generated_at', '')
+
+    html = '<div class="ev-card">'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">'
+    html += f'LEAK-FREE BACKTEST &mdash; {generated[:10] if generated else "N/A"}</div>'
+
+    # Render each section (central / nar)
+    sections = []
+    if bt_data.get('central_summary'):
+        sections.append(('Central (JRA)', bt_data['central_summary'], bt_data.get('central_results', [])))
+    if bt_data.get('nar_summary'):
+        sections.append(('NAR', bt_data['nar_summary'], bt_data.get('nar_results', [])))
+
+    if not sections:
+        html += '<div style="color:#6a6a80 !important;">No data</div></div>'
+        return html
+
+    for section_label, summary, results_list in sections:
+        n_races = summary.get('v8', {}).get('n_races', 0) or summary.get('v9', {}).get('n_races', 0)
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;margin-top:10px;">{section_label} 2025/10-12 &mdash; {n_races} races</div>'
+
+        # Comparison table
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.82em;margin-bottom:10px;">'
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
+        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;font-family:Oswald;">BET TYPE</th>'
+        for ver in ['V8', 'V9']:
+            html += f'<th colspan="2" style="text-align:center;padding:4px 6px;font-family:Oswald;">{ver}</th>'
+        html += '</tr>'
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">'
+        html += '<th></th>'
+        for _ in ['V8', 'V9']:
+            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">HIT</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">ROI</th>'
+        html += '</tr>'
+
+        for label, key in [('Trio 7-bet', 'trio'), ('Wide 1ax-2flow', 'wide'), ('Umaren 1ax-2flow', 'umaren')]:
+            html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;">{label}</td>'
+            for ver in ['v8', 'v9']:
+                d = summary.get(ver, {})
+                hit_rate = d.get(f'{key}_hit_rate', 0)
+                roi = d.get(f'{key}_roi', 0)
+                hit_color = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
+                roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+                html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_color} !important;">{hit_rate:.1f}%</td>'
+                html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{roi_color} !important;">{roi:.1f}%</td>'
+            html += '</tr>'
+        html += '</table>'
+
+    # Winner badge (central data)
+    central = bt_data.get('central_summary', {})
+    if central:
+        v8_trio = central.get('v8', {}).get('trio_hit_rate', 0)
+        v9_trio = central.get('v9', {}).get('trio_hit_rate', 0)
+        if v9_trio > v8_trio:
+            diff = v9_trio - v8_trio
+            html += f'<div style="background:rgba(46,204,64,0.1);border:1px solid rgba(46,204,64,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px;">'
+            html += f'<span style="font-family:Oswald;color:#2ecc40 !important;">V9 WINS</span>'
+            html += f'<span style="color:#b0b8c8 !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
+        elif v8_trio > v9_trio:
+            diff = v8_trio - v9_trio
+            html += f'<div style="background:rgba(40,152,216,0.1);border:1px solid rgba(40,152,216,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px;">'
+            html += f'<span style="font-family:Oswald;color:#2898d8 !important;">V8 WINS</span>'
+            html += f'<span style="color:#b0b8c8 !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
+
+    # Loss pattern analysis (use central results)
+    central_results = bt_data.get('central_results', [])
+    if central_results:
+        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN (V9 Trio)</div>'
+
+        v9_wins = [r for r in central_results if r.get('v9_trio_hit')]
+        v9_losses = [r for r in central_results if not r.get('v9_trio_hit')]
+
+        categories = [
+            ('Field Size', [
+                ('5-9', lambda r: 5 <= r.get('num_horses', 0) <= 9),
+                ('10-14', lambda r: 10 <= r.get('num_horses', 0) <= 14),
+                ('15-18', lambda r: 15 <= r.get('num_horses', 0) <= 18),
+            ]),
+            ('Distance', [
+                ('Sprint', lambda r: r.get('distance', 0) <= 1400),
+                ('Mile', lambda r: 1401 <= r.get('distance', 0) <= 1800),
+                ('Mid', lambda r: 1801 <= r.get('distance', 0) <= 2200),
+                ('Long', lambda r: r.get('distance', 0) >= 2201),
+            ]),
+        ]
+
+        for cat_name, items in categories:
+            html += f'<div style="font-size:0.78em;color:#6a6a80 !important;margin:6px 0 3px;">{cat_name}</div>'
+            for label, fn in items:
+                w = sum(1 for r in v9_wins if fn(r))
+                total = w + sum(1 for r in v9_losses if fn(r))
+                if total == 0:
+                    continue
+                rate = w / total * 100
+                bar_w = min(rate * 2, 100)
+                color = '#2ecc40' if rate >= 30 else ('#f0c040' if rate >= 15 else '#ff4060')
+                html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;font-size:0.88em;">'
+                html += f'<span style="min-width:70px;color:#b0b8c8 !important;">{label}</span>'
+                html += f'<div style="flex:1;height:12px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
+                html += f'<div style="width:{bar_w}%;height:100%;background:{color};border-radius:3px;"></div></div>'
+                html += f'<span style="font-family:Oswald;font-size:0.85em;min-width:80px;color:{color} !important;">{w}/{total} ({rate:.0f}%)</span>'
+                html += '</div>'
+
+        html += '</div>'
+
+    html += '</div>'
+    return html
+
+
 init_db()
 
 # ===== CSS =====
@@ -3288,6 +3416,14 @@ with st.expander("📊 週次分析レポート"):
         st.markdown(render_weekly_report(weekly), unsafe_allow_html=True)
     else:
         st.info("分析データがありません。レース結果を登録すると、コース/距離/馬場/頭数別の的中率・回収率を自動分析します。")
+
+# ===== V8 vs V9 バックテスト比較 =====
+with st.expander("🧪 V8 vs V9 Backtest Report"):
+    bt_data = load_backtest_report()
+    if bt_data:
+        st.markdown(render_backtest_report(bt_data), unsafe_allow_html=True)
+    else:
+        st.info("バックテスト未実施。`python backtest_v8_v9.py` を実行するとリークフリーの精度検証レポートが生成されます。")
 
 # TRACK RECORD 管理（削除機能）
 with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
