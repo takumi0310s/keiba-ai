@@ -1,0 +1,447 @@
+{
+  "generated_at": "2026-03-09 02:34:42",
+  "model": "nar_v2a_leakfree",
+  "total_races": 184,
+  "conditions": {
+    "A": {
+      "n": 69,
+      "best_bet": "trio",
+      "best_roi": 366.0,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 45,
+          "hit_rate": 65.2,
+          "investment": 48300,
+          "payout": 176790,
+          "roi": 366.0
+        },
+        "umaren": {
+          "hits": 25,
+          "hit_rate": 36.2,
+          "investment": 48300,
+          "payout": 157990,
+          "roi": 327.1
+        },
+        "wide": {
+          "hits": 47,
+          "hit_rate": 68.1,
+          "investment": 48300,
+          "payout": 121135,
+          "roi": 250.8
+        }
+      }
+    },
+    "B": {
+      "n": 83,
+      "best_bet": "trio",
+      "best_roi": 431.9,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 41,
+          "hit_rate": 49.4,
+          "investment": 58100,
+          "payout": 250910,
+          "roi": 431.9
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 36.1,
+          "investment": 58100,
+          "payout": 238000,
+          "roi": 409.6
+        },
+        "wide": {
+          "hits": 53,
+          "hit_rate": 63.9,
+          "investment": 58100,
+          "payout": 183470,
+          "roi": 315.8
+        }
+      }
+    },
+    "E": {
+      "n": 30,
+      "best_bet": "umaren",
+      "best_roi": 349.8,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 28,
+          "hit_rate": 93.3,
+          "investment": 21000,
+          "payout": 41700,
+          "roi": 198.6
+        },
+        "umaren": {
+          "hits": 18,
+          "hit_rate": 60.0,
+          "investment": 21000,
+          "payout": 73465,
+          "roi": 349.8
+        },
+        "wide": {
+          "hits": 28,
+          "hit_rate": 93.3,
+          "investment": 21000,
+          "payout": 44975,
+          "roi": 214.2
+        }
+      }
+    }
+  },
+  "multi_axis": {
+    "Distance": {
+      "mile": {
+        "n": 184,
+        "best_bet": "trio",
+        "best_roi": 365.2,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 115,
+          "hit_rate": 62.5,
+          "investment": 128800,
+          "payout": 470330,
+          "roi": 365.2
+        },
+        "umaren": {
+          "hits": 73,
+          "hit_rate": 39.7,
+          "investment": 128800,
+          "payout": 469455,
+          "roi": 364.5
+        },
+        "wide": {
+          "hits": 129,
+          "hit_rate": 70.1,
+          "investment": 128800,
+          "payout": 350175,
+          "roi": 271.9
+        }
+      }
+    },
+    "NumHorses": {
+      "medium": {
+        "n": 152,
+        "best_bet": "trio",
+        "best_roi": 402.0,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 86,
+          "hit_rate": 56.6,
+          "investment": 106400,
+          "payout": 427700,
+          "roi": 402.0
+        },
+        "umaren": {
+          "hits": 55,
+          "hit_rate": 36.2,
+          "investment": 106400,
+          "payout": 395990,
+          "roi": 372.2
+        },
+        "wide": {
+          "hits": 100,
+          "hit_rate": 65.8,
+          "investment": 106400,
+          "payout": 304605,
+          "roi": 286.3
+        }
+      },
+      "small": {
+        "n": 30,
+        "best_bet": "umaren",
+        "best_roi": 349.8,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 28,
+          "hit_rate": 93.3,
+          "investment": 21000,
+          "payout": 41700,
+          "roi": 198.6
+        },
+        "umaren": {
+          "hits": 18,
+          "hit_rate": 60.0,
+          "investment": 21000,
+          "payout": 73465,
+          "roi": 349.8
+        },
+        "wide": {
+          "hits": 28,
+          "hit_rate": 93.3,
+          "investment": 21000,
+          "payout": 44975,
+          "roi": 214.2
+        }
+      }
+    },
+    "TrackCond": {
+      "good": {
+        "n": 83,
+        "best_bet": "trio",
+        "best_roi": 319.9,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 56,
+          "hit_rate": 67.5,
+          "investment": 58100,
+          "payout": 185890,
+          "roi": 319.9
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 36.1,
+          "investment": 58100,
+          "payout": 169155,
+          "roi": 291.1
+        },
+        "wide": {
+          "hits": 58,
+          "hit_rate": 69.9,
+          "investment": 58100,
+          "payout": 132860,
+          "roi": 228.7
+        }
+      },
+      "heavy": {
+        "n": 101,
+        "best_bet": "umaren",
+        "best_roi": 424.8,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 59,
+          "hit_rate": 58.4,
+          "investment": 70700,
+          "payout": 284440,
+          "roi": 402.3
+        },
+        "umaren": {
+          "hits": 43,
+          "hit_rate": 42.6,
+          "investment": 70700,
+          "payout": 300300,
+          "roi": 424.8
+        },
+        "wide": {
+          "hits": 71,
+          "hit_rate": 70.3,
+          "investment": 70700,
+          "payout": 217315,
+          "roi": 307.4
+        }
+      }
+    },
+    "Course": {
+      "nan": {
+        "n": 179,
+        "best_bet": "trio",
+        "best_roi": 374.5,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 113,
+          "hit_rate": 63.1,
+          "investment": 125300,
+          "payout": 469270,
+          "roi": 374.5
+        },
+        "umaren": {
+          "hits": 72,
+          "hit_rate": 40.2,
+          "investment": 125300,
+          "payout": 422625,
+          "roi": 337.3
+        },
+        "wide": {
+          "hits": 126,
+          "hit_rate": 70.4,
+          "investment": 125300,
+          "payout": 337330,
+          "roi": 269.2
+        }
+      }
+    },
+    "Condition×Track": {
+      "A_good": {
+        "n": 69,
+        "best_bet": "trio",
+        "best_roi": 366.0,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 45,
+          "hit_rate": 65.2,
+          "investment": 48300,
+          "payout": 176790,
+          "roi": 366.0
+        },
+        "umaren": {
+          "hits": 25,
+          "hit_rate": 36.2,
+          "investment": 48300,
+          "payout": 157990,
+          "roi": 327.1
+        },
+        "wide": {
+          "hits": 47,
+          "hit_rate": 68.1,
+          "investment": 48300,
+          "payout": 121135,
+          "roi": 250.8
+        }
+      },
+      "B_heavy": {
+        "n": 83,
+        "best_bet": "trio",
+        "best_roi": 431.9,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 41,
+          "hit_rate": 49.4,
+          "investment": 58100,
+          "payout": 250910,
+          "roi": 431.9
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 36.1,
+          "investment": 58100,
+          "payout": 238000,
+          "roi": 409.6
+        },
+        "wide": {
+          "hits": 53,
+          "hit_rate": 63.9,
+          "investment": 58100,
+          "payout": 183470,
+          "roi": 315.8
+        }
+      },
+      "E_good": {
+        "n": 12,
+        "best_bet": "umaren",
+        "best_roi": 132.9,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 10,
+          "hit_rate": 83.3,
+          "investment": 8400,
+          "payout": 8170,
+          "roi": 97.3
+        },
+        "umaren": {
+          "hits": 5,
+          "hit_rate": 41.7,
+          "investment": 8400,
+          "payout": 11165,
+          "roi": 132.9
+        },
+        "wide": {
+          "hits": 10,
+          "hit_rate": 83.3,
+          "investment": 8400,
+          "payout": 11130,
+          "roi": 132.5
+        }
+      },
+      "E_heavy": {
+        "n": 18,
+        "best_bet": "umaren",
+        "best_roi": 494.4,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 18,
+          "hit_rate": 100.0,
+          "investment": 12600,
+          "payout": 33530,
+          "roi": 266.1
+        },
+        "umaren": {
+          "hits": 13,
+          "hit_rate": 72.2,
+          "investment": 12600,
+          "payout": 62300,
+          "roi": 494.4
+        },
+        "wide": {
+          "hits": 18,
+          "hit_rate": 100.0,
+          "investment": 12600,
+          "payout": 33845,
+          "roi": 268.6
+        }
+      }
+    },
+    "Distance×Track": {
+      "mile_good": {
+        "n": 83,
+        "best_bet": "trio",
+        "best_roi": 319.9,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 56,
+          "hit_rate": 67.5,
+          "investment": 58100,
+          "payout": 185890,
+          "roi": 319.9
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 36.1,
+          "investment": 58100,
+          "payout": 169155,
+          "roi": 291.1
+        },
+        "wide": {
+          "hits": 58,
+          "hit_rate": 69.9,
+          "investment": 58100,
+          "payout": 132860,
+          "roi": 228.7
+        }
+      },
+      "mile_heavy": {
+        "n": 101,
+        "best_bet": "umaren",
+        "best_roi": 424.8,
+        "stars": 3,
+        "recommended": true,
+        "trio": {
+          "hits": 59,
+          "hit_rate": 58.4,
+          "investment": 70700,
+          "payout": 284440,
+          "roi": 402.3
+        },
+        "umaren": {
+          "hits": 43,
+          "hit_rate": 42.6,
+          "investment": 70700,
+          "payout": 300300,
+          "roi": 424.8
+        },
+        "wide": {
+          "hits": 71,
+          "hit_rate": 70.3,
+          "investment": 70700,
+          "payout": 217315,
+          "roi": 307.4
+        }
+      }
+    }
+  }
+}

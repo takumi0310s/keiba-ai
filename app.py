@@ -20,10 +20,9 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predic
 INVESTMENT_PER_RACE = 700
 
 # 条件別買い目ロジック
-# V9.2a リークフリーモデル (AUC 0.8083, odds_log/horse_weight/condition_enc除外)
-# Pattern A (本番): 当日前情報のみ使用 → 確定オッズリーク完全排除
-# Pattern B (参考): レース前情報OK (AUC 0.8096) → odds_logのみ除外
-# ※旧V9.2 AUC 0.8456は確定オッズリークによる過大評価
+# WF backtest 2020-2025 (20,655R) リークフリーPattern A (AUC 0.8017)
+# 推定配当ROI (trio=o1*o2*o3*20, 全条件trio推奨)
+# ★★★=120%+, ★★=100-120%, ★=80-100%, X=80%未満
 CONDITION_PROFILES = {
     'A': {
         'label': '条件A',
@@ -32,11 +31,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,  # リークフリー: 的中率のみ検証済 (ROI未算出)
-        'hit_rate': 46.9,  # Pattern A trio的中率 (N=2185)
+        'roi': 380.9,  # WF trio推定ROI (N=6457) ★★★
+        'hit_rate': 44.7,  # WF trio的中率
         'recommended': True,
-        'leakfree_n': 2185,
-        # Pattern B参考: hit_rate=47.0% (N=2185)
+        'wf_n': 6457,
     },
     'B': {
         'label': '条件B',
@@ -45,11 +43,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 48.3,  # Pattern A trio的中率 (N=207)
+        'roi': 487.6,  # WF trio推定ROI (N=855) ★★★
+        'hit_rate': 45.3,
         'recommended': True,
-        'leakfree_n': 207,
-        # Pattern B参考: hit_rate=51.2% (N=207)
+        'wf_n': 855,
     },
     'C': {
         'label': '条件C',
@@ -58,11 +55,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 34.4,  # Pattern A trio的中率 (N=1703)
+        'roi': 510.2,  # WF trio推定ROI (N=4788) ★★★
+        'hit_rate': 33.6,
         'recommended': True,
-        'leakfree_n': 1703,
-        # Pattern B参考: hit_rate=33.2% (N=1703)
+        'wf_n': 4788,
     },
     'D': {
         'label': '条件D',
@@ -71,11 +67,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 29.2,  # Pattern A trio的中率 (N=2390)
+        'roi': 230.1,  # WF trio推定ROI (N=7280) ★★★
+        'hit_rate': 27.3,
         'recommended': True,
-        'leakfree_n': 2390,
-        # Pattern B参考: hit_rate=29.9% (N=2390)
+        'wf_n': 7280,
     },
     'E': {
         'label': '条件E',
@@ -84,11 +79,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 76.0,  # Pattern A trio的中率 (N=196)
+        'roi': 300.0,  # WF trio推定ROI (N=462) ★★★
+        'hit_rate': 75.3,
         'recommended': True,
-        'leakfree_n': 196,
-        # Pattern B参考: hit_rate=74.0% (N=196)
+        'wf_n': 462,
     },
     'X': {
         'label': '条件外',
@@ -97,11 +91,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 33.8,  # Pattern A trio的中率 (N=228)
+        'roi': 498.2,  # WF trio推定ROI (N=813) ★★★
+        'hit_rate': 35.7,
         'recommended': True,
-        'leakfree_n': 228,
-        # Pattern B参考: hit_rate=34.2% (N=228)
+        'wf_n': 813,
     },
 }
 
@@ -3322,17 +3315,14 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
     roi = cond_profile['roi']
     hit_rate = cond_profile['hit_rate']
     roi_c = '#2ecc40' if roi >= 100 else '#f0c040'
-    leakfree_n = cond_profile.get('leakfree_n', 0)
-    is_small_sample = cond_profile.get('small_sample', False)
-    is_unverified = cond_profile.get('leakfree_unverified', False)
+    wf_n = cond_profile.get('wf_n', cond_profile.get('leakfree_n', 0))
+    is_small_sample = wf_n > 0 and wf_n < 30
 
-    # リークフリー検証バッジ
-    if is_unverified:
-        lf_badge = '<span style="font-size:0.72em;padding:2px 6px;background:#554400;color:#f0c040 !important;border-radius:4px;margin-left:6px;">LF未検証</span>'
-    elif is_small_sample:
-        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">LF検証済 N={leakfree_n}</span><span style="font-size:0.72em;padding:2px 6px;background:#3a2a00;color:#f0c040 !important;border-radius:4px;margin-left:4px;">サンプル少</span>'
-    elif leakfree_n > 0:
-        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">LF検証済 N={leakfree_n}</span>'
+    # WFバックテスト検証バッジ
+    if wf_n >= 30:
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">WF検証済 N={wf_n:,}</span>'
+    elif wf_n > 0:
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#3a2a00;color:#f0c040 !important;border-radius:4px;margin-left:6px;">サンプル少 N={wf_n}</span>'
     else:
         lf_badge = ''
 
