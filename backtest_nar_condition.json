@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-03-08",
+  "description": "NAR 100レース条件別バックテスト結果 (V8モデル)",
+  "total_races": 100,
+  "condition_results": {
+    "A": {
+      "desc": "8-14頭/1600m+/良~稍重",
+      "n": 47,
+      "best_bet": "wide",
+      "trio": {"hits": 8, "hit_rate": 17.0, "investment": 32900, "payout": 13110, "roi": 39.8},
+      "wide": {"hits": 14, "hit_rate": 29.8, "investment": 9400, "payout": 8120, "roi": 86.4},
+      "umaren": {"hits": 7, "hit_rate": 14.9, "investment": 9400, "payout": 5000, "roi": 53.2},
+      "recommended": true
+    },
+    "B": {
+      "desc": "8-14頭/1600m+/重~不良",
+      "n": 42,
+      "best_bet": "wide",
+      "trio": {"hits": 9, "hit_rate": 21.4, "investment": 29400, "payout": 10640, "roi": 36.2},
+      "wide": {"hits": 14, "hit_rate": 33.3, "investment": 8400, "payout": 5710, "roi": 68.0},
+      "umaren": {"hits": 5, "hit_rate": 11.9, "investment": 8400, "payout": 5170, "roi": 61.5},
+      "recommended": false
+    },
+    "C": {
+      "desc": "15頭+/1600m+/良~稍重",
+      "n": 1,
+      "best_bet": "wide",
+      "recommended": false
+    },
+    "D": {
+      "desc": "1400m以下",
+      "n": 0,
+      "best_bet": "trio",
+      "recommended": false
+    },
+    "E": {
+      "desc": "7頭以下",
+      "n": 9,
+      "best_bet": "trio",
+      "trio": {"hits": 4, "hit_rate": 44.4, "investment": 6300, "payout": 3930, "roi": 62.4},
+      "wide": {"hits": 4, "hit_rate": 44.4, "investment": 1800, "payout": 1020, "roi": 56.7},
+      "umaren": {"hits": 2, "hit_rate": 22.2, "investment": 1800, "payout": 950, "roi": 52.8},
+      "recommended": false
+    },
+    "X": {
+      "desc": "15頭+/重~不良",
+      "n": 1,
+      "best_bet": "wide",
+      "recommended": false
+    }
+  },
+  "summary": "条件A(wide)のみROI 86.4%で買い推奨。他条件は全てROI 80%未満で非推奨。"
+}
