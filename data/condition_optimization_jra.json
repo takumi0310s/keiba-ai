@@ -1,0 +1,8019 @@
+{
+  "generated": "2026-03-09 00:42:44",
+  "total_conditions_explored": 2938,
+  "top_findings": [
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 33,
+      "hits": 7,
+      "hit_rate": 21.2,
+      "roi": 2517.7,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 9169.1,
+          "n": 4
+        },
+        {
+          "year": 2019,
+          "roi": 0.0,
+          "n": 4
+        },
+        {
+          "year": 2020,
+          "roi": 66.9,
+          "n": 4
+        },
+        {
+          "year": 2021,
+          "roi": 0.0,
+          "n": 5
+        },
+        {
+          "year": 2022,
+          "roi": 813.6,
+          "n": 4
+        },
+        {
+          "year": 2023,
+          "roi": 805.3,
+          "n": 4
+        },
+        {
+          "year": 2024,
+          "roi": 0.0,
+          "n": 4
+        },
+        {
+          "year": 2025,
+          "roi": 9916.1,
+          "n": 4
+        }
+      ],
+      "course": "新潟",
+      "class": "G2G3",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-1800m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 278,
+      "hits": 114,
+      "hit_rate": 41.0,
+      "roi": 1448.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 204.7,
+          "n": 30
+        },
+        {
+          "year": 2019,
+          "roi": 388.3,
+          "n": 29
+        },
+        {
+          "year": 2020,
+          "roi": 397.0,
+          "n": 33
+        },
+        {
+          "year": 2021,
+          "roi": 629.7,
+          "n": 35
+        },
+        {
+          "year": 2022,
+          "roi": 545.5,
+          "n": 38
+        },
+        {
+          "year": 2023,
+          "roi": 274.0,
+          "n": 38
+        },
+        {
+          "year": 2024,
+          "roi": 8146.9,
+          "n": 38
+        },
+        {
+          "year": 2025,
+          "roi": 244.9,
+          "n": 37
+        }
+      ],
+      "course": "札幌",
+      "class": "newcomer",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 80,
+      "hits": 32,
+      "hit_rate": 40.0,
+      "roi": 1171.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 205.2,
+          "n": 11
+        },
+        {
+          "year": 2019,
+          "roi": 709.0,
+          "n": 11
+        },
+        {
+          "year": 2020,
+          "roi": 601.1,
+          "n": 10
+        },
+        {
+          "year": 2021,
+          "roi": 1056.4,
+          "n": 11
+        },
+        {
+          "year": 2022,
+          "roi": 288.6,
+          "n": 11
+        },
+        {
+          "year": 2023,
+          "roi": 472.2,
+          "n": 12
+        },
+        {
+          "year": 2024,
+          "roi": 95.9,
+          "n": 4
+        },
+        {
+          "year": 2025,
+          "roi": 5679.8,
+          "n": 10
+        }
+      ],
+      "course": "阪神",
+      "class": "G2G3",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 641,
+      "hits": 319,
+      "hit_rate": 49.8,
+      "roi": 1104.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 580.3,
+          "n": 67
+        },
+        {
+          "year": 2019,
+          "roi": 429.9,
+          "n": 68
+        },
+        {
+          "year": 2020,
+          "roi": 347.5,
+          "n": 55
+        },
+        {
+          "year": 2021,
+          "roi": 620.2,
+          "n": 109
+        },
+        {
+          "year": 2022,
+          "roi": 478.7,
+          "n": 109
+        },
+        {
+          "year": 2023,
+          "roi": 535.4,
+          "n": 78
+        },
+        {
+          "year": 2024,
+          "roi": 579.2,
+          "n": 69
+        },
+        {
+          "year": 2025,
+          "roi": 4895.2,
+          "n": 86
+        }
+      ],
+      "course": "中京",
+      "class": "newcomer",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 44,
+      "hits": 22,
+      "hit_rate": 50.0,
+      "roi": 1055.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 529.0,
+          "n": 6
+        },
+        {
+          "year": 2020,
+          "roi": 390.1,
+          "n": 16
+        },
+        {
+          "year": 2021,
+          "roi": 3553.8,
+          "n": 6
+        },
+        {
+          "year": 2022,
+          "roi": 402.9,
+          "n": 3
+        },
+        {
+          "year": 2023,
+          "roi": 654.3,
+          "n": 6
+        },
+        {
+          "year": 2025,
+          "roi": 3527.2,
+          "n": 3
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 95,
+      "hits": 51,
+      "hit_rate": 53.7,
+      "roi": 1006.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 13549.0,
+          "n": 3
+        },
+        {
+          "year": 2019,
+          "roi": 2182.7,
+          "n": 9
+        },
+        {
+          "year": 2020,
+          "roi": 313.7,
+          "n": 16
+        },
+        {
+          "year": 2021,
+          "roi": 354.8,
+          "n": 24
+        },
+        {
+          "year": 2022,
+          "roi": 458.6,
+          "n": 9
+        },
+        {
+          "year": 2023,
+          "roi": 595.1,
+          "n": 19
+        },
+        {
+          "year": 2024,
+          "roi": 334.6,
+          "n": 11
+        },
+        {
+          "year": 2025,
+          "roi": 662.0,
+          "n": 4
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 54,
+      "hits": 19,
+      "hit_rate": 35.2,
+      "roi": 996.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1444.7,
+          "n": 9
+        },
+        {
+          "year": 2019,
+          "roi": 144.6,
+          "n": 3
+        },
+        {
+          "year": 2020,
+          "roi": 4896.2,
+          "n": 5
+        },
+        {
+          "year": 2021,
+          "roi": 182.2,
+          "n": 9
+        },
+        {
+          "year": 2022,
+          "roi": 99.3,
+          "n": 9
+        },
+        {
+          "year": 2023,
+          "roi": 737.6,
+          "n": 10
+        },
+        {
+          "year": 2024,
+          "roi": 0.0,
+          "n": 2
+        },
+        {
+          "year": 2025,
+          "roi": 819.6,
+          "n": 7
+        }
+      ],
+      "course": "阪神",
+      "class": "OP",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 59,
+      "hits": 20,
+      "hit_rate": 33.9,
+      "roi": 972.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 147.2,
+          "n": 9
+        },
+        {
+          "year": 2019,
+          "roi": 2647.9,
+          "n": 10
+        },
+        {
+          "year": 2020,
+          "roi": 129.7,
+          "n": 8
+        },
+        {
+          "year": 2023,
+          "roi": 703.1,
+          "n": 7
+        },
+        {
+          "year": 2024,
+          "roi": 69.1,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 2254.5,
+          "n": 10
+        }
+      ],
+      "course": "京都",
+      "class": "G2G3",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 57,
+      "hits": 26,
+      "hit_rate": 45.6,
+      "roi": 899.3,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 622.5,
+          "n": 8
+        },
+        {
+          "year": 2019,
+          "roi": 0.0,
+          "n": 3
+        },
+        {
+          "year": 2020,
+          "roi": 312.1,
+          "n": 20
+        },
+        {
+          "year": 2021,
+          "roi": 3046.1,
+          "n": 7
+        },
+        {
+          "year": 2022,
+          "roi": 302.2,
+          "n": 4
+        },
+        {
+          "year": 2023,
+          "roi": 710.6,
+          "n": 8
+        },
+        {
+          "year": 2024,
+          "roi": 327.9,
+          "n": 3
+        },
+        {
+          "year": 2025,
+          "roi": 2709.2,
+          "n": 4
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 128,
+      "hits": 69,
+      "hit_rate": 53.9,
+      "roi": 891.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 13549.0,
+          "n": 3
+        },
+        {
+          "year": 2019,
+          "roi": 1531.3,
+          "n": 14
+        },
+        {
+          "year": 2020,
+          "roi": 640.3,
+          "n": 20
+        },
+        {
+          "year": 2021,
+          "roi": 316.6,
+          "n": 32
+        },
+        {
+          "year": 2022,
+          "roi": 412.8,
+          "n": 10
+        },
+        {
+          "year": 2023,
+          "roi": 560.6,
+          "n": 29
+        },
+        {
+          "year": 2024,
+          "roi": 400.7,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 529.6,
+          "n": 5
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 39,
+      "hits": 20,
+      "hit_rate": 51.3,
+      "roi": 867.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 529.0,
+          "n": 6
+        },
+        {
+          "year": 2020,
+          "roi": 321.8,
+          "n": 13
+        },
+        {
+          "year": 2021,
+          "roi": 3553.8,
+          "n": 6
+        },
+        {
+          "year": 2022,
+          "roi": 402.9,
+          "n": 3
+        },
+        {
+          "year": 2023,
+          "roi": 654.3,
+          "n": 6
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 122,
+      "hits": 64,
+      "hit_rate": 52.5,
+      "roi": 860.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 8354.6,
+          "n": 5
+        },
+        {
+          "year": 2019,
+          "roi": 1374.7,
+          "n": 15
+        },
+        {
+          "year": 2020,
+          "roi": 286.1,
+          "n": 22
+        },
+        {
+          "year": 2021,
+          "roi": 322.9,
+          "n": 27
+        },
+        {
+          "year": 2022,
+          "roi": 430.0,
+          "n": 10
+        },
+        {
+          "year": 2023,
+          "roi": 487.3,
+          "n": 26
+        },
+        {
+          "year": 2024,
+          "roi": 443.5,
+          "n": 12
+        },
+        {
+          "year": 2025,
+          "roi": 1051.5,
+          "n": 5
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 143,
+      "hits": 78,
+      "hit_rate": 54.5,
+      "roi": 846.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 5313.9,
+          "n": 9
+        },
+        {
+          "year": 2019,
+          "roi": 1785.9,
+          "n": 11
+        },
+        {
+          "year": 2020,
+          "roi": 283.4,
+          "n": 24
+        },
+        {
+          "year": 2021,
+          "roi": 422.8,
+          "n": 37
+        },
+        {
+          "year": 2022,
+          "roi": 375.2,
+          "n": 11
+        },
+        {
+          "year": 2023,
+          "roi": 613.2,
+          "n": 29
+        },
+        {
+          "year": 2024,
+          "roi": 398.3,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 469.8,
+          "n": 7
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 188,
+      "hits": 78,
+      "hit_rate": 41.5,
+      "roi": 842.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 367.7,
+          "n": 24
+        },
+        {
+          "year": 2019,
+          "roi": 141.8,
+          "n": 13
+        },
+        {
+          "year": 2020,
+          "roi": 789.2,
+          "n": 42
+        },
+        {
+          "year": 2021,
+          "roi": 852.2,
+          "n": 33
+        },
+        {
+          "year": 2022,
+          "roi": 525.8,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 634.4,
+          "n": 36
+        },
+        {
+          "year": 2024,
+          "roi": 69.3,
+          "n": 10
+        },
+        {
+          "year": 2025,
+          "roi": 3892.9,
+          "n": 14
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 143,
+      "hits": 74,
+      "hit_rate": 51.7,
+      "roi": 841.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 7220.2,
+          "n": 6
+        },
+        {
+          "year": 2019,
+          "roi": 1160.3,
+          "n": 20
+        },
+        {
+          "year": 2020,
+          "roi": 251.8,
+          "n": 25
+        },
+        {
+          "year": 2021,
+          "roi": 304.1,
+          "n": 29
+        },
+        {
+          "year": 2022,
+          "roi": 506.4,
+          "n": 14
+        },
+        {
+          "year": 2023,
+          "roi": 717.0,
+          "n": 29
+        },
+        {
+          "year": 2024,
+          "roi": 430.7,
+          "n": 13
+        },
+        {
+          "year": 2025,
+          "roi": 751.1,
+          "n": 7
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 46,
+      "hits": 24,
+      "hit_rate": 52.2,
+      "roi": 839.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 711.4,
+          "n": 7
+        },
+        {
+          "year": 2020,
+          "roi": 261.4,
+          "n": 16
+        },
+        {
+          "year": 2021,
+          "roi": 3553.8,
+          "n": 6
+        },
+        {
+          "year": 2022,
+          "roi": 402.9,
+          "n": 3
+        },
+        {
+          "year": 2023,
+          "roi": 812.2,
+          "n": 7
+        },
+        {
+          "year": 2024,
+          "roi": 327.9,
+          "n": 3
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 284,
+      "hits": 134,
+      "hit_rate": 47.2,
+      "roi": 820.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1980.6,
+          "n": 27
+        },
+        {
+          "year": 2019,
+          "roi": 976.7,
+          "n": 22
+        },
+        {
+          "year": 2020,
+          "roi": 717.1,
+          "n": 47
+        },
+        {
+          "year": 2021,
+          "roi": 350.7,
+          "n": 64
+        },
+        {
+          "year": 2022,
+          "roi": 472.2,
+          "n": 24
+        },
+        {
+          "year": 2023,
+          "roi": 622.0,
+          "n": 59
+        },
+        {
+          "year": 2024,
+          "roi": 289.9,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 2622.6,
+          "n": 18
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 356,
+      "hits": 172,
+      "hit_rate": 48.3,
+      "roi": 805.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1719.3,
+          "n": 34
+        },
+        {
+          "year": 2019,
+          "roi": 802.8,
+          "n": 29
+        },
+        {
+          "year": 2020,
+          "roi": 694.0,
+          "n": 64
+        },
+        {
+          "year": 2021,
+          "roi": 580.5,
+          "n": 77
+        },
+        {
+          "year": 2022,
+          "roi": 447.9,
+          "n": 28
+        },
+        {
+          "year": 2023,
+          "roi": 610.8,
+          "n": 75
+        },
+        {
+          "year": 2024,
+          "roi": 356.4,
+          "n": 28
+        },
+        {
+          "year": 2025,
+          "roi": 2260.1,
+          "n": 21
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 183,
+      "hits": 76,
+      "hit_rate": 41.5,
+      "roi": 796.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 367.7,
+          "n": 24
+        },
+        {
+          "year": 2019,
+          "roi": 141.8,
+          "n": 13
+        },
+        {
+          "year": 2020,
+          "roi": 797.1,
+          "n": 39
+        },
+        {
+          "year": 2021,
+          "roi": 852.2,
+          "n": 33
+        },
+        {
+          "year": 2022,
+          "roi": 525.8,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 634.4,
+          "n": 36
+        },
+        {
+          "year": 2024,
+          "roi": 69.3,
+          "n": 10
+        },
+        {
+          "year": 2025,
+          "roi": 3659.9,
+          "n": 12
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 155,
+      "hits": 82,
+      "hit_rate": 52.9,
+      "roi": 796.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 8354.6,
+          "n": 5
+        },
+        {
+          "year": 2019,
+          "roi": 1120.7,
+          "n": 20
+        },
+        {
+          "year": 2020,
+          "roi": 541.6,
+          "n": 26
+        },
+        {
+          "year": 2021,
+          "roi": 295.2,
+          "n": 35
+        },
+        {
+          "year": 2022,
+          "roi": 390.9,
+          "n": 11
+        },
+        {
+          "year": 2023,
+          "roi": 489.4,
+          "n": 36
+        },
+        {
+          "year": 2024,
+          "roi": 478.2,
+          "n": 16
+        },
+        {
+          "year": 2025,
+          "roi": 876.2,
+          "n": 6
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 176,
+      "hits": 92,
+      "hit_rate": 52.3,
+      "roi": 788.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 7220.2,
+          "n": 6
+        },
+        {
+          "year": 2019,
+          "roi": 1000.0,
+          "n": 25
+        },
+        {
+          "year": 2020,
+          "roi": 485.6,
+          "n": 29
+        },
+        {
+          "year": 2021,
+          "roi": 282.0,
+          "n": 37
+        },
+        {
+          "year": 2022,
+          "roi": 472.6,
+          "n": 15
+        },
+        {
+          "year": 2023,
+          "roi": 660.1,
+          "n": 39
+        },
+        {
+          "year": 2024,
+          "roi": 466.4,
+          "n": 17
+        },
+        {
+          "year": 2025,
+          "roi": 657.2,
+          "n": 8
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 183,
+      "hits": 100,
+      "hit_rate": 54.6,
+      "roi": 788.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 4963.1,
+          "n": 10
+        },
+        {
+          "year": 2019,
+          "roi": 1339.9,
+          "n": 16
+        },
+        {
+          "year": 2020,
+          "roi": 470.6,
+          "n": 31
+        },
+        {
+          "year": 2021,
+          "roi": 383.6,
+          "n": 45
+        },
+        {
+          "year": 2022,
+          "roi": 344.0,
+          "n": 12
+        },
+        {
+          "year": 2023,
+          "roi": 612.3,
+          "n": 40
+        },
+        {
+          "year": 2024,
+          "roi": 464.4,
+          "n": 20
+        },
+        {
+          "year": 2025,
+          "roi": 393.7,
+          "n": 9
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-9999m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 312,
+      "hits": 119,
+      "hit_rate": 38.1,
+      "roi": 783.3,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 502.6,
+          "n": 37
+        },
+        {
+          "year": 2019,
+          "roi": 1509.3,
+          "n": 36
+        },
+        {
+          "year": 2020,
+          "roi": 535.6,
+          "n": 74
+        },
+        {
+          "year": 2021,
+          "roi": 718.5,
+          "n": 50
+        },
+        {
+          "year": 2022,
+          "roi": 400.9,
+          "n": 24
+        },
+        {
+          "year": 2023,
+          "roi": 576.0,
+          "n": 54
+        },
+        {
+          "year": 2024,
+          "roi": 49.5,
+          "n": 14
+        },
+        {
+          "year": 2025,
+          "roi": 2369.6,
+          "n": 23
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 393,
+      "hits": 184,
+      "hit_rate": 46.8,
+      "roi": 779.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1623.8,
+          "n": 36
+        },
+        {
+          "year": 2019,
+          "roi": 683.0,
+          "n": 35
+        },
+        {
+          "year": 2020,
+          "roi": 686.7,
+          "n": 75
+        },
+        {
+          "year": 2021,
+          "roi": 537.6,
+          "n": 84
+        },
+        {
+          "year": 2022,
+          "roi": 432.4,
+          "n": 29
+        },
+        {
+          "year": 2023,
+          "roi": 580.6,
+          "n": 80
+        },
+        {
+          "year": 2024,
+          "roi": 344.1,
+          "n": 29
+        },
+        {
+          "year": 2025,
+          "roi": 2333.4,
+          "n": 25
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 144,
+      "hits": 56,
+      "hit_rate": 38.9,
+      "roi": 777.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 313.9,
+          "n": 18
+        },
+        {
+          "year": 2019,
+          "roi": 167.6,
+          "n": 11
+        },
+        {
+          "year": 2020,
+          "roi": 1034.7,
+          "n": 26
+        },
+        {
+          "year": 2021,
+          "roi": 251.9,
+          "n": 27
+        },
+        {
+          "year": 2022,
+          "roi": 554.2,
+          "n": 13
+        },
+        {
+          "year": 2023,
+          "roi": 630.5,
+          "n": 30
+        },
+        {
+          "year": 2024,
+          "roi": 86.6,
+          "n": 8
+        },
+        {
+          "year": 2025,
+          "roi": 3992.6,
+          "n": 11
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 156,
+      "hits": 79,
+      "hit_rate": 50.6,
+      "roi": 776.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 10161.8,
+          "n": 4
+        },
+        {
+          "year": 2019,
+          "roi": 1161.2,
+          "n": 19
+        },
+        {
+          "year": 2020,
+          "roi": 615.0,
+          "n": 29
+        },
+        {
+          "year": 2021,
+          "roi": 278.7,
+          "n": 38
+        },
+        {
+          "year": 2022,
+          "roi": 412.8,
+          "n": 10
+        },
+        {
+          "year": 2023,
+          "roi": 512.0,
+          "n": 33
+        },
+        {
+          "year": 2024,
+          "roi": 375.6,
+          "n": 16
+        },
+        {
+          "year": 2025,
+          "roi": 419.8,
+          "n": 7
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 249,
+      "hits": 109,
+      "hit_rate": 43.8,
+      "roi": 757.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 556.5,
+          "n": 32
+        },
+        {
+          "year": 2019,
+          "roi": 115.2,
+          "n": 16
+        },
+        {
+          "year": 2020,
+          "roi": 646.8,
+          "n": 54
+        },
+        {
+          "year": 2021,
+          "roi": 750.1,
+          "n": 47
+        },
+        {
+          "year": 2022,
+          "roi": 442.8,
+          "n": 19
+        },
+        {
+          "year": 2023,
+          "roi": 647.4,
+          "n": 48
+        },
+        {
+          "year": 2024,
+          "roi": 264.7,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 3077.6,
+          "n": 18
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 307,
+      "hits": 117,
+      "hit_rate": 38.1,
+      "roi": 754.9,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 502.6,
+          "n": 37
+        },
+        {
+          "year": 2019,
+          "roi": 1509.3,
+          "n": 36
+        },
+        {
+          "year": 2020,
+          "roi": 529.2,
+          "n": 71
+        },
+        {
+          "year": 2021,
+          "roi": 718.5,
+          "n": 50
+        },
+        {
+          "year": 2022,
+          "roi": 400.9,
+          "n": 24
+        },
+        {
+          "year": 2023,
+          "roi": 576.0,
+          "n": 54
+        },
+        {
+          "year": 2024,
+          "roi": 49.5,
+          "n": 14
+        },
+        {
+          "year": 2025,
+          "roi": 2091.4,
+          "n": 21
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 72,
+      "hits": 38,
+      "hit_rate": 52.8,
+      "roi": 744.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 711.4,
+          "n": 7
+        },
+        {
+          "year": 2019,
+          "roi": 256.3,
+          "n": 7
+        },
+        {
+          "year": 2020,
+          "roi": 630.1,
+          "n": 17
+        },
+        {
+          "year": 2021,
+          "roi": 1711.8,
+          "n": 13
+        },
+        {
+          "year": 2022,
+          "roi": 302.2,
+          "n": 4
+        },
+        {
+          "year": 2023,
+          "roi": 569.6,
+          "n": 16
+        },
+        {
+          "year": 2024,
+          "roi": 662.6,
+          "n": 5
+        },
+        {
+          "year": 2025,
+          "roi": 85.1,
+          "n": 3
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 238,
+      "hits": 107,
+      "hit_rate": 45.0,
+      "roi": 739.7,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 574.5,
+          "n": 31
+        },
+        {
+          "year": 2019,
+          "roi": 122.9,
+          "n": 15
+        },
+        {
+          "year": 2020,
+          "roi": 657.4,
+          "n": 50
+        },
+        {
+          "year": 2021,
+          "roi": 766.4,
+          "n": 46
+        },
+        {
+          "year": 2022,
+          "roi": 467.4,
+          "n": 18
+        },
+        {
+          "year": 2023,
+          "roi": 661.2,
+          "n": 47
+        },
+        {
+          "year": 2024,
+          "roi": 264.7,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 2800.9,
+          "n": 16
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 268,
+      "hits": 97,
+      "hit_rate": 36.2,
+      "roi": 738.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 497.5,
+          "n": 31
+        },
+        {
+          "year": 2019,
+          "roi": 1598.0,
+          "n": 34
+        },
+        {
+          "year": 2020,
+          "roi": 575.7,
+          "n": 58
+        },
+        {
+          "year": 2021,
+          "roi": 331.8,
+          "n": 44
+        },
+        {
+          "year": 2022,
+          "roi": 400.6,
+          "n": 21
+        },
+        {
+          "year": 2023,
+          "roi": 566.2,
+          "n": 48
+        },
+        {
+          "year": 2024,
+          "roi": 57.7,
+          "n": 12
+        },
+        {
+          "year": 2025,
+          "roi": 2195.9,
+          "n": 20
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1200-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 169,
+      "hits": 81,
+      "hit_rate": 47.9,
+      "roi": 733.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 7220.2,
+          "n": 6
+        },
+        {
+          "year": 2019,
+          "roi": 966.9,
+          "n": 24
+        },
+        {
+          "year": 2020,
+          "roi": 230.2,
+          "n": 28
+        },
+        {
+          "year": 2021,
+          "roi": 281.4,
+          "n": 34
+        },
+        {
+          "year": 2022,
+          "roi": 451.0,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 611.6,
+          "n": 34
+        },
+        {
+          "year": 2024,
+          "roi": 429.5,
+          "n": 19
+        },
+        {
+          "year": 2025,
+          "roi": 657.2,
+          "n": 8
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-1800m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 368,
+      "hits": 127,
+      "hit_rate": 34.5,
+      "roi": 731.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 581.7,
+          "n": 37
+        },
+        {
+          "year": 2019,
+          "roi": 1422.3,
+          "n": 57
+        },
+        {
+          "year": 2020,
+          "roi": 161.8,
+          "n": 56
+        },
+        {
+          "year": 2021,
+          "roi": 560.0,
+          "n": 49
+        },
+        {
+          "year": 2022,
+          "roi": 1938.6,
+          "n": 41
+        },
+        {
+          "year": 2023,
+          "roi": 391.0,
+          "n": 46
+        },
+        {
+          "year": 2024,
+          "roi": 358.6,
+          "n": 50
+        },
+        {
+          "year": 2025,
+          "roi": 462.4,
+          "n": 32
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "15-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1054,
+      "hits": 334,
+      "hit_rate": 31.7,
+      "roi": 720.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 305.0,
+          "n": 130
+        },
+        {
+          "year": 2019,
+          "roi": 174.7,
+          "n": 119
+        },
+        {
+          "year": 2020,
+          "roi": 1409.1,
+          "n": 122
+        },
+        {
+          "year": 2021,
+          "roi": 300.1,
+          "n": 134
+        },
+        {
+          "year": 2022,
+          "roi": 357.1,
+          "n": 122
+        },
+        {
+          "year": 2023,
+          "roi": 302.2,
+          "n": 127
+        },
+        {
+          "year": 2024,
+          "roi": 317.6,
+          "n": 143
+        },
+        {
+          "year": 2025,
+          "roi": 2291.5,
+          "n": 157
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-12",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 281,
+      "hits": 165,
+      "hit_rate": 58.7,
+      "roi": 718.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2555.3,
+          "n": 18
+        },
+        {
+          "year": 2019,
+          "roi": 1109.5,
+          "n": 31
+        },
+        {
+          "year": 2020,
+          "roi": 491.3,
+          "n": 55
+        },
+        {
+          "year": 2021,
+          "roi": 423.9,
+          "n": 52
+        },
+        {
+          "year": 2022,
+          "roi": 400.8,
+          "n": 25
+        },
+        {
+          "year": 2023,
+          "roi": 476.2,
+          "n": 48
+        },
+        {
+          "year": 2024,
+          "roi": 1016.5,
+          "n": 33
+        },
+        {
+          "year": 2025,
+          "roi": 309.2,
+          "n": 19
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 192,
+      "hits": 83,
+      "hit_rate": 43.2,
+      "roi": 715.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 534.5,
+          "n": 24
+        },
+        {
+          "year": 2019,
+          "roi": 141.8,
+          "n": 13
+        },
+        {
+          "year": 2020,
+          "roi": 843.7,
+          "n": 34
+        },
+        {
+          "year": 2021,
+          "roi": 348.3,
+          "n": 40
+        },
+        {
+          "year": 2022,
+          "roi": 480.3,
+          "n": 15
+        },
+        {
+          "year": 2023,
+          "roi": 634.8,
+          "n": 40
+        },
+        {
+          "year": 2024,
+          "roi": 248.9,
+          "n": 12
+        },
+        {
+          "year": 2025,
+          "roi": 3182.8,
+          "n": 14
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 204,
+      "hits": 102,
+      "hit_rate": 50.0,
+      "roi": 715.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 6188.7,
+          "n": 7
+        },
+        {
+          "year": 2019,
+          "roi": 854.2,
+          "n": 30
+        },
+        {
+          "year": 2020,
+          "roi": 502.9,
+          "n": 38
+        },
+        {
+          "year": 2021,
+          "roi": 253.4,
+          "n": 43
+        },
+        {
+          "year": 2022,
+          "roi": 472.6,
+          "n": 15
+        },
+        {
+          "year": 2023,
+          "roi": 613.5,
+          "n": 43
+        },
+        {
+          "year": 2024,
+          "roi": 440.5,
+          "n": 18
+        },
+        {
+          "year": 2025,
+          "roi": 554.8,
+          "n": 10
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 183,
+      "hits": 92,
+      "hit_rate": 50.3,
+      "roi": 713.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 6962.1,
+          "n": 6
+        },
+        {
+          "year": 2019,
+          "roi": 921.5,
+          "n": 25
+        },
+        {
+          "year": 2020,
+          "roi": 546.0,
+          "n": 35
+        },
+        {
+          "year": 2021,
+          "roi": 263.3,
+          "n": 41
+        },
+        {
+          "year": 2022,
+          "roi": 390.9,
+          "n": 11
+        },
+        {
+          "year": 2023,
+          "roi": 456.4,
+          "n": 40
+        },
+        {
+          "year": 2024,
+          "roi": 450.1,
+          "n": 17
+        },
+        {
+          "year": 2025,
+          "roi": 693.5,
+          "n": 8
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1200-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 202,
+      "hits": 99,
+      "hit_rate": 49.0,
+      "roi": 705.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 7220.2,
+          "n": 6
+        },
+        {
+          "year": 2019,
+          "roi": 862.1,
+          "n": 29
+        },
+        {
+          "year": 2020,
+          "roi": 444.8,
+          "n": 32
+        },
+        {
+          "year": 2021,
+          "roi": 266.3,
+          "n": 42
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 585.1,
+          "n": 44
+        },
+        {
+          "year": 2024,
+          "roi": 456.1,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 584.2,
+          "n": 9
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 550,
+      "hits": 238,
+      "hit_rate": 43.3,
+      "roi": 704.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1208.0,
+          "n": 58
+        },
+        {
+          "year": 2019,
+          "roi": 1304.7,
+          "n": 59
+        },
+        {
+          "year": 2020,
+          "roi": 486.1,
+          "n": 111
+        },
+        {
+          "year": 2021,
+          "roi": 535.2,
+          "n": 100
+        },
+        {
+          "year": 2022,
+          "roi": 355.2,
+          "n": 40
+        },
+        {
+          "year": 2023,
+          "roi": 499.4,
+          "n": 111
+        },
+        {
+          "year": 2024,
+          "roi": 365.7,
+          "n": 34
+        },
+        {
+          "year": 2025,
+          "roi": 1379.8,
+          "n": 37
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-1800m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 189,
+      "hits": 65,
+      "hit_rate": 34.4,
+      "roi": 701.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 148.3,
+          "n": 25
+        },
+        {
+          "year": 2019,
+          "roi": 574.0,
+          "n": 23
+        },
+        {
+          "year": 2020,
+          "roi": 413.7,
+          "n": 23
+        },
+        {
+          "year": 2021,
+          "roi": 352.3,
+          "n": 27
+        },
+        {
+          "year": 2022,
+          "roi": 2779.8,
+          "n": 28
+        },
+        {
+          "year": 2023,
+          "roi": 211.0,
+          "n": 22
+        },
+        {
+          "year": 2024,
+          "roi": 516.3,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 122.8,
+          "n": 18
+        }
+      ],
+      "course": "小倉",
+      "class": "maiden",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 478,
+      "hits": 200,
+      "hit_rate": 41.8,
+      "roi": 698.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1276.1,
+          "n": 51
+        },
+        {
+          "year": 2019,
+          "roi": 1445.8,
+          "n": 52
+        },
+        {
+          "year": 2020,
+          "roi": 460.0,
+          "n": 94
+        },
+        {
+          "year": 2021,
+          "roi": 359.4,
+          "n": 87
+        },
+        {
+          "year": 2022,
+          "roi": 361.1,
+          "n": 36
+        },
+        {
+          "year": 2023,
+          "roi": 487.6,
+          "n": 95
+        },
+        {
+          "year": 2024,
+          "roi": 314.5,
+          "n": 29
+        },
+        {
+          "year": 2025,
+          "roi": 1494.0,
+          "n": 34
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 217,
+      "hits": 110,
+      "hit_rate": 50.7,
+      "roi": 697.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 4135.9,
+          "n": 12
+        },
+        {
+          "year": 2019,
+          "roi": 1002.8,
+          "n": 22
+        },
+        {
+          "year": 2020,
+          "roi": 478.5,
+          "n": 41
+        },
+        {
+          "year": 2021,
+          "roi": 340.8,
+          "n": 52
+        },
+        {
+          "year": 2022,
+          "roi": 317.5,
+          "n": 13
+        },
+        {
+          "year": 2023,
+          "roi": 558.5,
+          "n": 45
+        },
+        {
+          "year": 2024,
+          "roi": 442.2,
+          "n": 21
+        },
+        {
+          "year": 2025,
+          "roi": 348.6,
+          "n": 11
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-9999m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 587,
+      "hits": 250,
+      "hit_rate": 42.6,
+      "roi": 693.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1167.7,
+          "n": 60
+        },
+        {
+          "year": 2019,
+          "roi": 1193.9,
+          "n": 65
+        },
+        {
+          "year": 2020,
+          "roi": 500.4,
+          "n": 122
+        },
+        {
+          "year": 2021,
+          "roi": 504.5,
+          "n": 107
+        },
+        {
+          "year": 2022,
+          "roi": 346.6,
+          "n": 41
+        },
+        {
+          "year": 2023,
+          "roi": 483.4,
+          "n": 116
+        },
+        {
+          "year": 2024,
+          "roi": 355.2,
+          "n": 35
+        },
+        {
+          "year": 2025,
+          "roi": 1510.4,
+          "n": 41
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-1800m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 124,
+      "hits": 41,
+      "hit_rate": 33.1,
+      "roi": 693.7,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 751.8,
+          "n": 13
+        },
+        {
+          "year": 2019,
+          "roi": 2282.2,
+          "n": 23
+        },
+        {
+          "year": 2020,
+          "roi": 202.7,
+          "n": 32
+        },
+        {
+          "year": 2021,
+          "roi": 458.8,
+          "n": 17
+        },
+        {
+          "year": 2022,
+          "roi": 150.9,
+          "n": 8
+        },
+        {
+          "year": 2023,
+          "roi": 459.1,
+          "n": 18
+        },
+        {
+          "year": 2024,
+          "roi": 0.0,
+          "n": 4
+        },
+        {
+          "year": 2025,
+          "roi": 0.0,
+          "n": 9
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 734,
+      "hits": 270,
+      "hit_rate": 36.8,
+      "roi": 680.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 414.1,
+          "n": 84
+        },
+        {
+          "year": 2019,
+          "roi": 993.9,
+          "n": 91
+        },
+        {
+          "year": 2020,
+          "roi": 518.1,
+          "n": 119
+        },
+        {
+          "year": 2021,
+          "roi": 388.1,
+          "n": 105
+        },
+        {
+          "year": 2022,
+          "roi": 1182.5,
+          "n": 81
+        },
+        {
+          "year": 2023,
+          "roi": 471.0,
+          "n": 105
+        },
+        {
+          "year": 2024,
+          "roi": 298.9,
+          "n": 74
+        },
+        {
+          "year": 2025,
+          "roi": 1394.2,
+          "n": 75
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "15-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1280,
+      "hits": 404,
+      "hit_rate": 31.6,
+      "roi": 680.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 394.2,
+          "n": 165
+        },
+        {
+          "year": 2019,
+          "roi": 201.4,
+          "n": 139
+        },
+        {
+          "year": 2020,
+          "roi": 1267.2,
+          "n": 155
+        },
+        {
+          "year": 2021,
+          "roi": 342.0,
+          "n": 154
+        },
+        {
+          "year": 2022,
+          "roi": 409.4,
+          "n": 147
+        },
+        {
+          "year": 2023,
+          "roi": 325.9,
+          "n": 166
+        },
+        {
+          "year": 2024,
+          "roi": 314.2,
+          "n": 162
+        },
+        {
+          "year": 2025,
+          "roi": 1893.4,
+          "n": 192
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 109,
+      "hits": 50,
+      "hit_rate": 45.9,
+      "roi": 672.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 553.3,
+          "n": 9
+        },
+        {
+          "year": 2019,
+          "roi": 186.0,
+          "n": 13
+        },
+        {
+          "year": 2020,
+          "roi": 635.8,
+          "n": 28
+        },
+        {
+          "year": 2021,
+          "roi": 1135.7,
+          "n": 20
+        },
+        {
+          "year": 2022,
+          "roi": 241.7,
+          "n": 5
+        },
+        {
+          "year": 2023,
+          "roi": 464.4,
+          "n": 21
+        },
+        {
+          "year": 2024,
+          "roi": 552.1,
+          "n": 6
+        },
+        {
+          "year": 2025,
+          "roi": 1589.6,
+          "n": 7
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "all",
+      "num_range": "all",
+      "track": "all",
+      "axis": "class",
+      "bet_type": "trio",
+      "n": 895,
+      "hits": 234,
+      "hit_rate": 26.1,
+      "roi": 666.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 559.8,
+          "n": 111
+        },
+        {
+          "year": 2019,
+          "roi": 393.6,
+          "n": 111
+        },
+        {
+          "year": 2020,
+          "roi": 1071.4,
+          "n": 112
+        },
+        {
+          "year": 2021,
+          "roi": 352.6,
+          "n": 111
+        },
+        {
+          "year": 2022,
+          "roi": 686.9,
+          "n": 113
+        },
+        {
+          "year": 2023,
+          "roi": 441.2,
+          "n": 113
+        },
+        {
+          "year": 2024,
+          "roi": 372.9,
+          "n": 112
+        },
+        {
+          "year": 2025,
+          "roi": 1449.3,
+          "n": 112
+        }
+      ],
+      "course": "all",
+      "class": "G2G3",
+      "season": "all"
+    },
+    {
+      "dist_range": "0-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 191,
+      "hits": 89,
+      "hit_rate": 46.6,
+      "roi": 665.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3975.0,
+          "n": 11
+        },
+        {
+          "year": 2019,
+          "roi": 928.3,
+          "n": 25
+        },
+        {
+          "year": 2020,
+          "roi": 251.0,
+          "n": 36
+        },
+        {
+          "year": 2021,
+          "roi": 265.8,
+          "n": 36
+        },
+        {
+          "year": 2022,
+          "roi": 451.0,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 562.0,
+          "n": 37
+        },
+        {
+          "year": 2024,
+          "roi": 419.1,
+          "n": 20
+        },
+        {
+          "year": 2025,
+          "roi": 525.7,
+          "n": 10
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1000-2000m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 191,
+      "hits": 89,
+      "hit_rate": 46.6,
+      "roi": 665.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3975.0,
+          "n": 11
+        },
+        {
+          "year": 2019,
+          "roi": 928.3,
+          "n": 25
+        },
+        {
+          "year": 2020,
+          "roi": 251.0,
+          "n": 36
+        },
+        {
+          "year": 2021,
+          "roi": 265.8,
+          "n": 36
+        },
+        {
+          "year": 2022,
+          "roi": 451.0,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 562.0,
+          "n": 37
+        },
+        {
+          "year": 2024,
+          "roi": 419.1,
+          "n": 20
+        },
+        {
+          "year": 2025,
+          "roi": 525.7,
+          "n": 10
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 675,
+      "hits": 347,
+      "hit_rate": 51.4,
+      "roi": 665.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 502.0,
+          "n": 109
+        },
+        {
+          "year": 2019,
+          "roi": 360.9,
+          "n": 113
+        },
+        {
+          "year": 2020,
+          "roi": 361.6,
+          "n": 103
+        },
+        {
+          "year": 2023,
+          "roi": 1479.9,
+          "n": 77
+        },
+        {
+          "year": 2024,
+          "roi": 780.1,
+          "n": 164
+        },
+        {
+          "year": 2025,
+          "roi": 685.8,
+          "n": 109
+        }
+      ],
+      "course": "京都",
+      "class": "newcomer",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-9999m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 903,
+      "hits": 338,
+      "hit_rate": 37.4,
+      "roi": 661.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 418.2,
+          "n": 99
+        },
+        {
+          "year": 2019,
+          "roi": 847.4,
+          "n": 109
+        },
+        {
+          "year": 2020,
+          "roi": 527.2,
+          "n": 149
+        },
+        {
+          "year": 2021,
+          "roi": 542.9,
+          "n": 124
+        },
+        {
+          "year": 2022,
+          "roi": 1057.6,
+          "n": 100
+        },
+        {
+          "year": 2023,
+          "roi": 475.5,
+          "n": 136
+        },
+        {
+          "year": 2024,
+          "roi": 265.4,
+          "n": 94
+        },
+        {
+          "year": 2025,
+          "roi": 1326.0,
+          "n": 92
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 882,
+      "hits": 333,
+      "hit_rate": 37.8,
+      "roi": 660.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 422.2,
+          "n": 97
+        },
+        {
+          "year": 2019,
+          "roi": 879.7,
+          "n": 105
+        },
+        {
+          "year": 2020,
+          "roi": 527.5,
+          "n": 145
+        },
+        {
+          "year": 2021,
+          "roi": 542.9,
+          "n": 124
+        },
+        {
+          "year": 2022,
+          "roi": 1099.0,
+          "n": 96
+        },
+        {
+          "year": 2023,
+          "roi": 480.2,
+          "n": 133
+        },
+        {
+          "year": 2024,
+          "roi": 268.3,
+          "n": 93
+        },
+        {
+          "year": 2025,
+          "roi": 1251.8,
+          "n": 89
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-9999m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 426,
+      "hits": 164,
+      "hit_rate": 38.5,
+      "roi": 659.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 523.9,
+          "n": 54
+        },
+        {
+          "year": 2019,
+          "roi": 1242.2,
+          "n": 44
+        },
+        {
+          "year": 2020,
+          "roi": 440.9,
+          "n": 99
+        },
+        {
+          "year": 2021,
+          "roi": 654.8,
+          "n": 67
+        },
+        {
+          "year": 2022,
+          "roi": 330.3,
+          "n": 30
+        },
+        {
+          "year": 2023,
+          "roi": 510.9,
+          "n": 77
+        },
+        {
+          "year": 2024,
+          "roi": 227.7,
+          "n": 21
+        },
+        {
+          "year": 2025,
+          "roi": 1658.1,
+          "n": 34
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "15-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1310,
+      "hits": 418,
+      "hit_rate": 31.9,
+      "roi": 656.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 307.0,
+          "n": 164
+        },
+        {
+          "year": 2019,
+          "roi": 209.2,
+          "n": 143
+        },
+        {
+          "year": 2020,
+          "roi": 1201.6,
+          "n": 156
+        },
+        {
+          "year": 2021,
+          "roi": 260.2,
+          "n": 170
+        },
+        {
+          "year": 2022,
+          "roi": 363.2,
+          "n": 151
+        },
+        {
+          "year": 2023,
+          "roi": 360.9,
+          "n": 156
+        },
+        {
+          "year": 2024,
+          "roi": 387.9,
+          "n": 174
+        },
+        {
+          "year": 2025,
+          "roi": 1882.1,
+          "n": 196
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-9999m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 442,
+      "hits": 161,
+      "hit_rate": 36.4,
+      "roi": 651.8,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 368.3,
+          "n": 59
+        },
+        {
+          "year": 2019,
+          "roi": 1231.5,
+          "n": 52
+        },
+        {
+          "year": 2020,
+          "roi": 509.7,
+          "n": 101
+        },
+        {
+          "year": 2021,
+          "roi": 649.1,
+          "n": 66
+        },
+        {
+          "year": 2022,
+          "roi": 348.6,
+          "n": 34
+        },
+        {
+          "year": 2023,
+          "roi": 516.1,
+          "n": 77
+        },
+        {
+          "year": 2024,
+          "roi": 44.8,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 1845.8,
+          "n": 30
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "0-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 224,
+      "hits": 107,
+      "hit_rate": 47.8,
+      "roi": 650.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3975.0,
+          "n": 11
+        },
+        {
+          "year": 2019,
+          "roi": 833.4,
+          "n": 30
+        },
+        {
+          "year": 2020,
+          "roi": 420.5,
+          "n": 40
+        },
+        {
+          "year": 2021,
+          "roi": 254.2,
+          "n": 44
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 547.7,
+          "n": 47
+        },
+        {
+          "year": 2024,
+          "roi": 446.3,
+          "n": 24
+        },
+        {
+          "year": 2025,
+          "roi": 477.9,
+          "n": 11
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1000-2400m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 224,
+      "hits": 107,
+      "hit_rate": 47.8,
+      "roi": 650.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3975.0,
+          "n": 11
+        },
+        {
+          "year": 2019,
+          "roi": 833.4,
+          "n": 30
+        },
+        {
+          "year": 2020,
+          "roi": 420.5,
+          "n": 40
+        },
+        {
+          "year": 2021,
+          "roi": 254.2,
+          "n": 44
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 547.7,
+          "n": 47
+        },
+        {
+          "year": 2024,
+          "roi": 446.3,
+          "n": 24
+        },
+        {
+          "year": 2025,
+          "roi": 477.9,
+          "n": 11
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 928,
+      "hits": 473,
+      "hit_rate": 51.0,
+      "roi": 650.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1200.5,
+          "n": 114
+        },
+        {
+          "year": 2019,
+          "roi": 1216.6,
+          "n": 112
+        },
+        {
+          "year": 2020,
+          "roi": 341.7,
+          "n": 132
+        },
+        {
+          "year": 2021,
+          "roi": 393.1,
+          "n": 146
+        },
+        {
+          "year": 2022,
+          "roi": 577.4,
+          "n": 147
+        },
+        {
+          "year": 2023,
+          "roi": 332.9,
+          "n": 121
+        },
+        {
+          "year": 2024,
+          "roi": 296.9,
+          "n": 43
+        },
+        {
+          "year": 2025,
+          "roi": 796.7,
+          "n": 113
+        }
+      ],
+      "course": "阪神",
+      "class": "newcomer",
+      "season": "all"
+    },
+    {
+      "dist_range": "1200-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 230,
+      "hits": 109,
+      "hit_rate": 47.4,
+      "roi": 650.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 6188.7,
+          "n": 7
+        },
+        {
+          "year": 2019,
+          "roi": 753.7,
+          "n": 34
+        },
+        {
+          "year": 2020,
+          "roi": 469.8,
+          "n": 41
+        },
+        {
+          "year": 2021,
+          "roi": 242.6,
+          "n": 48
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 549.6,
+          "n": 48
+        },
+        {
+          "year": 2024,
+          "roi": 437.1,
+          "n": 24
+        },
+        {
+          "year": 2025,
+          "roi": 504.4,
+          "n": 11
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 415,
+      "hits": 162,
+      "hit_rate": 39.0,
+      "roi": 646.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 533.8,
+          "n": 53
+        },
+        {
+          "year": 2019,
+          "roi": 1271.1,
+          "n": 43
+        },
+        {
+          "year": 2020,
+          "roi": 437.8,
+          "n": 95
+        },
+        {
+          "year": 2021,
+          "roi": 664.7,
+          "n": 66
+        },
+        {
+          "year": 2022,
+          "roi": 341.7,
+          "n": 29
+        },
+        {
+          "year": 2023,
+          "roi": 517.6,
+          "n": 76
+        },
+        {
+          "year": 2024,
+          "roi": 227.7,
+          "n": 21
+        },
+        {
+          "year": 2025,
+          "roi": 1431.1,
+          "n": 32
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "15-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 3110,
+      "hits": 1076,
+      "hit_rate": 34.6,
+      "roi": 645.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 472.3,
+          "n": 404
+        },
+        {
+          "year": 2019,
+          "roi": 558.1,
+          "n": 377
+        },
+        {
+          "year": 2020,
+          "roi": 790.4,
+          "n": 358
+        },
+        {
+          "year": 2021,
+          "roi": 440.9,
+          "n": 371
+        },
+        {
+          "year": 2022,
+          "roi": 319.6,
+          "n": 342
+        },
+        {
+          "year": 2023,
+          "roi": 492.8,
+          "n": 383
+        },
+        {
+          "year": 2024,
+          "roi": 456.8,
+          "n": 445
+        },
+        {
+          "year": 2025,
+          "roi": 1534.3,
+          "n": 430
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "13-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 197,
+      "hits": 88,
+      "hit_rate": 44.7,
+      "roi": 639.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 498.5,
+          "n": 16
+        },
+        {
+          "year": 2019,
+          "roi": 362.4,
+          "n": 17
+        },
+        {
+          "year": 2020,
+          "roi": 693.0,
+          "n": 38
+        },
+        {
+          "year": 2021,
+          "roi": 1399.5,
+          "n": 25
+        },
+        {
+          "year": 2022,
+          "roi": 530.5,
+          "n": 21
+        },
+        {
+          "year": 2023,
+          "roi": 568.5,
+          "n": 33
+        },
+        {
+          "year": 2024,
+          "roi": 223.2,
+          "n": 25
+        },
+        {
+          "year": 2025,
+          "roi": 686.1,
+          "n": 22
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-14",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 446,
+      "hits": 240,
+      "hit_rate": 53.8,
+      "roi": 638.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2070.1,
+          "n": 33
+        },
+        {
+          "year": 2019,
+          "roi": 969.5,
+          "n": 42
+        },
+        {
+          "year": 2020,
+          "roi": 408.4,
+          "n": 84
+        },
+        {
+          "year": 2021,
+          "roi": 522.4,
+          "n": 82
+        },
+        {
+          "year": 2022,
+          "roi": 336.7,
+          "n": 40
+        },
+        {
+          "year": 2023,
+          "roi": 426.0,
+          "n": 78
+        },
+        {
+          "year": 2024,
+          "roi": 765.0,
+          "n": 50
+        },
+        {
+          "year": 2025,
+          "roi": 369.6,
+          "n": 37
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "8-16",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 805,
+      "hits": 381,
+      "hit_rate": 47.3,
+      "roi": 638.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1027.4,
+          "n": 79
+        },
+        {
+          "year": 2019,
+          "roi": 659.2,
+          "n": 76
+        },
+        {
+          "year": 2020,
+          "roi": 606.8,
+          "n": 142
+        },
+        {
+          "year": 2021,
+          "roi": 409.8,
+          "n": 137
+        },
+        {
+          "year": 2022,
+          "roi": 372.1,
+          "n": 80
+        },
+        {
+          "year": 2023,
+          "roi": 472.3,
+          "n": 137
+        },
+        {
+          "year": 2024,
+          "roi": 573.5,
+          "n": 74
+        },
+        {
+          "year": 2025,
+          "roi": 1293.0,
+          "n": 80
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2400m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 706,
+      "hits": 293,
+      "hit_rate": 41.5,
+      "roi": 638.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 900.5,
+          "n": 83
+        },
+        {
+          "year": 2019,
+          "roi": 1135.8,
+          "n": 79
+        },
+        {
+          "year": 2020,
+          "roi": 466.6,
+          "n": 138
+        },
+        {
+          "year": 2021,
+          "roi": 545.3,
+          "n": 119
+        },
+        {
+          "year": 2022,
+          "roi": 349.6,
+          "n": 55
+        },
+        {
+          "year": 2023,
+          "roi": 527.0,
+          "n": 137
+        },
+        {
+          "year": 2024,
+          "roi": 291.8,
+          "n": 46
+        },
+        {
+          "year": 2025,
+          "roi": 1059.7,
+          "n": 49
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-9999m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 743,
+      "hits": 305,
+      "hit_rate": 41.0,
+      "roi": 632.9,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 879.3,
+          "n": 85
+        },
+        {
+          "year": 2019,
+          "roi": 1063.0,
+          "n": 85
+        },
+        {
+          "year": 2020,
+          "roi": 479.7,
+          "n": 149
+        },
+        {
+          "year": 2021,
+          "roi": 518.7,
+          "n": 126
+        },
+        {
+          "year": 2022,
+          "roi": 343.4,
+          "n": 56
+        },
+        {
+          "year": 2023,
+          "roi": 513.0,
+          "n": 142
+        },
+        {
+          "year": 2024,
+          "roi": 285.6,
+          "n": 47
+        },
+        {
+          "year": 2025,
+          "roi": 1184.9,
+          "n": 53
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2400m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 437,
+      "hits": 159,
+      "hit_rate": 36.4,
+      "roi": 630.3,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 368.3,
+          "n": 59
+        },
+        {
+          "year": 2019,
+          "roi": 1231.5,
+          "n": 52
+        },
+        {
+          "year": 2020,
+          "roi": 504.3,
+          "n": 98
+        },
+        {
+          "year": 2021,
+          "roi": 649.1,
+          "n": 66
+        },
+        {
+          "year": 2022,
+          "roi": 348.6,
+          "n": 34
+        },
+        {
+          "year": 2023,
+          "roi": 516.1,
+          "n": 77
+        },
+        {
+          "year": 2024,
+          "roi": 44.8,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 1599.7,
+          "n": 28
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 366,
+      "hits": 143,
+      "hit_rate": 39.1,
+      "roi": 629.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 282.1,
+          "n": 47
+        },
+        {
+          "year": 2019,
+          "roi": 275.9,
+          "n": 34
+        },
+        {
+          "year": 2020,
+          "roi": 834.8,
+          "n": 63
+        },
+        {
+          "year": 2021,
+          "roi": 237.6,
+          "n": 56
+        },
+        {
+          "year": 2022,
+          "roi": 407.5,
+          "n": 40
+        },
+        {
+          "year": 2023,
+          "roi": 533.5,
+          "n": 59
+        },
+        {
+          "year": 2024,
+          "roi": 174.5,
+          "n": 24
+        },
+        {
+          "year": 2025,
+          "roi": 2087.7,
+          "n": 43
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-2400m",
+      "num_range": "13-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1493,
+      "hits": 484,
+      "hit_rate": 32.4,
+      "roi": 627.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 366.7,
+          "n": 183
+        },
+        {
+          "year": 2019,
+          "roi": 195.6,
+          "n": 180
+        },
+        {
+          "year": 2020,
+          "roi": 1082.0,
+          "n": 166
+        },
+        {
+          "year": 2021,
+          "roi": 309.4,
+          "n": 183
+        },
+        {
+          "year": 2022,
+          "roi": 528.0,
+          "n": 185
+        },
+        {
+          "year": 2023,
+          "roi": 310.3,
+          "n": 181
+        },
+        {
+          "year": 2024,
+          "roi": 327.7,
+          "n": 201
+        },
+        {
+          "year": 2025,
+          "roi": 1768.1,
+          "n": 214
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "15-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 3889,
+      "hits": 1353,
+      "hit_rate": 34.8,
+      "roi": 627.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 519.4,
+          "n": 524
+        },
+        {
+          "year": 2019,
+          "roi": 653.8,
+          "n": 465
+        },
+        {
+          "year": 2020,
+          "roi": 713.2,
+          "n": 469
+        },
+        {
+          "year": 2021,
+          "roi": 443.0,
+          "n": 455
+        },
+        {
+          "year": 2022,
+          "roi": 319.9,
+          "n": 437
+        },
+        {
+          "year": 2023,
+          "roi": 588.5,
+          "n": 482
+        },
+        {
+          "year": 2024,
+          "roi": 436.4,
+          "n": 516
+        },
+        {
+          "year": 2025,
+          "roi": 1253.8,
+          "n": 541
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "15-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 3366,
+      "hits": 1160,
+      "hit_rate": 34.5,
+      "roi": 626.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 460.1,
+          "n": 438
+        },
+        {
+          "year": 2019,
+          "roi": 547.4,
+          "n": 401
+        },
+        {
+          "year": 2020,
+          "roi": 761.5,
+          "n": 392
+        },
+        {
+          "year": 2021,
+          "roi": 411.8,
+          "n": 407
+        },
+        {
+          "year": 2022,
+          "roi": 325.1,
+          "n": 371
+        },
+        {
+          "year": 2023,
+          "roi": 501.7,
+          "n": 412
+        },
+        {
+          "year": 2024,
+          "roi": 473.4,
+          "n": 476
+        },
+        {
+          "year": 2025,
+          "roi": 1426.2,
+          "n": 469
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2000m",
+      "num_range": "8-16",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 634,
+      "hits": 255,
+      "hit_rate": 40.2,
+      "roi": 626.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 918.0,
+          "n": 76
+        },
+        {
+          "year": 2019,
+          "roi": 1221.3,
+          "n": 72
+        },
+        {
+          "year": 2020,
+          "roi": 443.6,
+          "n": 121
+        },
+        {
+          "year": 2021,
+          "roi": 402.3,
+          "n": 106
+        },
+        {
+          "year": 2022,
+          "roi": 353.3,
+          "n": 51
+        },
+        {
+          "year": 2023,
+          "roi": 521.4,
+          "n": 121
+        },
+        {
+          "year": 2024,
+          "roi": 246.6,
+          "n": 41
+        },
+        {
+          "year": 2025,
+          "roi": 1123.3,
+          "n": 46
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "15-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1575,
+      "hits": 499,
+      "hit_rate": 31.7,
+      "roi": 624.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 375.7,
+          "n": 205
+        },
+        {
+          "year": 2019,
+          "roi": 239.2,
+          "n": 165
+        },
+        {
+          "year": 2020,
+          "roi": 1083.8,
+          "n": 196
+        },
+        {
+          "year": 2021,
+          "roi": 296.1,
+          "n": 193
+        },
+        {
+          "year": 2022,
+          "roi": 401.3,
+          "n": 181
+        },
+        {
+          "year": 2023,
+          "roi": 391.7,
+          "n": 200
+        },
+        {
+          "year": 2024,
+          "roi": 370.4,
+          "n": 197
+        },
+        {
+          "year": 2025,
+          "roi": 1567.4,
+          "n": 238
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "2000-9999m",
+      "num_range": "13-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 261,
+      "hits": 97,
+      "hit_rate": 37.2,
+      "roi": 622.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 382.8,
+          "n": 22
+        },
+        {
+          "year": 2019,
+          "roi": 245.8,
+          "n": 27
+        },
+        {
+          "year": 2020,
+          "roi": 550.6,
+          "n": 52
+        },
+        {
+          "year": 2021,
+          "roi": 1346.8,
+          "n": 34
+        },
+        {
+          "year": 2022,
+          "roi": 407.2,
+          "n": 28
+        },
+        {
+          "year": 2023,
+          "roi": 434.7,
+          "n": 45
+        },
+        {
+          "year": 2024,
+          "roi": 604.9,
+          "n": 27
+        },
+        {
+          "year": 2025,
+          "roi": 987.5,
+          "n": 26
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "13-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 369,
+      "hits": 138,
+      "hit_rate": 37.4,
+      "roi": 622.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 506.7,
+          "n": 46
+        },
+        {
+          "year": 2019,
+          "roi": 1333.1,
+          "n": 41
+        },
+        {
+          "year": 2020,
+          "roi": 473.5,
+          "n": 79
+        },
+        {
+          "year": 2021,
+          "roi": 375.8,
+          "n": 60
+        },
+        {
+          "year": 2022,
+          "roi": 334.7,
+          "n": 26
+        },
+        {
+          "year": 2023,
+          "roi": 487.7,
+          "n": 69
+        },
+        {
+          "year": 2024,
+          "roi": 211.0,
+          "n": 18
+        },
+        {
+          "year": 2025,
+          "roi": 1518.0,
+          "n": 30
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "13-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 4426,
+      "hits": 1586,
+      "hit_rate": 35.8,
+      "roi": 620.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 469.8,
+          "n": 554
+        },
+        {
+          "year": 2019,
+          "roi": 492.0,
+          "n": 560
+        },
+        {
+          "year": 2020,
+          "roi": 658.7,
+          "n": 512
+        },
+        {
+          "year": 2021,
+          "roi": 433.6,
+          "n": 531
+        },
+        {
+          "year": 2022,
+          "roi": 555.1,
+          "n": 502
+        },
+        {
+          "year": 2023,
+          "roi": 497.4,
+          "n": 542
+        },
+        {
+          "year": 2024,
+          "roi": 512.9,
+          "n": 622
+        },
+        {
+          "year": 2025,
+          "roi": 1284.8,
+          "n": 603
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "all",
+      "track": "all",
+      "axis": "course_dist_class",
+      "bet_type": "trio",
+      "n": 315,
+      "hits": 154,
+      "hit_rate": 48.9,
+      "roi": 618.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 181.8,
+          "n": 36
+        },
+        {
+          "year": 2019,
+          "roi": 349.3,
+          "n": 38
+        },
+        {
+          "year": 2020,
+          "roi": 642.5,
+          "n": 45
+        },
+        {
+          "year": 2021,
+          "roi": 380.9,
+          "n": 51
+        },
+        {
+          "year": 2022,
+          "roi": 452.8,
+          "n": 51
+        },
+        {
+          "year": 2023,
+          "roi": 383.6,
+          "n": 42
+        },
+        {
+          "year": 2024,
+          "roi": 255.3,
+          "n": 15
+        },
+        {
+          "year": 2025,
+          "roi": 2268.8,
+          "n": 37
+        }
+      ],
+      "course": "阪神",
+      "class": "1win",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "13-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 2933,
+      "hits": 1102,
+      "hit_rate": 37.6,
+      "roi": 616.7,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 520.7,
+          "n": 371
+        },
+        {
+          "year": 2019,
+          "roi": 632.3,
+          "n": 380
+        },
+        {
+          "year": 2020,
+          "roi": 455.7,
+          "n": 346
+        },
+        {
+          "year": 2021,
+          "roi": 499.0,
+          "n": 348
+        },
+        {
+          "year": 2022,
+          "roi": 571.0,
+          "n": 317
+        },
+        {
+          "year": 2023,
+          "roi": 591.2,
+          "n": 361
+        },
+        {
+          "year": 2024,
+          "roi": 601.3,
+          "n": 421
+        },
+        {
+          "year": 2025,
+          "roi": 1018.9,
+          "n": 389
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 223,
+      "hits": 105,
+      "hit_rate": 47.1,
+      "roi": 612.7,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2482.9,
+          "n": 20
+        },
+        {
+          "year": 2019,
+          "roi": 952.0,
+          "n": 22
+        },
+        {
+          "year": 2020,
+          "roi": 239.9,
+          "n": 43
+        },
+        {
+          "year": 2021,
+          "roi": 387.5,
+          "n": 43
+        },
+        {
+          "year": 2022,
+          "roi": 306.0,
+          "n": 15
+        },
+        {
+          "year": 2023,
+          "roi": 407.3,
+          "n": 47
+        },
+        {
+          "year": 2024,
+          "roi": 468.2,
+          "n": 18
+        },
+        {
+          "year": 2025,
+          "roi": 458.6,
+          "n": 15
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 535,
+      "hits": 211,
+      "hit_rate": 39.4,
+      "roi": 612.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 320.6,
+          "n": 62
+        },
+        {
+          "year": 2019,
+          "roi": 217.3,
+          "n": 52
+        },
+        {
+          "year": 2020,
+          "roi": 747.2,
+          "n": 93
+        },
+        {
+          "year": 2021,
+          "roi": 531.7,
+          "n": 75
+        },
+        {
+          "year": 2022,
+          "roi": 445.5,
+          "n": 59
+        },
+        {
+          "year": 2023,
+          "roi": 518.7,
+          "n": 90
+        },
+        {
+          "year": 2024,
+          "roi": 159.5,
+          "n": 44
+        },
+        {
+          "year": 2025,
+          "roi": 1786.7,
+          "n": 60
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "8-16",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1105,
+      "hits": 526,
+      "hit_rate": 47.6,
+      "roi": 612.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 877.0,
+          "n": 102
+        },
+        {
+          "year": 2019,
+          "roi": 560.2,
+          "n": 109
+        },
+        {
+          "year": 2020,
+          "roi": 616.4,
+          "n": 195
+        },
+        {
+          "year": 2021,
+          "roi": 530.6,
+          "n": 181
+        },
+        {
+          "year": 2022,
+          "roi": 446.7,
+          "n": 110
+        },
+        {
+          "year": 2023,
+          "roi": 477.1,
+          "n": 192
+        },
+        {
+          "year": 2024,
+          "roi": 495.3,
+          "n": 112
+        },
+        {
+          "year": 2025,
+          "roi": 1092.9,
+          "n": 104
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "13-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 3749,
+      "hits": 1436,
+      "hit_rate": 38.3,
+      "roi": 611.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 586.7,
+          "n": 505
+        },
+        {
+          "year": 2019,
+          "roi": 713.0,
+          "n": 481
+        },
+        {
+          "year": 2020,
+          "roi": 428.9,
+          "n": 454
+        },
+        {
+          "year": 2021,
+          "roi": 476.6,
+          "n": 442
+        },
+        {
+          "year": 2022,
+          "roi": 541.7,
+          "n": 430
+        },
+        {
+          "year": 2023,
+          "roi": 677.8,
+          "n": 444
+        },
+        {
+          "year": 2024,
+          "roi": 576.7,
+          "n": 494
+        },
+        {
+          "year": 2025,
+          "roi": 858.8,
+          "n": 499
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "15-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 514,
+      "hits": 206,
+      "hit_rate": 40.1,
+      "roi": 610.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 323.8,
+          "n": 60
+        },
+        {
+          "year": 2019,
+          "roi": 235.4,
+          "n": 48
+        },
+        {
+          "year": 2020,
+          "roi": 757.7,
+          "n": 89
+        },
+        {
+          "year": 2021,
+          "roi": 531.7,
+          "n": 75
+        },
+        {
+          "year": 2022,
+          "roi": 473.1,
+          "n": 55
+        },
+        {
+          "year": 2023,
+          "roi": 527.4,
+          "n": 87
+        },
+        {
+          "year": 2024,
+          "roi": 163.2,
+          "n": 43
+        },
+        {
+          "year": 2025,
+          "roi": 1695.0,
+          "n": 57
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "15-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 4184,
+      "hits": 1448,
+      "hit_rate": 34.6,
+      "roi": 609.8,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 503.8,
+          "n": 564
+        },
+        {
+          "year": 2019,
+          "roi": 642.6,
+          "n": 491
+        },
+        {
+          "year": 2020,
+          "roi": 687.3,
+          "n": 510
+        },
+        {
+          "year": 2021,
+          "roi": 417.1,
+          "n": 494
+        },
+        {
+          "year": 2022,
+          "roi": 323.2,
+          "n": 471
+        },
+        {
+          "year": 2023,
+          "roi": 596.7,
+          "n": 516
+        },
+        {
+          "year": 2024,
+          "roi": 448.8,
+          "n": 551
+        },
+        {
+          "year": 2025,
+          "roi": 1171.7,
+          "n": 587
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "8-12",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 389,
+      "hits": 218,
+      "hit_rate": 56.0,
+      "roi": 608.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1826.2,
+          "n": 28
+        },
+        {
+          "year": 2019,
+          "roi": 884.6,
+          "n": 46
+        },
+        {
+          "year": 2020,
+          "roi": 416.6,
+          "n": 76
+        },
+        {
+          "year": 2021,
+          "roi": 365.5,
+          "n": 62
+        },
+        {
+          "year": 2022,
+          "roi": 306.2,
+          "n": 36
+        },
+        {
+          "year": 2023,
+          "roi": 452.4,
+          "n": 65
+        },
+        {
+          "year": 2024,
+          "roi": 872.9,
+          "n": 45
+        },
+        {
+          "year": 2025,
+          "roi": 350.7,
+          "n": 31
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2400m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 263,
+      "hits": 127,
+      "hit_rate": 48.3,
+      "roi": 608.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2450.7,
+          "n": 21
+        },
+        {
+          "year": 2019,
+          "roi": 842.2,
+          "n": 27
+        },
+        {
+          "year": 2020,
+          "roi": 362.0,
+          "n": 50
+        },
+        {
+          "year": 2021,
+          "roi": 358.5,
+          "n": 51
+        },
+        {
+          "year": 2022,
+          "roi": 286.8,
+          "n": 16
+        },
+        {
+          "year": 2023,
+          "roi": 445.8,
+          "n": 58
+        },
+        {
+          "year": 2024,
+          "roi": 510.4,
+          "n": 23
+        },
+        {
+          "year": 2025,
+          "roi": 419.6,
+          "n": 17
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "15-99",
+      "track": "良のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 2056,
+      "hits": 742,
+      "hit_rate": 36.1,
+      "roi": 607.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 551.8,
+          "n": 274
+        },
+        {
+          "year": 2019,
+          "roi": 734.9,
+          "n": 258
+        },
+        {
+          "year": 2020,
+          "roi": 470.5,
+          "n": 236
+        },
+        {
+          "year": 2021,
+          "roi": 520.5,
+          "n": 237
+        },
+        {
+          "year": 2022,
+          "roi": 298.9,
+          "n": 220
+        },
+        {
+          "year": 2023,
+          "roi": 587.4,
+          "n": 256
+        },
+        {
+          "year": 2024,
+          "roi": 522.7,
+          "n": 302
+        },
+        {
+          "year": 2025,
+          "roi": 1098.8,
+          "n": 273
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2000m",
+      "num_range": "15-99",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 398,
+      "hits": 139,
+      "hit_rate": 34.9,
+      "roi": 607.1,
+      "stable": false,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 350.1,
+          "n": 53
+        },
+        {
+          "year": 2019,
+          "roi": 1280.7,
+          "n": 50
+        },
+        {
+          "year": 2020,
+          "roi": 532.2,
+          "n": 85
+        },
+        {
+          "year": 2021,
+          "roi": 358.6,
+          "n": 60
+        },
+        {
+          "year": 2022,
+          "roi": 343.3,
+          "n": 31
+        },
+        {
+          "year": 2023,
+          "roi": 504.5,
+          "n": 71
+        },
+        {
+          "year": 2024,
+          "roi": 49.1,
+          "n": 21
+        },
+        {
+          "year": 2025,
+          "roi": 1658.9,
+          "n": 27
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "0-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 252,
+      "hits": 117,
+      "hit_rate": 46.4,
+      "roi": 606.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3643.7,
+          "n": 12
+        },
+        {
+          "year": 2019,
+          "roi": 732.1,
+          "n": 35
+        },
+        {
+          "year": 2020,
+          "roi": 445.9,
+          "n": 49
+        },
+        {
+          "year": 2021,
+          "roi": 232.9,
+          "n": 50
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 517.3,
+          "n": 51
+        },
+        {
+          "year": 2024,
+          "roi": 428.4,
+          "n": 25
+        },
+        {
+          "year": 2025,
+          "roi": 426.8,
+          "n": 13
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1000-9999m",
+      "num_range": "8-12",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 252,
+      "hits": 117,
+      "hit_rate": 46.4,
+      "roi": 606.0,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 3643.7,
+          "n": 12
+        },
+        {
+          "year": 2019,
+          "roi": 732.1,
+          "n": 35
+        },
+        {
+          "year": 2020,
+          "roi": 445.9,
+          "n": 49
+        },
+        {
+          "year": 2021,
+          "roi": 232.9,
+          "n": 50
+        },
+        {
+          "year": 2022,
+          "roi": 424.5,
+          "n": 17
+        },
+        {
+          "year": 2023,
+          "roi": 517.3,
+          "n": 51
+        },
+        {
+          "year": 2024,
+          "roi": 428.4,
+          "n": 25
+        },
+        {
+          "year": 2025,
+          "roi": 426.8,
+          "n": 13
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "13-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 5567,
+      "hits": 2022,
+      "hit_rate": 36.3,
+      "roi": 605.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 531.6,
+          "n": 735
+        },
+        {
+          "year": 2019,
+          "roi": 562.3,
+          "n": 698
+        },
+        {
+          "year": 2020,
+          "roi": 610.3,
+          "n": 664
+        },
+        {
+          "year": 2021,
+          "roi": 427.4,
+          "n": 660
+        },
+        {
+          "year": 2022,
+          "roi": 531.2,
+          "n": 654
+        },
+        {
+          "year": 2023,
+          "roi": 561.0,
+          "n": 678
+        },
+        {
+          "year": 2024,
+          "roi": 499.8,
+          "n": 721
+        },
+        {
+          "year": 2025,
+          "roi": 1072.4,
+          "n": 757
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2000m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 262,
+      "hits": 121,
+      "hit_rate": 46.2,
+      "roi": 604.2,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2226.4,
+          "n": 23
+        },
+        {
+          "year": 2019,
+          "roi": 840.5,
+          "n": 29
+        },
+        {
+          "year": 2020,
+          "roi": 219.1,
+          "n": 49
+        },
+        {
+          "year": 2021,
+          "roi": 455.1,
+          "n": 47
+        },
+        {
+          "year": 2022,
+          "roi": 368.9,
+          "n": 20
+        },
+        {
+          "year": 2023,
+          "roi": 514.5,
+          "n": 53
+        },
+        {
+          "year": 2024,
+          "roi": 432.3,
+          "n": 21
+        },
+        {
+          "year": 2025,
+          "roi": 343.9,
+          "n": 20
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2000m",
+      "num_range": "8-12",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 450,
+      "hits": 240,
+      "hit_rate": 53.3,
+      "roi": 603.6,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 1650.7,
+          "n": 32
+        },
+        {
+          "year": 2019,
+          "roi": 825.7,
+          "n": 54
+        },
+        {
+          "year": 2020,
+          "roi": 366.4,
+          "n": 87
+        },
+        {
+          "year": 2021,
+          "roi": 357.9,
+          "n": 68
+        },
+        {
+          "year": 2022,
+          "roi": 336.9,
+          "n": 41
+        },
+        {
+          "year": 2023,
+          "roi": 688.8,
+          "n": 76
+        },
+        {
+          "year": 2024,
+          "roi": 772.6,
+          "n": 53
+        },
+        {
+          "year": 2025,
+          "roi": 278.8,
+          "n": 39
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2400m",
+      "num_range": "13-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 728,
+      "hits": 306,
+      "hit_rate": 42.0,
+      "roi": 603.5,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 558.4,
+          "n": 78
+        },
+        {
+          "year": 2019,
+          "roi": 352.7,
+          "n": 62
+        },
+        {
+          "year": 2020,
+          "roi": 663.1,
+          "n": 130
+        },
+        {
+          "year": 2021,
+          "roi": 622.4,
+          "n": 111
+        },
+        {
+          "year": 2022,
+          "roi": 406.5,
+          "n": 76
+        },
+        {
+          "year": 2023,
+          "roi": 496.8,
+          "n": 122
+        },
+        {
+          "year": 2024,
+          "roi": 219.3,
+          "n": 66
+        },
+        {
+          "year": 2025,
+          "roi": 1357.4,
+          "n": 83
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1400-2400m",
+      "num_range": "8-14",
+      "track": "不のみ",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 302,
+      "hits": 143,
+      "hit_rate": 47.4,
+      "roi": 601.3,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 2208.9,
+          "n": 24
+        },
+        {
+          "year": 2019,
+          "roi": 769.7,
+          "n": 34
+        },
+        {
+          "year": 2020,
+          "roi": 330.7,
+          "n": 56
+        },
+        {
+          "year": 2021,
+          "roi": 418.3,
+          "n": 55
+        },
+        {
+          "year": 2022,
+          "roi": 351.3,
+          "n": 21
+        },
+        {
+          "year": 2023,
+          "roi": 530.9,
+          "n": 64
+        },
+        {
+          "year": 2024,
+          "roi": 476.6,
+          "n": 26
+        },
+        {
+          "year": 2025,
+          "roi": 324.3,
+          "n": 22
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-2000m",
+      "num_range": "15-99",
+      "track": "良〜稍",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 2609,
+      "hits": 949,
+      "hit_rate": 36.4,
+      "roi": 601.1,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 576.9,
+          "n": 359
+        },
+        {
+          "year": 2019,
+          "roi": 846.7,
+          "n": 326
+        },
+        {
+          "year": 2020,
+          "roi": 439.7,
+          "n": 314
+        },
+        {
+          "year": 2021,
+          "roi": 494.6,
+          "n": 301
+        },
+        {
+          "year": 2022,
+          "roi": 274.5,
+          "n": 290
+        },
+        {
+          "year": 2023,
+          "roi": 726.4,
+          "n": 316
+        },
+        {
+          "year": 2024,
+          "roi": 492.4,
+          "n": 354
+        },
+        {
+          "year": 2025,
+          "roi": 901.9,
+          "n": 349
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1800-9999m",
+      "num_range": "13-99",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 792,
+      "hits": 315,
+      "hit_rate": 39.8,
+      "roi": 600.7,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 523.8,
+          "n": 84
+        },
+        {
+          "year": 2019,
+          "roi": 310.3,
+          "n": 72
+        },
+        {
+          "year": 2020,
+          "roi": 614.6,
+          "n": 144
+        },
+        {
+          "year": 2021,
+          "roi": 665.7,
+          "n": 120
+        },
+        {
+          "year": 2022,
+          "roi": 375.3,
+          "n": 83
+        },
+        {
+          "year": 2023,
+          "roi": 458.3,
+          "n": 134
+        },
+        {
+          "year": 2024,
+          "roi": 370.9,
+          "n": 68
+        },
+        {
+          "year": 2025,
+          "roi": 1416.6,
+          "n": 87
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    },
+    {
+      "dist_range": "1600-2000m",
+      "num_range": "8-16",
+      "track": "重〜不",
+      "axis": "dist_num_cond",
+      "bet_type": "trio",
+      "n": 1434,
+      "hits": 612,
+      "hit_rate": 42.7,
+      "roi": 597.4,
+      "stable": true,
+      "yearly": [
+        {
+          "year": 2018,
+          "roi": 753.3,
+          "n": 145
+        },
+        {
+          "year": 2019,
+          "roi": 802.3,
+          "n": 167
+        },
+        {
+          "year": 2020,
+          "roi": 436.7,
+          "n": 237
+        },
+        {
+          "year": 2021,
+          "roi": 501.0,
+          "n": 209
+        },
+        {
+          "year": 2022,
+          "roi": 755.6,
+          "n": 152
+        },
+        {
+          "year": 2023,
+          "roi": 391.5,
+          "n": 232
+        },
+        {
+          "year": 2024,
+          "roi": 478.9,
+          "n": 148
+        },
+        {
+          "year": 2025,
+          "roi": 893.3,
+          "n": 144
+        }
+      ],
+      "course": "all",
+      "class": "all",
+      "season": "all"
+    }
+  ],
+  "new_condition_proposals": {
+    "trio": [
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 33,
+        "hits": 7,
+        "hit_rate": 21.2,
+        "roi": 2517.7,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 9169.1,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2020,
+            "roi": 66.9,
+            "n": 4
+          },
+          {
+            "year": 2021,
+            "roi": 0.0,
+            "n": 5
+          },
+          {
+            "year": 2022,
+            "roi": 813.6,
+            "n": 4
+          },
+          {
+            "year": 2023,
+            "roi": 805.3,
+            "n": 4
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 9916.1,
+            "n": 4
+          }
+        ],
+        "course": "新潟",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 278,
+        "hits": 114,
+        "hit_rate": 41.0,
+        "roi": 1448.3,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 204.7,
+            "n": 30
+          },
+          {
+            "year": 2019,
+            "roi": 388.3,
+            "n": 29
+          },
+          {
+            "year": 2020,
+            "roi": 397.0,
+            "n": 33
+          },
+          {
+            "year": 2021,
+            "roi": 629.7,
+            "n": 35
+          },
+          {
+            "year": 2022,
+            "roi": 545.5,
+            "n": 38
+          },
+          {
+            "year": 2023,
+            "roi": 274.0,
+            "n": 38
+          },
+          {
+            "year": 2024,
+            "roi": 8146.9,
+            "n": 38
+          },
+          {
+            "year": 2025,
+            "roi": 244.9,
+            "n": 37
+          }
+        ],
+        "course": "札幌",
+        "class": "newcomer",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 80,
+        "hits": 32,
+        "hit_rate": 40.0,
+        "roi": 1171.4,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 205.2,
+            "n": 11
+          },
+          {
+            "year": 2019,
+            "roi": 709.0,
+            "n": 11
+          },
+          {
+            "year": 2020,
+            "roi": 601.1,
+            "n": 10
+          },
+          {
+            "year": 2021,
+            "roi": 1056.4,
+            "n": 11
+          },
+          {
+            "year": 2022,
+            "roi": 288.6,
+            "n": 11
+          },
+          {
+            "year": 2023,
+            "roi": 472.2,
+            "n": 12
+          },
+          {
+            "year": 2024,
+            "roi": 95.9,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 5679.8,
+            "n": 10
+          }
+        ],
+        "course": "阪神",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 641,
+        "hits": 319,
+        "hit_rate": 49.8,
+        "roi": 1104.3,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 580.3,
+            "n": 67
+          },
+          {
+            "year": 2019,
+            "roi": 429.9,
+            "n": 68
+          },
+          {
+            "year": 2020,
+            "roi": 347.5,
+            "n": 55
+          },
+          {
+            "year": 2021,
+            "roi": 620.2,
+            "n": 109
+          },
+          {
+            "year": 2022,
+            "roi": 478.7,
+            "n": 109
+          },
+          {
+            "year": 2023,
+            "roi": 535.4,
+            "n": 78
+          },
+          {
+            "year": 2024,
+            "roi": 579.2,
+            "n": 69
+          },
+          {
+            "year": 2025,
+            "roi": 4895.2,
+            "n": 86
+          }
+        ],
+        "course": "中京",
+        "class": "newcomer",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-9999m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "trio",
+        "n": 44,
+        "hits": 22,
+        "hit_rate": 50.0,
+        "roi": 1055.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 529.0,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 390.1,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 3553.8,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 402.9,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 654.3,
+            "n": 6
+          },
+          {
+            "year": 2025,
+            "roi": 3527.2,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-12",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "trio",
+        "n": 95,
+        "hits": 51,
+        "hit_rate": 53.7,
+        "roi": 1006.2,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 13549.0,
+            "n": 3
+          },
+          {
+            "year": 2019,
+            "roi": 2182.7,
+            "n": 9
+          },
+          {
+            "year": 2020,
+            "roi": 313.7,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 354.8,
+            "n": 24
+          },
+          {
+            "year": 2022,
+            "roi": 458.6,
+            "n": 9
+          },
+          {
+            "year": 2023,
+            "roi": 595.1,
+            "n": 19
+          },
+          {
+            "year": 2024,
+            "roi": 334.6,
+            "n": 11
+          },
+          {
+            "year": 2025,
+            "roi": 662.0,
+            "n": 4
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 54,
+        "hits": 19,
+        "hit_rate": 35.2,
+        "roi": 996.4,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 1444.7,
+            "n": 9
+          },
+          {
+            "year": 2019,
+            "roi": 144.6,
+            "n": 3
+          },
+          {
+            "year": 2020,
+            "roi": 4896.2,
+            "n": 5
+          },
+          {
+            "year": 2021,
+            "roi": 182.2,
+            "n": 9
+          },
+          {
+            "year": 2022,
+            "roi": 99.3,
+            "n": 9
+          },
+          {
+            "year": 2023,
+            "roi": 737.6,
+            "n": 10
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 2
+          },
+          {
+            "year": 2025,
+            "roi": 819.6,
+            "n": 7
+          }
+        ],
+        "course": "阪神",
+        "class": "OP",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "trio",
+        "n": 59,
+        "hits": 20,
+        "hit_rate": 33.9,
+        "roi": 972.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 147.2,
+            "n": 9
+          },
+          {
+            "year": 2019,
+            "roi": 2647.9,
+            "n": 10
+          },
+          {
+            "year": 2020,
+            "roi": 129.7,
+            "n": 8
+          },
+          {
+            "year": 2023,
+            "roi": 703.1,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 69.1,
+            "n": 15
+          },
+          {
+            "year": 2025,
+            "roi": 2254.5,
+            "n": 10
+          }
+        ],
+        "course": "京都",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2400m",
+        "num_range": "8-12",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "trio",
+        "n": 128,
+        "hits": 69,
+        "hit_rate": 53.9,
+        "roi": 891.1,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 13549.0,
+            "n": 3
+          },
+          {
+            "year": 2019,
+            "roi": 1531.3,
+            "n": 14
+          },
+          {
+            "year": 2020,
+            "roi": 640.3,
+            "n": 20
+          },
+          {
+            "year": 2021,
+            "roi": 316.6,
+            "n": 32
+          },
+          {
+            "year": 2022,
+            "roi": 412.8,
+            "n": 10
+          },
+          {
+            "year": 2023,
+            "roi": 560.6,
+            "n": 29
+          },
+          {
+            "year": 2024,
+            "roi": 400.7,
+            "n": 15
+          },
+          {
+            "year": 2025,
+            "roi": 529.6,
+            "n": 5
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "trio",
+        "n": 39,
+        "hits": 20,
+        "hit_rate": 51.3,
+        "roi": 867.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 529.0,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 321.8,
+            "n": 13
+          },
+          {
+            "year": 2021,
+            "roi": 3553.8,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 402.9,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 654.3,
+            "n": 6
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      }
+    ],
+    "combo": [
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "combo",
+        "n": 33,
+        "hits": 10,
+        "hit_rate": 30.3,
+        "roi": 456.5,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 1124.7,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 355.6,
+            "n": 4
+          },
+          {
+            "year": 2020,
+            "roi": 13.4,
+            "n": 4
+          },
+          {
+            "year": 2021,
+            "roi": 0.0,
+            "n": 5
+          },
+          {
+            "year": 2022,
+            "roi": 404.3,
+            "n": 4
+          },
+          {
+            "year": 2023,
+            "roi": 234.9,
+            "n": 4
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 1633.2,
+            "n": 4
+          }
+        ],
+        "course": "新潟",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-9999m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 44,
+        "hits": 25,
+        "hit_rate": 56.8,
+        "roi": 351.6,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 159.7,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 103.8,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 1287.1,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 175.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 300.4,
+            "n": 6
+          },
+          {
+            "year": 2025,
+            "roi": 933.0,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "13-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 46,
+        "hits": 28,
+        "hit_rate": 60.9,
+        "roi": 322.9,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 234.0,
+            "n": 7
+          },
+          {
+            "year": 2020,
+            "roi": 98.3,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 1287.1,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 175.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 281.5,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 416.9,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 39,
+        "hits": 23,
+        "hit_rate": 59.0,
+        "roi": 321.7,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 159.7,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 118.1,
+            "n": 13
+          },
+          {
+            "year": 2021,
+            "roi": 1287.1,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 175.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 300.4,
+            "n": 6
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-12",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 95,
+        "hits": 66,
+        "hit_rate": 69.5,
+        "roi": 298.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 3298.4,
+            "n": 3
+          },
+          {
+            "year": 2019,
+            "roi": 133.8,
+            "n": 9
+          },
+          {
+            "year": 2020,
+            "roi": 253.3,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 218.5,
+            "n": 24
+          },
+          {
+            "year": 2022,
+            "roi": 290.3,
+            "n": 9
+          },
+          {
+            "year": 2023,
+            "roi": 112.2,
+            "n": 19
+          },
+          {
+            "year": 2024,
+            "roi": 213.0,
+            "n": 11
+          },
+          {
+            "year": 2025,
+            "roi": 205.4,
+            "n": 4
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1600m",
+        "num_range": "8-14",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 125,
+        "hits": 65,
+        "hit_rate": 52.0,
+        "roi": 295.4,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 73.1,
+            "n": 11
+          },
+          {
+            "year": 2019,
+            "roi": 694.3,
+            "n": 22
+          },
+          {
+            "year": 2020,
+            "roi": 141.1,
+            "n": 20
+          },
+          {
+            "year": 2021,
+            "roi": 434.6,
+            "n": 9
+          },
+          {
+            "year": 2022,
+            "roi": 183.4,
+            "n": 10
+          },
+          {
+            "year": 2023,
+            "roi": 207.3,
+            "n": 22
+          },
+          {
+            "year": 2024,
+            "roi": 129.6,
+            "n": 16
+          },
+          {
+            "year": 2025,
+            "roi": 376.0,
+            "n": 15
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "combo",
+        "n": 60,
+        "hits": 21,
+        "hit_rate": 35.0,
+        "roi": 282.1,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 463.2,
+            "n": 6
+          },
+          {
+            "year": 2019,
+            "roi": 76.1,
+            "n": 5
+          },
+          {
+            "year": 2020,
+            "roi": 51.5,
+            "n": 10
+          },
+          {
+            "year": 2021,
+            "roi": 82.5,
+            "n": 10
+          },
+          {
+            "year": 2022,
+            "roi": 52.7,
+            "n": 11
+          },
+          {
+            "year": 2023,
+            "roi": 11.0,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 50.2,
+            "n": 5
+          },
+          {
+            "year": 2025,
+            "roi": 1920.1,
+            "n": 6
+          }
+        ],
+        "course": "阪神",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-14",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 446,
+        "hits": 294,
+        "hit_rate": 65.9,
+        "roi": 280.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 823.5,
+            "n": 33
+          },
+          {
+            "year": 2019,
+            "roi": 125.4,
+            "n": 42
+          },
+          {
+            "year": 2020,
+            "roi": 224.1,
+            "n": 84
+          },
+          {
+            "year": 2021,
+            "roi": 428.4,
+            "n": 82
+          },
+          {
+            "year": 2022,
+            "roi": 228.9,
+            "n": 40
+          },
+          {
+            "year": 2023,
+            "roi": 159.3,
+            "n": 78
+          },
+          {
+            "year": 2024,
+            "roi": 243.1,
+            "n": 50
+          },
+          {
+            "year": 2025,
+            "roi": 137.9,
+            "n": 37
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "combo",
+        "n": 75,
+        "hits": 42,
+        "hit_rate": 56.0,
+        "roi": 280.1,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 32.2,
+            "n": 6
+          },
+          {
+            "year": 2019,
+            "roi": 803.1,
+            "n": 7
+          },
+          {
+            "year": 2020,
+            "roi": 135.0,
+            "n": 8
+          },
+          {
+            "year": 2021,
+            "roi": 404.3,
+            "n": 13
+          },
+          {
+            "year": 2022,
+            "roi": 216.9,
+            "n": 13
+          },
+          {
+            "year": 2023,
+            "roi": 348.8,
+            "n": 9
+          },
+          {
+            "year": 2024,
+            "roi": 162.3,
+            "n": 11
+          },
+          {
+            "year": 2025,
+            "roi": 139.4,
+            "n": 8
+          }
+        ],
+        "course": "小倉",
+        "class": "1win",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-12",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "combo",
+        "n": 281,
+        "hits": 197,
+        "hit_rate": 70.1,
+        "roi": 268.9,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 722.9,
+            "n": 18
+          },
+          {
+            "year": 2019,
+            "roi": 115.1,
+            "n": 31
+          },
+          {
+            "year": 2020,
+            "roi": 293.4,
+            "n": 55
+          },
+          {
+            "year": 2021,
+            "roi": 291.3,
+            "n": 52
+          },
+          {
+            "year": 2022,
+            "roi": 319.9,
+            "n": 25
+          },
+          {
+            "year": 2023,
+            "roi": 155.4,
+            "n": 48
+          },
+          {
+            "year": 2024,
+            "roi": 313.3,
+            "n": 33
+          },
+          {
+            "year": 2025,
+            "roi": 100.9,
+            "n": 19
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      }
+    ],
+    "umaren": [
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "umaren",
+        "n": 33,
+        "hits": 6,
+        "hit_rate": 18.2,
+        "roi": 481.2,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 492.6,
+            "n": 4
+          },
+          {
+            "year": 2020,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2021,
+            "roi": 0.0,
+            "n": 5
+          },
+          {
+            "year": 2022,
+            "roi": 603.4,
+            "n": 4
+          },
+          {
+            "year": 2023,
+            "roi": 361.4,
+            "n": 4
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 2512.6,
+            "n": 4
+          }
+        ],
+        "course": "新潟",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-9999m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 44,
+        "hits": 14,
+        "hit_rate": 31.8,
+        "roi": 477.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 204.6,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 100.4,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 1847.7,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 252.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 339.6,
+            "n": 6
+          },
+          {
+            "year": 2025,
+            "roi": 1435.5,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 39,
+        "hits": 13,
+        "hit_rate": 33.3,
+        "roi": 428.6,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 204.6,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 123.5,
+            "n": 13
+          },
+          {
+            "year": 2021,
+            "roi": 1847.7,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 252.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 339.6,
+            "n": 6
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "13-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 46,
+        "hits": 17,
+        "hit_rate": 37.0,
+        "roi": 425.9,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 324.8,
+            "n": 7
+          },
+          {
+            "year": 2020,
+            "roi": 100.4,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 1847.7,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 252.8,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 328.0,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 434.7,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-12",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 95,
+        "hits": 41,
+        "hit_rate": 43.2,
+        "roi": 399.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 4957.5,
+            "n": 3
+          },
+          {
+            "year": 2019,
+            "roi": 163.1,
+            "n": 9
+          },
+          {
+            "year": 2020,
+            "roi": 343.3,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 280.5,
+            "n": 24
+          },
+          {
+            "year": 2022,
+            "roi": 404.7,
+            "n": 9
+          },
+          {
+            "year": 2023,
+            "roi": 122.8,
+            "n": 19
+          },
+          {
+            "year": 2024,
+            "roi": 267.6,
+            "n": 11
+          },
+          {
+            "year": 2025,
+            "roi": 123.4,
+            "n": 4
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "umaren",
+        "n": 75,
+        "hits": 26,
+        "hit_rate": 34.7,
+        "roi": 367.2,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 49.5,
+            "n": 6
+          },
+          {
+            "year": 2019,
+            "roi": 1189.2,
+            "n": 7
+          },
+          {
+            "year": 2020,
+            "roi": 136.9,
+            "n": 8
+          },
+          {
+            "year": 2021,
+            "roi": 570.9,
+            "n": 13
+          },
+          {
+            "year": 2022,
+            "roi": 235.5,
+            "n": 13
+          },
+          {
+            "year": 2023,
+            "roi": 458.7,
+            "n": 9
+          },
+          {
+            "year": 2024,
+            "roi": 178.2,
+            "n": 11
+          },
+          {
+            "year": 2025,
+            "roi": 156.8,
+            "n": 8
+          }
+        ],
+        "course": "小倉",
+        "class": "1win",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "umaren",
+        "n": 60,
+        "hits": 8,
+        "hit_rate": 13.3,
+        "roi": 362.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 408.8,
+            "n": 6
+          },
+          {
+            "year": 2019,
+            "roi": 66.1,
+            "n": 5
+          },
+          {
+            "year": 2020,
+            "roi": 14.6,
+            "n": 10
+          },
+          {
+            "year": 2021,
+            "roi": 105.0,
+            "n": 10
+          },
+          {
+            "year": 2022,
+            "roi": 30.5,
+            "n": 11
+          },
+          {
+            "year": 2023,
+            "roi": 0.0,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 77.3,
+            "n": 5
+          },
+          {
+            "year": 2025,
+            "roi": 2836.3,
+            "n": 6
+          }
+        ],
+        "course": "阪神",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2000m",
+        "num_range": "8-14",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 446,
+        "hits": 178,
+        "hit_rate": 39.9,
+        "roi": 353.2,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 1193.2,
+            "n": 33
+          },
+          {
+            "year": 2019,
+            "roi": 119.7,
+            "n": 42
+          },
+          {
+            "year": 2020,
+            "roi": 268.9,
+            "n": 84
+          },
+          {
+            "year": 2021,
+            "roi": 591.4,
+            "n": 82
+          },
+          {
+            "year": 2022,
+            "roi": 305.5,
+            "n": 40
+          },
+          {
+            "year": 2023,
+            "roi": 168.1,
+            "n": 78
+          },
+          {
+            "year": 2024,
+            "roi": 236.4,
+            "n": 50
+          },
+          {
+            "year": 2025,
+            "roi": 132.5,
+            "n": 37
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "umaren",
+        "n": 65,
+        "hits": 13,
+        "hit_rate": 20.0,
+        "roi": 344.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 3234.6,
+            "n": 5
+          },
+          {
+            "year": 2020,
+            "roi": 318.4,
+            "n": 5
+          },
+          {
+            "year": 2021,
+            "roi": 66.8,
+            "n": 12
+          },
+          {
+            "year": 2022,
+            "roi": 180.8,
+            "n": 13
+          },
+          {
+            "year": 2023,
+            "roi": 68.6,
+            "n": 10
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 7
+          },
+          {
+            "year": 2025,
+            "roi": 83.9,
+            "n": 9
+          }
+        ],
+        "course": "中京",
+        "class": "2win",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1600m",
+        "num_range": "8-14",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "umaren",
+        "n": 125,
+        "hits": 36,
+        "hit_rate": 28.8,
+        "roi": 341.7,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 71.6,
+            "n": 11
+          },
+          {
+            "year": 2019,
+            "roi": 906.8,
+            "n": 22
+          },
+          {
+            "year": 2020,
+            "roi": 68.4,
+            "n": 20
+          },
+          {
+            "year": 2021,
+            "roi": 662.4,
+            "n": 9
+          },
+          {
+            "year": 2022,
+            "roi": 260.9,
+            "n": 10
+          },
+          {
+            "year": 2023,
+            "roi": 145.5,
+            "n": 22
+          },
+          {
+            "year": 2024,
+            "roi": 114.9,
+            "n": 16
+          },
+          {
+            "year": 2025,
+            "roi": 466.7,
+            "n": 15
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      }
+    ],
+    "wide": [
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "wide",
+        "n": 33,
+        "hits": 10,
+        "hit_rate": 30.3,
+        "roi": 431.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 2249.4,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 218.6,
+            "n": 4
+          },
+          {
+            "year": 2020,
+            "roi": 26.9,
+            "n": 4
+          },
+          {
+            "year": 2021,
+            "roi": 0.0,
+            "n": 5
+          },
+          {
+            "year": 2022,
+            "roi": 205.3,
+            "n": 4
+          },
+          {
+            "year": 2023,
+            "roi": 108.4,
+            "n": 4
+          },
+          {
+            "year": 2024,
+            "roi": 0.0,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 753.8,
+            "n": 4
+          }
+        ],
+        "course": "新潟",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1600m",
+        "num_range": "8-14",
+        "track": "重〜不",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 125,
+        "hits": 65,
+        "hit_rate": 52.0,
+        "roi": 249.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 74.6,
+            "n": 11
+          },
+          {
+            "year": 2019,
+            "roi": 481.7,
+            "n": 22
+          },
+          {
+            "year": 2020,
+            "roi": 213.8,
+            "n": 20
+          },
+          {
+            "year": 2021,
+            "roi": 206.7,
+            "n": 9
+          },
+          {
+            "year": 2022,
+            "roi": 105.8,
+            "n": 10
+          },
+          {
+            "year": 2023,
+            "roi": 269.2,
+            "n": 22
+          },
+          {
+            "year": 2024,
+            "roi": 144.3,
+            "n": 16
+          },
+          {
+            "year": 2025,
+            "roi": 285.3,
+            "n": 15
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-9999m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 44,
+        "hits": 25,
+        "hit_rate": 56.8,
+        "roi": 225.4,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 114.8,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 107.2,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 726.6,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 98.7,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 261.2,
+            "n": 6
+          },
+          {
+            "year": 2025,
+            "roi": 430.5,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "13-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 46,
+        "hits": 28,
+        "hit_rate": 60.9,
+        "roi": 220.0,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 143.1,
+            "n": 7
+          },
+          {
+            "year": 2020,
+            "roi": 96.2,
+            "n": 16
+          },
+          {
+            "year": 2021,
+            "roi": 726.6,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 98.7,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 234.9,
+            "n": 7
+          },
+          {
+            "year": 2024,
+            "roi": 399.2,
+            "n": 3
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "wide",
+        "n": 31,
+        "hits": 14,
+        "hit_rate": 45.2,
+        "roi": 215.3,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 104.6,
+            "n": 4
+          },
+          {
+            "year": 2019,
+            "roi": 125.1,
+            "n": 4
+          },
+          {
+            "year": 2020,
+            "roi": 40.8,
+            "n": 4
+          },
+          {
+            "year": 2021,
+            "roi": 804.8,
+            "n": 3
+          },
+          {
+            "year": 2022,
+            "roi": 25.9,
+            "n": 4
+          },
+          {
+            "year": 2023,
+            "roi": 88.6,
+            "n": 4
+          },
+          {
+            "year": 2024,
+            "roi": 480.5,
+            "n": 4
+          },
+          {
+            "year": 2025,
+            "roi": 199.5,
+            "n": 4
+          }
+        ],
+        "course": "福島",
+        "class": "G2G3",
+        "season": "all"
+      },
+      {
+        "dist_range": "2000-2400m",
+        "num_range": "15-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 39,
+        "hits": 23,
+        "hit_rate": 59.0,
+        "roi": 214.8,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 114.8,
+            "n": 6
+          },
+          {
+            "year": 2020,
+            "roi": 112.7,
+            "n": 13
+          },
+          {
+            "year": 2021,
+            "roi": 726.6,
+            "n": 6
+          },
+          {
+            "year": 2022,
+            "roi": 98.7,
+            "n": 3
+          },
+          {
+            "year": 2023,
+            "roi": 261.2,
+            "n": 6
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "13-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 249,
+        "hits": 135,
+        "hit_rate": 54.2,
+        "roi": 213.6,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 127.9,
+            "n": 32
+          },
+          {
+            "year": 2019,
+            "roi": 86.2,
+            "n": 16
+          },
+          {
+            "year": 2020,
+            "roi": 154.0,
+            "n": 54
+          },
+          {
+            "year": 2021,
+            "roi": 297.5,
+            "n": 47
+          },
+          {
+            "year": 2022,
+            "roi": 148.0,
+            "n": 19
+          },
+          {
+            "year": 2023,
+            "roi": 305.9,
+            "n": 48
+          },
+          {
+            "year": 2024,
+            "roi": 144.8,
+            "n": 15
+          },
+          {
+            "year": 2025,
+            "roi": 319.7,
+            "n": 18
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      },
+      {
+        "dist_range": "1400-1800m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "wide",
+        "n": 278,
+        "hits": 156,
+        "hit_rate": 56.1,
+        "roi": 212.7,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 107.6,
+            "n": 30
+          },
+          {
+            "year": 2019,
+            "roi": 109.9,
+            "n": 29
+          },
+          {
+            "year": 2020,
+            "roi": 189.3,
+            "n": 33
+          },
+          {
+            "year": 2021,
+            "roi": 98.2,
+            "n": 35
+          },
+          {
+            "year": 2022,
+            "roi": 172.8,
+            "n": 38
+          },
+          {
+            "year": 2023,
+            "roi": 120.6,
+            "n": 38
+          },
+          {
+            "year": 2024,
+            "roi": 730.8,
+            "n": 38
+          },
+          {
+            "year": 2025,
+            "roi": 111.5,
+            "n": 37
+          }
+        ],
+        "course": "札幌",
+        "class": "newcomer",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-9999m",
+        "num_range": "all",
+        "track": "all",
+        "axis": "course_dist_class",
+        "bet_type": "wide",
+        "n": 641,
+        "hits": 400,
+        "hit_rate": 62.4,
+        "roi": 211.4,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 129.6,
+            "n": 67
+          },
+          {
+            "year": 2019,
+            "roi": 126.4,
+            "n": 68
+          },
+          {
+            "year": 2020,
+            "roi": 183.9,
+            "n": 55
+          },
+          {
+            "year": 2021,
+            "roi": 171.8,
+            "n": 109
+          },
+          {
+            "year": 2022,
+            "roi": 177.9,
+            "n": 109
+          },
+          {
+            "year": 2023,
+            "roi": 243.0,
+            "n": 78
+          },
+          {
+            "year": 2024,
+            "roi": 217.2,
+            "n": 69
+          },
+          {
+            "year": 2025,
+            "roi": 419.2,
+            "n": 86
+          }
+        ],
+        "course": "中京",
+        "class": "newcomer",
+        "season": "all"
+      },
+      {
+        "dist_range": "1800-2400m",
+        "num_range": "13-99",
+        "track": "不のみ",
+        "axis": "dist_num_cond",
+        "bet_type": "wide",
+        "n": 238,
+        "hits": 132,
+        "hit_rate": 55.5,
+        "roi": 210.6,
+        "stable": true,
+        "yearly": [
+          {
+            "year": 2018,
+            "roi": 132.0,
+            "n": 31
+          },
+          {
+            "year": 2019,
+            "roi": 91.9,
+            "n": 15
+          },
+          {
+            "year": 2020,
+            "roi": 161.4,
+            "n": 50
+          },
+          {
+            "year": 2021,
+            "roi": 270.7,
+            "n": 46
+          },
+          {
+            "year": 2022,
+            "roi": 156.2,
+            "n": 18
+          },
+          {
+            "year": 2023,
+            "roi": 312.4,
+            "n": 47
+          },
+          {
+            "year": 2024,
+            "roi": 144.8,
+            "n": 15
+          },
+          {
+            "year": 2025,
+            "roi": 278.9,
+            "n": 16
+          }
+        ],
+        "course": "all",
+        "class": "all",
+        "season": "all"
+      }
+    ]
+  },
+  "comparison_old_vs_new": [
+    {
+      "type": "old",
+      "cond": "A",
+      "desc": "8-14頭/1600m+/良〜稍",
+      "bet": "trio",
+      "roi": 420.7,
+      "n": 8634,
+      "hit_rate": 45.1
+    },
+    {
+      "type": "old",
+      "cond": "A",
+      "desc": "8-14頭/1600m+/良〜稍",
+      "bet": "combo",
+      "roi": 146.4,
+      "n": 8634,
+      "hit_rate": 56.7
+    },
+    {
+      "type": "old",
+      "cond": "A",
+      "desc": "8-14頭/1600m+/良〜稍",
+      "bet": "umaren",
+      "roi": 167.4,
+      "n": 8634,
+      "hit_rate": 32.0
+    },
+    {
+      "type": "old",
+      "cond": "A",
+      "desc": "8-14頭/1600m+/良〜稍",
+      "bet": "wide",
+      "roi": 125.4,
+      "n": 8634,
+      "hit_rate": 56.7
+    },
+    {
+      "type": "old",
+      "cond": "B",
+      "desc": "8-14頭/1600m+/重〜不",
+      "bet": "trio",
+      "roi": 473.8,
+      "n": 1067,
+      "hit_rate": 45.4
+    },
+    {
+      "type": "old",
+      "cond": "B",
+      "desc": "8-14頭/1600m+/重〜不",
+      "bet": "combo",
+      "roi": 197.2,
+      "n": 1067,
+      "hit_rate": 56.9
+    },
+    {
+      "type": "old",
+      "cond": "B",
+      "desc": "8-14頭/1600m+/重〜不",
+      "bet": "umaren",
+      "roi": 236.5,
+      "n": 1067,
+      "hit_rate": 32.2
+    },
+    {
+      "type": "old",
+      "cond": "B",
+      "desc": "8-14頭/1600m+/重〜不",
+      "bet": "wide",
+      "roi": 157.8,
+      "n": 1067,
+      "hit_rate": 56.9
+    },
+    {
+      "type": "old",
+      "cond": "C",
+      "desc": "15頭+/1600m+/良〜稍",
+      "bet": "trio",
+      "roi": 498.6,
+      "n": 6405,
+      "hit_rate": 33.4
+    },
+    {
+      "type": "old",
+      "cond": "C",
+      "desc": "15頭+/1600m+/良〜稍",
+      "bet": "combo",
+      "roi": 172.5,
+      "n": 6405,
+      "hit_rate": 48.5
+    },
+    {
+      "type": "old",
+      "cond": "C",
+      "desc": "15頭+/1600m+/良〜稍",
+      "bet": "umaren",
+      "roi": 194.4,
+      "n": 6405,
+      "hit_rate": 26.6
+    },
+    {
+      "type": "old",
+      "cond": "C",
+      "desc": "15頭+/1600m+/良〜稍",
+      "bet": "wide",
+      "roi": 150.7,
+      "n": 6405,
+      "hit_rate": 48.5
+    },
+    {
+      "type": "old",
+      "cond": "D",
+      "desc": "1400m以下",
+      "bet": "trio",
+      "roi": 247.0,
+      "n": 9807,
+      "hit_rate": 28.2
+    },
+    {
+      "type": "old",
+      "cond": "D",
+      "desc": "1400m以下",
+      "bet": "combo",
+      "roi": 109.3,
+      "n": 9807,
+      "hit_rate": 42.2
+    },
+    {
+      "type": "old",
+      "cond": "D",
+      "desc": "1400m以下",
+      "bet": "umaren",
+      "roi": 125.6,
+      "n": 9807,
+      "hit_rate": 22.1
+    },
+    {
+      "type": "old",
+      "cond": "D",
+      "desc": "1400m以下",
+      "bet": "wide",
+      "roi": 93.1,
+      "n": 9807,
+      "hit_rate": 42.2
+    },
+    {
+      "type": "old",
+      "cond": "E",
+      "desc": "7頭以下",
+      "bet": "trio",
+      "roi": 330.4,
+      "n": 569,
+      "hit_rate": 75.7
+    },
+    {
+      "type": "old",
+      "cond": "E",
+      "desc": "7頭以下",
+      "bet": "combo",
+      "roi": 127.5,
+      "n": 569,
+      "hit_rate": 77.7
+    },
+    {
+      "type": "old",
+      "cond": "E",
+      "desc": "7頭以下",
+      "bet": "umaren",
+      "roi": 142.0,
+      "n": 569,
+      "hit_rate": 51.8
+    },
+    {
+      "type": "old",
+      "cond": "E",
+      "desc": "7頭以下",
+      "bet": "wide",
+      "roi": 112.9,
+      "n": 569,
+      "hit_rate": 77.7
+    },
+    {
+      "type": "old",
+      "cond": "X",
+      "desc": "15頭+/重〜不",
+      "bet": "trio",
+      "roi": 598.2,
+      "n": 1055,
+      "hit_rate": 36.1
+    },
+    {
+      "type": "old",
+      "cond": "X",
+      "desc": "15頭+/重〜不",
+      "bet": "combo",
+      "roi": 186.8,
+      "n": 1055,
+      "hit_rate": 49.8
+    },
+    {
+      "type": "old",
+      "cond": "X",
+      "desc": "15頭+/重〜不",
+      "bet": "umaren",
+      "roi": 220.7,
+      "n": 1055,
+      "hit_rate": 28.6
+    },
+    {
+      "type": "old",
+      "cond": "X",
+      "desc": "15頭+/重〜不",
+      "bet": "wide",
+      "roi": 152.9,
+      "n": 1055,
+      "hit_rate": 49.8
+    }
+  ]
+}
