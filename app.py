@@ -17,7 +17,30 @@ st.set_page_config(page_title="KEIBA AI", page_icon="🏇", layout="wide")
 # ===== SQLite DB =====
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
 
-INVESTMENT_PER_RACE = 700  # 三連複7点 × 100円
+INVESTMENT_PER_RACE = 700  # ワイド2点 × 350円
+
+
+def check_buy_recommendation(race_info, num_horses, is_nar=False):
+    """バックテスト結果に基づく買い推奨判定。
+    中央: 14頭以下・1600m以上・良/稍重 → 推奨
+    地方: 常に推奨（V8で運用）
+    Returns: (is_recommended: bool, reason: str)
+    """
+    if is_nar:
+        return True, "NAR V8"
+    dist = race_info.get('distance', 0)
+    cond = str(race_info.get('condition', '良'))
+    cond_ok = any(c in cond for c in ['良', '稍'])
+    reasons = []
+    if num_horses > 14:
+        reasons.append(f"頭数{num_horses}頭(14頭以下推奨)")
+    if dist < 1600:
+        reasons.append(f"距離{dist}m(1600m以上推奨)")
+    if not cond_ok:
+        reasons.append(f"馬場:{cond}(良/稍重推奨)")
+    if reasons:
+        return False, " / ".join(reasons)
+    return True, "条件クリア"
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -48,6 +71,10 @@ def init_db():
         "ALTER TABLE race_results ADD COLUMN hit_combo TEXT DEFAULT NULL",
         "ALTER TABLE race_results ADD COLUMN payout INTEGER DEFAULT 0",
         "ALTER TABLE race_results ADD COLUMN is_nar INTEGER DEFAULT 0",
+        "ALTER TABLE race_results ADD COLUMN wide_bets TEXT DEFAULT NULL",
+        "ALTER TABLE race_results ADD COLUMN hit_wide INTEGER DEFAULT NULL",
+        "ALTER TABLE race_results ADD COLUMN wide_payout INTEGER DEFAULT 0",
+        "ALTER TABLE race_results ADD COLUMN buy_recommended INTEGER DEFAULT 1",
     ]:
         try:
             c.execute(col_sql)
@@ -72,6 +99,18 @@ def generate_trio_bets(df_sorted):
                 bets.add(combo)
     return [list(b) for b in sorted(bets)]
 
+
+def generate_wide_bets(df_sorted):
+    """AI順位TOP1軸 - TOP2,TOP3 のワイド1軸2流し(2点)を生成"""
+    if len(df_sorted) < 3:
+        return []
+    nums = [int(df_sorted.iloc[i]['馬番']) for i in range(min(3, len(df_sorted)))]
+    bets = [sorted([nums[0], nums[1]]), sorted([nums[0], nums[2]])]
+    # 重複除去
+    if bets[0] == bets[1]:
+        return [bets[0]]
+    return bets
+
 def save_prediction(race_id, race_name, race_info, df_sorted, is_nar=False):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -91,11 +130,15 @@ def save_prediction(race_id, race_name, race_info, df_sorted, is_nar=False):
              1 if int(row['AI順位']) <= 3 else 0))
     top1 = df_sorted.iloc[0]
     trio_bets = generate_trio_bets(df_sorted)
+    wide_bets = generate_wide_bets(df_sorted)
+    buy_rec, _ = check_buy_recommendation(race_info, len(df_sorted), is_nar=is_nar)
     c.execute("""INSERT INTO race_results
-        (race_id, race_name, predicted_at, num_horses, top1_name, top1_score, trio_bets, is_nar)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (race_id, race_name, predicted_at, num_horses, top1_name, top1_score,
+         trio_bets, wide_bets, is_nar, buy_recommended)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (race_id, race_name, now, len(df_sorted), top1['馬名'], float(top1['スコア']),
-         json.dumps(trio_bets), 1 if is_nar else 0))
+         json.dumps(trio_bets), json.dumps(wide_bets),
+         1 if is_nar else 0, 1 if buy_rec else 0))
     conn.commit()
     conn.close()
 
@@ -388,6 +431,83 @@ def load_backtest_report():
             return json.load(f)
     except:
         return None
+
+def load_backtest_5year():
+    """backtest_results_5year.jsonから5年分バックテスト結果を読み込む"""
+    bt_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backtest_results_5year.json")
+    if not os.path.exists(bt_path):
+        return None
+    try:
+        with open(bt_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        return None
+
+def render_5year_report(bt5):
+    """5年分バックテスト結果をHTML描画"""
+    if not bt5:
+        return '<div class="ev-card"><span class="ev-lbl">5年バックテスト未実施</span></div>'
+
+    generated = bt5.get('generated_at', '')
+    summary = bt5.get('central_5year_summary', {})
+    yearly = bt5.get('yearly_summaries', {})
+
+    html = '<div class="ev-card">'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">'
+    html += f'5-YEAR BACKTEST (2020-2025) &mdash; {generated[:10] if generated else "N/A"}</div>'
+
+    # Overall summary table
+    if summary:
+        n_races = summary.get('v8', {}).get('n_races', 0) or summary.get('v9', {}).get('n_races', 0)
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">Overall &mdash; {n_races} races</div>'
+
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.82em;margin-bottom:10px;">'
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
+        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;font-family:Oswald;">BET TYPE</th>'
+        for ver in ['V8', 'V9']:
+            html += f'<th colspan="2" style="text-align:center;padding:4px 6px;font-family:Oswald;">{ver}</th>'
+        html += '</tr>'
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">'
+        html += '<th></th>'
+        for _ in ['V8', 'V9']:
+            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">HIT</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">ROI</th>'
+        html += '</tr>'
+
+        for label, key in [('Trio 7-bet', 'trio'), ('Wide 1ax-2flow', 'wide'), ('Umaren 1ax-2flow', 'umaren')]:
+            html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;">{label}</td>'
+            for ver in ['v8', 'v9']:
+                d = summary.get(ver, {})
+                hit_rate = d.get(f'{key}_hit_rate', 0)
+                roi = d.get(f'{key}_roi', 0)
+                hit_color = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
+                roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+                html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_color} !important;">{hit_rate:.1f}%</td>'
+                html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{roi_color} !important;">{roi:.1f}%</td>'
+            html += '</tr>'
+        html += '</table>'
+
+    # Yearly breakdown (V9 trio only for readability)
+    if yearly:
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin:10px 0 6px;">V9 TRIO HIT RATE BY YEAR</div>'
+        for year in sorted(yearly.keys(), key=lambda x: int(x)):
+            ys = yearly[year]
+            v9d = ys.get('v9', {})
+            n = v9d.get('n_races', 0)
+            trio_rate = v9d.get('trio_hit_rate', 0)
+            wide_rate = v9d.get('wide_hit_rate', 0)
+            bar_w = min(trio_rate * 2, 100)
+            color = '#2ecc40' if trio_rate >= 30 else ('#f0c040' if trio_rate >= 15 else '#ff4060')
+            html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:0.85em;">'
+            html += f'<span style="min-width:40px;color:#b0b8c8 !important;font-family:Oswald;">{year}</span>'
+            html += f'<div style="flex:1;height:14px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
+            html += f'<div style="width:{bar_w}%;height:100%;background:{color};border-radius:3px;"></div></div>'
+            html += f'<span style="font-family:Oswald;font-size:0.9em;min-width:120px;color:{color} !important;">Trio {trio_rate:.0f}% Wide {wide_rate:.0f}% ({n}R)</span>'
+            html += '</div>'
+
+    html += '</div>'
+    return html
 
 
 def render_backtest_report(bt_data):
@@ -841,13 +961,16 @@ else:
 _v9_models = load_v9_models()
 
 def get_model_for_race(is_nar=False):
-    """レースタイプに応じたモデルを返す。v9モデルがあれば使い分け、なければv8を使う"""
-    v9_key = 'nar' if is_nar else 'central'
-    v9_data = _v9_models.get(v9_key)
-    if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
-        return v9_data, v9_key
-    # v9がなければデフォルトモデル
-    return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
+    """レースタイプに応じたモデルを返す。中央→V9、地方→V8（バックテスト結果に基づく）"""
+    if is_nar:
+        # NAR: V8が優勢（バックテスト: V8 trio 21% vs V9 9%）
+        return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
+    else:
+        # 中央: V9が優勢（バックテスト: V9 trio 29% vs V8 15%）
+        v9_data = _v9_models.get('central')
+        if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
+            return v9_data, 'central'
+        return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
 
 jockey_wr = load_jockey_wr()
 
@@ -3255,6 +3378,7 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_model_type'] = active_model_type
     st.session_state['pred_model_version'] = active_version
     st.session_state['pred_model_auc'] = active_auc
+    st.session_state['pred_is_nar'] = is_nar
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -3300,7 +3424,38 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
-    # Buy section
+    # Buy recommendation filter
+    is_nar_pred = st.session_state.get('pred_is_nar', False)
+    buy_rec, buy_reason = check_buy_recommendation(race_info, len(df), is_nar=is_nar_pred)
+    if buy_rec:
+        wide_bets = generate_wide_bets(df)
+        top3 = df.head(3)
+        n1_name = top3.iloc[0]['馬名'][:5]
+        n1_num = int(top3.iloc[0]['馬番'])
+        n2_num = int(top3.iloc[1]['馬番'])
+        n3_num = int(top3.iloc[2]['馬番'])
+        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#0a2a1a,#1a3a2a);border:2px solid #2ecc40;border-radius:12px;">
+<div style="font-family:Oswald;font-size:1.1em;color:#2ecc40 !important;margin-bottom:8px;">BUY RECOMMENDED</div>
+<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:10px;">条件クリア: 頭数{len(df)}頭 / {race_info.get("distance",0)}m / {race_info.get("condition","良")}</div>
+<div style="font-family:Oswald;font-size:0.95em;color:#f0c040 !important;margin-bottom:4px;">WIDE 1-AXIS 2-FLOW</div>
+<div style="font-size:1.05em;padding:6px 0;">
+<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
+<span style="color:#6a6a80 !important;"> - </span>
+<span style="font-family:Oswald;">{n2_num}</span> (350円)
+<br>
+<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
+<span style="color:#6a6a80 !important;"> - </span>
+<span style="font-family:Oswald;">{n3_num}</span> (350円)
+</div>
+<div style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;margin-top:6px;">TOTAL: 700 YEN (350 x 2)</div>
+</div>''', unsafe_allow_html=True)
+    else:
+        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
+<div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
+<div style="font-size:0.9em;color:#ff4060 !important;">{buy_reason}</div>
+<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">バックテスト結果: この条件では的中率・ROIが大幅に低下。見送りまたは少額投資推奨。</div>
+</div>''', unsafe_allow_html=True)
+    # Buy section (detailed)
     st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
     st.markdown(render_buy_section(df, race_info, rank_map), unsafe_allow_html=True)
     # Expected Value Section (with trio odds integration)
@@ -3424,6 +3579,12 @@ with st.expander("🧪 V8 vs V9 Backtest Report"):
         st.markdown(render_backtest_report(bt_data), unsafe_allow_html=True)
     else:
         st.info("バックテスト未実施。`python backtest_v8_v9.py` を実行するとリークフリーの精度検証レポートが生成されます。")
+
+    bt5 = load_backtest_5year()
+    if bt5:
+        st.markdown(render_5year_report(bt5), unsafe_allow_html=True)
+    else:
+        st.info("5年バックテスト未実施。`python backtest_v8_v9.py --5year` で2020-2025の拡張検証を実行できます。")
 
 # TRACK RECORD 管理（削除機能）
 with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """KEIBA AI - V8/V9 Leak-Free Backtest
-2025/10-12月の中央100レース + 地方100レースで検証。
+2020-2025年の中央レース + 地方レースで検証。
 各レースの予測時点で当日以降のデータを一切使わない完全リークフリー。
+--5year フラグで5年分拡張バックテスト実行。
 """
 import pandas as pd
 import numpy as np
@@ -25,6 +26,7 @@ V9N_PATH = os.path.join(os.path.dirname(__file__), 'keiba_model_v9_nar.pkl')
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 N_CENTRAL = 100
 N_NAR = 100
+N_CENTRAL_5YEAR = 500  # 5年分: 各年100レース
 
 COL = {
     'year': 0, 'month': 1, 'day': 2, 'race_num': 3,
@@ -575,6 +577,128 @@ def run_central_backtest(models):
 
     print(f"  Completed: {len(results)} races processed")
     return results
+
+
+def run_central_backtest_5year(models):
+    """Run 5-year backtest (2020-2025) with rolling training window.
+    Each year uses all prior data as training. Samples ~100 races per year.
+    """
+    print("\n" + "="*60)
+    print("  CENTRAL 5-YEAR BACKTEST (2020-2025)")
+    print("="*60)
+
+    df = load_csv()
+
+    # Year ranges: test year -> train uses all data before that year's test period
+    # For each year, test Oct-Dec, train = everything before Oct of that year
+    test_periods = [
+        (2020, 20201001, 20201231),
+        (2021, 20210101, 20211231),
+        (2022, 20220101, 20221231),
+        (2023, 20230101, 20231231),
+        (2024, 20240101, 20241231),
+        (2025, 20250101, 20251231),
+    ]
+
+    all_results = []
+    races_per_year = 100
+
+    for test_year, test_start, test_end in test_periods:
+        # Training: everything before the test period starts
+        train_mask = df['date_num'] < test_start
+        test_mask = (df['date_num'] >= test_start) & (df['date_num'] <= test_end) & (df['num_horses'] >= 8)
+
+        train_count = train_mask.sum()
+        test_count = test_mask.sum()
+        print(f"\n  Year {test_year}: Train={train_count}, Test pool={test_count}")
+
+        if train_count < 1000 or test_count < 50:
+            print(f"    Skipping: insufficient data")
+            continue
+
+        # Encode using training data only (leak-free)
+        df_year = df.copy()
+        df_year, sire_map, bms_map = encode_data(df_year, train_mask)
+        df_year = compute_stats_leakfree(df_year, train_mask)
+        df_year = compute_lag_features(df_year)
+        df_year = build_features(df_year)
+
+        # Get test races
+        test_races = df_year[test_mask]['race_id'].unique()
+        print(f"    Test races available: {len(test_races)}")
+
+        if len(test_races) > races_per_year:
+            rng = np.random.RandomState(42 + test_year)
+            test_races = rng.choice(test_races, races_per_year, replace=False)
+        print(f"    Selected: {len(test_races)} races")
+
+        # Ensure features exist
+        for f in V8_FEATURES + ['odds_log', 'prev_odds_log']:
+            if f not in df_year.columns:
+                df_year[f] = 0
+            df_year[f] = pd.to_numeric(df_year[f], errors='coerce').fillna(0)
+
+        v8_data = models.get('v8')
+        v9_data = models.get('v9c')
+
+        for ri, rid in enumerate(test_races):
+            race_df = df_year[(df_year['race_id'] == rid) & test_mask].copy()
+            if len(race_df) < 5:
+                continue
+
+            row0 = race_df.iloc[0]
+            race_meta = {
+                'race_id': rid,
+                'test_year': test_year,
+                'date': f"{int(row0['year_full'])}-{int(row0['month']):02d}-{int(row0['day']):02d}",
+                'course': str(row0.get('course', '')),
+                'distance': int(row0['distance']),
+                'surface': str(row0.get('surface', '')),
+                'condition': str(row0.get('condition', '')),
+                'num_horses': len(race_df),
+            }
+
+            actual = {}
+            for _, h in race_df.iterrows():
+                actual[int(h['umaban'])] = int(h['finish'])
+            finish_to_uma = {}
+            for uma, fin in actual.items():
+                if fin <= 3:
+                    finish_to_uma[fin] = uma
+
+            result_entry = {**race_meta, 'actual_top3': finish_to_uma}
+
+            for ver, data, feats, pred_fn in [
+                ('v8', v8_data, V8_FEATURES, predict_v8),
+                ('v9', v9_data, V9_FEATURES, lambda d, X, f: predict_v9_ensemble(d, X, f)),
+            ]:
+                if not data:
+                    continue
+                X = race_df[feats].values
+                scores = pred_fn(data, X, feats)
+                race_df[f'{ver}_score'] = scores
+                race_df[f'{ver}_rank'] = race_df[f'{ver}_score'].rank(ascending=False).astype(int)
+                ranking = race_df.sort_values(f'{ver}_rank')['umaban'].tolist()
+
+                trio_bets, wide_bets, umaren_bets = calc_bets(ranking)
+                trio_hit, trio_combo, wide_hits, umaren_hits = check_hits(
+                    finish_to_uma, trio_bets, wide_bets, umaren_bets
+                )
+                result_entry[f'{ver}_top3'] = ranking[:3]
+                result_entry[f'{ver}_top6'] = ranking[:6]
+                result_entry[f'{ver}_trio_bets'] = trio_bets
+                result_entry[f'{ver}_trio_hit'] = trio_hit
+                result_entry[f'{ver}_wide_bets'] = wide_bets
+                result_entry[f'{ver}_wide_hits'] = [list(w) for w in wide_hits]
+                result_entry[f'{ver}_umaren_bets'] = umaren_bets
+                result_entry[f'{ver}_umaren_hits'] = [list(u) for u in umaren_hits]
+
+            all_results.append(result_entry)
+
+        print(f"    Year {test_year}: {sum(1 for r in all_results if r.get('test_year') == test_year)} races done")
+
+    print(f"\n  Total 5-year backtest: {len(all_results)} races")
+    return all_results
 
 
 def scrape_payouts_for_results(results, is_nar=False):
@@ -1131,60 +1255,113 @@ def main():
 
     models = load_models()
 
-    # Phase 1: Central backtest (CSV-based, fast)
-    central_results = None
-    if existing and existing.get('central_results') and len(existing['central_results']) >= N_CENTRAL:
-        print(f"\n  Using cached central results ({len(existing['central_results'])} races)")
-        central_results = existing['central_results']
-    else:
-        central_results = run_central_backtest(models)
+    is_5year = '--5year' in sys.argv
 
-    # Phase 2: Scrape payouts for central races
-    has_valid_payouts = any(r.get('payouts', {}).get('trio', 0) > 0 for r in central_results)
-    if not has_valid_payouts:
-        print("\n  Scraping payouts for central races...")
-        central_results = scrape_payouts_for_results(central_results, is_nar=False)
-    else:
-        print("  Payouts already scraped")
+    if is_5year:
+        # ===== 5-Year Extended Backtest =====
+        result_5y_path = os.path.join(os.path.dirname(__file__), 'backtest_results_5year.json')
+        existing_5y = None
+        if os.path.exists(result_5y_path):
+            try:
+                with open(result_5y_path, 'r', encoding='utf-8') as f:
+                    existing_5y = json.load(f)
+                if existing_5y.get('central_results_5year'):
+                    print(f"  Found cached 5-year results: {len(existing_5y['central_results_5year'])} races")
+            except:
+                existing_5y = None
 
-    # Analyze central
-    central_summary = analyze_results(central_results, "CENTRAL (JRA) Oct-Dec 2025")
-    for ver in ['v8', 'v9']:
-        analyze_losses(central_results, ver)
-
-    # Save intermediate
-    save_data = {
-        'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'central_results': central_results,
-        'central_summary': central_summary,
-        'nar_results': existing.get('nar_results') if existing else None,
-        'nar_summary': existing.get('nar_summary') if existing else None,
-    }
-    with open(RESULT_PATH, 'w', encoding='utf-8') as f:
-        json.dump(save_data, f, ensure_ascii=False, indent=2, default=str)
-    print(f"\n  Saved to {RESULT_PATH}")
-
-    # Phase 3: NAR backtest (scraping-based)
-    nar_results = existing.get('nar_results') if existing else None
-    if '--nar' in sys.argv or (nar_results and len(nar_results) >= N_NAR):
-        if nar_results and len(nar_results) >= N_NAR:
-            print(f"\n  Using cached NAR results ({len(nar_results)} races)")
+        if existing_5y and existing_5y.get('central_results_5year') and len(existing_5y['central_results_5year']) >= N_CENTRAL_5YEAR:
+            print(f"\n  Using cached 5-year results")
+            central_5y = existing_5y['central_results_5year']
         else:
-            nar_results = run_nar_backtest(models, nar_results)
+            central_5y = run_central_backtest_5year(models)
 
-        if nar_results:
-            nar_summary = analyze_results(nar_results, "NAR Oct-Dec 2025")
-            for ver in ['v8', 'v9']:
-                analyze_losses(nar_results, ver)
+        # Scrape payouts for 5-year races
+        has_valid_payouts = any(r.get('payouts', {}).get('trio', 0) > 0 for r in central_5y)
+        if not has_valid_payouts:
+            print("\n  Scraping payouts for 5-year central races...")
+            central_5y = scrape_payouts_for_results(central_5y, is_nar=False)
+        else:
+            print("  5-year payouts already scraped")
 
-            # Save with NAR
-            save_data['nar_results'] = nar_results
-            save_data['nar_summary'] = nar_summary
-            with open(RESULT_PATH, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, ensure_ascii=False, indent=2, default=str)
-            print(f"\n  Saved (with NAR) to {RESULT_PATH}")
+        # Analyze overall
+        central_5y_summary = analyze_results(central_5y, "CENTRAL 5-YEAR (2020-2025)")
+        for ver in ['v8', 'v9']:
+            analyze_losses(central_5y, ver)
+
+        # Analyze per-year
+        yearly_summaries = {}
+        for year in [2020, 2021, 2022, 2023, 2024, 2025]:
+            year_races = [r for r in central_5y if r.get('test_year') == year]
+            if year_races:
+                yearly_summaries[year] = analyze_results(year_races, f"CENTRAL {year}")
+
+        save_5y = {
+            'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'central_results_5year': central_5y,
+            'central_5year_summary': central_5y_summary,
+            'yearly_summaries': yearly_summaries,
+        }
+        with open(result_5y_path, 'w', encoding='utf-8') as f:
+            json.dump(save_5y, f, ensure_ascii=False, indent=2, default=str)
+        print(f"\n  Saved 5-year results to {result_5y_path}")
+
     else:
-        print("\n  NAR backtest: run with --nar flag (scraping ~100 races, ~30 min)")
+        # ===== Original 3-month Backtest =====
+        # Phase 1: Central backtest (CSV-based, fast)
+        central_results = None
+        if existing and existing.get('central_results') and len(existing['central_results']) >= N_CENTRAL:
+            print(f"\n  Using cached central results ({len(existing['central_results'])} races)")
+            central_results = existing['central_results']
+        else:
+            central_results = run_central_backtest(models)
+
+        # Phase 2: Scrape payouts for central races
+        has_valid_payouts = any(r.get('payouts', {}).get('trio', 0) > 0 for r in central_results)
+        if not has_valid_payouts:
+            print("\n  Scraping payouts for central races...")
+            central_results = scrape_payouts_for_results(central_results, is_nar=False)
+        else:
+            print("  Payouts already scraped")
+
+        # Analyze central
+        central_summary = analyze_results(central_results, "CENTRAL (JRA) Oct-Dec 2025")
+        for ver in ['v8', 'v9']:
+            analyze_losses(central_results, ver)
+
+        # Save intermediate
+        save_data = {
+            'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'central_results': central_results,
+            'central_summary': central_summary,
+            'nar_results': existing.get('nar_results') if existing else None,
+            'nar_summary': existing.get('nar_summary') if existing else None,
+        }
+        with open(RESULT_PATH, 'w', encoding='utf-8') as f:
+            json.dump(save_data, f, ensure_ascii=False, indent=2, default=str)
+        print(f"\n  Saved to {RESULT_PATH}")
+
+        # Phase 3: NAR backtest (scraping-based)
+        nar_results = existing.get('nar_results') if existing else None
+        if '--nar' in sys.argv or (nar_results and len(nar_results) >= N_NAR):
+            if nar_results and len(nar_results) >= N_NAR:
+                print(f"\n  Using cached NAR results ({len(nar_results)} races)")
+            else:
+                nar_results = run_nar_backtest(models, nar_results)
+
+            if nar_results:
+                nar_summary = analyze_results(nar_results, "NAR Oct-Dec 2025")
+                for ver in ['v8', 'v9']:
+                    analyze_losses(nar_results, ver)
+
+                # Save with NAR
+                save_data['nar_results'] = nar_results
+                save_data['nar_summary'] = nar_summary
+                with open(RESULT_PATH, 'w', encoding='utf-8') as f:
+                    json.dump(save_data, f, ensure_ascii=False, indent=2, default=str)
+                print(f"\n  Saved (with NAR) to {RESULT_PATH}")
+        else:
+            print("\n  NAR backtest: run with --nar flag (scraping ~100 races, ~30 min)")
 
     print("\n" + "="*60)
     print("  BACKTEST COMPLETE")
