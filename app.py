@@ -99,7 +99,8 @@ CONDITION_PROFILES = {
     },
 }
 
-# NAR(地方)専用条件プロファイル - NAR専用モデル(AUC 0.789) 184レースバックテスト
+# NAR(地方)専用条件プロファイル - NAR V2モデル(AUC 0.792) 184レースバックテスト
+# 旧V1参考値: A trio 559.2%, B trio 334.0%, E umaren 185.2%
 NAR_CONDITION_PROFILES = {
     'A': {
         'label': 'NAR条件A',
@@ -108,19 +109,19 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 559.2,
-        'hit_rate': 62.2,
+        'roi': 382.2,  # V2 (N=69) ★★★ 旧V1: 559.2%
+        'hit_rate': 55.1,
         'recommended': True,
     },
     'B': {
         'label': 'NAR条件B',
         'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'bet_type': 'wide',  # V2: wide最適 (ROI 253.0% vs trio 245.4%)
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 334.0,
-        'hit_rate': 35.7,
+        'roi': 253.0,  # V2 (N=83) ★★★ 旧V1 trio: 334.0%
+        'hit_rate': 50.6,
         'recommended': True,
     },
     'C': {
@@ -130,8 +131,8 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 0,
+        'roi': 66.4,  # N=2, サンプル不足
+        'hit_rate': 50.0,
         'recommended': False,
     },
     'D': {
@@ -141,7 +142,7 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
+        'roi': 0,  # データなし
         'hit_rate': 0,
         'recommended': False,
     },
@@ -152,8 +153,8 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '馬連1軸2流し',
         'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 185.2,
-        'hit_rate': 47.6,
+        'roi': 148.2,  # V2 (N=30) ★★★ 旧V1: 185.2%
+        'hit_rate': 40.0,
         'recommended': True,
     },
     'X': {
@@ -163,7 +164,7 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,
+        'roi': 0,  # データなし
         'hit_rate': 0,
         'recommended': False,
     },
@@ -4105,7 +4106,7 @@ with st.expander("🤖 モデル情報・特徴量重要度"):
     else:
         st.markdown(f"**V8 (フォールバック):** AUC {model_auc:.4f}")
     if _v9_models.get('nar'):
-        st.markdown(f"**NAR:** 専用モデル AUC 0.789 (A: trio ROI 559% / B: trio ROI 334% / E: umaren ROI 185% / C,D,X: 非推奨)")
+        st.markdown(f"**NAR V2:** 専用モデル AUC 0.792 (A: trio ROI 382% / B: wide ROI 253% / E: umaren ROI 148% / C,D,X: 非推奨)")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
