@@ -1,0 +1,300 @@
+{
+  "generated": "2026-03-09 00:42:44",
+  "model": "LightGBM walk-forward (no day-of features)",
+  "fold_aucs": {
+    "2018": 0.7991,
+    "2019": 0.8067,
+    "2020": 0.8057,
+    "2021": 0.8003,
+    "2022": 0.7984,
+    "2023": 0.8008,
+    "2024": 0.8019,
+    "2025": 0.8051
+  },
+  "condition_results": {
+    "A": {
+      "trio": {
+        "n": 8634,
+        "hits": 3890,
+        "hit_rate": 45.1,
+        "total_invest": 6043800,
+        "total_return": 25429227,
+        "roi": 420.7,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 8634,
+        "hits": 4892,
+        "hit_rate": 56.7,
+        "total_invest": 8634000,
+        "total_return": 12638530,
+        "roi": 146.4,
+        "star": "★★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 8634,
+        "hits": 2767,
+        "hit_rate": 32.0,
+        "total_invest": 6043800,
+        "total_return": 10116372,
+        "roi": 167.4,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 8634,
+        "hits": 4892,
+        "hit_rate": 56.7,
+        "total_invest": 6043800,
+        "total_return": 7577570,
+        "roi": 125.4,
+        "star": "★★★",
+        "flag": ""
+      }
+    },
+    "B": {
+      "trio": {
+        "n": 1067,
+        "hits": 484,
+        "hit_rate": 45.4,
+        "total_invest": 746900,
+        "total_return": 3539139,
+        "roi": 473.8,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 1067,
+        "hits": 607,
+        "hit_rate": 56.9,
+        "total_invest": 1067000,
+        "total_return": 2103772,
+        "roi": 197.2,
+        "star": "★★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 1067,
+        "hits": 344,
+        "hit_rate": 32.2,
+        "total_invest": 746900,
+        "total_return": 1766646,
+        "roi": 236.5,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 1067,
+        "hits": 607,
+        "hit_rate": 56.9,
+        "total_invest": 746900,
+        "total_return": 1178635,
+        "roi": 157.8,
+        "star": "★★★",
+        "flag": ""
+      }
+    },
+    "C": {
+      "trio": {
+        "n": 6405,
+        "hits": 2137,
+        "hit_rate": 33.4,
+        "total_invest": 4483500,
+        "total_return": 22355894,
+        "roi": 498.6,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 6405,
+        "hits": 3106,
+        "hit_rate": 48.5,
+        "total_invest": 6405000,
+        "total_return": 11050712,
+        "roi": 172.5,
+        "star": "★★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 6405,
+        "hits": 1701,
+        "hit_rate": 26.6,
+        "total_invest": 4483500,
+        "total_return": 8714905,
+        "roi": 194.4,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 6405,
+        "hits": 3106,
+        "hit_rate": 48.5,
+        "total_invest": 4483500,
+        "total_return": 6756092,
+        "roi": 150.7,
+        "star": "★★★",
+        "flag": ""
+      }
+    },
+    "D": {
+      "trio": {
+        "n": 9807,
+        "hits": 2769,
+        "hit_rate": 28.2,
+        "total_invest": 6864900,
+        "total_return": 16958143,
+        "roi": 247.0,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 9807,
+        "hits": 4142,
+        "hit_rate": 42.2,
+        "total_invest": 9807000,
+        "total_return": 10720505,
+        "roi": 109.3,
+        "star": "★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 9807,
+        "hits": 2170,
+        "hit_rate": 22.1,
+        "total_invest": 6864900,
+        "total_return": 8618932,
+        "roi": 125.6,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 9807,
+        "hits": 4142,
+        "hit_rate": 42.2,
+        "total_invest": 6864900,
+        "total_return": 6389775,
+        "roi": 93.1,
+        "star": "★",
+        "flag": ""
+      }
+    },
+    "E": {
+      "trio": {
+        "n": 569,
+        "hits": 431,
+        "hit_rate": 75.7,
+        "total_invest": 385500,
+        "total_return": 1273853,
+        "roi": 330.4,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 569,
+        "hits": 442,
+        "hit_rate": 77.7,
+        "total_invest": 569000,
+        "total_return": 725307,
+        "roi": 127.5,
+        "star": "★★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 569,
+        "hits": 295,
+        "hit_rate": 51.8,
+        "total_invest": 398300,
+        "total_return": 565596,
+        "roi": 142.0,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 569,
+        "hits": 442,
+        "hit_rate": 77.7,
+        "total_invest": 398300,
+        "total_return": 449834,
+        "roi": 112.9,
+        "star": "★★",
+        "flag": ""
+      }
+    },
+    "X": {
+      "trio": {
+        "n": 1055,
+        "hits": 381,
+        "hit_rate": 36.1,
+        "total_invest": 738500,
+        "total_return": 4418076,
+        "roi": 598.2,
+        "star": "★★★",
+        "flag": ""
+      },
+      "combo": {
+        "n": 1055,
+        "hits": 525,
+        "hit_rate": 49.8,
+        "total_invest": 1055000,
+        "total_return": 1970552,
+        "roi": 186.8,
+        "star": "★★★",
+        "flag": ""
+      },
+      "umaren": {
+        "n": 1055,
+        "hits": 302,
+        "hit_rate": 28.6,
+        "total_invest": 738500,
+        "total_return": 1629901,
+        "roi": 220.7,
+        "star": "★★★",
+        "flag": ""
+      },
+      "wide": {
+        "n": 1055,
+        "hits": 525,
+        "hit_rate": 49.8,
+        "total_invest": 738500,
+        "total_return": 1128872,
+        "roi": 152.9,
+        "star": "★★★",
+        "flag": ""
+      }
+    }
+  },
+  "recommended": {
+    "A": {
+      "bet_type": "trio",
+      "roi": 420.7,
+      "n": 8634
+    },
+    "B": {
+      "bet_type": "trio",
+      "roi": 473.8,
+      "n": 1067
+    },
+    "C": {
+      "bet_type": "trio",
+      "roi": 498.6,
+      "n": 6405
+    },
+    "D": {
+      "bet_type": "trio",
+      "roi": 247.0,
+      "n": 9807
+    },
+    "E": {
+      "bet_type": "trio",
+      "roi": 330.4,
+      "n": 569
+    },
+    "X": {
+      "bet_type": "trio",
+      "roi": 598.2,
+      "n": 1055
+    }
+  }
+}

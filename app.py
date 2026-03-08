@@ -19,8 +19,10 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predic
 
 INVESTMENT_PER_RACE = 700
 
-# 条件別買い目ロジック (リークフリーバックテスト 2023-2025完全未知データ)
-# 旧ROI参考値(5年BT): A=197.8%, B=151.7%, C=169.9%, D=180.1%, E=530.0%, X=173.4%
+# 条件別買い目ロジック
+# WF = ウォークフォワードBT 2018-2025 (27,537R, 当日データ除外, 推定配当)
+# LF = リークフリーBT 2023-2025 (300R, 実配当)
+# 全条件でtrio(三連複)が最高ROI → trio推奨に統一
 CONDITION_PROFILES = {
     'A': {
         'label': '条件A',
@@ -29,10 +31,12 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 128.7,  # リークフリーBT (N=92) ★★★ 旧: 197.8%
-        'hit_rate': 47.8,
+        'roi': 128.7,  # LF実配当ROI (N=92) ★★★
+        'hit_rate': 45.1,  # WF的中率 (N=8634)
         'recommended': True,
         'leakfree_n': 92,
+        'wf_n': 8634,
+        'wf_roi_est': 420.7,  # WF推定配当ROI (参考値)
     },
     'B': {
         'label': '条件B',
@@ -41,10 +45,12 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 143.2,  # リークフリーBT (N=9, サンプル少) ★★★ 旧: 151.7%
-        'hit_rate': 44.4,
+        'roi': 143.2,  # LF実配当ROI (N=9, サンプル少) ★★★
+        'hit_rate': 45.4,  # WF的中率 (N=1067)
         'recommended': True,
         'leakfree_n': 9,
+        'wf_n': 1067,
+        'wf_roi_est': 473.8,
         'small_sample': True,
     },
     'C': {
@@ -54,10 +60,12 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 160.8,  # リークフリーBT (N=70) ★★★ 旧: 169.9%
-        'hit_rate': 38.6,
+        'roi': 160.8,  # LF実配当ROI (N=70) ★★★
+        'hit_rate': 33.4,  # WF的中率 (N=6405)
         'recommended': True,
         'leakfree_n': 70,
+        'wf_n': 6405,
+        'wf_roi_est': 498.6,
     },
     'D': {
         'label': '条件D',
@@ -66,23 +74,26 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 153.8,  # リークフリーBT (N=118) ★★★ 旧: 180.1%
-        'hit_rate': 31.4,
+        'roi': 153.8,  # LF実配当ROI (N=118) ★★★
+        'hit_rate': 28.2,  # WF的中率 (N=9807)
         'recommended': True,
         'leakfree_n': 118,
+        'wf_n': 9807,
+        'wf_roi_est': 247.0,
     },
     'E': {
         'label': '条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'umaren',
-        'bet_label': '馬連1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'bet_type': 'trio',  # WF検証: trio ROI 330% >> umaren 142% → trio推奨に変更
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 530.0,  # 旧5年BT値(N=4) ※リークフリーBT未検証
-        'hit_rate': 75.0,
+        'roi': 330.4,  # WF推定配当ROI (N=569) ★★★
+        'hit_rate': 75.7,  # WF的中率 (N=569)
         'recommended': True,
         'leakfree_n': 0,
-        'leakfree_unverified': True,
+        'wf_n': 569,
+        'wf_roi_est': 330.4,
     },
     'X': {
         'label': '条件外',
@@ -91,10 +102,12 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 223.2,  # リークフリーBT (N=11, サンプル少) ★★★ 旧: 173.4%
-        'hit_rate': 45.5,
+        'roi': 223.2,  # LF実配当ROI (N=11, サンプル少) ★★★
+        'hit_rate': 36.1,  # WF的中率 (N=1055)
         'recommended': True,
         'leakfree_n': 11,
+        'wf_n': 1055,
+        'wf_roi_est': 598.2,
         'small_sample': True,
     },
 }
