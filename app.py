@@ -2500,25 +2500,24 @@ def fetch_race_results(race_id, is_nar=False):
                 payout_tables = soup.select("table.Payout_Detail_Table")
             if not payout_tables:
                 payout_tables = soup.find_all("table")
+            def _extract_payout(r):
+                tds_p = r.find_all("td")
+                payout_td = r.select_one("td.Payout")
+                if payout_td:
+                    t = payout_td.get_text(strip=True)
+                elif len(tds_p) >= 2:
+                    t = tds_p[1].get_text(strip=True)
+                else:
+                    return 0
+                t = t.replace(',', '').replace('円', '').replace('¥', '')
+                pm = re.search(r'(\d{3,})', t)
+                return int(pm.group(1)) if pm else 0
             for table in payout_tables:
                 for row in table.find_all("tr"):
                     th = row.find("th")
                     if not th:
                         continue
                     th_text = th.get_text(strip=True)
-                    # 払戻金額を抽出するヘルパー
-                    def _extract_payout(r):
-                        tds_p = r.find_all("td")
-                        payout_td = r.select_one("td.Payout")
-                        if payout_td:
-                            t = payout_td.get_text(strip=True)
-                        elif len(tds_p) >= 2:
-                            t = tds_p[1].get_text(strip=True)
-                        else:
-                            return 0
-                        t = t.replace(',', '').replace('円', '').replace('¥', '')
-                        m = re.search(r'(\d{3,})', t)
-                        return int(m.group(1)) if m else 0
                     if ('3連複' in th_text or '三連複' in th_text) and trio_payout == 0:
                         trio_payout = _extract_payout(row)
                     elif ('馬連' in th_text) and '馬単' not in th_text and umaren_payout == 0:
@@ -4020,11 +4019,17 @@ with st.expander("🤖 モデル情報・特徴量重要度"):
     for src_name, src_data in [('v9 central', _v9_models.get('central')), ('v9 nar', _v9_models.get('nar')), ('v8', _loaded)]:
         if src_data and isinstance(src_data, dict) and 'model' in src_data:
             m = src_data['model']
-            if hasattr(m, 'feature_importances_'):
+            importances = None
+            if hasattr(m, 'feature_importance'):
+                # LightGBM Booster
+                importances = m.feature_importance(importance_type='gain')
+            elif hasattr(m, 'feature_importances_'):
+                # sklearn-like models
+                importances = m.feature_importances_
+            if importances is not None:
                 fi_model = m
                 fi_features = src_data.get('features') or FEATURES
                 st.markdown(f"**特徴量重要度 ({src_name}): TOP 20**")
-                importances = fi_model.feature_importances_
                 pairs = sorted(zip(fi_features, importances), key=lambda x: x[1], reverse=True)[:20]
                 fi_html = '<div style="font-size:0.85em;">'
                 max_imp = pairs[0][1] if pairs else 1
