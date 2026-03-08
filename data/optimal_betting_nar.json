@@ -1,0 +1,971 @@
+{
+  "generated_at": "2026-03-09T00:33:42.108458",
+  "walk_forward_aucs": {
+    "2012": 0.7062,
+    "2013": 0.6995,
+    "2014": 0.7009,
+    "2015": 0.7212,
+    "2016": 0.7147,
+    "2017": 0.7288,
+    "2018": 0.7149,
+    "2019": 0.6933,
+    "2020": 0.7753,
+    "2022": 0.5834
+  },
+  "summary_all": {
+    "A": {
+      "n": 69,
+      "trio_7": {
+        "hits": 7,
+        "hit_rate": 10.1,
+        "random_rate": 6.5,
+        "edge": 3.6,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 73.3,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 19,
+        "hit_rate": 27.5,
+        "random_rate": 13.3,
+        "edge": 14.3,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 105.0,
+        "stars": 2,
+        "flag": "★★"
+      },
+      "umaren_2": {
+        "hits": 7,
+        "hit_rate": 10.1,
+        "random_rate": 4.6,
+        "edge": 5.5,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 96.1,
+        "stars": 1,
+        "flag": "★"
+      },
+      "wide_2": {
+        "hits": 19,
+        "hit_rate": 27.5,
+        "random_rate": 13.3,
+        "edge": 14.3,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 114.0,
+        "stars": 2,
+        "flag": "★★"
+      }
+    },
+    "B": {
+      "n": 83,
+      "trio_7": {
+        "hits": 4,
+        "hit_rate": 4.8,
+        "random_rate": 6.4,
+        "edge": -1.5,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 45.1,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 14,
+        "hit_rate": 16.9,
+        "random_rate": 13.0,
+        "edge": 3.9,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 64.8,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 4,
+        "hit_rate": 4.8,
+        "random_rate": 4.5,
+        "edge": 0.3,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 59.8,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 14,
+        "hit_rate": 16.9,
+        "random_rate": 13.0,
+        "edge": 3.9,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 69.7,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "C": {
+      "n": 2,
+      "trio_7": {
+        "hits": 0,
+        "hit_rate": 0.0,
+        "random_rate": 1.2,
+        "edge": -1.2,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 0.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "uma_wide_combo": {
+        "hits": 1,
+        "hit_rate": 50.0,
+        "random_rate": 4.9,
+        "edge": 45.1,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 55.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "umaren_2": {
+        "hits": 0,
+        "hit_rate": 0.0,
+        "random_rate": 1.7,
+        "edge": -1.7,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 0.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "wide_2": {
+        "hits": 1,
+        "hit_rate": 50.0,
+        "random_rate": 4.9,
+        "edge": 45.1,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 110.0,
+        "stars": 2,
+        "flag": "★★ (要追加検証)"
+      }
+    },
+    "D": {
+      "n": 99,
+      "trio_7": {
+        "hits": 14,
+        "hit_rate": 14.1,
+        "random_rate": 10.0,
+        "edge": 4.2,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 29,
+        "hit_rate": 29.3,
+        "random_rate": 17.6,
+        "edge": 11.7,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 10,
+        "hit_rate": 10.1,
+        "random_rate": 6.1,
+        "edge": 4.0,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 29,
+        "hit_rate": 29.3,
+        "random_rate": 17.6,
+        "edge": 11.7,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "E": {
+      "n": 2094,
+      "trio_7": {
+        "hits": 1350,
+        "hit_rate": 64.5,
+        "random_rate": 59.7,
+        "edge": 4.8,
+        "n": 2094,
+        "n_pay": 30,
+        "roi": 115.2,
+        "stars": 2,
+        "flag": "★★"
+      },
+      "uma_wide_combo": {
+        "hits": 1400,
+        "hit_rate": 66.9,
+        "random_rate": 60.6,
+        "edge": 6.2,
+        "n": 2094,
+        "n_pay": 30,
+        "roi": 54.4,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 673,
+        "hit_rate": 32.1,
+        "random_rate": 29.0,
+        "edge": 3.1,
+        "n": 2094,
+        "n_pay": 30,
+        "roi": 36.7,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 1400,
+        "hit_rate": 66.9,
+        "random_rate": 60.6,
+        "edge": 6.2,
+        "n": 2094,
+        "n_pay": 30,
+        "roi": 72.2,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "ALL": {
+      "n": 2347,
+      "trio_7": {
+        "hits": 1375,
+        "hit_rate": 58.6,
+        "random_rate": 54.1,
+        "edge": 4.5,
+        "n": 2347,
+        "n_pay": 184,
+        "roi": 66.6,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 1463,
+        "hit_rate": 62.3,
+        "random_rate": 55.7,
+        "edge": 6.7,
+        "n": 2347,
+        "n_pay": 184,
+        "roi": 78.1,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 694,
+        "hit_rate": 29.6,
+        "random_rate": 26.5,
+        "edge": 3.1,
+        "n": 2347,
+        "n_pay": 184,
+        "roi": 69.0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 1463,
+        "hit_rate": 62.3,
+        "random_rate": 55.7,
+        "edge": 6.7,
+        "n": 2347,
+        "n_pay": 184,
+        "roi": 87.1,
+        "stars": 1,
+        "flag": "★"
+      }
+    }
+  },
+  "summary_kdscope": {
+    "D": {
+      "n": 99,
+      "trio_7": {
+        "hits": 14,
+        "hit_rate": 14.1,
+        "random_rate": 10.0,
+        "edge": 4.2,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 29,
+        "hit_rate": 29.3,
+        "random_rate": 17.6,
+        "edge": 11.7,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 10,
+        "hit_rate": 10.1,
+        "random_rate": 6.1,
+        "edge": 4.0,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 29,
+        "hit_rate": 29.3,
+        "random_rate": 17.6,
+        "edge": 11.7,
+        "n": 99,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "E": {
+      "n": 2064,
+      "trio_7": {
+        "hits": 1337,
+        "hit_rate": 64.8,
+        "random_rate": 60.1,
+        "edge": 4.6,
+        "n": 2064,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 1387,
+        "hit_rate": 67.2,
+        "random_rate": 61.0,
+        "edge": 6.2,
+        "n": 2064,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 667,
+        "hit_rate": 32.3,
+        "random_rate": 29.3,
+        "edge": 3.0,
+        "n": 2064,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 1387,
+        "hit_rate": 67.2,
+        "random_rate": 61.0,
+        "edge": 6.2,
+        "n": 2064,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "ALL": {
+      "n": 2163,
+      "trio_7": {
+        "hits": 1351,
+        "hit_rate": 62.5,
+        "random_rate": 57.8,
+        "edge": 4.6,
+        "n": 2163,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 1416,
+        "hit_rate": 65.5,
+        "random_rate": 59.1,
+        "edge": 6.4,
+        "n": 2163,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 677,
+        "hit_rate": 31.3,
+        "random_rate": 28.2,
+        "edge": 3.1,
+        "n": 2163,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 1416,
+        "hit_rate": 65.5,
+        "random_rate": 59.1,
+        "edge": 6.4,
+        "n": 2163,
+        "n_pay": 0,
+        "roi": 0,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    }
+  },
+  "summary_netkeiba": {
+    "A": {
+      "n": 69,
+      "trio_7": {
+        "hits": 7,
+        "hit_rate": 10.1,
+        "random_rate": 6.5,
+        "edge": 3.6,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 73.3,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 19,
+        "hit_rate": 27.5,
+        "random_rate": 13.3,
+        "edge": 14.3,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 105.0,
+        "stars": 2,
+        "flag": "★★"
+      },
+      "umaren_2": {
+        "hits": 7,
+        "hit_rate": 10.1,
+        "random_rate": 4.6,
+        "edge": 5.5,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 96.1,
+        "stars": 1,
+        "flag": "★"
+      },
+      "wide_2": {
+        "hits": 19,
+        "hit_rate": 27.5,
+        "random_rate": 13.3,
+        "edge": 14.3,
+        "n": 69,
+        "n_pay": 69,
+        "roi": 114.0,
+        "stars": 2,
+        "flag": "★★"
+      }
+    },
+    "B": {
+      "n": 83,
+      "trio_7": {
+        "hits": 4,
+        "hit_rate": 4.8,
+        "random_rate": 6.4,
+        "edge": -1.5,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 45.1,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 14,
+        "hit_rate": 16.9,
+        "random_rate": 13.0,
+        "edge": 3.9,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 64.8,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 4,
+        "hit_rate": 4.8,
+        "random_rate": 4.5,
+        "edge": 0.3,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 59.8,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 14,
+        "hit_rate": 16.9,
+        "random_rate": 13.0,
+        "edge": 3.9,
+        "n": 83,
+        "n_pay": 83,
+        "roi": 69.7,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "C": {
+      "n": 2,
+      "trio_7": {
+        "hits": 0,
+        "hit_rate": 0.0,
+        "random_rate": 1.2,
+        "edge": -1.2,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 0.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "uma_wide_combo": {
+        "hits": 1,
+        "hit_rate": 50.0,
+        "random_rate": 4.9,
+        "edge": 45.1,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 55.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "umaren_2": {
+        "hits": 0,
+        "hit_rate": 0.0,
+        "random_rate": 1.7,
+        "edge": -1.7,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 0.0,
+        "stars": 0,
+        "flag": "非推奨 (要追加検証)"
+      },
+      "wide_2": {
+        "hits": 1,
+        "hit_rate": 50.0,
+        "random_rate": 4.9,
+        "edge": 45.1,
+        "n": 2,
+        "n_pay": 2,
+        "roi": 110.0,
+        "stars": 2,
+        "flag": "★★ (要追加検証)"
+      }
+    },
+    "E": {
+      "n": 30,
+      "trio_7": {
+        "hits": 13,
+        "hit_rate": 43.3,
+        "random_rate": 27.5,
+        "edge": 15.8,
+        "n": 30,
+        "n_pay": 30,
+        "roi": 115.2,
+        "stars": 2,
+        "flag": "★★"
+      },
+      "uma_wide_combo": {
+        "hits": 13,
+        "hit_rate": 43.3,
+        "random_rate": 31.8,
+        "edge": 11.5,
+        "n": 30,
+        "n_pay": 30,
+        "roi": 54.4,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 6,
+        "hit_rate": 20.0,
+        "random_rate": 11.7,
+        "edge": 8.3,
+        "n": 30,
+        "n_pay": 30,
+        "roi": 36.7,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 13,
+        "hit_rate": 43.3,
+        "random_rate": 31.8,
+        "edge": 11.5,
+        "n": 30,
+        "n_pay": 30,
+        "roi": 72.2,
+        "stars": 0,
+        "flag": "非推奨"
+      }
+    },
+    "ALL": {
+      "n": 184,
+      "trio_7": {
+        "hits": 24,
+        "hit_rate": 13.0,
+        "random_rate": 9.8,
+        "edge": 3.2,
+        "n": 184,
+        "n_pay": 184,
+        "roi": 66.6,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "uma_wide_combo": {
+        "hits": 47,
+        "hit_rate": 25.5,
+        "random_rate": 16.1,
+        "edge": 9.5,
+        "n": 184,
+        "n_pay": 184,
+        "roi": 78.1,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "umaren_2": {
+        "hits": 17,
+        "hit_rate": 9.2,
+        "random_rate": 5.7,
+        "edge": 3.6,
+        "n": 184,
+        "n_pay": 184,
+        "roi": 69.0,
+        "stars": 0,
+        "flag": "非推奨"
+      },
+      "wide_2": {
+        "hits": 47,
+        "hit_rate": 25.5,
+        "random_rate": 16.1,
+        "edge": 9.5,
+        "n": 184,
+        "n_pay": 184,
+        "roi": 87.1,
+        "stars": 1,
+        "flag": "★"
+      }
+    }
+  },
+  "proposals": {
+    "old": {
+      "A": {
+        "desc": "8-14頭/1600m+/良~稍重",
+        "bet": "trio_7",
+        "roi": 382.2,
+        "hit": 55.1
+      },
+      "B": {
+        "desc": "8-14頭/1600m+/重~不良",
+        "bet": "wide_2",
+        "roi": 253.0,
+        "hit": 50.6
+      },
+      "C": {
+        "desc": "15頭+/1600m+/良~稍重",
+        "bet": "trio_7",
+        "roi": 66.4,
+        "hit": 50.0
+      },
+      "D": {
+        "desc": "1400m以下",
+        "bet": "trio_7",
+        "roi": 0,
+        "hit": 0
+      },
+      "E": {
+        "desc": "7頭以下",
+        "bet": "umaren_2",
+        "roi": 148.2,
+        "hit": 40.0
+      },
+      "X": {
+        "desc": "15頭+/重~不良",
+        "bet": "trio_7",
+        "roi": 0,
+        "hit": 0
+      }
+    },
+    "proposals": [
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "良",
+        "season": "春",
+        "bet": "uma_wide_combo",
+        "bet_name": "馬連+ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "良",
+        "season": "春",
+        "bet": "wide_2",
+        "bet_name": "ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "良~稍",
+        "season": "春",
+        "bet": "uma_wide_combo",
+        "bet_name": "馬連+ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "良~稍",
+        "season": "春",
+        "bet": "wide_2",
+        "bet_name": "ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "ALL",
+        "season": "春",
+        "bet": "uma_wide_combo",
+        "bet_name": "馬連+ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1400m",
+        "horses": "6-8",
+        "track": "ALL",
+        "season": "春",
+        "bet": "wide_2",
+        "bet_name": "ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1600m",
+        "horses": "6-8",
+        "track": "良",
+        "season": "春",
+        "bet": "uma_wide_combo",
+        "bet_name": "馬連+ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1600m",
+        "horses": "6-8",
+        "track": "良",
+        "season": "春",
+        "bet": "wide_2",
+        "bet_name": "ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1600m",
+        "horses": "6-8",
+        "track": "良~稍",
+        "season": "春",
+        "bet": "uma_wide_combo",
+        "bet_name": "馬連+ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      },
+      {
+        "dist": "1200-1600m",
+        "horses": "6-8",
+        "track": "良~稍",
+        "season": "春",
+        "bet": "wide_2",
+        "bet_name": "ワイド1軸2流し",
+        "n": 48,
+        "avg_horses": 6.7,
+        "hits": 26,
+        "hit_rate": 54.2,
+        "random_rate": 30.2,
+        "edge": 24.0,
+        "n_pay": 0,
+        "roi": 0,
+        "stability": 19.5,
+        "yearly_edges": [
+          52.825510204081645,
+          11.808309037900887,
+          52.419825072886304,
+          34.07551020408164,
+          26.09402332361517,
+          -0.04676870748298967
+        ]
+      }
+    ]
+  }
+}
