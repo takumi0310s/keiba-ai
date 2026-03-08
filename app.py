@@ -95,12 +95,15 @@ def classify_race_condition(race_info, num_horses, is_nar=False):
     Returns: (condition_key, profile_dict)
     """
     if is_nar:
-        return 'A', {**CONDITION_PROFILES['A'], 'label': 'NAR', 'desc': 'NAR V8',
-                     'bet_type': 'trio', 'bet_label': '三連複7点'}
+        # NARバックテスト(100レース)で全条件ROI80%未満のため買い非推奨
+        # V8 条件B(ワイド)が最良で ROI 68.0% → 参考表示のみ
+        return 'B', {**CONDITION_PROFILES['B'], 'label': 'NAR', 'desc': 'NAR V8 (参考)',
+                     'bet_type': 'wide', 'bet_label': 'ワイド1軸2流し',
+                     'roi': 68.0, 'hit_rate': 33.3, 'recommended': False}
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
-    good_track = any(c in cond for c in ['良', '稍'])
     heavy_track = any(c in cond for c in ['重', '不'])
+    good_track = not heavy_track
 
     if num_horses <= 7:
         return 'E', CONDITION_PROFILES['E']
@@ -1769,6 +1772,144 @@ def fetch_training_data(race_id, is_nar=False):
     except Exception:
         pass
     return training_dict
+
+# ===== Fetch Lap Time Data =====
+def fetch_lap_times(race_id, is_nar=False):
+    """netkeibaの過去レース結果ページからラップタイムを取得。
+    返り値: {'laps': [12.5, 11.2, ...], 'pace': 'H'/'M'/'S', 'first_half': 34.5, 'second_half': 35.0}
+    or None if not available.
+    """
+    try:
+        url = f"https://db.netkeiba.com/race/{race_id}/"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        if resp.status_code != 200:
+            return None
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # ラップタイムは race_lap_cell クラスか、テーブル内のラップ行から取得
+        lap_data = {'laps': [], 'pace': '', 'first_half': 0, 'second_half': 0}
+
+        # パターン1: race_lap_cell (新レイアウト)
+        lap_cell = soup.find("td", class_="race_lap_cell")
+        if not lap_cell:
+            # パターン2: nowrap_data_intro 内のラップ
+            lap_cell = soup.find("div", class_="race_lap_data")
+
+        if lap_cell:
+            lap_text = lap_cell.get_text(strip=True)
+            # "12.5-11.2-12.0-..." のようなフォーマット
+            laps = re.findall(r'(\d+\.?\d*)', lap_text)
+            lap_data['laps'] = [float(l) for l in laps if 9.0 <= float(l) <= 20.0]
+
+        # パターン3: スパンセルからの取得
+        if not lap_data['laps']:
+            for span in soup.find_all("span"):
+                text = span.get_text(strip=True)
+                if re.match(r'^\d+\.\d\s*-\s*\d+\.\d', text):
+                    laps = re.findall(r'(\d+\.\d)', text)
+                    lap_data['laps'] = [float(l) for l in laps if 9.0 <= float(l) <= 20.0]
+                    break
+
+        # パターン4: テーブル全体からラップ行を探す
+        if not lap_data['laps']:
+            all_text = soup.get_text()
+            # "ラップ" の近くにある数値列を探す
+            m = re.search(r'ラップ[^\d]*?([\d\.]+\s*-\s*[\d\.]+(?:\s*-\s*[\d\.]+)+)', all_text)
+            if m:
+                laps = re.findall(r'(\d+\.\d)', m.group(1))
+                lap_data['laps'] = [float(l) for l in laps if 9.0 <= float(l) <= 20.0]
+
+        if lap_data['laps'] and len(lap_data['laps']) >= 4:
+            mid = len(lap_data['laps']) // 2
+            lap_data['first_half'] = round(sum(lap_data['laps'][:mid]), 1)
+            lap_data['second_half'] = round(sum(lap_data['laps'][mid:]), 1)
+            diff = lap_data['first_half'] - lap_data['second_half']
+            if diff < -1.0:
+                lap_data['pace'] = 'S'  # スロー（前半遅い）
+            elif diff > 1.0:
+                lap_data['pace'] = 'H'  # ハイ（前半速い）
+            else:
+                lap_data['pace'] = 'M'  # ミドル
+
+        return lap_data if lap_data['laps'] else None
+
+    except Exception:
+        return None
+
+
+def fetch_horse_lap_history(horse_id, n_races=5):
+    """馬の過去nレースのラップタイム傾向を取得。
+    返り値: {'avg_first_half': float, 'avg_second_half': float, 'pace_pattern': str,
+             'avg_lap_variance': float}
+    """
+    try:
+        url = f"https://db.netkeiba.com/horse/{horse_id}/"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        if resp.status_code != 200:
+            return None
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # 過去レースIDを取得
+        race_ids = []
+        table = soup.find("table", class_="db_h_race_results")
+        if not table:
+            return None
+
+        for row in table.find_all("tr"):
+            tds = row.find_all("td")
+            if len(tds) < 5:
+                continue
+            link = tds[4].find("a") if len(tds) > 4 else None
+            if link:
+                href = link.get("href", "")
+                m = re.search(r'/race/(\d{12})/', href)
+                if m:
+                    race_ids.append(m.group(1))
+            if len(race_ids) >= n_races:
+                break
+
+        if not race_ids:
+            return None
+
+        # 各レースのラップを取得
+        first_halves = []
+        second_halves = []
+        all_variances = []
+
+        for rid in race_ids[:n_races]:
+            lap_data = fetch_lap_times(rid)
+            if lap_data and lap_data['first_half'] > 0:
+                first_halves.append(lap_data['first_half'])
+                second_halves.append(lap_data['second_half'])
+                if lap_data['laps']:
+                    all_variances.append(np.std(lap_data['laps']))
+            time.sleep(0.5)
+
+        if not first_halves:
+            return None
+
+        avg_fh = round(np.mean(first_halves), 1)
+        avg_sh = round(np.mean(second_halves), 1)
+        diff = avg_fh - avg_sh
+        if diff < -1.0:
+            pattern = 'S'
+        elif diff > 1.0:
+            pattern = 'H'
+        else:
+            pattern = 'M'
+
+        return {
+            'avg_first_half': avg_fh,
+            'avg_second_half': avg_sh,
+            'pace_pattern': pattern,
+            'avg_lap_variance': round(np.mean(all_variances), 2) if all_variances else 0,
+            'n_races': len(first_halves),
+        }
+    except Exception:
+        return None
+
 
 # ===== Fetch Realtime Track Condition =====
 def fetch_track_condition(race_id, is_nar=False):

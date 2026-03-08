@@ -1233,6 +1233,94 @@ def analyze_losses(results, ver='v8'):
     return patterns
 
 
+def classify_nar_condition(race):
+    """NAR backtest結果を条件A-Eに分類"""
+    n = race.get('num_horses', 14)
+    dist = race.get('distance', 1600)
+    cond = str(race.get('condition', '良'))
+    heavy = any(c in cond for c in ['重', '不'])
+    if n <= 7:
+        return 'E'
+    if dist <= 1400:
+        return 'D'
+    if 8 <= n <= 14 and dist >= 1600 and not heavy:
+        return 'A'
+    if 8 <= n <= 14 and dist >= 1600 and heavy:
+        return 'B'
+    if n >= 15 and dist >= 1600 and not heavy:
+        return 'C'
+    return 'X'
+
+
+def analyze_nar_by_condition(results, ver='v8'):
+    """NAR結果を条件別に分析してROIを算出"""
+    print(f"\n{'='*60}")
+    print(f"  NAR CONDITION-BASED ANALYSIS [{ver.upper()}]")
+    print(f"{'='*60}")
+
+    cond_map = {
+        'A': {'label': '8-14頭/1600m+/良~稍', 'bet': 'trio', 'n_bets': 7},
+        'B': {'label': '8-14頭/1600m+/重~不良', 'bet': 'wide', 'n_bets': 2},
+        'C': {'label': '15頭+/1600m+/良~稍', 'bet': 'wide', 'n_bets': 2},
+        'D': {'label': '1400m以下(スプリント)', 'bet': 'trio', 'n_bets': 7},
+        'E': {'label': '7頭以下(少頭数)', 'bet': 'umaren', 'n_bets': 2},
+        'X': {'label': '15頭+/重~不良', 'bet': 'wide', 'n_bets': 2},
+    }
+
+    condition_results = {}
+    for r in results:
+        ckey = classify_nar_condition(r)
+        if ckey not in condition_results:
+            condition_results[ckey] = []
+        condition_results[ckey].append(r)
+
+    summaries = {}
+    print(f"\n  {'COND':<6} {'DESC':<30} {'BET':<8} {'N':>4} {'HIT':>5} {'RATE':>8} {'INVEST':>10} {'PAYOUT':>10} {'ROI':>8}")
+    print(f"  {'-'*90}")
+
+    for ckey in ['A', 'B', 'C', 'D', 'E', 'X']:
+        races = condition_results.get(ckey, [])
+        info = cond_map.get(ckey, {'label': '?', 'bet': 'trio', 'n_bets': 7})
+        n = len(races)
+        if n == 0:
+            summaries[ckey] = {'n': 0, 'hit': 0, 'roi': 0, 'recommended': False}
+            continue
+
+        bet_type = info['bet']
+        n_bets = info['n_bets']
+
+        if bet_type == 'trio':
+            hits = sum(1 for r in races if r.get(f'{ver}_trio_hit', False))
+            payouts = sum(r.get('trio_payout', 0) for r in races if r.get(f'{ver}_trio_hit'))
+            investment = n * n_bets * 100
+        elif bet_type == 'wide':
+            hits = sum(1 for r in races if len(r.get(f'{ver}_wide_hits', [])) > 0)
+            payouts = sum(r.get(f'{ver}_wide_payout', 0) for r in races)
+            investment = n * n_bets * 100
+        elif bet_type == 'umaren':
+            hits = sum(1 for r in races if len(r.get(f'{ver}_umaren_hits', [])) > 0)
+            payouts = sum(r.get(f'{ver}_umaren_payout', 0) for r in races)
+            investment = n * n_bets * 100
+        else:
+            hits = 0; payouts = 0; investment = 1
+
+        roi = payouts / investment * 100 if investment > 0 else 0
+        hit_rate = hits / n * 100 if n > 0 else 0
+        recommended = roi >= 80
+
+        summaries[ckey] = {
+            'n': n, 'hit': hits, 'hit_rate': hit_rate,
+            'investment': investment, 'payout': payouts,
+            'roi': roi, 'bet_type': bet_type, 'recommended': recommended,
+        }
+
+        marker = ' *** REC' if recommended else ''
+        print(f"  {ckey:<6} {info['label']:<30} {bet_type:<8} {n:>4} {hits:>5} {hit_rate:>7.1f}% {investment:>9,} {payouts:>9,} {roi:>7.1f}%{marker}")
+
+    print(f"\n  REC = ROI >= 80% (買い推奨)")
+    return summaries
+
+
 # ===== Main =====
 def main():
     print("KEIBA AI V8/V9 Leak-Free Backtest")
@@ -1354,9 +1442,15 @@ def main():
                 for ver in ['v8', 'v9']:
                     analyze_losses(nar_results, ver)
 
+                # Condition-based NAR analysis
+                nar_cond_v8 = analyze_nar_by_condition(nar_results, ver='v8')
+                nar_cond_v9 = analyze_nar_by_condition(nar_results, ver='v9')
+
                 # Save with NAR
                 save_data['nar_results'] = nar_results
                 save_data['nar_summary'] = nar_summary
+                save_data['nar_condition_v8'] = nar_cond_v8
+                save_data['nar_condition_v9'] = nar_cond_v9
                 with open(RESULT_PATH, 'w', encoding='utf-8') as f:
                     json.dump(save_data, f, ensure_ascii=False, indent=2, default=str)
                 print(f"\n  Saved (with NAR) to {RESULT_PATH}")
