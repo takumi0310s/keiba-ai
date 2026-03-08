@@ -19,7 +19,8 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predic
 
 INVESTMENT_PER_RACE = 700
 
-# 条件別買い目ロジック (5年バックテスト実績ベース)
+# 条件別買い目ロジック (リークフリーバックテスト 2023-2025完全未知データ)
+# 旧ROI参考値(5年BT): A=197.8%, B=151.7%, C=169.9%, D=180.1%, E=530.0%, X=173.4%
 CONDITION_PROFILES = {
     'A': {
         'label': '条件A',
@@ -28,9 +29,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 197.8,
-        'hit_rate': 55.2,
+        'roi': 128.7,  # リークフリーBT (N=92) ★★★ 旧: 197.8%
+        'hit_rate': 47.8,
         'recommended': True,
+        'leakfree_n': 92,
     },
     'B': {
         'label': '条件B',
@@ -39,9 +41,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 151.7,
-        'hit_rate': 38.9,
+        'roi': 143.2,  # リークフリーBT (N=9, サンプル少) ★★★ 旧: 151.7%
+        'hit_rate': 44.4,
         'recommended': True,
+        'leakfree_n': 9,
+        'small_sample': True,
     },
     'C': {
         'label': '条件C',
@@ -50,9 +54,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 169.9,
-        'hit_rate': 38.0,
+        'roi': 160.8,  # リークフリーBT (N=70) ★★★ 旧: 169.9%
+        'hit_rate': 38.6,
         'recommended': True,
+        'leakfree_n': 70,
     },
     'D': {
         'label': '条件D',
@@ -61,9 +66,10 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 180.1,
-        'hit_rate': 38.8,
+        'roi': 153.8,  # リークフリーBT (N=118) ★★★ 旧: 180.1%
+        'hit_rate': 31.4,
         'recommended': True,
+        'leakfree_n': 118,
     },
     'E': {
         'label': '条件E',
@@ -72,9 +78,11 @@ CONDITION_PROFILES = {
         'bet_label': '馬連1軸2流し',
         'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 530.0,
+        'roi': 530.0,  # 旧5年BT値(N=4) ※リークフリーBT未検証
         'hit_rate': 75.0,
         'recommended': True,
+        'leakfree_n': 0,
+        'leakfree_unverified': True,
     },
     'X': {
         'label': '条件外',
@@ -83,9 +91,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 173.4,
-        'hit_rate': 45.0,
+        'roi': 223.2,  # リークフリーBT (N=11, サンプル少) ★★★ 旧: 173.4%
+        'hit_rate': 45.5,
         'recommended': True,
+        'leakfree_n': 11,
+        'small_sample': True,
     },
 }
 
@@ -3296,6 +3306,19 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
     roi = cond_profile['roi']
     hit_rate = cond_profile['hit_rate']
     roi_c = '#2ecc40' if roi >= 100 else '#f0c040'
+    leakfree_n = cond_profile.get('leakfree_n', 0)
+    is_small_sample = cond_profile.get('small_sample', False)
+    is_unverified = cond_profile.get('leakfree_unverified', False)
+
+    # リークフリー検証バッジ
+    if is_unverified:
+        lf_badge = '<span style="font-size:0.72em;padding:2px 6px;background:#554400;color:#f0c040 !important;border-radius:4px;margin-left:6px;">LF未検証</span>'
+    elif is_small_sample:
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">LF検証済 N={leakfree_n}</span><span style="font-size:0.72em;padding:2px 6px;background:#3a2a00;color:#f0c040 !important;border-radius:4px;margin-left:4px;">サンプル少</span>'
+    elif leakfree_n > 0:
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">LF検証済 N={leakfree_n}</span>'
+    else:
+        lf_badge = ''
 
     html = '<div class="buy-card buy-honmei">'
     html += '<div class="buy-header">'
@@ -3303,7 +3326,7 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
     if bet_type == 'trio':
         bets = generate_trio_bets(sorted_df)
         html += f'<span class="buy-type bt-hon">&#127942; 三連複 7点</span>'
-        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
+        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span>{lf_badge}</div>'
         html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += f'<div style="padding:4px 12px;margin-bottom:4px;">'
         html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#f0c040 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
@@ -3353,7 +3376,7 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
             exp2_txt = ''
 
         html += f'<span class="buy-type bt-hon">&#127942; {type_label}</span>'
-        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
+        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span>{lf_badge}</div>'
         html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += '<div style="padding:4px 12px 8px;">'
         # Bet 1
@@ -3438,7 +3461,7 @@ model_badge_placeholder = st.empty()
 if v9_avail:
     _v9c_auc = _v9_models['central'].get('auc', 0)
     _v9c_ver = _v9_models['central'].get('version', 'v9').upper()
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span> <span class="model-badge" style="background:linear-gradient(135deg,#1a3a2a,#0a2a1a);border:1px solid #2ecc40;color:#2ecc40 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
