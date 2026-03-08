@@ -122,10 +122,9 @@ def encode_categoricals(df):
             cond_map[val] = 0
     df['condition_enc'] = df['condition'].map(cond_map).fillna(0).astype(int)
 
-    # Course encoding
-    course_counts = df['course'].value_counts()
-    course_map = {c: i for i, c in enumerate(course_counts.index)}
-    df['course_enc'] = df['course'].map(course_map).fillna(0).astype(int)
+    # Course encoding - 固定マップ使用（app.pyのCOURSE_MAPと一致させる）
+    course_map = dict(COURSE_MAP)
+    df['course_enc'] = df['course'].map(course_map).fillna(len(COURSE_MAP)).astype(int)
 
     # Location encoding
     loc_map = {}
@@ -286,6 +285,13 @@ def compute_lag_features(df):
     # Avg last3f over 3 races
     df['avg_last3f_3r'] = df[['prev_last3f', 'prev2_last3f']].mean(axis=1)
 
+    # Weight change (馬体重増減)
+    df['horse_weight_num'] = pd.to_numeric(df['horse_weight'], errors='coerce').fillna(480)
+    df['prev_horse_weight'] = grp['horse_weight_num'].shift(1).fillna(df['horse_weight_num'])
+    df['weight_change'] = df['horse_weight_num'] - df['prev_horse_weight']
+    df['weight_change_abs'] = df['weight_change'].abs()
+    df['weight_change_large'] = (df['weight_change_abs'] >= 5).astype(int)  # 5kg以上変動フラグ
+
     # Rest category
     bins = [-1, 6, 14, 35, 63, 180, 9999]
     df['rest_category'] = pd.cut(df['rest_days'], bins=bins, labels=[0,1,2,3,4,5]).astype(float).fillna(2)
@@ -338,6 +344,11 @@ def build_features(df):
     df['cond_surface'] = df['condition_enc'] * 10 + df['surface_enc']
     df['course_surface'] = df['course_enc'] * 10 + df['surface_enc']
     df['is_nar'] = 0  # This data is JRA only
+
+    # 血統×距離・馬場の交差特徴量
+    df['sire_dist'] = df['sire_enc'] * 10 + df['dist_cat']
+    df['sire_surface'] = df['sire_enc'] * 10 + df['surface_enc']
+    df['bms_dist'] = df['bms_enc'] * 10 + df['dist_cat']
 
     # 調教タイム特徴量
     df['training_time'] = pd.to_numeric(df['training_time'], errors='coerce').fillna(0)
@@ -411,6 +422,19 @@ LAP_FEATURES = [
 
 FEATURES_V9_2 = FEATURES_V9_1 + LAP_FEATURES
 FEATURES_V9_2_PKL = FEATURES_V9_1_PKL + LAP_FEATURES
+
+# v9.3 feature list (v9.1 + weight_change + sire cross features)
+V93_FEATURES = [
+    'weight_change',        # 前走からの馬体重変化
+    'weight_change_abs',    # 馬体重変化の絶対値
+    'weight_change_large',  # 5kg以上変動フラグ
+    'sire_dist',            # 父馬×距離カテゴリ
+    'sire_surface',         # 父馬×芝ダート
+    'bms_dist',             # 母父×距離カテゴリ
+]
+
+FEATURES_V9_3 = FEATURES_V9_1 + V93_FEATURES
+FEATURES_V9_3_PKL = FEATURES_V9_1_PKL + V93_FEATURES
 
 
 def train_lgb(X_train, y_train, X_valid, y_valid, feature_names, params_override=None):
@@ -715,6 +739,49 @@ def main():
     else:
         print("\n  Skipping v9.2 (no lap data available)")
 
+    # ===== v9.3: Train with weight_change + sire cross features =====
+    print("\n" + "="*60)
+    print("  Training v9.3 (v9.1 + weight_change + sire cross)")
+    print("="*60)
+
+    feature_cols_v93 = FEATURES_V9_3
+    for f in feature_cols_v93:
+        if f not in df.columns:
+            df[f] = 0
+        df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
+
+    X_v93 = df[feature_cols_v93].values
+    X_v93_train, X_v93_valid = X_v93[train_mask], X_v93[valid_mask]
+
+    lgb_model_v93 = train_lgb(X_v93_train, y_train, X_v93_valid, y_valid, feature_cols_v93)
+    lgb_v93_pred = lgb_model_v93.predict(X_v93_valid)
+    lgb_v93_auc = roc_auc_score(y_valid, lgb_v93_pred)
+    print(f"\n  v9.3 LightGBM AUC: {lgb_v93_auc:.4f}")
+
+    fi_v93 = show_feature_importance(lgb_model_v93, feature_cols_v93, "v9.3 Feature Importance")
+
+    # v9.3 XGBoost
+    xgb_model_v93 = train_xgb(X_v93_train, y_train, X_v93_valid, y_valid)
+    xgb_v93_pred = xgb_model_v93.predict(xgb.DMatrix(X_v93_valid))
+    xgb_v93_auc = roc_auc_score(y_valid, xgb_v93_pred)
+    print(f"  v9.3 XGBoost AUC: {xgb_v93_auc:.4f}")
+
+    # v9.3 Ensemble
+    total_v93 = lgb_v93_auc + xgb_v93_auc
+    w93_lgb = lgb_v93_auc / total_v93
+    w93_xgb = xgb_v93_auc / total_v93
+    v93_ensemble_pred = lgb_v93_pred * w93_lgb + xgb_v93_pred * w93_xgb
+    v93_ensemble_auc = roc_auc_score(y_valid, v93_ensemble_pred)
+    print(f"  v9.3 Ensemble AUC: {v93_ensemble_auc:.4f}")
+
+    # New feature importance
+    print(f"\n  v9.3 new features:")
+    for feat in V93_FEATURES:
+        if feat in feature_cols_v93:
+            idx = feature_cols_v93.index(feat)
+            imp = lgb_model_v93.feature_importance(importance_type='gain')[idx]
+            print(f"    {feat}: importance={imp:.1f}")
+
     # ===== Compare with v8 =====
     v8_path = os.path.join(OUTPUT_DIR, 'keiba_model_v8.pkl')
     v8_auc = 0.0
@@ -742,11 +809,15 @@ def main():
         print(f"  v9.2 LGB+lap:    AUC {lgb_v92_auc:.4f}")
         print(f"  v9.2 XGB+lap:    AUC {xgb_v92_auc:.4f}")
         print(f"  v9.2 Ensemble:   AUC {v92_ensemble_auc:.4f}")
+    print(f"  v9.3 LGB+wt+sire: AUC {lgb_v93_auc:.4f}")
+    print(f"  v9.3 XGB+wt+sire: AUC {xgb_v93_auc:.4f}")
+    print(f"  v9.3 Ensemble:   AUC {v93_ensemble_auc:.4f}")
 
-    # Determine best model among v9, v9.1, v9.2
+    # Determine best model among v9, v9.1, v9.2, v9.3
     candidates = [
         ('v9', ensemble_auc),
         ('v9.1', v91_ensemble_auc),
+        ('v9.3', v93_ensemble_auc),
     ]
     if has_lap:
         candidates.append(('v9.2', v92_ensemble_auc))
@@ -754,7 +825,17 @@ def main():
     best_version_name, best_candidate_auc = max(candidates, key=lambda x: x[1])
     print(f"\n  >>> Best: {best_version_name} (Ensemble AUC {best_candidate_auc:.4f})")
 
-    if best_version_name == 'v9.2':
+    if best_version_name == 'v9.3':
+        best_lgb = lgb_model_v93
+        best_xgb = xgb_model_v93
+        best_ensemble_auc = v93_ensemble_auc
+        best_pkl_features = [rename_map.get(f, f) for f in feature_cols_v93]
+        best_weights = {'lgb': w93_lgb, 'xgb': w93_xgb, 'mlp': 0}
+        best_mlp = None
+        best_scaler = None
+        save_version = 'v9.3'
+        save_auc = lgb_v93_auc
+    elif best_version_name == 'v9.2':
         best_lgb = lgb_model_v92
         best_xgb = xgb_model_v92
         best_ensemble_auc = v92_ensemble_auc
@@ -816,6 +897,7 @@ def main():
         'mlp_model': save_mlp,
         'mlp_scaler': save_scaler,
         'ensemble_weights': save_weights,
+        'course_map': dict(COURSE_MAP),
     }
     central_path = os.path.join(OUTPUT_DIR, 'keiba_model_v9_central.pkl')
     with open(central_path, 'wb') as f:
