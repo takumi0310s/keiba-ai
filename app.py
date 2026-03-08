@@ -246,8 +246,13 @@ def save_prediction(race_id, race_name, race_info, df_sorted, is_nar=False):
     conn.commit()
     conn.close()
 
-def update_actual_results(race_id, results_dict, trio_payout=0):
-    """results_dict: {馬番: 着順}, trio_payout: 三連複払戻金"""
+def update_actual_results(race_id, results_dict, payouts=None):
+    """results_dict: {馬番: 着順}, payouts: {'trio': 金額, 'umaren': 金額, 'wide': 金額}"""
+    if payouts is None:
+        payouts = {'trio': 0, 'umaren': 0, 'wide': 0}
+    # 後方互換: 旧呼び出し(trio_payout=int)対応
+    if isinstance(payouts, (int, float)):
+        payouts = {'trio': int(payouts), 'umaren': 0, 'wide': 0}
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -255,31 +260,53 @@ def update_actual_results(race_id, results_dict, trio_payout=0):
     for horse_num, finish in results_dict.items():
         c.execute("UPDATE predictions SET actual_finish = ? WHERE race_id = ? AND horse_num = ?",
                   (finish, race_id, horse_num))
-    # 3着以内の馬番を取得（同着考慮）
+    # 上位馬番を取得（同着考慮）
+    top2_nums = set(n for n, f in results_dict.items() if f <= 2)
     top3_nums = set(n for n, f in results_dict.items() if f <= 3)
-    # DBから三連複7点を取得
-    c.execute("SELECT trio_bets FROM race_results WHERE race_id = ?", (race_id,))
+    # DBからbet_typeと各種買い目を取得
+    c.execute("SELECT trio_bets, wide_bets, umaren_bets, bet_type FROM race_results WHERE race_id = ?", (race_id,))
     row = c.fetchone()
     hit_trio = 0
     hit_combo = None
     payout = 0
     if row:
-        trio_bets_raw = row[0]
-        if trio_bets_raw:
-            trio_bets = json.loads(trio_bets_raw)
-            if trio_bets:  # 空リストでない場合のみ照合
-                for bet in trio_bets:
-                    bet_set = set(bet)
-                    if bet_set.issubset(top3_nums):
-                        hit_trio = 1
-                        hit_combo = json.dumps(sorted(bet))
-                        payout = trio_payout
-                        break
+        trio_bets_raw, wide_bets_raw, umaren_bets_raw, bet_type = row
+        bet_type = bet_type or 'trio'  # NULLの場合デフォルトtrio
+
+        # bet_typeに応じた的中判定
+        if bet_type == 'trio':
+            bets = json.loads(trio_bets_raw) if trio_bets_raw else []
+            target_nums = top3_nums
+            target_payout = payouts.get('trio', 0)
+            for bet in bets:
+                if set(bet).issubset(target_nums):
+                    hit_trio = 1
+                    hit_combo = json.dumps(sorted(bet))
+                    payout = target_payout
+                    break
+        elif bet_type == 'umaren':
+            bets = json.loads(umaren_bets_raw) if umaren_bets_raw else []
+            target_payout = payouts.get('umaren', 0)
+            for bet in bets:
+                if set(bet).issubset(top2_nums):
+                    hit_trio = 1  # hit_trioカラムを的中フラグとして流用
+                    hit_combo = json.dumps(sorted(bet))
+                    payout = target_payout
+                    break
+        elif bet_type == 'wide':
+            bets = json.loads(wide_bets_raw) if wide_bets_raw else []
+            target_payout = payouts.get('wide', 0)
+            for bet in bets:
+                if set(bet).issubset(top3_nums):
+                    hit_trio = 1
+                    hit_combo = json.dumps(sorted(bet))
+                    payout = target_payout
+                    break
+
         c.execute("""UPDATE race_results SET result_updated_at=?, hit_trio=?,
                      hit_combo=?, payout=? WHERE race_id=?""",
                   (now, hit_trio, hit_combo, payout, race_id))
     else:
-        # 予測データがないレースでも結果は記録する
         c.execute("""INSERT OR IGNORE INTO race_results
             (race_id, race_name, predicted_at, num_horses, top1_name, top1_score,
              trio_bets, hit_trio, hit_combo, payout, result_updated_at)
@@ -352,7 +379,7 @@ def get_all_race_records():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute("SELECT race_id, race_name, predicted_at, hit_trio, payout, is_nar FROM race_results ORDER BY predicted_at DESC")
+    c.execute("SELECT race_id, race_name, predicted_at, hit_trio, payout, is_nar, bet_type, bet_condition FROM race_results ORDER BY predicted_at DESC")
     rows = [dict(r) for r in c.fetchall()]
     conn.close()
     return rows
@@ -2394,11 +2421,13 @@ def run_system_checks():
 
 # ===== Fetch Race Results =====
 def fetch_race_results(race_id, is_nar=False):
-    """netkeibaのレース結果ページから着順と三連複払戻金を取得。
+    """netkeibaのレース結果ページから着順と払戻金を取得。
     race.netkeiba.com（新形式）と db.netkeiba.com（旧形式）の両方に対応。
-    返り値: (results_dict={馬番:着順}, trio_payout=三連複払戻金)"""
+    返り値: (results_dict={馬番:着順}, payouts={'trio':金額, 'umaren':金額, 'wide':金額})"""
     results = {}
     trio_payout = 0
+    umaren_payout = 0
+    wide_payout = 0
     # 新形式（race.netkeiba.com）と旧形式（db.netkeiba.com）の両方を試す
     urls = []
     if is_nar:
@@ -2464,12 +2493,10 @@ def fetch_race_results(race_id, is_nar=False):
                         umaban = int(text)
                 if umaban and 1 <= finish <= 30:
                     results[umaban] = finish
-            # ===== 三連複払戻金取得 =====
+            # ===== 払戻金取得（三連複・馬連・ワイド） =====
             if is_old_format:
-                # 旧形式: table.pay_table_01
                 payout_tables = soup.find_all("table", class_="pay_table_01")
             else:
-                # 新形式: table.Payout_Detail_Table
                 payout_tables = soup.select("table.Payout_Detail_Table")
             if not payout_tables:
                 payout_tables = soup.find_all("table")
@@ -2479,27 +2506,32 @@ def fetch_race_results(race_id, is_nar=False):
                     if not th:
                         continue
                     th_text = th.get_text(strip=True)
-                    if '3連複' in th_text or '三連複' in th_text:
-                        tds_p = row.find_all("td")
-                        payout_td = row.select_one("td.Payout")
+                    # 払戻金額を抽出するヘルパー
+                    def _extract_payout(r):
+                        tds_p = r.find_all("td")
+                        payout_td = r.select_one("td.Payout")
                         if payout_td:
-                            text = payout_td.get_text(strip=True)
+                            t = payout_td.get_text(strip=True)
                         elif len(tds_p) >= 2:
-                            text = tds_p[1].get_text(strip=True)
+                            t = tds_p[1].get_text(strip=True)
                         else:
-                            text = ''
-                        text = text.replace(',', '').replace('円', '').replace('¥', '')
-                        m = re.search(r'(\d{3,})', text)
-                        if m:
-                            trio_payout = int(m.group(1))
-                        break
-                if trio_payout > 0:
-                    break
+                            return 0
+                        t = t.replace(',', '').replace('円', '').replace('¥', '')
+                        m = re.search(r'(\d{3,})', t)
+                        return int(m.group(1)) if m else 0
+                    if ('3連複' in th_text or '三連複' in th_text) and trio_payout == 0:
+                        trio_payout = _extract_payout(row)
+                    elif ('馬連' in th_text) and '馬単' not in th_text and umaren_payout == 0:
+                        umaren_payout = _extract_payout(row)
+                    elif ('ワイド' in th_text) and wide_payout == 0:
+                        # ワイドは複数行あるが最初の1つ（最低配当）を取得
+                        wide_payout = _extract_payout(row)
             if results:
                 break  # 結果取得成功、次のURLを試す必要なし
         except Exception:
             continue
-    return results, trio_payout
+    payouts = {'trio': trio_payout, 'umaren': umaren_payout, 'wide': wide_payout}
+    return results, payouts
 
 # ===== 開催日レース一覧取得 =====
 def fetch_race_list(date_str=None, is_nar=False):
@@ -3144,14 +3176,18 @@ def render_dashboard():
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;"></div>'
         html += '<div style="font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">RECENT RACES</div>'
         html += '<div style="font-size:0.8em;">'
+        BET_SHORT = {'trio': '三', 'umaren': '連', 'wide': 'W'}
         for r in recent[:8]:
             name = r.get('race_name', '')
             date = r.get('predicted_at', '')
             hit_trio = r.get('hit_trio')
             payout = r.get('payout', 0) or 0
             is_nar_race = r.get('is_nar', 0)
+            db_bet_type = r.get('bet_type', 'trio') or 'trio'
+            bet_short = BET_SHORT.get(db_bet_type, '三')
             date_short = date[:10] if date else ''
             tag = '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#1a3a1a;color:#2ecc40 !important;margin-right:4px;">JRA</span>' if not is_nar_race else '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#3a2a1a;color:#e67e22 !important;margin-right:4px;">NAR</span>'
+            bet_tag = f'<span style="font-size:0.65em;padding:1px 3px;border-radius:2px;background:#2a2a3a;color:#aab !important;margin-right:3px;">{bet_short}</span>'
             if hit_trio is not None:
                 if hit_trio == 1:
                     icon = '&#9989;'
@@ -3159,9 +3195,9 @@ def render_dashboard():
                 else:
                     icon = '&#10060;'
                     pt = f'<span style="color:#ff4060 !important;font-family:Oswald;">-&yen;{INVESTMENT_PER_RACE}</span>'
-                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{date_short} {name[:8]}</span><span>{pt}</span><span>{icon}</span></div>'
+                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{bet_tag}{date_short} {name[:8]}</span><span>{pt}</span><span>{icon}</span></div>'
             else:
-                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{date_short} {name[:8]}</span><span style="color:#6a6a80 !important;font-size:0.85em;">&#8987;</span></div>'
+                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{bet_tag}{date_short} {name[:8]}</span><span style="color:#6a6a80 !important;font-size:0.85em;">&#8987;</span></div>'
         html += '</div>'
     html += '</div>'
     return html
@@ -4063,11 +4099,13 @@ with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）")
             payout = rec.get('payout', 0) or 0
             is_nar_r = rec.get('is_nar', 0)
             tag = "NAR" if is_nar_r else "JRA"
+            bt = rec.get('bet_type', 'trio') or 'trio'
+            bt_label = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}.get(bt, '三連複')
             if hit is not None:
                 status = f"✅ +¥{payout - INVESTMENT_PER_RACE:,}" if hit == 1 else f"❌ -¥{INVESTMENT_PER_RACE}"
             else:
                 status = "⏳ 未確定"
-            label = f"[{tag}] {date} {name} {status}"
+            label = f"[{tag}] {date} {name} ({bt_label}) {status}"
             if st.checkbox(label, key=f"del_{rid}"):
                 selected_ids.append(rid)
         if selected_ids:
@@ -4191,45 +4229,70 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
             st.info(f"race_id: {result_race_id} ({'NAR' if is_nar_result else 'JRA'})")
             try:
                 with st.spinner("レース結果・払戻金を取得中..."):
-                    results_dict, trio_payout = fetch_race_results(result_race_id, is_nar=is_nar_result)
+                    results_dict, result_payouts = fetch_race_results(result_race_id, is_nar=is_nar_result)
             except Exception as e:
-                results_dict, trio_payout = {}, 0
+                results_dict, result_payouts = {}, {'trio': 0, 'umaren': 0, 'wide': 0}
                 st.error(f"結果取得中にエラー: {e}")
             if results_dict:
                 st.markdown(f"**{len(results_dict)}頭の着順を取得しました**")
-                # 着順プレビュー（上位5頭 + 全頭数表示）
                 sorted_results = sorted(results_dict.items(), key=lambda x: x[1])
                 preview_df = pd.DataFrame([
                     {"馬番": k, "着順": v} for k, v in sorted_results
                 ])
                 st.dataframe(preview_df, hide_index=True)
-                if trio_payout > 0:
-                    st.info(f"三連複 払戻金: **{trio_payout:,}円**")
-                else:
-                    st.warning("三連複払戻金を取得できませんでした（払戻金0円として記録）")
-                # DBの三連複7点と照合
+                # DBからbet_typeと買い目を取得
                 conn = sqlite3.connect(DB_PATH)
                 c = conn.cursor()
-                c.execute("SELECT trio_bets FROM race_results WHERE race_id = ?", (result_race_id,))
+                c.execute("SELECT trio_bets, wide_bets, umaren_bets, bet_type, bet_condition FROM race_results WHERE race_id = ?", (result_race_id,))
                 row = c.fetchone()
                 conn.close()
+                top2_nums = set(n for n, f in results_dict.items() if f <= 2)
                 top3_nums = set(n for n, f in results_dict.items() if f <= 3)
                 st.markdown(f"**実際の3着以内:** {'-'.join(str(n) for n in sorted(top3_nums))}")
-                if row and row[0]:
-                    trio_bets = json.loads(row[0])
-                    hit = any(set(b).issubset(top3_nums) for b in trio_bets)
-                    st.markdown(f"**AI三連複7点:** {', '.join('-'.join(str(n) for n in b) for b in trio_bets)}")
-                    if hit:
-                        profit = trio_payout - INVESTMENT_PER_RACE
-                        st.success(f"🎉 的中！ 払戻 {trio_payout:,}円 - 投資 {INVESTMENT_PER_RACE}円 = **+{profit:,}円**")
+                if row:
+                    trio_bets_raw, wide_bets_raw, umaren_bets_raw, db_bet_type, db_cond = row
+                    db_bet_type = db_bet_type or 'trio'
+                    # 買い目種別に応じた判定
+                    BET_LABELS = {'trio': '三連複7点', 'umaren': '馬連1軸2流し', 'wide': 'ワイド1軸2流し'}
+                    bet_label = BET_LABELS.get(db_bet_type, '三連複7点')
+                    if db_bet_type == 'trio' and trio_bets_raw:
+                        bets = json.loads(trio_bets_raw)
+                        target_nums = top3_nums
+                        relevant_payout = result_payouts.get('trio', 0)
+                    elif db_bet_type == 'umaren' and umaren_bets_raw:
+                        bets = json.loads(umaren_bets_raw)
+                        target_nums = top2_nums
+                        relevant_payout = result_payouts.get('umaren', 0)
+                    elif db_bet_type == 'wide' and wide_bets_raw:
+                        bets = json.loads(wide_bets_raw)
+                        target_nums = top3_nums
+                        relevant_payout = result_payouts.get('wide', 0)
                     else:
-                        st.error(f"❌ ハズレ（投資 -{INVESTMENT_PER_RACE}円）")
+                        bets = []
+                        target_nums = top3_nums
+                        relevant_payout = 0
+                    if relevant_payout > 0:
+                        st.info(f"{bet_label} 払戻金: **{relevant_payout:,}円**")
+                    else:
+                        st.warning(f"{bet_label}の払戻金を取得できませんでした（払戻金0円として記録）")
+                    if bets:
+                        hit = any(set(b).issubset(target_nums) for b in bets)
+                        cond_info = f" [条件{db_cond}]" if db_cond else ""
+                        st.markdown(f"**AI {bet_label}{cond_info}:** {', '.join('-'.join(str(n) for n in b) for b in bets)}")
+                        if hit:
+                            profit = relevant_payout - INVESTMENT_PER_RACE
+                            st.success(f"🎉 的中！ 払戻 {relevant_payout:,}円 - 投資 {INVESTMENT_PER_RACE}円 = **+{profit:,}円**")
+                        else:
+                            st.error(f"❌ ハズレ（投資 -{INVESTMENT_PER_RACE}円）")
+                    else:
+                        st.warning("買い目データがDBにありません。")
                 else:
                     st.warning("このレースのAI予測データがDBにありません（先に予測を実行してください）。着順のみ記録します。")
                 # DB更新
                 try:
-                    update_actual_results(result_race_id, results_dict, trio_payout)
-                    st.success(f"✅ 結果をDBに保存しました（{len(results_dict)}頭 / 三連複 {trio_payout:,}円）")
+                    update_actual_results(result_race_id, results_dict, result_payouts)
+                    payout_summary = '/'.join(f"{k}:{v:,}円" for k, v in result_payouts.items() if v > 0) or '払戻なし'
+                    st.success(f"✅ 結果をDBに保存しました（{len(results_dict)}頭 / {payout_summary}）")
                 except Exception as e:
                     st.error(f"DB保存エラー: {e}")
             else:
