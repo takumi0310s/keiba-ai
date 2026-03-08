@@ -46,34 +46,28 @@ try:
 except Exception as e:
     ok("[2] V8 model", False, str(e))
 
-# ===== 3. 条件A-E,X自動判定 =====
-def classify(ri, nh, nar=False):
-    if nar:
-        return 'B', 'wide'
-    dist = ri.get('distance', 0)
-    cond = str(ri.get('condition', '良'))
-    heavy = any(c in cond for c in ['重', '不'])
-    if nh <= 7: return 'E', 'umaren'
-    if dist <= 1400: return 'D', 'trio'
-    if 8 <= nh <= 14 and dist >= 1600 and not heavy: return 'A', 'trio'
-    if 8 <= nh <= 14 and dist >= 1600 and heavy: return 'B', 'trio'
-    if nh >= 15 and dist >= 1600 and not heavy: return 'C', 'trio'
-    return 'X', 'trio'
-
+# ===== 3. 条件A-E,X自動判定 (app.pyのclassify_race_conditionを使う) =====
+from app import classify_race_condition
 cases = [
+    # (race_info, num_horses, is_nar, expected_key, expected_bet_type)
     ({'distance': 2000, 'condition': '良'}, 10, False, 'A', 'trio'),
     ({'distance': 2000, 'condition': '重'}, 10, False, 'B', 'trio'),
     ({'distance': 2000, 'condition': '良'}, 16, False, 'C', 'trio'),
     ({'distance': 1200, 'condition': '良'}, 10, False, 'D', 'trio'),
     ({'distance': 2000, 'condition': '良'}, 5, False, 'E', 'umaren'),
     ({'distance': 2000, 'condition': '重'}, 16, False, 'X', 'trio'),
-    ({'distance': 2000, 'condition': '良'}, 10, True, 'B', 'wide'),
+    # NAR: 条件別判定（条件Aのみ推奨、wideで）
+    ({'distance': 2000, 'condition': '良'}, 10, True, 'A', 'wide'),
+    ({'distance': 2000, 'condition': '重'}, 10, True, 'B', 'wide'),
+    ({'distance': 2000, 'condition': '良'}, 5, True, 'E', 'trio'),
 ]
 all_ok = True
 for ri, nh, nar, ek, ebt in cases:
-    k, bt = classify(ri, nh, nar)
+    k, profile = classify_race_condition(ri, nh, nar)
+    bt = profile['bet_type']
     if k != ek or bt != ebt:
         all_ok = False
+        print(f"    MISMATCH: {ri} nh={nh} nar={nar} -> got {k}/{bt} expected {ek}/{ebt}")
 ok("[3] Condition A-E,X classify", all_ok, "condition mismatch")
 
 # ===== 4. 買い目生成 =====
@@ -197,6 +191,15 @@ urls = [
 ]
 all_nar = all(("nar" in u) == exp for u, exp in urls)
 ok("[13] Central/NAR detection", all_nar)
+
+# ===== 13b. NAR条件別推奨テスト =====
+from app import NAR_CONDITION_PROFILES
+nar_a_rec = NAR_CONDITION_PROFILES['A']['recommended']
+nar_b_rec = NAR_CONDITION_PROFILES['B']['recommended']
+nar_a_bt = NAR_CONDITION_PROFILES['A']['bet_type']
+ok("[13b] NAR condition A=recommended, B=not",
+   nar_a_rec is True and nar_b_rec is False and nar_a_bt == 'wide',
+   f"A.rec={nar_a_rec}, B.rec={nar_b_rec}, A.bet={nar_a_bt}")
 
 # ===== 14. TRACK RECORD badge =====
 BET_SHORT = {'trio': '三', 'umaren': '連', 'wide': 'W'}
