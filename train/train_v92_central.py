@@ -262,6 +262,50 @@ def merge_training_features(df, tt_data):
     df['wood_best_4f_filled'] = df['wood_best_4f'].fillna(wood_mean if not np.isnan(wood_mean) else 52.0)
     df['has_wood_training'] = df['wood_best_4f'].notna().astype(int)
 
+    # === Sakaro training features ===
+    print("  Merging sakaro training features...")
+    horse_sakaro = {}
+    if len(sakaro) > 0 and 'horse_id' in sakaro.columns:
+        sak_clean = sakaro[sakaro['horse_id'].astype(str).str.strip() != ''].copy()
+        sak_clean['horse_id'] = sak_clean['horse_id'].astype(str).str.strip()
+        for hid, grp in sak_clean.groupby('horse_id'):
+            horse_sakaro[hid] = sorted(
+                [(int(r['date']), r['time_4f'], r['time_3f']) for _, r in grp.iterrows()],
+                key=lambda x: x[0]
+            )
+
+    df['sakaro_best_4f'] = np.nan
+    df['sakaro_best_3f'] = np.nan
+    df['sakaro_count_2w'] = 0
+
+    for hid, grp_idx in df.groupby(df['horse_id'].astype(str).str.strip()).groups.items():
+        if hid not in horse_sakaro:
+            continue
+        entries = horse_sakaro[hid]
+        for idx in grp_idx:
+            race_date = df.loc[idx, 'date_num']
+            best4f, best3f, count = np.nan, np.nan, 0
+            for d, t4, t3 in entries:
+                if d >= race_date - 14 and d < race_date:
+                    count += 1
+                    if np.isnan(best4f) or t4 < best4f:
+                        best4f = t4
+                    if not np.isnan(t3) and (np.isnan(best3f) or t3 < best3f):
+                        best3f = t3
+            df.loc[idx, 'sakaro_best_4f'] = best4f
+            df.loc[idx, 'sakaro_best_3f'] = best3f
+            df.loc[idx, 'sakaro_count_2w'] = count
+
+    sak_matched = df['sakaro_best_4f'].notna().sum()
+    print(f"  Sakaro training matched: {sak_matched}/{len(df)} ({sak_matched/len(df)*100:.1f}%)")
+
+    sak_mean_4f = df.loc[df['sakaro_best_4f'].notna(), 'sakaro_best_4f'].mean()
+    sak_mean_3f = df.loc[df['sakaro_best_3f'].notna(), 'sakaro_best_3f'].mean()
+    df['sakaro_best_4f_filled'] = df['sakaro_best_4f'].fillna(sak_mean_4f if not np.isnan(sak_mean_4f) else 53.0)
+    df['sakaro_best_3f_filled'] = df['sakaro_best_3f'].fillna(sak_mean_3f if not np.isnan(sak_mean_3f) else 39.0)
+    df['has_sakaro_training'] = df['sakaro_best_4f'].notna().astype(int)
+    df['total_training_count'] = df['wood_count_2w'] + df['sakaro_count_2w']
+
     return df
 
 
@@ -404,6 +448,64 @@ def compute_sire_performance(df):
     return df
 
 
+def compute_distance_aptitude(df):
+    """Compute horse's distance-category aptitude (expanding window, leak-free)."""
+    print("Computing distance aptitude features...")
+    df = df.sort_values('date_num').reset_index(drop=True)
+
+    df['dist_cat_apt'] = pd.cut(df['distance'], bins=[0, 1200, 1400, 1800, 2200, 9999],
+                                 labels=[0, 1, 2, 3, 4]).astype(float).fillna(2)
+    global_t3 = df['is_top3'].mean()
+    alpha = 5
+
+    df['hd_cum_races'] = df.groupby(['horse_id', 'dist_cat_apt']).cumcount()
+    df['hd_cum_top3'] = df.groupby(['horse_id', 'dist_cat_apt'])['is_top3'].cumsum() - df['is_top3']
+    df['horse_dist_top3r'] = (
+        (df['hd_cum_top3'] + alpha * global_t3) /
+        (df['hd_cum_races'] + alpha)
+    )
+
+    # Horse surface aptitude
+    df['hs_cum_races'] = df.groupby(['horse_id', 'surface_enc']).cumcount()
+    df['hs_cum_top3'] = df.groupby(['horse_id', 'surface_enc'])['is_top3'].cumsum() - df['is_top3']
+    df['horse_surface_top3r'] = (
+        (df['hs_cum_top3'] + alpha * global_t3) /
+        (df['hs_cum_races'] + alpha)
+    )
+
+    drop_cols = [c for c in df.columns if c.startswith(('hd_cum_', 'hs_cum_'))]
+    drop_cols.append('dist_cat_apt')
+    df = df.drop(columns=drop_cols)
+    df = df.sort_values(['horse_id', 'date_num', 'race_num']).reset_index(drop=True)
+    return df
+
+
+def compute_frame_advantage(df):
+    """Compute bracket advantage by course×distance (expanding window, leak-free)."""
+    print("Computing frame advantage features...")
+    df = df.sort_values('date_num').reset_index(drop=True)
+
+    global_wr = df['is_win'].mean()
+    alpha = 100
+
+    # Bracket win rate by course × dist_cat
+    df['dist_cat_frm'] = pd.cut(df['distance'], bins=[0, 1200, 1400, 1800, 2200, 9999],
+                                 labels=[0, 1, 2, 3, 4]).astype(float).fillna(2)
+    df['frame_key'] = df['course_enc'].astype(str) + '_' + df['dist_cat_frm'].astype(str) + '_' + df['bracket'].astype(str)
+
+    df['frm_cum_races'] = df.groupby('frame_key').cumcount()
+    df['frm_cum_wins'] = df.groupby('frame_key')['is_win'].cumsum() - df['is_win']
+    df['frame_course_dist_wr'] = (
+        (df['frm_cum_wins'] + alpha * global_wr) /
+        (df['frm_cum_races'] + alpha)
+    )
+
+    drop_cols = ['dist_cat_frm', 'frame_key', 'frm_cum_races', 'frm_cum_wins']
+    df = df.drop(columns=drop_cols)
+    df = df.sort_values(['horse_id', 'date_num', 'race_num']).reset_index(drop=True)
+    return df
+
+
 def load_lap_data():
     """Load lap_times.csv for race-level pace features."""
     if not os.path.exists(LAP_PATH):
@@ -475,6 +577,9 @@ def compute_lag_features(df):
         df['prev_race_first3f'] = grp['race_first3f'].shift(1).fillna(35.8)
         df['prev_race_last3f'] = grp['race_last3f'].shift(1).fillna(36.5)
         df['prev_race_pace_diff'] = grp['race_pace_diff'].shift(1).fillna(0.0)
+
+    # Horse agari relative to race pace (how much better/worse than race avg)
+    df['prev_agari_relative'] = df['prev_last3f'] - df['prev_race_last3f']
 
     print(f"  Lag features computed for {df['horse_id'].nunique()} horses")
     return df
@@ -552,8 +657,31 @@ V92_NEW_FEATURES = [
 
 FEATURES_V92 = FEATURES_V91 + V92_NEW_FEATURES
 
+# V9.3 NEW features (all pre-day, leak-free for Pattern A)
+V93_NEW_FEATURES = [
+    # Pace features (from lap data, previous race)
+    'prev_race_first3f',       # Previous race first 3F time
+    'prev_race_last3f',        # Previous race last 3F time
+    'prev_race_pace_diff',     # Previous race pace diff
+    'prev_agari_relative',     # Horse's prev agari vs race pace
+    # Training features (sakaro + wood count)
+    'wood_count_2w',           # Wood training count in 2 weeks
+    'sakaro_best_4f_filled',   # Best sakaro 4F time
+    'sakaro_best_3f_filled',   # Best sakaro 3F time
+    'has_sakaro_training',     # Has sakaro training
+    'total_training_count',    # Total training sessions
+    # Distance aptitude (expanding window)
+    'horse_dist_top3r',        # Horse top3 rate at distance category
+    'horse_surface_top3r',     # Horse top3 rate on surface type
+    # Frame advantage (expanding window)
+    'frame_course_dist_wr',    # Bracket win rate by course×distance
+]
+
+FEATURES_V93 = FEATURES_V92 + V93_NEW_FEATURES
+
 # PKL feature names (rename num_horses_val → num_horses for compatibility)
 FEATURES_V92_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V92]
+FEATURES_V93_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V93]
 FEATURES_V91_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V91]
 
 
