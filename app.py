@@ -2825,6 +2825,45 @@ def calc_expected_values(df_sorted, realtime_odds):
             })
     return ev_list
 
+def fetch_pair_odds(race_id, bet_type='wide', is_nar=False):
+    """ワイド(type=5)または馬連(type=4)のオッズを取得。{(n1,n2): odds} を返す"""
+    pair_odds = {}
+    type_code = '5' if bet_type == 'wide' else '4'
+    try:
+        if is_nar:
+            url = f"https://nar.netkeiba.com/api/api_get_nar_odds.html?race_id={race_id}&type={type_code}"
+        else:
+            url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type={type_code}"
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.encoding = "utf-8"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for row in soup.find_all("tr"):
+            tds = row.find_all("td")
+            if len(tds) < 2:
+                continue
+            combo_text = tds[0].get_text(strip=True)
+            nums = re.findall(r'\d+', combo_text)
+            if len(nums) == 2:
+                key = tuple(sorted(int(n) for n in nums))
+                for td in tds[1:]:
+                    try:
+                        txt = td.get_text(strip=True).replace(',', '')
+                        # ワイドは「2.3 - 5.1」形式（下限-上限）の場合あり
+                        if '-' in txt and bet_type == 'wide':
+                            parts = txt.split('-')
+                            v = float(parts[0].strip())
+                        else:
+                            v = float(txt)
+                        if v >= 1.0:
+                            pair_odds[key] = v
+                            break
+                    except:
+                        continue
+    except Exception:
+        pass
+    return pair_odds
+
+
 def fetch_trio_odds(race_id, is_nar=False):
     """三連複オッズを取得。{(n1,n2,n3): odds} を返す"""
     trio_odds = {}
@@ -2986,8 +3025,10 @@ def render_dashboard():
     html += '</div>'
     return html
 
-def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None):
-    """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示"""
+def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None, pair_odds=None):
+    """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示。
+    pair_odds: {(n1,n2): odds} ワイドまたは馬連のペアオッズ
+    """
     if cond_profile is None:
         is_nar = False
         cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar)
@@ -3002,10 +3043,6 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
     top = sorted_df.head(6)
     t1 = top.iloc[0]; t2 = top.iloc[1]; t3 = top.iloc[2]
 
-    def hl(h):
-        num = int(h['馬番'])
-        name = h['馬名'][:5]
-        return f'{num} {name}' if num > 0 else name
     def hn(h):
         n = int(h['馬番'])
         return str(n) if n > 0 else h['馬名'][:3]
@@ -3022,49 +3059,83 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
         html += f'<span class="buy-type bt-hon">&#127942; 三連複 7点</span>'
         html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
         html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
-        # Formation display
         html += f'<div style="padding:4px 12px;margin-bottom:4px;">'
         html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#f0c040 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
         html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">2列目: <span style="font-family:Oswald;">{hn(t2)}</span>, <span style="font-family:Oswald;">{hn(t3)}</span></div>'
         himo = [hn(top.iloc[i]) for i in range(1, min(6, len(top)))]
         html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{",".join(himo)}</span></div>'
         html += '</div>'
-        # Individual bets
         html += '<div style="padding:0 12px 8px;display:flex;flex-wrap:wrap;gap:6px;">'
         for b in bets:
             html += f'<span style="font-family:Oswald;font-size:0.85em;padding:3px 8px;background:rgba(255,255,255,0.06);border-radius:4px;color:#b0b8c8 !important;">{b[0]}-{b[1]}-{b[2]}</span>'
         html += '</div>'
         html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
 
-    elif bet_type == 'wide':
-        bets = generate_wide_bets(sorted_df)
-        html += f'<span class="buy-type bt-hon">&#127942; ワイド 1軸2流し</span>'
-        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
-        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
-        html += '<div style="padding:4px 12px 8px;">'
-        html += f'<div style="font-size:1em;margin-bottom:6px;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t2)}</span> <span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
-        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
-        html += f'<div style="font-size:1em;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t3)}</span> <span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
-        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
-        html += '</div>'
-        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">2点 &times; 350円 = 700円</div>'
+    elif bet_type in ('wide', 'umaren'):
+        if bet_type == 'wide':
+            bets = generate_wide_bets(sorted_df)
+            type_label = 'ワイド 1軸2流し'
+        else:
+            bets = generate_umaren_bets(sorted_df)
+            type_label = '馬連 1軸2流し'
 
-    elif bet_type == 'umaren':
-        bets = generate_umaren_bets(sorted_df)
-        html += f'<span class="buy-type bt-hon">&#127942; 馬連 1軸2流し</span>'
+        # オッズ連動投資額振り分け (400/300)
+        n1 = int(t1['馬番']); n2 = int(t2['馬番']); n3 = int(t3['馬番'])
+        key1 = tuple(sorted([n1, n2]))
+        key2 = tuple(sorted([n1, n3]))
+        odds1 = (pair_odds or {}).get(key1, 0)
+        odds2 = (pair_odds or {}).get(key2, 0)
+
+        if odds1 > 0 and odds2 > 0:
+            # オッズ高い方に400円、低い方に300円
+            if odds1 >= odds2:
+                amt1, amt2 = 400, 300
+            else:
+                amt1, amt2 = 300, 400
+            exp1 = int(odds1 * amt1)
+            exp2 = int(odds2 * amt2)
+            odds1_txt = f'<span style="font-family:Oswald;color:#00d4ff !important;">{odds1:.1f}倍</span>'
+            odds2_txt = f'<span style="font-family:Oswald;color:#00d4ff !important;">{odds2:.1f}倍</span>'
+            exp1_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp1:,}</span>'
+            exp2_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp2:,}</span>'
+        else:
+            # オッズ未取得時はフォールバック350/350
+            amt1, amt2 = 350, 350
+            odds1_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
+            odds2_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
+            exp1_txt = ''
+            exp2_txt = ''
+
+        html += f'<span class="buy-type bt-hon">&#127942; {type_label}</span>'
         html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
         html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += '<div style="padding:4px 12px 8px;">'
-        html += f'<div style="font-size:1em;margin-bottom:6px;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t2)}</span> <span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
-        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
-        html += f'<div style="font-size:1em;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t3)}</span> <span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
-        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
+        # Bet 1
+        html += f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;">'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;min-width:20px;">{hn(t1)}</span>'
+        html += f'<span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f'<span style="color:#6a6a80 !important;">―</span>'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;">{hn(t2)}</span>'
+        html += f'<span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
+        html += f'<span style="margin-left:auto;">{odds1_txt}</span>'
+        html += f'<span style="font-family:Oswald;font-weight:700;color:#f0c040 !important;">{amt1}円</span>'
+        html += f'</div>'
+        if exp1_txt:
+            html += f'<div style="text-align:right;margin:-4px 10px 6px 0;">{exp1_txt}</div>'
+        # Bet 2
+        html += f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;">'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;min-width:20px;">{hn(t1)}</span>'
+        html += f'<span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f'<span style="color:#6a6a80 !important;">―</span>'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;">{hn(t3)}</span>'
+        html += f'<span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
+        html += f'<span style="margin-left:auto;">{odds2_txt}</span>'
+        html += f'<span style="font-family:Oswald;font-weight:700;color:#f0c040 !important;">{amt2}円</span>'
+        html += f'</div>'
+        if exp2_txt:
+            html += f'<div style="text-align:right;margin:-4px 10px 6px 0;">{exp2_txt}</div>'
         html += '</div>'
-        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">2点 &times; 350円 = 700円</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">TOTAL: {amt1} + {amt2} = 700円</div>'
 
     # TOP1 note
     s1_style = STYLE_NAMES.get(int(t1.get('脚質', 0)), '不明')
@@ -3116,10 +3187,12 @@ badge_css = f'badge-{model_version}'
 auc_text = f' AUC {model_auc:.4f}' if model_auc > 0 else ''
 leak_text = ' LEAK-FREE' if model_leak_free else ''
 # v9モデル利用可能状況
-v9_avail = _v9_models.get('central') is not None or _v9_models.get('nar') is not None
-v9_note = ' <span class="model-badge badge-v9">V9 READY</span>' if v9_avail else ''
+v9_avail = _v9_models.get('central') is not None
 model_badge_placeholder = st.empty()
-model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span>{v9_note}</div>', unsafe_allow_html=True)
+if v9_avail:
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL V9</span> <span class="model-badge badge-nar">NAR V8</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
+else:
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
 # ===== 起動時自動チェック =====
 sys_checks = run_system_checks()
@@ -3148,15 +3221,14 @@ if st.button("🔍 予想する") and url_input:
     active_auc = active_model_data.get('auc', 0.0)
     active_sire_map = active_model_data.get('sire_map', sire_map)
     active_bms_map = active_model_data.get('bms_map', bms_map)
-    # バッジ更新
-    type_badge = ''
-    if active_model_type == 'central':
-        type_badge = '<span class="model-badge badge-central">CENTRAL MODEL</span>'
-    elif active_model_type == 'nar':
-        type_badge = '<span class="model-badge badge-nar">NAR MODEL</span>'
+    # バッジ更新（CENTRAL V9 / NAR V8 自動切替）
+    if is_nar:
+        race_badge = '<span class="model-badge badge-nar">NAR V8</span>'
+    else:
+        race_badge = '<span class="model-badge badge-central">CENTRAL V9</span>'
     ab_css = f'badge-{active_version}'
     ab_auc = f' AUC {active_auc:.4f}' if active_auc > 0 else (f' AUC {model_auc:.4f}' if model_auc > 0 else '')
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {ab_css}">MODEL {active_version.upper()}{ab_auc}</span>{type_badge}</div>', unsafe_allow_html=True)
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge} <span class="model-badge {ab_css}">MODEL {active_version.upper()}{ab_auc}</span></div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
         rid_match = re.search(r'/race/(\d{10,12})/?', url_input)
@@ -3630,18 +3702,16 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     race_id = st.session_state.get('last_race_id', '')
     is_nar = st.session_state.get('last_is_nar', False)
 
-    # モデルバッジ更新（キャッシュ表示時）
-    p_model_type = st.session_state.get('pred_model_type', 'default')
+    # モデルバッジ更新（キャッシュ表示時 - CENTRAL V9 / NAR V8 自動切替）
     p_model_ver = st.session_state.get('pred_model_version', model_version)
     p_model_auc = st.session_state.get('pred_model_auc', model_auc)
-    p_type_badge = ''
-    if p_model_type == 'central':
-        p_type_badge = '<span class="model-badge badge-central">CENTRAL MODEL</span>'
-    elif p_model_type == 'nar':
-        p_type_badge = '<span class="model-badge badge-nar">NAR MODEL</span>'
+    if is_nar:
+        p_race_badge = '<span class="model-badge badge-nar">NAR V8</span>'
+    else:
+        p_race_badge = '<span class="model-badge badge-central">CENTRAL V9</span>'
     p_badge_css = f'badge-{p_model_ver}'
     p_auc_text = f' AUC {p_model_auc:.4f}' if p_model_auc > 0 else ''
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {p_badge_css}">MODEL {p_model_ver.upper()}{p_auc_text}</span>{p_type_badge}</div>', unsafe_allow_html=True)
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge} <span class="model-badge {p_badge_css}">MODEL {p_model_ver.upper()}{p_auc_text}</span></div>', unsafe_allow_html=True)
     st.markdown(rc_html, unsafe_allow_html=True)
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
@@ -3662,73 +3732,28 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
-    # 条件別買い目自動切替
+    # 条件別買い目自動切替（統合表示）
     is_nar_pred = st.session_state.get('pred_is_nar', False)
     cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
-    bets_list, bet_type = generate_bets_for_condition(df, cond_key, cond_profile)
     is_recommended = cond_profile['recommended'] and cond_profile['roi'] >= 80
 
-    if is_recommended and len(df) >= 3:
-        top3 = df.head(3)
-        n1_name = top3.iloc[0]['馬名'][:5]
-        n1_num = int(top3.iloc[0]['馬番'])
-        n2_num = int(top3.iloc[1]['馬番'])
-        n3_num = int(top3.iloc[2]['馬番'])
+    # ワイド/馬連オッズ取得（オッズ連動投資額振り分け用）
+    pair_odds = {}
+    bet_type = cond_profile['bet_type']
+    if is_recommended and bet_type in ('wide', 'umaren') and odds_available:
+        pair_odds = fetch_pair_odds(race_id, bet_type=bet_type, is_nar=is_nar_pred)
 
-        # 買い目の詳細表示
-        if bet_type == 'trio':
-            type_label = 'TRIO 7-BET (三連複7点)'
-            bets_html = '<div style="font-size:0.95em;padding:6px 0;">'
-            for b in bets_list:
-                bets_html += f'<span style="font-family:Oswald;">{b[0]}-{b[1]}-{b[2]}</span> (100円)<br>'
-            bets_html += '</div>'
-            total_label = 'TOTAL: 700 YEN (100 x 7)'
-        elif bet_type == 'wide':
-            type_label = 'WIDE 1-AXIS 2-FLOW (ワイド1軸2流し)'
-            bets_html = f'''<div style="font-size:1.05em;padding:6px 0;">
-<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
-<span style="color:#6a6a80 !important;"> - </span>
-<span style="font-family:Oswald;">{n2_num}</span> (350円)<br>
-<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
-<span style="color:#6a6a80 !important;"> - </span>
-<span style="font-family:Oswald;">{n3_num}</span> (350円)
-</div>'''
-            total_label = 'TOTAL: 700 YEN (350 x 2)'
-        else:  # umaren
-            type_label = 'UMAREN 1-AXIS 2-FLOW (馬連1軸2流し)'
-            bets_html = f'''<div style="font-size:1.05em;padding:6px 0;">
-<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
-<span style="color:#6a6a80 !important;"> - </span>
-<span style="font-family:Oswald;">{n2_num}</span> (350円)<br>
-<span style="font-family:Oswald;color:#2ecc40 !important;">{n1_num}</span> <span style="color:#b0b8c8 !important;">{n1_name}</span>
-<span style="color:#6a6a80 !important;"> - </span>
-<span style="font-family:Oswald;">{n3_num}</span> (350円)
-</div>'''
-            total_label = 'TOTAL: 700 YEN (350 x 2)'
-
-        roi_color = '#2ecc40' if cond_profile['roi'] >= 100 else '#f0c040'
-        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#0a2a1a,#1a3a2a);border:2px solid #2ecc40;border-radius:12px;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-<div style="font-family:Oswald;font-size:1.1em;color:#2ecc40 !important;">BUY RECOMMENDED</div>
-<div style="font-family:Oswald;font-size:0.85em;padding:2px 10px;border:1px solid {roi_color};border-radius:4px;color:{roi_color} !important;">
-{cond_profile["label"]} / ROI {cond_profile["roi"]:.1f}% / HIT {cond_profile["hit_rate"]:.1f}%</div>
-</div>
-<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:10px;">{cond_profile["desc"]} : 頭数{len(df)}頭 / {race_info.get("distance",0)}m / {race_info.get("condition","良")}</div>
-<div style="font-family:Oswald;font-size:0.95em;color:#f0c040 !important;margin-bottom:4px;">{type_label}</div>
-{bets_html}
-<div style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;margin-top:6px;">{total_label}</div>
-</div>''', unsafe_allow_html=True)
+    if is_recommended:
+        st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
+        buy_html = render_buy_section(df, race_info, rank_map, cond_key=cond_key, cond_profile=cond_profile, pair_odds=pair_odds)
+        if buy_html:
+            st.markdown(buy_html, unsafe_allow_html=True)
     else:
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
 <div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
 <div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
 <div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。</div>
 </div>''', unsafe_allow_html=True)
-    # Buy section (条件別最適買い目1種類のみ)
-    buy_html = render_buy_section(df, race_info, rank_map, cond_key=cond_key, cond_profile=cond_profile)
-    if buy_html:
-        st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
-        st.markdown(buy_html, unsafe_allow_html=True)
     # Expected Value Section (with trio odds integration)
     if odds_available:
         st.markdown('<div class="sec-title">💰 期待値分析<span class="sec-line"></span></div>', unsafe_allow_html=True)
