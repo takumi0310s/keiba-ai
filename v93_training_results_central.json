@@ -1,0 +1,74 @@
+{
+  "generated_at": "2026-03-09 02:57:32",
+  "baseline_v92a": {
+    "lgb": 0.8071856490938786,
+    "xgb": 0.8079069051280776,
+    "ensemble": 0.808252332115048
+  },
+  "v93_all": {
+    "lgb": 0.8081986685752757,
+    "xgb": 0.8091577579500826,
+    "ensemble": 0.809482224194754
+  },
+  "v93_final": {
+    "lgb": 0.8081986685752757,
+    "xgb": 0.8091577579500826,
+    "ensemble": 0.809482224194754,
+    "n_features": 67
+  },
+  "improved": true,
+  "improvement": 0.0012298920797060298,
+  "ablation": {
+    "pace": {
+      "delta": 0.0008603058765112026,
+      "improves": true,
+      "features": [
+        "prev_race_first3f",
+        "prev_race_last3f",
+        "prev_race_pace_diff",
+        "prev_agari_relative"
+      ]
+    },
+    "sakaro": {
+      "delta": 0.0,
+      "improves": false,
+      "features": [
+        "sakaro_best_4f_filled",
+        "sakaro_best_3f_filled",
+        "has_sakaro_training",
+        "total_training_count",
+        "wood_count_2w"
+      ]
+    },
+    "dist_aptitude": {
+      "delta": 0.0006550343447772056,
+      "improves": true,
+      "features": [
+        "horse_dist_top3r",
+        "horse_surface_top3r"
+      ]
+    },
+    "frame_adv": {
+      "delta": 5.0520477645310535e-05,
+      "improves": true,
+      "features": [
+        "frame_course_dist_wr"
+      ]
+    }
+  },
+  "removed_groups": [],
+  "new_features": [
+    "prev_race_first3f",
+    "prev_race_last3f",
+    "prev_race_pace_diff",
+    "prev_agari_relative",
+    "wood_count_2w",
+    "sakaro_best_4f_filled",
+    "sakaro_best_3f_filled",
+    "has_sakaro_training",
+    "total_training_count",
+    "horse_dist_top3r",
+    "horse_surface_top3r",
+    "frame_course_dist_wr"
+  ]
+}
