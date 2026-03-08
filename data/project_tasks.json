@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "priority": "HIGH",
+    "status": "TODO",
+    "title": "JV-Link HR payout data extraction",
+    "desc": "Extract trio/wide/umaren payouts from TFJV SE_DATA SH records for accurate ROI"
+  },
+  {
+    "id": 2,
+    "priority": "HIGH",
+    "status": "TODO",
+    "title": "Walk-forward with actual payouts",
+    "desc": "Re-run WF backtest using real payouts instead of tansho odds estimates"
+  },
+  {
+    "id": 3,
+    "priority": "MID",
+    "status": "TODO",
+    "title": "Weather data integration",
+    "desc": "Fetch JMA weather per course/date for track condition prediction"
+  },
+  {
+    "id": 4,
+    "priority": "MID",
+    "status": "TODO",
+    "title": "Track bias feature",
+    "desc": "Compute inner/outer track bias per course/day from passing data"
+  },
+  {
+    "id": 5,
+    "priority": "MID",
+    "status": "TODO",
+    "title": "Jockey-Trainer combination stats",
+    "desc": "Expanding window win rate for (jockey_id, trainer_id) pairs"
+  },
+  {
+    "id": 6,
+    "priority": "LOW",
+    "status": "TODO",
+    "title": "LINE notification integration",
+    "desc": "Send bet recommendations via LINE Notify API"
+  },
+  {
+    "id": 7,
+    "priority": "LOW",
+    "status": "TODO",
+    "title": "Wood training horse_id format fix",
+    "desc": "Match rate 0% due to horse_id format mismatch between CSVs"
+  },
+  {
+    "id": 8,
+    "priority": "LOW",
+    "status": "TODO",
+    "title": "NAR model v3 with more data sources",
+    "desc": "Integrate additional NAR data beyond KDSCOPE/netkeiba"
+  }
+]

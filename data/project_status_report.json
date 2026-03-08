@@ -1,0 +1,488 @@
+{
+  "generated_at": "2026-03-09 00:49:32",
+  "models": [
+    {
+      "label": "Central V9.2",
+      "version": "v9.2",
+      "auc": 0.8452010897902001,
+      "ensemble_auc": 0.8456107272478266,
+      "n_train": 680381,
+      "n_features": 63,
+      "trained_at": "2026-03-09 00:06:09"
+    },
+    {
+      "label": "NAR V2",
+      "version": "nar_v2",
+      "auc": 0.7891891891891892,
+      "ensemble_auc": 0.7916756756756756,
+      "n_train": "?",
+      "n_features": 35,
+      "trained_at": "2026-03-09 00:11:44"
+    },
+    {
+      "label": "V8 Baseline",
+      "version": "v9.2",
+      "auc": 0.8456107272478266,
+      "ensemble_auc": 0.8456107272478266,
+      "n_train": 680381,
+      "n_features": 63,
+      "trained_at": "2026-03-09 00:06:09"
+    }
+  ],
+  "data_assets": [
+    {
+      "file": "blood_full.csv",
+      "rows": 81986,
+      "cols": 36,
+      "date_range": "",
+      "size": 33241708,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "chihou_races_2020_2025.csv",
+      "rows": 1803,
+      "cols": 36,
+      "date_range": "",
+      "size": 292192,
+      "modified": "2026-03-08 20:37"
+    },
+    {
+      "file": "chihou_races_full.csv",
+      "rows": 17071,
+      "cols": 17,
+      "date_range": "2009-09-08~2020-03-19",
+      "size": 1930817,
+      "modified": "2026-03-08 21:24"
+    },
+    {
+      "file": "condition_optimization_jra.json",
+      "rows": 5,
+      "cols": 0,
+      "date_range": "",
+      "size": 160238,
+      "modified": "2026-03-09 00:42"
+    },
+    {
+      "file": "condition_optimization_nar.json",
+      "rows": 5,
+      "cols": 0,
+      "date_range": "",
+      "size": 115263,
+      "modified": "2026-03-09 00:33"
+    },
+    {
+      "file": "horse_history_full.csv",
+      "rows": 81986,
+      "cols": 40,
+      "date_range": "",
+      "size": 22892908,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "jockey_history_full.csv",
+      "rows": 573,
+      "cols": 28,
+      "date_range": "",
+      "size": 111956,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "jra_races_full.csv",
+      "rows": 781161,
+      "cols": 52,
+      "date_range": "10~25",
+      "size": 266147607,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "lap_times.csv",
+      "rows": 19982,
+      "cols": 60,
+      "date_range": "",
+      "size": 6665274,
+      "modified": "2026-03-08 13:31"
+    },
+    {
+      "file": "nar_merged.csv",
+      "rows": 14093,
+      "cols": 49,
+      "date_range": "2012-11-16~2022-01-01",
+      "size": 4236248,
+      "modified": "2026-03-09 00:10"
+    },
+    {
+      "file": "nar_scraped_cache.json",
+      "rows": 184,
+      "cols": 0,
+      "date_range": "",
+      "size": 797176,
+      "modified": "2026-03-08 20:37"
+    },
+    {
+      "file": "odds_history.csv",
+      "rows": 778387,
+      "cols": 12,
+      "date_range": "10~25",
+      "size": 61465358,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "optimal_betting_jra.json",
+      "rows": 5,
+      "cols": 0,
+      "date_range": "",
+      "size": 6665,
+      "modified": "2026-03-09 00:42"
+    },
+    {
+      "file": "optimal_betting_nar.json",
+      "rows": 6,
+      "cols": 0,
+      "date_range": "",
+      "size": 21894,
+      "modified": "2026-03-09 00:33"
+    },
+    {
+      "file": "project_tasks.json",
+      "rows": 8,
+      "cols": 0,
+      "date_range": "",
+      "size": 1578,
+      "modified": "2026-03-09 00:49"
+    },
+    {
+      "file": "simulation_results_jra.csv",
+      "rows": 27537,
+      "cols": 26,
+      "date_range": "2018~2025",
+      "size": 4047367,
+      "modified": "2026-03-09 00:42"
+    },
+    {
+      "file": "simulation_results_nar.csv",
+      "rows": 2347,
+      "cols": 28,
+      "date_range": "2012~2022",
+      "size": 324510,
+      "modified": "2026-03-09 00:33"
+    },
+    {
+      "file": "target_odds.csv",
+      "rows": 781160,
+      "cols": 52,
+      "date_range": "",
+      "size": 223166514,
+      "modified": "2026-03-08 01:49"
+    },
+    {
+      "file": "trainer_history_full.csv",
+      "rows": 620,
+      "cols": 16,
+      "date_range": "",
+      "size": 69236,
+      "modified": "2026-03-08 23:58"
+    },
+    {
+      "file": "training_times.csv",
+      "rows": 955580,
+      "cols": 16,
+      "date_range": "20210727~20260102",
+      "size": 103737710,
+      "modified": "2026-03-08 23:58"
+    }
+  ],
+  "conditions": {
+    "central": [
+      {
+        "condition": "A",
+        "definition": "8-14H / 1600m+ / Good",
+        "n_wf": 8634,
+        "best_bet": "trio",
+        "lf_roi": 128.69565217391303,
+        "wf_roi": 420.7,
+        "hit_rate": 45.1,
+        "grade": "SSS",
+        "confidence": "HIGH"
+      },
+      {
+        "condition": "B",
+        "definition": "8-14H / 1600m+ / Heavy",
+        "n_wf": 1067,
+        "best_bet": "trio",
+        "lf_roi": 143.17460317460316,
+        "wf_roi": 473.8,
+        "hit_rate": 45.4,
+        "grade": "SSS",
+        "confidence": "MID"
+      },
+      {
+        "condition": "C",
+        "definition": "15H+ / 1600m+ / Good",
+        "n_wf": 6405,
+        "best_bet": "trio",
+        "lf_roi": 160.77551020408163,
+        "wf_roi": 498.6,
+        "hit_rate": 33.4,
+        "grade": "SSS",
+        "confidence": "HIGH"
+      },
+      {
+        "condition": "D",
+        "definition": "<=1400m (Sprint)",
+        "n_wf": 9807,
+        "best_bet": "trio",
+        "lf_roi": 153.78934624697337,
+        "wf_roi": 247.0,
+        "hit_rate": 28.2,
+        "grade": "SSS",
+        "confidence": "HIGH"
+      },
+      {
+        "condition": "E",
+        "definition": "<=7H (Small)",
+        "n_wf": 569,
+        "best_bet": "trio",
+        "lf_roi": 0,
+        "wf_roi": 330.4,
+        "hit_rate": 75.7,
+        "grade": "SSS",
+        "confidence": "MID"
+      },
+      {
+        "condition": "X",
+        "definition": "15H+ / Heavy",
+        "n_wf": 1055,
+        "best_bet": "trio",
+        "lf_roi": 223.24675324675326,
+        "wf_roi": 598.2,
+        "hit_rate": 36.1,
+        "grade": "SSS",
+        "confidence": "MID"
+      }
+    ],
+    "nar": [
+      {
+        "condition": "A",
+        "definition": "8-14H / 1600m+ / Good",
+        "n": 69,
+        "bet_type": "trio",
+        "roi": 382.2153209109731,
+        "hit_rate": 55.072463768115945,
+        "grade": "SSS",
+        "recommended": true
+      },
+      {
+        "condition": "B",
+        "definition": "8-14H / 1600m+ / Heavy",
+        "n": 83,
+        "bet_type": "wide",
+        "roi": 252.95180722891567,
+        "hit_rate": 50.602409638554214,
+        "grade": "SSS",
+        "recommended": true
+      },
+      {
+        "condition": "C",
+        "definition": "15H+ / 1600m+ / Good",
+        "n": 2,
+        "bet_type": "trio",
+        "roi": 66.42857142857143,
+        "hit_rate": 50.0,
+        "grade": "-",
+        "recommended": false
+      },
+      {
+        "condition": "D",
+        "definition": "<=1400m (Sprint)",
+        "n": 0,
+        "bet_type": "trio",
+        "roi": 0,
+        "hit_rate": 0,
+        "grade": "-",
+        "recommended": false
+      },
+      {
+        "condition": "E",
+        "definition": "<=7H (Small)",
+        "n": 30,
+        "bet_type": "umaren",
+        "roi": 148.16666666666666,
+        "hit_rate": 40.0,
+        "grade": "SSS",
+        "recommended": true
+      },
+      {
+        "condition": "X",
+        "definition": "15H+ / Heavy",
+        "n": 0,
+        "bet_type": "trio",
+        "roi": 0,
+        "hit_rate": 0,
+        "grade": "-",
+        "recommended": false
+      }
+    ]
+  },
+  "missing": [
+    {
+      "data": "Jockey stats",
+      "status": "OK",
+      "file": "jockey_history_full.csv",
+      "method": "jockey_wr.json or JV-Link BR_DATA"
+    },
+    {
+      "data": "Trainer stats",
+      "status": "OK",
+      "file": "trainer_history_full.csv",
+      "method": "JV-Link BR_DATA"
+    },
+    {
+      "data": "Blood/Pedigree",
+      "status": "OK",
+      "file": "blood_full.csv",
+      "method": "JV-Link KT_DATA"
+    },
+    {
+      "data": "Horse history",
+      "status": "OK",
+      "file": "horse_history_full.csv",
+      "method": "JV-Link SE_DATA"
+    },
+    {
+      "data": "Race results",
+      "status": "OK",
+      "file": "jra_races_full.csv",
+      "method": "JV-Link SE_DATA / target_odds.csv"
+    },
+    {
+      "data": "Odds history",
+      "status": "OK",
+      "file": "odds_history.csv",
+      "method": "JV-Link HY_DATA"
+    },
+    {
+      "data": "Training times",
+      "status": "OK",
+      "file": "training_times.csv",
+      "method": "JV-Link CK_DATA / target_sakaro/wood"
+    },
+    {
+      "data": "Lap times",
+      "status": "OK",
+      "file": "lap_times.csv",
+      "method": "TARGET Frontier export"
+    },
+    {
+      "data": "NAR races",
+      "status": "OK",
+      "file": "chihou_races_full.csv",
+      "method": "KDSCOPE or netkeiba scraping"
+    },
+    {
+      "data": "Track bias index",
+      "status": "MISS",
+      "file": "(not created)",
+      "method": "Compute from lap_times.csv per course/day"
+    },
+    {
+      "data": "Pace index",
+      "status": "MISS",
+      "file": "(not created)",
+      "method": "Compute from race pass data in jra_races_full"
+    },
+    {
+      "data": "Weather data",
+      "status": "MISS",
+      "file": "(not created)",
+      "method": "JMA API (api.open-meteo.com) per course/date"
+    },
+    {
+      "data": "Jockey-Trainer combo",
+      "status": "MISS",
+      "file": "(not created)",
+      "method": "Compute from jra_races_full (jockey_id x trainer_id)"
+    },
+    {
+      "data": "Wide/Umaren/Trio payouts",
+      "status": "MISS",
+      "file": "(not created)",
+      "method": "JV-Link HR records or netkeiba scraping"
+    }
+  ],
+  "data_quality": {
+    "jra_races_full.csv": {
+      "mark1": 100.0,
+      "mark2": 100.0
+    },
+    "training_times.csv": {
+      "trainer": 1.6,
+      "horse_id": 100.0
+    }
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "priority": "HIGH",
+      "status": "TODO",
+      "title": "JV-Link HR payout data extraction",
+      "desc": "Extract trio/wide/umaren payouts from TFJV SE_DATA SH records for accurate ROI"
+    },
+    {
+      "id": 2,
+      "priority": "HIGH",
+      "status": "TODO",
+      "title": "Walk-forward with actual payouts",
+      "desc": "Re-run WF backtest using real payouts instead of tansho odds estimates"
+    },
+    {
+      "id": 3,
+      "priority": "MID",
+      "status": "TODO",
+      "title": "Weather data integration",
+      "desc": "Fetch JMA weather per course/date for track condition prediction"
+    },
+    {
+      "id": 4,
+      "priority": "MID",
+      "status": "TODO",
+      "title": "Track bias feature",
+      "desc": "Compute inner/outer track bias per course/day from passing data"
+    },
+    {
+      "id": 5,
+      "priority": "MID",
+      "status": "TODO",
+      "title": "Jockey-Trainer combination stats",
+      "desc": "Expanding window win rate for (jockey_id, trainer_id) pairs"
+    },
+    {
+      "id": 6,
+      "priority": "LOW",
+      "status": "TODO",
+      "title": "LINE notification integration",
+      "desc": "Send bet recommendations via LINE Notify API"
+    },
+    {
+      "id": 7,
+      "priority": "LOW",
+      "status": "TODO",
+      "title": "Wood training horse_id format fix",
+      "desc": "Match rate 0% due to horse_id format mismatch between CSVs"
+    },
+    {
+      "id": 8,
+      "priority": "LOW",
+      "status": "TODO",
+      "title": "NAR model v3 with more data sources",
+      "desc": "Integrate additional NAR data beyond KDSCOPE/netkeiba"
+    }
+  ],
+  "git": {
+    "last_commit_hash": "22331182",
+    "last_commit_date": "2026-03-09 00:44:38 +0900",
+    "last_commit_msg": "Walk-forward backtest (2018-2025, 27537R) with condition optimization",
+    "remote_url": "https://github.com/takumi0310s/keiba-ai",
+    "branch": "main",
+    "uncommitted_changes": 3
+  }
+}
