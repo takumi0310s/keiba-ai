@@ -56,10 +56,10 @@ cases = [
     ({'distance': 1200, 'condition': '良'}, 10, False, 'D', 'trio'),
     ({'distance': 2000, 'condition': '良'}, 5, False, 'E', 'umaren'),
     ({'distance': 2000, 'condition': '重'}, 16, False, 'X', 'trio'),
-    # NAR: 条件別判定（条件Aのみ推奨、wideで）
-    ({'distance': 2000, 'condition': '良'}, 10, True, 'A', 'wide'),
-    ({'distance': 2000, 'condition': '重'}, 10, True, 'B', 'wide'),
-    ({'distance': 2000, 'condition': '良'}, 5, True, 'E', 'trio'),
+    # NAR: 条件別判定（A=trio, B=trio, E=umaren）
+    ({'distance': 2000, 'condition': '良'}, 10, True, 'A', 'trio'),
+    ({'distance': 2000, 'condition': '重'}, 10, True, 'B', 'trio'),
+    ({'distance': 2000, 'condition': '良'}, 5, True, 'E', 'umaren'),
 ]
 all_ok = True
 for ri, nh, nar, ek, ebt in cases:
@@ -196,10 +196,14 @@ ok("[13] Central/NAR detection", all_nar)
 from app import NAR_CONDITION_PROFILES
 nar_a_rec = NAR_CONDITION_PROFILES['A']['recommended']
 nar_b_rec = NAR_CONDITION_PROFILES['B']['recommended']
+nar_c_rec = NAR_CONDITION_PROFILES['C']['recommended']
+nar_e_rec = NAR_CONDITION_PROFILES['E']['recommended']
 nar_a_bt = NAR_CONDITION_PROFILES['A']['bet_type']
-ok("[13b] NAR condition A=recommended, B=not",
-   nar_a_rec is True and nar_b_rec is False and nar_a_bt == 'wide',
-   f"A.rec={nar_a_rec}, B.rec={nar_b_rec}, A.bet={nar_a_bt}")
+nar_e_bt = NAR_CONDITION_PROFILES['E']['bet_type']
+ok("[13b] NAR condition A,B,E=recommended, C=not",
+   nar_a_rec is True and nar_b_rec is True and nar_e_rec is True and nar_c_rec is False
+   and nar_a_bt == 'trio' and nar_e_bt == 'umaren',
+   f"A.rec={nar_a_rec}({nar_a_bt}), B.rec={nar_b_rec}, E.rec={nar_e_rec}({nar_e_bt}), C.rec={nar_c_rec}")
 
 # ===== 14. TRACK RECORD badge =====
 BET_SHORT = {'trio': '三', 'umaren': '連', 'wide': 'W'}
