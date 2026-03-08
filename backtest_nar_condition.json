@@ -1,31 +1,31 @@
 {
-  "generated_at": "2026-03-09 00:11:44",
+  "generated_at": "2026-03-09 01:37:51",
   "version": "nar_v2",
-  "lgb_auc": 0.7891891891891892,
-  "ensemble_auc": 0.7916756756756756,
+  "lgb_auc": 0.8673873873873874,
+  "ensemble_auc": 0.8717117117117118,
   "condition_results": {
     "A": {
       "bet_type": "trio",
-      "hit_rate": 55.072463768115945,
-      "roi": 382.2153209109731,
+      "hit_rate": 72.46376811594203,
+      "roi": 296.74948240165634,
       "stars": 3,
       "recommended": true,
       "n": 69
     },
     "B": {
-      "bet_type": "wide",
-      "hit_rate": 50.602409638554214,
-      "roi": 252.95180722891567,
+      "bet_type": "trio",
+      "hit_rate": 55.42168674698795,
+      "roi": 248.7263339070568,
       "stars": 3,
       "recommended": true,
       "n": 83
     },
     "C": {
-      "bet_type": "trio",
-      "hit_rate": 50.0,
-      "roi": 66.42857142857143,
-      "stars": 0,
-      "recommended": false,
+      "bet_type": "wide",
+      "hit_rate": 100.0,
+      "roi": 262.5,
+      "stars": 3,
+      "recommended": true,
       "n": 2
     },
     "D": {
@@ -38,8 +38,8 @@
     },
     "E": {
       "bet_type": "umaren",
-      "hit_rate": 40.0,
-      "roi": 148.16666666666666,
+      "hit_rate": 73.33333333333333,
+      "roi": 212.16666666666666,
       "stars": 3,
       "recommended": true,
       "n": 30
