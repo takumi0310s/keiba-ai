@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-"""KEIBA AI v9 Training Script
+"""KEIBA AI v9/v9.2 Training Script
 - Central (JRA) and NAR model separation
 - LightGBM + XGBoost + MLP ensemble
 - Odds feature integration from target_odds.csv
+- v9.1: oikiri (training) data features
+- v9.2: lap time features (前半3F, 後半3F, 前後半差, PCI)
 - Feature importance analysis
 """
 import pandas as pd
@@ -19,6 +21,7 @@ import lightgbm as lgb
 
 # ===== Configuration =====
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'target_odds.csv')
+LAP_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'lap_times.csv')
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..')
 N_TOP_SIRE = 100
 
@@ -208,6 +211,34 @@ def compute_trainer_stats(df):
     return df
 
 
+def load_lap_data():
+    """Load lap_times.csv and return race-level lap features."""
+    print("Loading lap time data...")
+    if not os.path.exists(LAP_PATH):
+        print("  WARNING: lap_times.csv not found, skipping lap features")
+        return None
+    lap = pd.read_csv(LAP_PATH, encoding='cp932')
+    cols = lap.columns.tolist()
+    lap_df = pd.DataFrame({
+        'race_id': lap.iloc[:, 0].astype(str).str.strip(),
+        'race_first3f': pd.to_numeric(lap.iloc[:, 27], errors='coerce'),  # 前3F通過
+        'race_last3f': pd.to_numeric(lap.iloc[:, 28], errors='coerce'),   # 後3F上り
+        'race_pci': pd.to_numeric(lap.iloc[:, 59], errors='coerce'),      # レースPCI
+    })
+    # 前後半差 (後半3F - 前半3F): 正=スロー(後半速い), 負=ハイペース
+    lap_df['race_pace_diff'] = lap_df['race_last3f'] - lap_df['race_first3f']
+    # ペース分類: H(ハイ), M(ミドル), S(スロー)
+    lap_df['race_pace_cat'] = pd.cut(
+        lap_df['race_pace_diff'],
+        bins=[-999, -1.0, 1.0, 999],
+        labels=[0, 1, 2]  # 0=H, 1=M, 2=S
+    ).astype(float).fillna(1)
+
+    lap_df = lap_df.drop_duplicates(subset='race_id', keep='first')
+    print(f"  Loaded {len(lap_df)} races with lap data")
+    return lap_df
+
+
 def compute_lag_features(df):
     """Compute lag features per horse (prev finishes, agari, etc.)."""
     print("Computing lag features...")
@@ -258,6 +289,22 @@ def compute_lag_features(df):
     # Rest category
     bins = [-1, 6, 14, 35, 63, 180, 9999]
     df['rest_category'] = pd.cut(df['rest_days'], bins=bins, labels=[0,1,2,3,4,5]).astype(float).fillna(2)
+
+    # Lap time lag features (前走のレースラップ)
+    if 'race_first3f' in df.columns:
+        df['prev_race_first3f'] = grp['race_first3f'].shift(1).fillna(35.8)
+        df['prev_race_last3f'] = grp['race_last3f'].shift(1).fillna(36.5)
+        df['prev_race_pace_diff'] = grp['race_pace_diff'].shift(1).fillna(0.0)
+        df['prev_race_pci'] = grp['race_pci'].shift(1).fillna(49.0)
+        df['prev_race_pace_cat'] = grp['race_pace_cat'].shift(1).fillna(1)
+        # 2走前ラップ
+        df['prev2_race_first3f'] = grp['race_first3f'].shift(2).fillna(35.8)
+        df['prev2_race_last3f'] = grp['race_last3f'].shift(2).fillna(36.5)
+        df['prev2_race_pace_diff'] = grp['race_pace_diff'].shift(2).fillna(0.0)
+        # 前走ラップの平均
+        df['avg_race_first3f_2r'] = df[['prev_race_first3f', 'prev2_race_first3f']].mean(axis=1)
+        df['avg_race_last3f_2r'] = df[['prev_race_last3f', 'prev2_race_last3f']].mean(axis=1)
+        print(f"  Lap lag features added")
 
     print(f"  Lag features computed for {df['horse_id'].nunique()} horses")
     return df
@@ -347,6 +394,23 @@ FEATURES_V9_PKL = [
 FEATURES_V9_1_PKL = FEATURES_V9_PKL + [
     'training_time_filled', 'has_training', 'training_per_dist',
 ]
+
+# v9.2 feature list (v9.1 + lap time features)
+LAP_FEATURES = [
+    'prev_race_first3f',    # 前走の前半3F
+    'prev_race_last3f',     # 前走の後半3F
+    'prev_race_pace_diff',  # 前走の前後半差
+    'prev_race_pci',        # 前走のPCI
+    'prev_race_pace_cat',   # 前走のペース分類(H/M/S)
+    'prev2_race_first3f',   # 2走前の前半3F
+    'prev2_race_last3f',    # 2走前の後半3F
+    'prev2_race_pace_diff', # 2走前の前後半差
+    'avg_race_first3f_2r',  # 直近2走の前半3F平均
+    'avg_race_last3f_2r',   # 直近2走の後半3F平均
+]
+
+FEATURES_V9_2 = FEATURES_V9_1 + LAP_FEATURES
+FEATURES_V9_2_PKL = FEATURES_V9_1_PKL + LAP_FEATURES
 
 
 def train_lgb(X_train, y_train, X_valid, y_valid, feature_names, params_override=None):
@@ -450,6 +514,16 @@ def show_feature_importance(model, feature_names, title="Feature Importance"):
 def main():
     # Load and process data
     df = load_data()
+
+    # Load and merge lap time data
+    lap_df = load_lap_data()
+    if lap_df is not None:
+        df['race_id'] = df['race_id'].astype(str).str.strip()
+        before_len = len(df)
+        df = df.merge(lap_df, on='race_id', how='left')
+        matched = df['race_first3f'].notna().sum()
+        print(f"  Lap data merged: {matched}/{before_len} rows matched ({matched/before_len*100:.1f}%)")
+
     df, course_map = encode_categoricals(df)
     df, sire_map, bms_map = encode_sires(df)
 
@@ -590,6 +664,57 @@ def main():
         imp = lgb_model_v91.feature_importance(importance_type='gain')[idx]
         print(f"    {feat}: importance={imp:.1f}")
 
+    # ===== v9.2: Train with lap time features =====
+    lgb_v92_auc = 0
+    xgb_v92_auc = 0
+    v92_ensemble_auc = 0
+    has_lap = lap_df is not None and 'prev_race_first3f' in df.columns
+
+    if has_lap:
+        print("\n" + "="*60)
+        print("  Training v9.2 (v9.1 + lap time features)")
+        print("="*60)
+
+        feature_cols_v92 = FEATURES_V9_2
+        for f in feature_cols_v92:
+            if f not in df.columns:
+                df[f] = 0
+            df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
+
+        X_v92 = df[feature_cols_v92].values
+        X_v92_train, X_v92_valid = X_v92[train_mask], X_v92[valid_mask]
+
+        lgb_model_v92 = train_lgb(X_v92_train, y_train, X_v92_valid, y_valid, feature_cols_v92)
+        lgb_v92_pred = lgb_model_v92.predict(X_v92_valid)
+        lgb_v92_auc = roc_auc_score(y_valid, lgb_v92_pred)
+        print(f"\n  v9.2 LightGBM AUC: {lgb_v92_auc:.4f}")
+
+        fi_v92 = show_feature_importance(lgb_model_v92, feature_cols_v92, "v9.2 Feature Importance (with Lap Data)")
+
+        # v9.2 XGBoost
+        xgb_model_v92 = train_xgb(X_v92_train, y_train, X_v92_valid, y_valid)
+        xgb_v92_pred = xgb_model_v92.predict(xgb.DMatrix(X_v92_valid))
+        xgb_v92_auc = roc_auc_score(y_valid, xgb_v92_pred)
+        print(f"  v9.2 XGBoost AUC: {xgb_v92_auc:.4f}")
+
+        # v9.2 Ensemble
+        total_v92 = lgb_v92_auc + xgb_v92_auc
+        w92_lgb = lgb_v92_auc / total_v92
+        w92_xgb = xgb_v92_auc / total_v92
+        v92_ensemble_pred = lgb_v92_pred * w92_lgb + xgb_v92_pred * w92_xgb
+        v92_ensemble_auc = roc_auc_score(y_valid, v92_ensemble_pred)
+        print(f"  v9.2 Ensemble AUC: {v92_ensemble_auc:.4f}")
+
+        # Lap feature importance
+        print(f"\n  Lap time features:")
+        for feat in LAP_FEATURES:
+            if feat in feature_cols_v92:
+                idx = feature_cols_v92.index(feat)
+                imp = lgb_model_v92.feature_importance(importance_type='gain')[idx]
+                print(f"    {feat}: importance={imp:.1f}")
+    else:
+        print("\n  Skipping v9.2 (no lap data available)")
+
     # ===== Compare with v8 =====
     v8_path = os.path.join(OUTPUT_DIR, 'keiba_model_v8.pkl')
     v8_auc = 0.0
@@ -613,11 +738,33 @@ def main():
     print(f"  v9.1 LGB+oikiri: AUC {lgb_v91_auc:.4f}")
     print(f"  v9.1 XGB+oikiri: AUC {xgb_v91_auc:.4f}")
     print(f"  v9.1 Ensemble:   AUC {v91_ensemble_auc:.4f}")
+    if has_lap:
+        print(f"  v9.2 LGB+lap:    AUC {lgb_v92_auc:.4f}")
+        print(f"  v9.2 XGB+lap:    AUC {xgb_v92_auc:.4f}")
+        print(f"  v9.2 Ensemble:   AUC {v92_ensemble_auc:.4f}")
 
-    # Determine best model
-    use_v91 = v91_ensemble_auc > ensemble_auc
-    if use_v91:
-        print(f"\n  >>> v9.1 ({v91_ensemble_auc:.4f}) > v9 ({ensemble_auc:.4f}) - Using v9.1 with training data")
+    # Determine best model among v9, v9.1, v9.2
+    candidates = [
+        ('v9', ensemble_auc),
+        ('v9.1', v91_ensemble_auc),
+    ]
+    if has_lap:
+        candidates.append(('v9.2', v92_ensemble_auc))
+
+    best_version_name, best_candidate_auc = max(candidates, key=lambda x: x[1])
+    print(f"\n  >>> Best: {best_version_name} (Ensemble AUC {best_candidate_auc:.4f})")
+
+    if best_version_name == 'v9.2':
+        best_lgb = lgb_model_v92
+        best_xgb = xgb_model_v92
+        best_ensemble_auc = v92_ensemble_auc
+        best_pkl_features = [rename_map.get(f, f) for f in feature_cols_v92]
+        best_weights = {'lgb': w92_lgb, 'xgb': w92_xgb, 'mlp': 0}
+        best_mlp = None
+        best_scaler = None
+        save_version = 'v9.2'
+        save_auc = lgb_v92_auc
+    elif best_version_name == 'v9.1':
         best_lgb = lgb_model_v91
         best_xgb = xgb_model_v91
         best_ensemble_auc = v91_ensemble_auc
@@ -625,33 +772,30 @@ def main():
         best_weights = {'lgb': w91_lgb, 'xgb': w91_xgb, 'mlp': 0}
         best_mlp = None
         best_scaler = None
+        save_version = 'v9.1'
+        save_auc = lgb_v91_auc
     else:
-        print(f"\n  >>> v9 ({ensemble_auc:.4f}) >= v9.1 ({v91_ensemble_auc:.4f}) - Keeping v9 without training data")
+        best_lgb = lgb_model
+        best_xgb = xgb_model
+        best_ensemble_auc = ensemble_auc
+        best_pkl_features = pkl_features
+        best_weights = {'lgb': w_lgb, 'xgb': w_xgb, 'mlp': w_mlp}
+        best_mlp = mlp_model
+        best_scaler = mlp_scaler
+        save_version = 'v9'
+        save_auc = lgb_auc
 
     # ===== Save models =====
     from datetime import datetime
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    if use_v91:
-        save_lgb = best_lgb
-        save_xgb = best_xgb
-        save_mlp = best_mlp
-        save_scaler = best_scaler
-        save_features = best_pkl_features
-        save_weights = best_weights
-        save_version = 'v9.1'
-        save_auc = lgb_v91_auc
-        save_ensemble_auc = best_ensemble_auc
-    else:
-        save_lgb = lgb_model
-        save_xgb = xgb_model
-        save_mlp = mlp_model
-        save_scaler = mlp_scaler
-        save_features = pkl_features
-        save_weights = {'lgb': w_lgb, 'xgb': w_xgb, 'mlp': w_mlp}
-        save_version = 'v9'
-        save_auc = lgb_auc
-        save_ensemble_auc = ensemble_auc
+    save_lgb = best_lgb
+    save_xgb = best_xgb
+    save_mlp = best_mlp
+    save_scaler = best_scaler
+    save_features = best_pkl_features
+    save_weights = best_weights
+    save_ensemble_auc = best_ensemble_auc
 
     # Central model
     central_pkl = {
