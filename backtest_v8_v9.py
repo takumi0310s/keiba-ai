@@ -41,7 +41,7 @@ COL = {
     'prize': 36, 'horse_id': 37, 'jockey_id': 38, 'trainer_id': 39,
     'race_horse_key': 40, 'father': 41, 'mother': 42, 'bms': 43,
     'sire_sire': 44, 'col45': 45, 'origin': 46, 'birthday': 47,
-    'odds': 48, 'empty1': 49, 'empty2': 50, 'col51': 51,
+    'odds': 48, 'empty1': 49, 'empty2': 50, 'training_time': 51,
 }
 
 
@@ -247,6 +247,17 @@ def build_features(df):
     df['cond_surface'] = df['condition_enc'] * 10 + df['surface_enc']
     df['course_surface'] = df['course_enc'] * 10 + df['surface_enc']
     df['is_nar'] = 0
+
+    # 調教タイム特徴量 (v9.1)
+    if 'training_time' in df.columns:
+        df['training_time'] = pd.to_numeric(df['training_time'], errors='coerce').fillna(0)
+    else:
+        df['training_time'] = 0
+    df['has_training'] = (df['training_time'] > 0).astype(int)
+    mean_tt = df.loc[df['training_time'] > 0, 'training_time'].mean() if (df['training_time'] > 0).any() else 48.5
+    df['training_time_filled'] = df['training_time'].replace(0, mean_tt).fillna(mean_tt)
+    df['training_per_dist'] = df['training_time_filled'] / (df['distance'] / 200).clip(1)
+
     return df
 
 
@@ -266,6 +277,7 @@ V8_FEATURES = [
 ]
 
 V9_FEATURES = V8_FEATURES + ['odds_log', 'prev_odds_log']
+V91_FEATURES = V9_FEATURES + ['training_time_filled', 'has_training', 'training_per_dist']
 
 
 def predict_v8(model_data, X, features):
@@ -275,7 +287,7 @@ def predict_v8(model_data, X, features):
 
 
 def predict_v9_ensemble(model_data, X, features):
-    """V9 prediction (LightGBM + XGBoost + MLP ensemble)."""
+    """V9/V9.1 prediction (LightGBM + XGBoost + MLP ensemble)."""
     lgb_pred = model_data['model'].predict(X)
 
     xgb_model = model_data.get('xgb_model')
@@ -288,8 +300,23 @@ def predict_v9_ensemble(model_data, X, features):
         xgb_pred = xgb_model.predict(xgb.DMatrix(X))
         mlp_pred = mlp_model.predict_proba(mlp_scaler.transform(X))[:, 1]
         return lgb_pred * weights['lgb'] + xgb_pred * weights['xgb'] + mlp_pred * weights['mlp']
+    elif xgb_model:
+        import xgboost as xgb
+        xgb_pred = xgb_model.predict(xgb.DMatrix(X))
+        w_lgb = weights.get('lgb', 0.5)
+        w_xgb = weights.get('xgb', 0.5)
+        total = w_lgb + w_xgb
+        return lgb_pred * (w_lgb / total) + xgb_pred * (w_xgb / total)
     else:
         return lgb_pred
+
+
+def get_v9_features(model_data):
+    """Auto-detect feature list from model pkl."""
+    feats = model_data.get('features', [])
+    if feats and 'training_time_filled' in feats:
+        return V91_FEATURES
+    return V9_FEATURES
 
 
 # ===== Bet Calculation =====
@@ -494,13 +521,17 @@ def run_central_backtest(models):
     print(f"  Selected: {len(test_races)} races")
 
     # Prepare feature matrices
-    for f in V8_FEATURES + ['odds_log', 'prev_odds_log']:
+    v8_data = models.get('v8')
+    v9_data = models.get('v9c')
+    v9_feats = get_v9_features(v9_data) if v9_data else V9_FEATURES
+    all_needed = list(set(V8_FEATURES + v9_feats))
+    for f in all_needed:
         if f not in df.columns:
             df[f] = 0
         df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
 
-    v8_data = models.get('v8')
-    v9_data = models.get('v9c')
+    v9_ver = v9_data.get('version', 'v9').upper() if v9_data else 'V9'
+    print(f"  V9 model: {v9_ver}, features: {len(v9_feats)}")
 
     results = []
     for ri, rid in enumerate(test_races):
@@ -541,12 +572,12 @@ def run_central_backtest(models):
             race_df['v8_rank'] = race_df['v8_score'].rank(ascending=False).astype(int)
             v8_ranking = race_df.sort_values('v8_rank')['umaban'].tolist()
 
-        # V9 prediction
+        # V9/V9.1 prediction
         v9_scores = None
         v9_ranking = None
         if v9_data:
-            X_v9 = race_df[V9_FEATURES].values
-            v9_scores = predict_v9_ensemble(v9_data, X_v9, V9_FEATURES)
+            X_v9 = race_df[v9_feats].values
+            v9_scores = predict_v9_ensemble(v9_data, X_v9, v9_feats)
             race_df['v9_score'] = v9_scores
             race_df['v9_rank'] = race_df['v9_score'].rank(ascending=False).astype(int)
             v9_ranking = race_df.sort_values('v9_rank')['umaban'].tolist()
@@ -633,13 +664,14 @@ def run_central_backtest_5year(models):
         print(f"    Selected: {len(test_races)} races")
 
         # Ensure features exist
-        for f in V8_FEATURES + ['odds_log', 'prev_odds_log']:
+        v8_data = models.get('v8')
+        v9_data = models.get('v9c')
+        v9_feats = get_v9_features(v9_data) if v9_data else V9_FEATURES
+        all_needed = list(set(V8_FEATURES + v9_feats))
+        for f in all_needed:
             if f not in df_year.columns:
                 df_year[f] = 0
             df_year[f] = pd.to_numeric(df_year[f], errors='coerce').fillna(0)
-
-        v8_data = models.get('v8')
-        v9_data = models.get('v9c')
 
         for ri, rid in enumerate(test_races):
             race_df = df_year[(df_year['race_id'] == rid) & test_mask].copy()
@@ -670,7 +702,7 @@ def run_central_backtest_5year(models):
 
             for ver, data, feats, pred_fn in [
                 ('v8', v8_data, V8_FEATURES, predict_v8),
-                ('v9', v9_data, V9_FEATURES, lambda d, X, f: predict_v9_ensemble(d, X, f)),
+                ('v9', v9_data, v9_feats, lambda d, X, f: predict_v9_ensemble(d, X, f)),
             ]:
                 if not data:
                     continue
@@ -998,11 +1030,20 @@ def predict_nar_race(horses, models):
     df['odds_log'] = np.log1p(df['odds'].clip(1, 999))
     df['prev_odds_log'] = np.log1p(df['odds'].clip(1, 999))  # Use current odds as proxy
 
+    # NAR training features (defaults since no historical data)
+    df['training_time'] = 0
+    df['has_training'] = 0
+    mean_tt = 48.5
+    df['training_time_filled'] = mean_tt
+    df['training_per_dist'] = mean_tt / (df['distance'] / 200).clip(1)
+
     rankings = {}
     v8_data = models.get('v8')
     v9_data = models.get('v9n') or models.get('v9c')
+    v9_feats = get_v9_features(v9_data) if v9_data else V9_FEATURES
 
-    for f in V8_FEATURES + ['odds_log', 'prev_odds_log']:
+    all_needed = list(set(V8_FEATURES + v9_feats))
+    for f in all_needed:
         if f not in df.columns:
             df[f] = 0
         df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
@@ -1014,8 +1055,8 @@ def predict_nar_race(horses, models):
         rankings['v8'] = df.sort_values('v8_score', ascending=False)['umaban'].tolist()
 
     if v9_data:
-        X_v9 = df[V9_FEATURES].values
-        scores = predict_v9_ensemble(v9_data, X_v9, V9_FEATURES)
+        X_v9 = df[v9_feats].values
+        scores = predict_v9_ensemble(v9_data, X_v9, v9_feats)
         df['v9_score'] = scores
         rankings['v9'] = df.sort_values('v9_score', ascending=False)['umaban'].tolist()
 
