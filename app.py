@@ -1036,13 +1036,9 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 }
 .buy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
 .buy-honmei::before { background: linear-gradient(90deg, #f0c040, #00e87b); }
-.buy-hiroku::before { background: linear-gradient(90deg, #00d4ff, #a855f7); }
-.buy-ana::before { background: linear-gradient(90deg, #ff4060, #f0c040); }
 .buy-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .buy-type { font-family: 'Oswald'; font-size: 0.8em; letter-spacing: 2px; padding: 3px 12px; border-radius: 6px; }
 .bt-hon { background: rgba(240,192,64,0.15); color: #f0c040 !important; }
-.bt-hir { background: rgba(0,212,255,0.15); color: #00d4ff !important; }
-.bt-ana { background: rgba(255,64,96,0.15); color: #ff4060 !important; }
 .buy-conf { font-family: 'Oswald'; font-size: 0.82em; color: #6a6a80 !important; }
 .buy-row {
     display: flex; align-items: center; gap: 10px; padding: 9px 12px;
@@ -1055,18 +1051,6 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
     background: rgba(255,255,255,0.02); border-radius: 8px;
     border-left: 2px solid rgba(255,255,255,0.08); margin-top: 4px;
 }
-
-/* Invest Bar */
-.inv-bar { display: flex; height: 30px; border-radius: 10px; overflow: hidden; margin: 10px 0 8px; }
-.inv-seg {
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Oswald'; font-size: 0.78em; font-weight: 600;
-}
-.inv-hon { background: linear-gradient(90deg, #c89020, #f0c040); color: #000 !important; }
-.inv-hir { background: linear-gradient(90deg, #0090b0, #00d4ff); color: #000 !important; }
-.inv-ana { background: linear-gradient(90deg, #c03050, #ff4060); color: #fff !important; }
-.inv-legend { display: flex; gap: 16px; justify-content: center; }
-.inv-legend span { font-size: 0.7em; color: #6a6a80 !important; }
 
 /* Table */
 .htable { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
@@ -3002,84 +2986,93 @@ def render_dashboard():
     html += '</div>'
     return html
 
-def render_buy_section(df, race_info, rank_map):
+def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None):
+    """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示"""
+    if cond_profile is None:
+        is_nar = False
+        cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar)
+
+    bet_type = cond_profile['bet_type']
+    if bet_type == 'none' or not cond_profile['recommended']:
+        return ''
+
     sorted_df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
+    if len(sorted_df) < 3:
+        return ''
     top = sorted_df.head(6)
     t1 = top.iloc[0]; t2 = top.iloc[1]; t3 = top.iloc[2]
-    t4 = top.iloc[3] if len(top) > 3 else None
-    t5 = top.iloc[4] if len(top) > 4 else None
-    t6 = top.iloc[5] if len(top) > 5 else None
-    def horse_label(h):
+
+    def hl(h):
         num = int(h['馬番'])
         name = h['馬名'][:5]
-        if num > 0:
-            return f'{num} {name}'
-        return name
-    n1 = horse_label(t1); n2 = horse_label(t2); n3 = horse_label(t3)
-    def horse_num(h):
+        return f'{num} {name}' if num > 0 else name
+    def hn(h):
         n = int(h['馬番'])
         return str(n) if n > 0 else h['馬名'][:3]
-    gap12 = t1['スコア'] - t2['スコア']
-    conf_stars = '★★★★' if gap12 > 0.03 else ('★★★' if gap12 > 0.015 else '★★')
-    html = '<div class="buy-card buy-honmei"><div class="buy-header">'
-    html += '<span class="buy-type bt-hon">&#128293; 本命</span>'
-    html += f'<span class="buy-conf">信頼度 {conf_stars}</span></div>'
-    html += f'<div class="buy-row"><span class="buy-lbl">ワイド</span><span class="buy-horses">{n1} ― {n3}</span></div>'
-    html += f'<div class="buy-row"><span class="buy-lbl">馬連</span><span class="buy-horses">{n1} ― {n2}</span></div>'
+
+    roi = cond_profile['roi']
+    hit_rate = cond_profile['hit_rate']
+    roi_c = '#2ecc40' if roi >= 100 else '#f0c040'
+
+    html = '<div class="buy-card buy-honmei">'
+    html += '<div class="buy-header">'
+
+    if bet_type == 'trio':
+        bets = generate_trio_bets(sorted_df)
+        html += f'<span class="buy-type bt-hon">&#127942; 三連複 7点</span>'
+        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
+        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
+        # Formation display
+        html += f'<div style="padding:4px 12px;margin-bottom:4px;">'
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#f0c040 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">2列目: <span style="font-family:Oswald;">{hn(t2)}</span>, <span style="font-family:Oswald;">{hn(t3)}</span></div>'
+        himo = [hn(top.iloc[i]) for i in range(1, min(6, len(top)))]
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{",".join(himo)}</span></div>'
+        html += '</div>'
+        # Individual bets
+        html += '<div style="padding:0 12px 8px;display:flex;flex-wrap:wrap;gap:6px;">'
+        for b in bets:
+            html += f'<span style="font-family:Oswald;font-size:0.85em;padding:3px 8px;background:rgba(255,255,255,0.06);border-radius:4px;color:#b0b8c8 !important;">{b[0]}-{b[1]}-{b[2]}</span>'
+        html += '</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
+
+    elif bet_type == 'wide':
+        bets = generate_wide_bets(sorted_df)
+        html += f'<span class="buy-type bt-hon">&#127942; ワイド 1軸2流し</span>'
+        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
+        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
+        html += '<div style="padding:4px 12px 8px;">'
+        html += f'<div style="font-size:1em;margin-bottom:6px;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t2)}</span> <span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
+        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
+        html += f'<div style="font-size:1em;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t3)}</span> <span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
+        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
+        html += '</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">2点 &times; 350円 = 700円</div>'
+
+    elif bet_type == 'umaren':
+        bets = generate_umaren_bets(sorted_df)
+        html += f'<span class="buy-type bt-hon">&#127942; 馬連 1軸2流し</span>'
+        html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span></div>'
+        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
+        html += '<div style="padding:4px 12px 8px;">'
+        html += f'<div style="font-size:1em;margin-bottom:6px;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t2)}</span> <span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
+        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
+        html += f'<div style="font-size:1em;"><span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;">{hn(t1)}</span> <span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
+        html += f' <span style="color:#6a6a80 !important;">―</span> <span style="font-family:Oswald;">{hn(t3)}</span> <span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
+        html += f' <span style="font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">(350円)</span></div>'
+        html += '</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">2点 &times; 350円 = 700円</div>'
+
+    # TOP1 note
     s1_style = STYLE_NAMES.get(int(t1.get('脚質', 0)), '不明')
     s1_match = rank_map.get(int(t1.get('脚質', 0)), ('△','fair',''))[0]
     t1_odds = t1.get('単勝オッズ', 0)
     odds_note = f' 単勝{t1_odds:.1f}倍' if t1_odds > 0 else ''
-    html += f'<div class="buy-note">TOP1 {t1["馬名"]}は{s1_style}({s1_match})で展開向き。前走{int(t1["前走着順"])}着の安定感。{odds_note}</div>'
+    html += f'<div class="buy-note">軸 {t1["馬名"]} ({s1_style}/{s1_match}) 前走{int(t1["前走着順"])}着{odds_note}</div>'
     html += '</div>'
-    himo = []
-    if t4 is not None: himo.append(horse_num(t4))
-    if t5 is not None: himo.append(horse_num(t5))
-    if t6 is not None: himo.append(horse_num(t6))
-    html += '<div class="buy-card buy-hiroku"><div class="buy-header">'
-    html += '<span class="buy-type bt-hir">&#9889; 手広く</span>'
-    html += '<span class="buy-conf">信頼度 ★★★</span></div>'
-    himo_plus = [horse_num(t2), horse_num(t3)] + himo
-    html += f'<div class="buy-row"><span class="buy-lbl">3連複</span><span class="buy-horses">{horse_num(t1)} ― {horse_num(t2)},{horse_num(t3)} ― {",".join(himo_plus)}</span></div>'
-    pt = len(himo) * 2 + 1 if himo else 3
-    html += f'<div class="buy-note">軸{t1["馬名"]}固定。2着候補にTOP2-3、3着候補にTOP2-6。計{pt}点（TOP1-2-3含む）</div></div>'
-    ana_horse = None
-    for i in range(5, min(len(sorted_df), 12)):
-        h = sorted_df.iloc[i]
-        rs = int(h.get('脚質', 0))
-        if rs > 0:
-            rm = rank_map.get(rs, ('△','fair',''))
-            if rm[0] in ['◎', '○']:
-                ana_horse = h
-                break
-    if ana_horse is not None:
-        ana_name = ana_horse['馬名']
-        ana_num = horse_num(ana_horse)
-        ana_style = STYLE_NAMES.get(int(ana_horse.get('脚質',0)), '')
-        ana_match = rank_map.get(int(ana_horse.get('脚質',0)), ('△','',''))[0]
-        html += '<div class="buy-card buy-ana"><div class="buy-header">'
-        html += '<span class="buy-type bt-ana">&#128142; 穴狙い</span>'
-        html += '<span class="buy-conf">信頼度 ★★</span></div>'
-        html += f'<div class="buy-row"><span class="buy-lbl">単勝</span><span class="buy-horses" style="color:#ff4060">{ana_num} {ana_name}</span></div>'
-        html += f'<div class="buy-row"><span class="buy-lbl">ワイド</span><span class="buy-horses">{ana_num} ― {horse_num(t1)},{horse_num(t3)}</span></div>'
-        ana_odds = ana_horse.get('単勝オッズ', 0)
-        ana_odds_note = f' 単勝{ana_odds:.1f}倍で妙味あり。' if ana_odds > 0 else ' 人気薄で妙味あり。'
-        html += f'<div class="buy-note">{ana_style}({ana_match})で展開◎。{ana_odds_note}</div></div>'
-    html += '<div style="margin-top:14px"><div class="pace-title">&#128176; INVESTMENT BALANCE</div>'
-    html += '<div class="inv-bar"><div class="inv-seg inv-hon" style="width:50%">50%</div>'
-    html += '<div class="inv-seg inv-hir" style="width:30%">30%</div>'
-    html += '<div class="inv-seg inv-ana" style="width:20%">20%</div></div>'
-    html += '<div class="inv-legend"><span>&#9679; 本命</span><span>&#9679; 手広く</span><span>&#9679; 穴狙い</span></div></div>'
-    # === 期待値インジケーター ===
-    top_score = t1['スコア']
-    ev_label = ''
-    if top_score > 0.5:
-        ev_label = '<div style="margin-top:10px;padding:10px;background:#1a3a1a;border:1px solid #2ecc40;border-radius:8px;color:#2ecc40;text-align:center;font-weight:bold;">💰 期待値◎ — AI高確信レース。積極投資推奨。</div>'
-    elif top_score > 0.4:
-        ev_label = '<div style="margin-top:10px;padding:10px;background:#1a2a3a;border:1px solid #3498db;border-radius:8px;color:#3498db;text-align:center;">📊 期待値○ — 標準投資。</div>'
-    else:
-        ev_label = '<div style="margin-top:10px;padding:10px;background:#3a2a1a;border:1px solid #e67e22;border-radius:8px;color:#e67e22;text-align:center;">⚠️ 期待値△ — 混戦模様。少額 or 見送り推奨。</div>'
-    html += ev_label
     return html
 
 def render_table(df, rank_map):
@@ -3731,9 +3724,11 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
 <div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
 <div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。</div>
 </div>''', unsafe_allow_html=True)
-    # Buy section (detailed)
-    st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
-    st.markdown(render_buy_section(df, race_info, rank_map), unsafe_allow_html=True)
+    # Buy section (条件別最適買い目1種類のみ)
+    buy_html = render_buy_section(df, race_info, rank_map, cond_key=cond_key, cond_profile=cond_profile)
+    if buy_html:
+        st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
+        st.markdown(buy_html, unsafe_allow_html=True)
     # Expected Value Section (with trio odds integration)
     if odds_available:
         st.markdown('<div class="sec-title">💰 期待値分析<span class="sec-line"></span></div>', unsafe_allow_html=True)
