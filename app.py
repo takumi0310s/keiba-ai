@@ -99,30 +99,33 @@ CONDITION_PROFILES = {
     },
 }
 
-# NAR(地方)専用条件プロファイル - NAR V2モデル(AUC 0.792) 184レースバックテスト
-# 旧V1参考値: A trio 559.2%, B trio 334.0%, E umaren 185.2%
+# NAR(地方)専用条件プロファイル
+# V2モデル(AUC 0.792) 184レースBT + WF検証(KDSCOPE+netkeiba 3211R, 2012-2022)
+# WF = ウォークフォワード (リークフリー, odds無しモデル)
+# V2 = NAR V2バックテスト (odds有りモデル, 184レース)
+# Edge = 実的中率 - ランダム期待的中率
 NAR_CONDITION_PROFILES = {
     'A': {
         'label': 'NAR条件A',
         'desc': '8-14頭 / 1600m+ / 良〜稍重',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'bet_type': 'wide',  # WF検証: wide ROI 114.0% ★★ > trio 73.3%
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 382.2,  # V2 (N=69) ★★★ 旧V1: 559.2%
-        'hit_rate': 55.1,
+        'roi': 114.0,  # WF ROI (N=69) ★★, V2参考: trio 382.2%
+        'hit_rate': 27.5,  # WF的中率, edge +14.3%
         'recommended': True,
     },
     'B': {
         'label': 'NAR条件B',
         'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'wide',  # V2: wide最適 (ROI 253.0% vs trio 245.4%)
+        'bet_type': 'wide',
         'bet_label': 'ワイド1軸2流し',
         'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 253.0,  # V2 (N=83) ★★★ 旧V1 trio: 334.0%
-        'hit_rate': 50.6,
-        'recommended': True,
+        'roi': 69.7,  # WF ROI (N=83) edge +3.9%, V2参考: 253.0%
+        'hit_rate': 16.9,
+        'recommended': False,  # WF検証で非推奨 (ROI<80%)
     },
     'C': {
         'label': 'NAR条件C',
@@ -131,30 +134,30 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 66.4,  # N=2, サンプル不足
-        'hit_rate': 50.0,
+        'roi': 0,  # WF N=2, サンプル不足
+        'hit_rate': 0,
         'recommended': False,
     },
     'D': {
         'label': 'NAR条件D',
         'desc': '1400m以下（スプリント）',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'bet_type': 'wide',  # WF: wide edge +11.7% (trio +4.2%)
+        'bet_label': 'ワイド1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 0,  # データなし
-        'hit_rate': 0,
-        'recommended': False,
+        'roi': 0,  # WF配当データなし, 的中率29.3%(edge +11.7%)
+        'hit_rate': 29.3,
+        'recommended': False,  # ROI未検証
     },
     'E': {
         'label': 'NAR条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'umaren',
-        'bet_label': '馬連1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'bet_type': 'trio',  # WF検証: trio ROI 115.2% ★★ > umaren 36.7%
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 148.2,  # V2 (N=30) ★★★ 旧V1: 185.2%
-        'hit_rate': 40.0,
+        'roi': 115.2,  # WF ROI (N=30+2064) ★★, edge +4.8%
+        'hit_rate': 43.3,  # netkeiba 2022, WF全体64.5%
         'recommended': True,
     },
     'X': {
@@ -164,7 +167,7 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 0,  # データなし
+        'roi': 0,
         'hit_rate': 0,
         'recommended': False,
     },
