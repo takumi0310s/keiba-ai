@@ -140,7 +140,7 @@ def test_condition_classification():
                 errors.append(f"CONDITION_PROFILES['{cond_key}'] に '{rk}' がありません")
 
     # Verify bet types
-    expected_bets = {'A': 'trio', 'B': 'wide', 'C': 'wide', 'D': 'none', 'E': 'umaren', 'X': 'wide'}
+    expected_bets = {'A': 'trio', 'B': 'trio', 'C': 'trio', 'D': 'trio', 'E': 'umaren', 'X': 'trio'}
     for k, bt in expected_bets.items():
         actual_bt = CONDITION_PROFILES[k]['bet_type']
         if actual_bt != bt:
