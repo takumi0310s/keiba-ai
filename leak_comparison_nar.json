@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-03-09 01:58:18",
+  "original": {
+    "lgb": 0.8673873873873874,
+    "xgb": 0.8707027027027027,
+    "ensemble": 0.8717117117117118
+  },
+  "pattern_a": {
+    "lgb": 0.8264144144144145,
+    "xgb": 0.8148828828828829,
+    "ensemble": 0.8242522522522522,
+    "removed": [
+      "condition_enc",
+      "horse_weight",
+      "odds_log",
+      "pop_rank",
+      "weight_cat"
+    ],
+    "conditions": {
+      "A": {
+        "n": 69,
+        "bet_type": "trio",
+        "hit_rate": 65.21739130434783,
+        "roi": 366.0248447204969
+      },
+      "B": {
+        "n": 83,
+        "bet_type": "trio",
+        "hit_rate": 49.39759036144578,
+        "roi": 431.85886402753874
+      },
+      "C": {
+        "n": 2,
+        "bet_type": "trio",
+        "hit_rate": 50.0,
+        "roi": 66.42857142857143
+      },
+      "D": {
+        "n": 0,
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0
+      },
+      "E": {
+        "n": 30,
+        "bet_type": "umaren",
+        "hit_rate": 60.0,
+        "roi": 349.83333333333337
+      },
+      "X": {
+        "n": 0,
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0
+      }
+    }
+  },
+  "pattern_b": {
+    "lgb": 0.8105945945945947,
+    "xgb": 0.8031351351351351,
+    "ensemble": 0.8088288288288288,
+    "removed": [
+      "odds_log",
+      "pop_rank"
+    ],
+    "conditions": {
+      "A": {
+        "n": 69,
+        "bet_type": "trio",
+        "hit_rate": 68.11594202898551,
+        "roi": 625.3830227743271
+      },
+      "B": {
+        "n": 83,
+        "bet_type": "umaren",
+        "hit_rate": 34.93975903614458,
+        "roi": 465.18072289156623
+      },
+      "C": {
+        "n": 2,
+        "bet_type": "trio",
+        "hit_rate": 100.0,
+        "roi": 259.2857142857143
+      },
+      "D": {
+        "n": 0,
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0
+      },
+      "E": {
+        "n": 30,
+        "bet_type": "umaren",
+        "hit_rate": 56.666666666666664,
+        "roi": 322.66666666666663
+      },
+      "X": {
+        "n": 0,
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0
+      }
+    }
+  }
+}
