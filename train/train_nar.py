@@ -5,6 +5,8 @@
 - 地方専用LightGBM + XGBoostアンサンブル
 - 条件A-E,X別にROI算出、80%以上のみ買い推奨
 """
+import sys
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -13,6 +15,7 @@ import sys
 import json
 import re
 import time
+import random
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -109,7 +112,7 @@ def collect_nar_race_ids(start_year=2020, end_year=2025, max_races=600):
                                 all_races.append({'race_id': rid, 'date': date_str, 'year': year})
                 except Exception:
                     pass
-                time.sleep(0.3)
+                time.sleep(random.uniform(3.0, 5.0))
 
                 if len(all_races) >= max_races * 3:
                     break
@@ -319,12 +322,16 @@ def scrape_nar_race_full(race_id):
 
 
 def scrape_payouts(soup):
-    """Extract trio/umaren/wide payouts from result page soup."""
+    """Extract trio/umaren/wide payouts from result page soup.
+    db.netkeiba.com pay_table_01 structure:
+    - Table 0: 単勝, 複勝, 枠連, 馬連
+    - Table 1: ワイド, 枠単, 馬単, 三連複, 三連単
+    td[0]=組番号, td[1]=払戻金, td[2]=人気
+    ワイドは<br>区切りで複数の払戻金が入る
+    """
     payouts = {'trio': 0, 'umaren': 0, 'wide': []}
     try:
         payout_tables = soup.find_all("table", class_="pay_table_01")
-        if not payout_tables:
-            payout_tables = soup.find_all("table", class_="pay_block")
         if not payout_tables:
             payout_tables = soup.find_all("table")
 
@@ -335,26 +342,38 @@ def scrape_payouts(soup):
                     continue
                 th_text = th.get_text(strip=True)
                 tds = row.find_all("td")
-                if not tds:
+                if len(tds) < 2:
                     continue
 
-                payout_text = tds[0].get_text(strip=True) if tds else '0'
-                payout_text = payout_text.replace(',', '').replace('円', '').replace('¥', '')
-                pm = re.search(r'(\d{3,})', payout_text)
-                payout_val = int(pm.group(1)) if pm else 0
+                # 三連複
+                if ('三連複' in th_text or '3連複' in th_text) and payouts['trio'] == 0:
+                    payout_text = tds[1].get_text(strip=True).replace(',', '')
+                    pm = re.search(r'(\d+)', payout_text)
+                    if pm:
+                        payouts['trio'] = int(pm.group(1))
 
-                if ('3連複' in th_text or '三連複' in th_text) and payouts['trio'] == 0:
-                    payouts['trio'] = payout_val
+                # 馬連 (馬単を除外)
                 elif '馬連' in th_text and '馬単' not in th_text and payouts['umaren'] == 0:
-                    payouts['umaren'] = payout_val
-                elif 'ワイド' in th_text:
-                    # Wide can have multiple payouts
-                    all_tds = row.find_all("td")
-                    for td in all_tds:
-                        t = td.get_text(strip=True).replace(',', '').replace('円', '')
-                        wm = re.search(r'(\d{3,})', t)
-                        if wm:
-                            payouts['wide'].append(int(wm.group(1)))
+                    payout_text = tds[1].get_text(strip=True).replace(',', '')
+                    pm = re.search(r'(\d+)', payout_text)
+                    if pm:
+                        payouts['umaren'] = int(pm.group(1))
+
+                # ワイド - <br>区切りで複数の払戻金
+                elif 'ワイド' in th_text and not payouts['wide']:
+                    # <br>タグで分割して個別に取得
+                    payout_td = tds[1]
+                    # brタグを改行に変換
+                    for br in payout_td.find_all("br"):
+                        br.replace_with("\n")
+                    lines = payout_td.get_text().split("\n")
+                    for line in lines:
+                        line = line.strip().replace(',', '')
+                        pm = re.search(r'(\d+)', line)
+                        if pm:
+                            val = int(pm.group(1))
+                            if 100 <= val <= 999999:  # 妥当な払戻金の範囲
+                                payouts['wide'].append(val)
     except Exception:
         pass
     return payouts
@@ -495,27 +514,43 @@ def scrape_and_collect(race_ids, cache_path=NAR_CACHE_PATH):
     jockey_stats_raw = {}  # Jockey name -> {wins, races}
     new_scraped = 0
 
+    consecutive_errors = 0
     for ri, race_info in enumerate(race_ids):
         rid = race_info['race_id']
 
         # Check cache
         if rid in cache:
             race_data = cache[rid]
+            consecutive_errors = 0
         else:
-            result = scrape_nar_race_full(rid)
-            if not result:
-                time.sleep(1.0)
+            try:
+                result = scrape_nar_race_full(rid)
+                if not result:
+                    consecutive_errors += 1
+                    if consecutive_errors >= 10:
+                        print(f"    WARNING: 10 consecutive errors, stopping early")
+                        break
+                    time.sleep(random.uniform(3.0, 5.0))
+                    continue
+                horses, actual_finishes, payouts, race_meta = result
+                race_data = {
+                    'horses': horses,
+                    'actual_finishes': actual_finishes,
+                    'payouts': payouts,
+                    'meta': race_meta,
+                }
+                cache[rid] = race_data
+                new_scraped += 1
+                consecutive_errors = 0
+                time.sleep(random.uniform(3.0, 5.0))
+            except Exception as e:
+                print(f"    ERROR scraping {rid}: {e}")
+                consecutive_errors += 1
+                if consecutive_errors >= 10:
+                    print(f"    WARNING: 10 consecutive errors, stopping early")
+                    break
+                time.sleep(random.uniform(5.0, 8.0))
                 continue
-            horses, actual_finishes, payouts, race_meta = result
-            race_data = {
-                'horses': horses,
-                'actual_finishes': actual_finishes,
-                'payouts': payouts,
-                'meta': race_meta,
-            }
-            cache[rid] = race_data
-            new_scraped += 1
-            time.sleep(1.5)
 
         horses = race_data['horses']
         actual = race_data['actual_finishes']

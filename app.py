@@ -89,37 +89,37 @@ CONDITION_PROFILES = {
     },
 }
 
-# NAR(地方)専用条件プロファイル - 100レースバックテスト結果に基づく
+# NAR(地方)専用条件プロファイル - NAR専用モデル(AUC 0.789) 184レースバックテスト
 NAR_CONDITION_PROFILES = {
     'A': {
         'label': 'NAR条件A',
         'desc': '8-14頭 / 1600m+ / 良〜稍重',
-        'bet_type': 'wide',
-        'bet_label': 'ワイド1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 200,
-        'roi': 86.4,
-        'hit_rate': 29.8,
+        'bet_type': 'trio',
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'investment': 700,
+        'roi': 559.2,
+        'hit_rate': 62.2,
         'recommended': True,
     },
     'B': {
         'label': 'NAR条件B',
         'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'wide',
-        'bet_label': 'ワイド1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 200,
-        'roi': 68.0,
-        'hit_rate': 33.3,
-        'recommended': False,
+        'bet_type': 'trio',
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'investment': 700,
+        'roi': 334.0,
+        'hit_rate': 35.7,
+        'recommended': True,
     },
     'C': {
         'label': 'NAR条件C',
         'desc': '15頭+ / 1600m+ / 良〜稍重',
-        'bet_type': 'wide',
-        'bet_label': 'ワイド1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 200,
+        'bet_type': 'trio',
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'investment': 700,
         'roi': 0,
         'hit_rate': 0,
         'recommended': False,
@@ -138,21 +138,21 @@ NAR_CONDITION_PROFILES = {
     'E': {
         'label': 'NAR条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'bet_type': 'umaren',
+        'bet_label': '馬連1軸2流し',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 62.4,
-        'hit_rate': 44.4,
-        'recommended': False,
+        'roi': 185.2,
+        'hit_rate': 47.6,
+        'recommended': True,
     },
     'X': {
         'label': 'NAR条件外',
         'desc': '15頭+ / 重〜不良',
-        'bet_type': 'wide',
-        'bet_label': 'ワイド1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 200,
+        'bet_type': 'trio',
+        'bet_label': '三連複7点',
+        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'investment': 700,
         'roi': 0,
         'hit_rate': 0,
         'recommended': False,
@@ -1292,7 +1292,7 @@ _v9_models = load_v9_models()
 def get_model_for_race(is_nar=False):
     """レースタイプに応じたモデルを返す。中央→V9.1、地方→V8（バックテスト結果に基づく）"""
     if is_nar:
-        # NAR: V8使用（条件A wideのみROI 86.4%で推奨、他条件は非推奨）
+        # NAR: V8使用（NAR専用モデルAUC 0.789、条件A/B/E推奨）
         return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
     else:
         # 中央: V9.1(調教データ込み) AUC 0.8456
@@ -3438,7 +3438,7 @@ model_badge_placeholder = st.empty()
 if v9_avail:
     _v9c_auc = _v9_models['central'].get('auc', 0)
     _v9c_ver = _v9_models['central'].get('version', 'v9').upper()
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR V8 条件A推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
@@ -3471,7 +3471,7 @@ if st.button("🔍 予想する") and url_input:
     active_bms_map = active_model_data.get('bms_map', bms_map)
     # バッジ更新（CENTRAL V9.1 / NAR V8 自動切替）
     if is_nar:
-        race_badge = '<span class="model-badge badge-nar">NAR V8 (条件A推奨)</span>'
+        race_badge = '<span class="model-badge badge-nar">NAR専用 条件A,B,E推奨</span>'
     else:
         race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge}</div>', unsafe_allow_html=True)
@@ -3952,7 +3952,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     p_model_ver = st.session_state.get('pred_model_version', model_version)
     p_model_auc = st.session_state.get('pred_model_auc', model_auc)
     if is_nar:
-        p_race_badge = '<span class="model-badge badge-nar">NAR V8 (条件A推奨)</span>'
+        p_race_badge = '<span class="model-badge badge-nar">NAR専用 条件A,B,E推奨</span>'
     else:
         p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge}</div>', unsafe_allow_html=True)
@@ -3994,7 +3994,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
             st.markdown(buy_html, unsafe_allow_html=True)
     else:
         if is_nar_pred:
-            reason = f'地方100レースバックテスト結果: {cond_profile["label"]}はROI {cond_profile.get("roi", 0):.1f}% (80%未満)。参考表示のみ。条件A(良馬場/8-14頭/1600m+)のみ買い推奨。'
+            reason = f'地方184レースバックテスト結果: {cond_profile["label"]}はROI {cond_profile.get("roi", 0):.1f}% (80%未満)。参考表示のみ。条件A/B/Eのみ買い推奨。'
         else:
             reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
@@ -4082,7 +4082,7 @@ with st.expander("🤖 モデル情報・特徴量重要度"):
     else:
         st.markdown(f"**V8 (フォールバック):** AUC {model_auc:.4f}")
     if _v9_models.get('nar'):
-        st.markdown(f"**NAR:** V8使用 AUC {model_auc:.4f} (条件A: ワイドROI 86.4%推奨 / 他条件: 非推奨)")
+        st.markdown(f"**NAR:** 専用モデル AUC 0.789 (A: trio ROI 559% / B: trio ROI 334% / E: umaren ROI 185% / C,D,X: 非推奨)")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
