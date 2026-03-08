@@ -1193,12 +1193,12 @@ else:
 _v9_models = load_v9_models()
 
 def get_model_for_race(is_nar=False):
-    """レースタイプに応じたモデルを返す。中央→V9、地方→V8（バックテスト結果に基づく）"""
+    """レースタイプに応じたモデルを返す。中央→V9.1、地方→V8（バックテスト結果に基づく）"""
     if is_nar:
-        # NAR: V8が優勢（バックテスト: V8 trio 21% vs V9 9%）
+        # NAR: V8使用（NARバックテスト全条件ROI<80%のため参考表示のみ）
         return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
     else:
-        # 中央: V9が優勢（バックテスト: V9 trio 29% vs V8 15%）
+        # 中央: V9.1(調教データ込み) AUC 0.8456
         v9_data = _v9_models.get('central')
         if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
             return v9_data, 'central'
@@ -3331,7 +3331,9 @@ leak_text = ' LEAK-FREE' if model_leak_free else ''
 v9_avail = _v9_models.get('central') is not None
 model_badge_placeholder = st.empty()
 if v9_avail:
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL V9</span> <span class="model-badge badge-nar">NAR V8</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
+    _v9c_auc = _v9_models['central'].get('auc', 0)
+    _v9c_ver = _v9_models['central'].get('version', 'v9').upper()
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR V8 参考のみ</span> <span class="model-badge badge-v9">AUTO SELECT</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
@@ -3362,14 +3364,12 @@ if st.button("🔍 予想する") and url_input:
     active_auc = active_model_data.get('auc', 0.0)
     active_sire_map = active_model_data.get('sire_map', sire_map)
     active_bms_map = active_model_data.get('bms_map', bms_map)
-    # バッジ更新（CENTRAL V9 / NAR V8 自動切替）
+    # バッジ更新（CENTRAL V9.1 / NAR V8 自動切替）
     if is_nar:
-        race_badge = '<span class="model-badge badge-nar">NAR V8</span>'
+        race_badge = '<span class="model-badge badge-nar">NAR V8 参考のみ・買い非推奨</span>'
     else:
-        race_badge = '<span class="model-badge badge-central">CENTRAL V9</span>'
-    ab_css = f'badge-{active_version}'
-    ab_auc = f' AUC {active_auc:.4f}' if active_auc > 0 else (f' AUC {model_auc:.4f}' if model_auc > 0 else '')
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge} <span class="model-badge {ab_css}">MODEL {active_version.upper()}{ab_auc}</span></div>', unsafe_allow_html=True)
+        race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge}</div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
         rid_match = re.search(r'/race/(\d{10,12})/?', url_input)
@@ -3843,16 +3843,14 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     race_id = st.session_state.get('last_race_id', '')
     is_nar = st.session_state.get('last_is_nar', False)
 
-    # モデルバッジ更新（キャッシュ表示時 - CENTRAL V9 / NAR V8 自動切替）
+    # モデルバッジ更新（キャッシュ表示時 - CENTRAL V9.1 / NAR V8 自動切替）
     p_model_ver = st.session_state.get('pred_model_version', model_version)
     p_model_auc = st.session_state.get('pred_model_auc', model_auc)
     if is_nar:
-        p_race_badge = '<span class="model-badge badge-nar">NAR V8</span>'
+        p_race_badge = '<span class="model-badge badge-nar">NAR V8 参考のみ・買い非推奨</span>'
     else:
-        p_race_badge = '<span class="model-badge badge-central">CENTRAL V9</span>'
-    p_badge_css = f'badge-{p_model_ver}'
-    p_auc_text = f' AUC {p_model_auc:.4f}' if p_model_auc > 0 else ''
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge} <span class="model-badge {p_badge_css}">MODEL {p_model_ver.upper()}{p_auc_text}</span></div>', unsafe_allow_html=True)
+        p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge}</div>', unsafe_allow_html=True)
     st.markdown(rc_html, unsafe_allow_html=True)
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
@@ -3890,10 +3888,14 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         if buy_html:
             st.markdown(buy_html, unsafe_allow_html=True)
     else:
+        if is_nar_pred:
+            reason = '地方100レースバックテスト結果: 全条件でROI 80%未満（最良: ワイド68.0%）。参考表示のみ。'
+        else:
+            reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
 <div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
 <div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
-<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。</div>
+<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">{reason}</div>
 </div>''', unsafe_allow_html=True)
     # Expected Value Section (with trio odds integration)
     if odds_available:
@@ -3966,13 +3968,16 @@ if dash_html:
 
 # ===== モデル情報・特徴量重要度 =====
 with st.expander("🤖 モデル情報・特徴量重要度"):
-    st.markdown(f"**現行モデル:** {model_version.upper()} (AUC: {model_auc:.4f})")
+    st.markdown(f"**V8 (ベースライン):** AUC {model_auc:.4f}")
     if _v9_models.get('central'):
         v9c = _v9_models['central']
-        st.markdown(f"**v9 中央:** AUC {v9c.get('auc', 0):.4f}")
+        v9c_ver = v9c.get('version', 'v9').upper()
+        v9c_auc = v9c.get('auc', 0)
+        v9c_ens = v9c.get('ensemble_auc', v9c_auc)
+        st.markdown(f"**{v9c_ver} 中央 (本番):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
     if _v9_models.get('nar'):
         v9n = _v9_models['nar']
-        st.markdown(f"**v9 地方:** AUC {v9n.get('auc', 0):.4f}")
+        st.markdown(f"**地方:** V8使用 (参考のみ・買い非推奨 / NAR全条件ROI<80%)")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
