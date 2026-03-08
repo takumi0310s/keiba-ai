@@ -1,0 +1,1130 @@
+{
+  "generated_at": "2026-03-09 02:38:38",
+  "model": "v9.2a_leakfree (Pattern A)",
+  "features_removed": [
+    "cond_surface",
+    "condition_enc",
+    "horse_weight",
+    "odds_log",
+    "weight_cat",
+    "weight_cat_dist",
+    "weight_change",
+    "weight_change_abs"
+  ],
+  "n_features": 55,
+  "test_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "total_races": 20655,
+  "fold_aucs": {
+    "2020": 0.7950806678225133,
+    "2021": 0.7997254393821945,
+    "2022": 0.8023635164140268,
+    "2023": 0.8012147869099056,
+    "2024": 0.8070984919665665,
+    "2025": 0.8048084774006996
+  },
+  "avg_auc": 0.8017,
+  "conditions": {
+    "A": {
+      "n": 6457,
+      "best_bet": "trio",
+      "best_roi": 380.9,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 2888,
+          "hit_rate": 44.7,
+          "investment": 4519900,
+          "payout": 17216249,
+          "roi": 380.9
+        },
+        "umaren": {
+          "hits": 2104,
+          "hit_rate": 32.6,
+          "investment": 4519900,
+          "payout": 7469969,
+          "roi": 165.3
+        },
+        "wide": {
+          "hits": 3644,
+          "hit_rate": 56.4,
+          "investment": 4519900,
+          "payout": 5748893,
+          "roi": 127.2
+        }
+      }
+    },
+    "B": {
+      "n": 855,
+      "best_bet": "trio",
+      "best_roi": 487.6,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 387,
+          "hit_rate": 45.3,
+          "investment": 598500,
+          "payout": 2917993,
+          "roi": 487.6
+        },
+        "umaren": {
+          "hits": 276,
+          "hit_rate": 32.3,
+          "investment": 598500,
+          "payout": 1367824,
+          "roi": 228.5
+        },
+        "wide": {
+          "hits": 474,
+          "hit_rate": 55.4,
+          "investment": 598500,
+          "payout": 944604,
+          "roi": 157.8
+        }
+      }
+    },
+    "C": {
+      "n": 4788,
+      "best_bet": "trio",
+      "best_roi": 510.2,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 1607,
+          "hit_rate": 33.6,
+          "investment": 3351600,
+          "payout": 17100953,
+          "roi": 510.2
+        },
+        "umaren": {
+          "hits": 1281,
+          "hit_rate": 26.8,
+          "investment": 3351600,
+          "payout": 6286892,
+          "roi": 187.6
+        },
+        "wide": {
+          "hits": 2354,
+          "hit_rate": 49.2,
+          "investment": 3351600,
+          "payout": 5121007,
+          "roi": 152.8
+        }
+      }
+    },
+    "D": {
+      "n": 7280,
+      "best_bet": "trio",
+      "best_roi": 230.1,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 1985,
+          "hit_rate": 27.3,
+          "investment": 5096000,
+          "payout": 11725767,
+          "roi": 230.1
+        },
+        "umaren": {
+          "hits": 1634,
+          "hit_rate": 22.4,
+          "investment": 5096000,
+          "payout": 6642671,
+          "roi": 130.4
+        },
+        "wide": {
+          "hits": 3075,
+          "hit_rate": 42.2,
+          "investment": 5096000,
+          "payout": 4930929,
+          "roi": 96.8
+        }
+      }
+    },
+    "E": {
+      "n": 462,
+      "best_bet": "trio",
+      "best_roi": 300.0,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 348,
+          "hit_rate": 75.3,
+          "investment": 323400,
+          "payout": 970060,
+          "roi": 300.0
+        },
+        "umaren": {
+          "hits": 249,
+          "hit_rate": 53.9,
+          "investment": 323400,
+          "payout": 480420,
+          "roi": 148.6
+        },
+        "wide": {
+          "hits": 357,
+          "hit_rate": 77.3,
+          "investment": 323400,
+          "payout": 393701,
+          "roi": 121.7
+        }
+      }
+    },
+    "X": {
+      "n": 813,
+      "best_bet": "trio",
+      "best_roi": 498.2,
+      "stars": 3,
+      "recommended": true,
+      "bets": {
+        "trio": {
+          "hits": 290,
+          "hit_rate": 35.7,
+          "investment": 569100,
+          "payout": 2835235,
+          "roi": 498.2
+        },
+        "umaren": {
+          "hits": 226,
+          "hit_rate": 27.8,
+          "investment": 569100,
+          "payout": 1149186,
+          "roi": 201.9
+        },
+        "wide": {
+          "hits": 402,
+          "hit_rate": 49.4,
+          "investment": 569100,
+          "payout": 931826,
+          "roi": 163.7
+        }
+      }
+    }
+  },
+  "multi_axis": {
+    "Distance": {
+      "long": {
+        "n": 1598,
+        "best_bet": "trio",
+        "best_roi": 316.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.7,
+        "trio_roi": 316.8
+      },
+      "middle": {
+        "n": 9127,
+        "best_bet": "trio",
+        "best_roi": 490.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 43.2,
+        "trio_roi": 490.6
+      },
+      "mile": {
+        "n": 5361,
+        "best_bet": "trio",
+        "best_roi": 317.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 32.7,
+        "trio_roi": 317.3
+      },
+      "sprint": {
+        "n": 4569,
+        "best_bet": "trio",
+        "best_roi": 186.7,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.7,
+        "trio_roi": 186.7
+      }
+    },
+    "NumHorses": {
+      "large": {
+        "n": 10512,
+        "best_bet": "trio",
+        "best_roi": 372.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 29.3,
+        "trio_roi": 372.2
+      },
+      "medium": {
+        "n": 9681,
+        "best_bet": "trio",
+        "best_roi": 360.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 42.1,
+        "trio_roi": 360.2
+      },
+      "small": {
+        "n": 462,
+        "best_bet": "trio",
+        "best_roi": 300.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 75.3,
+        "trio_roi": 300.0
+      }
+    },
+    "TrackCond": {
+      "good": {
+        "n": 18034,
+        "best_bet": "trio",
+        "best_roi": 357.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 36.3,
+        "trio_roi": 357.2
+      },
+      "heavy": {
+        "n": 2621,
+        "best_bet": "trio",
+        "best_roi": 418.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 36.4,
+        "trio_roi": 418.4
+      }
+    },
+    "Course": {
+      "中京": {
+        "n": 2475,
+        "best_bet": "trio",
+        "best_roi": 471.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 38.0,
+        "trio_roi": 471.5
+      },
+      "中山": {
+        "n": 3017,
+        "best_bet": "trio",
+        "best_roi": 323.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 33.3,
+        "trio_roi": 323.1
+      },
+      "京都": {
+        "n": 1974,
+        "best_bet": "trio",
+        "best_roi": 503.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.6,
+        "trio_roi": 503.5
+      },
+      "函館": {
+        "n": 861,
+        "best_bet": "trio",
+        "best_roi": 470.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 37.0,
+        "trio_roi": 470.2
+      },
+      "小倉": {
+        "n": 1744,
+        "best_bet": "trio",
+        "best_roi": 283.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 32.5,
+        "trio_roi": 283.3
+      },
+      "新潟": {
+        "n": 1979,
+        "best_bet": "trio",
+        "best_roi": 345.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.8,
+        "trio_roi": 345.2
+      },
+      "札幌": {
+        "n": 1004,
+        "best_bet": "trio",
+        "best_roi": 352.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 37.7,
+        "trio_roi": 352.8
+      },
+      "東京": {
+        "n": 3205,
+        "best_bet": "trio",
+        "best_roi": 279.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 38.8,
+        "trio_roi": 279.9
+      },
+      "福島": {
+        "n": 1337,
+        "best_bet": "trio",
+        "best_roi": 301.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.3,
+        "trio_roi": 301.0
+      },
+      "阪神": {
+        "n": 3059,
+        "best_bet": "trio",
+        "best_roi": 381.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.9,
+        "trio_roi": 381.2
+      }
+    },
+    "Class": {
+      "cls115": {
+        "n": 379,
+        "best_bet": "trio",
+        "best_roi": 264.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 32.5,
+        "trio_roi": 264.5
+      },
+      "cls131": {
+        "n": 616,
+        "best_bet": "trio",
+        "best_roi": 389.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 28.9,
+        "trio_roi": 389.6
+      },
+      "cls15": {
+        "n": 1804,
+        "best_bet": "trio",
+        "best_roi": 426.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.5,
+        "trio_roi": 426.4
+      },
+      "cls163": {
+        "n": 432,
+        "best_bet": "trio",
+        "best_roi": 538.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 21.8,
+        "trio_roi": 538.5
+      },
+      "cls179": {
+        "n": 241,
+        "best_bet": "trio",
+        "best_roi": 453.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 30.3,
+        "trio_roi": 453.6
+      },
+      "cls195": {
+        "n": 154,
+        "best_bet": "trio",
+        "best_roi": 485.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.2,
+        "trio_roi": 485.3
+      },
+      "cls23": {
+        "n": 5566,
+        "best_bet": "trio",
+        "best_roi": 316.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 35.3,
+        "trio_roi": 316.9
+      },
+      "cls43": {
+        "n": 2801,
+        "best_bet": "trio",
+        "best_roi": 336.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.6,
+        "trio_roi": 336.3
+      },
+      "cls67": {
+        "n": 1264,
+        "best_bet": "trio",
+        "best_roi": 222.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.7,
+        "trio_roi": 222.5
+      },
+      "cls7": {
+        "n": 7396,
+        "best_bet": "trio",
+        "best_roi": 409.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 42.8,
+        "trio_roi": 409.0
+      }
+    },
+    "Season": {
+      "autumn": {
+        "n": 4990,
+        "best_bet": "trio",
+        "best_roi": 389.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 36.7,
+        "trio_roi": 389.8
+      },
+      "spring": {
+        "n": 5320,
+        "best_bet": "trio",
+        "best_roi": 322.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 37.2,
+        "trio_roi": 322.0
+      },
+      "summer": {
+        "n": 5227,
+        "best_bet": "trio",
+        "best_roi": 327.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 36.5,
+        "trio_roi": 327.0
+      },
+      "winter": {
+        "n": 5118,
+        "best_bet": "trio",
+        "best_roi": 424.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.9,
+        "trio_roi": 424.1
+      }
+    },
+    "Surface": {
+      "dirt": {
+        "n": 10234,
+        "best_bet": "trio",
+        "best_roi": 428.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 38.1,
+        "trio_roi": 428.9
+      },
+      "turf": {
+        "n": 10421,
+        "best_bet": "trio",
+        "best_roi": 302.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.6,
+        "trio_roi": 302.2
+      }
+    },
+    "Condition×Surface": {
+      "A_dirt": {
+        "n": 2461,
+        "best_bet": "trio",
+        "best_roi": 582.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 49.9,
+        "trio_roi": 582.3
+      },
+      "A_turf": {
+        "n": 3996,
+        "best_bet": "trio",
+        "best_roi": 256.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 41.6,
+        "trio_roi": 256.8
+      },
+      "B_dirt": {
+        "n": 521,
+        "best_bet": "trio",
+        "best_roi": 486.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 48.9,
+        "trio_roi": 486.4
+      },
+      "B_turf": {
+        "n": 334,
+        "best_bet": "trio",
+        "best_roi": 489.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.5,
+        "trio_roi": 489.3
+      },
+      "C_dirt": {
+        "n": 2297,
+        "best_bet": "trio",
+        "best_roi": 536.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 38.0,
+        "trio_roi": 536.2
+      },
+      "C_turf": {
+        "n": 2491,
+        "best_bet": "trio",
+        "best_roi": 486.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 29.4,
+        "trio_roi": 486.3
+      },
+      "D_dirt": {
+        "n": 4377,
+        "best_bet": "trio",
+        "best_roi": 265.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 29.4,
+        "trio_roi": 265.2
+      },
+      "D_turf": {
+        "n": 2903,
+        "best_bet": "trio",
+        "best_roi": 177.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 24.0,
+        "trio_roi": 177.2
+      },
+      "E_dirt": {
+        "n": 80,
+        "best_bet": "trio",
+        "best_roi": 329.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 80.0,
+        "trio_roi": 329.6
+      },
+      "E_turf": {
+        "n": 382,
+        "best_bet": "trio",
+        "best_roi": 293.7,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 74.3,
+        "trio_roi": 293.7
+      },
+      "X_dirt": {
+        "n": 498,
+        "best_bet": "trio",
+        "best_roi": 570.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.4,
+        "trio_roi": 570.0
+      },
+      "X_turf": {
+        "n": 315,
+        "best_bet": "trio",
+        "best_roi": 384.7,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 29.8,
+        "trio_roi": 384.7
+      }
+    },
+    "Distance×TrackCond": {
+      "long_good": {
+        "n": 1457,
+        "best_bet": "trio",
+        "best_roi": 312.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 41.1,
+        "trio_roi": 312.1
+      },
+      "long_heavy": {
+        "n": 141,
+        "best_bet": "trio",
+        "best_roi": 365.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.5,
+        "trio_roi": 365.4
+      },
+      "middle_good": {
+        "n": 7913,
+        "best_bet": "trio",
+        "best_roi": 479.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 42.8,
+        "trio_roi": 479.5
+      },
+      "middle_heavy": {
+        "n": 1214,
+        "best_bet": "trio",
+        "best_roi": 562.7,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 45.7,
+        "trio_roi": 562.7
+      },
+      "mile_good": {
+        "n": 4731,
+        "best_bet": "trio",
+        "best_roi": 306.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 32.8,
+        "trio_roi": 306.8
+      },
+      "mile_heavy": {
+        "n": 630,
+        "best_bet": "trio",
+        "best_roi": 396.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.6,
+        "trio_roi": 396.2
+      },
+      "sprint_good": {
+        "n": 3933,
+        "best_bet": "trio",
+        "best_roi": 188.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.7,
+        "trio_roi": 188.3
+      },
+      "sprint_heavy": {
+        "n": 636,
+        "best_bet": "trio",
+        "best_roi": 176.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.9,
+        "trio_roi": 176.8
+      }
+    },
+    "Course×Distance": {
+      "中京_long": {
+        "n": 56,
+        "best_bet": "trio",
+        "best_roi": 129.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 17.9,
+        "trio_roi": 129.9
+      },
+      "中京_middle": {
+        "n": 1175,
+        "best_bet": "trio",
+        "best_roi": 764.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 48.8,
+        "trio_roi": 764.5
+      },
+      "中京_mile": {
+        "n": 833,
+        "best_bet": "trio",
+        "best_roi": 239.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.0,
+        "trio_roi": 239.3
+      },
+      "中京_sprint": {
+        "n": 411,
+        "best_bet": "trio",
+        "best_roi": 151.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 24.3,
+        "trio_roi": 151.2
+      },
+      "中山_long": {
+        "n": 234,
+        "best_bet": "trio",
+        "best_roi": 356.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.6,
+        "trio_roi": 356.0
+      },
+      "中山_middle": {
+        "n": 1445,
+        "best_bet": "trio",
+        "best_roi": 409.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.1,
+        "trio_roi": 409.2
+      },
+      "中山_mile": {
+        "n": 381,
+        "best_bet": "trio",
+        "best_roi": 297.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 26.8,
+        "trio_roi": 297.9
+      },
+      "中山_sprint": {
+        "n": 957,
+        "best_bet": "trio",
+        "best_roi": 195.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 27.0,
+        "trio_roi": 195.1
+      },
+      "京都_long": {
+        "n": 115,
+        "best_bet": "trio",
+        "best_roi": 410.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 49.6,
+        "trio_roi": 410.5
+      },
+      "京都_middle": {
+        "n": 924,
+        "best_bet": "trio",
+        "best_roi": 510.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 48.2,
+        "trio_roi": 510.4
+      },
+      "京都_mile": {
+        "n": 624,
+        "best_bet": "trio",
+        "best_roi": 644.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.6,
+        "trio_roi": 644.3
+      },
+      "京都_sprint": {
+        "n": 311,
+        "best_bet": "trio",
+        "best_roi": 235.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 26.4,
+        "trio_roi": 235.3
+      },
+      "函館_long": {
+        "n": 51,
+        "best_bet": "trio",
+        "best_roi": 839.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 52.9,
+        "trio_roi": 839.2
+      },
+      "函館_middle": {
+        "n": 430,
+        "best_bet": "trio",
+        "best_roi": 707.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 41.9,
+        "trio_roi": 707.5
+      },
+      "函館_sprint": {
+        "n": 380,
+        "best_bet": "trio",
+        "best_roi": 152.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 29.5,
+        "trio_roi": 152.1
+      },
+      "小倉_long": {
+        "n": 227,
+        "best_bet": "trio",
+        "best_roi": 274.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 39.2,
+        "trio_roi": 274.2
+      },
+      "小倉_middle": {
+        "n": 891,
+        "best_bet": "trio",
+        "best_roi": 381.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 37.6,
+        "trio_roi": 381.4
+      },
+      "小倉_sprint": {
+        "n": 626,
+        "best_bet": "trio",
+        "best_roi": 147.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 22.7,
+        "trio_roi": 147.1
+      },
+      "新潟_long": {
+        "n": 187,
+        "best_bet": "trio",
+        "best_roi": 155.3,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 27.8,
+        "trio_roi": 155.3
+      },
+      "新潟_middle": {
+        "n": 878,
+        "best_bet": "trio",
+        "best_roi": 502.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 40.3,
+        "trio_roi": 502.1
+      },
+      "新潟_mile": {
+        "n": 306,
+        "best_bet": "trio",
+        "best_roi": 215.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 26.5,
+        "trio_roi": 215.5
+      },
+      "新潟_sprint": {
+        "n": 608,
+        "best_bet": "trio",
+        "best_roi": 242.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 23.5,
+        "trio_roi": 242.2
+      },
+      "札幌_long": {
+        "n": 65,
+        "best_bet": "trio",
+        "best_roi": 807.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 49.2,
+        "trio_roi": 807.8
+      },
+      "札幌_middle": {
+        "n": 554,
+        "best_bet": "trio",
+        "best_roi": 431.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 43.7,
+        "trio_roi": 431.8
+      },
+      "札幌_mile": {
+        "n": 121,
+        "best_bet": "trio",
+        "best_roi": 240.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 30.6,
+        "trio_roi": 240.6
+      },
+      "札幌_sprint": {
+        "n": 264,
+        "best_bet": "trio",
+        "best_roi": 126.4,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.8,
+        "trio_roi": 126.4
+      },
+      "東京_long": {
+        "n": 262,
+        "best_bet": "trio",
+        "best_roi": 263.7,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 45.0,
+        "trio_roi": 263.7
+      },
+      "東京_middle": {
+        "n": 823,
+        "best_bet": "trio",
+        "best_roi": 284.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 44.7,
+        "trio_roi": 284.9
+      },
+      "東京_mile": {
+        "n": 2120,
+        "best_bet": "trio",
+        "best_roi": 280.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 35.8,
+        "trio_roi": 280.0
+      },
+      "福島_long": {
+        "n": 187,
+        "best_bet": "trio",
+        "best_roi": 243.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 36.9,
+        "trio_roi": 243.6
+      },
+      "福島_middle": {
+        "n": 641,
+        "best_bet": "trio",
+        "best_roi": 392.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.3,
+        "trio_roi": 392.0
+      },
+      "福島_sprint": {
+        "n": 509,
+        "best_bet": "trio",
+        "best_roi": 207.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 25.5,
+        "trio_roi": 207.5
+      },
+      "阪神_long": {
+        "n": 214,
+        "best_bet": "trio",
+        "best_roi": 314.0,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 46.7,
+        "trio_roi": 314.0
+      },
+      "阪神_middle": {
+        "n": 1366,
+        "best_bet": "trio",
+        "best_roi": 517.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 48.4,
+        "trio_roi": 517.2
+      },
+      "阪神_mile": {
+        "n": 976,
+        "best_bet": "trio",
+        "best_roi": 304.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 32.7,
+        "trio_roi": 304.8
+      },
+      "阪神_sprint": {
+        "n": 503,
+        "best_bet": "trio",
+        "best_roi": 188.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 27.8,
+        "trio_roi": 188.9
+      }
+    },
+    "Surface×Distance": {
+      "dirt_long": {
+        "n": 340,
+        "best_bet": "trio",
+        "best_roi": 360.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 38.5,
+        "trio_roi": 360.8
+      },
+      "dirt_middle": {
+        "n": 4821,
+        "best_bet": "trio",
+        "best_roi": 588.8,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 45.9,
+        "trio_roi": 588.8
+      },
+      "dirt_mile": {
+        "n": 2478,
+        "best_bet": "trio",
+        "best_roi": 363.5,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 34.5,
+        "trio_roi": 363.5
+      },
+      "dirt_sprint": {
+        "n": 2595,
+        "best_bet": "trio",
+        "best_roi": 203.1,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 27.1,
+        "trio_roi": 203.1
+      },
+      "turf_long": {
+        "n": 1258,
+        "best_bet": "trio",
+        "best_roi": 304.9,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 40.1,
+        "trio_roi": 304.9
+      },
+      "turf_middle": {
+        "n": 4306,
+        "best_bet": "trio",
+        "best_roi": 380.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 40.2,
+        "trio_roi": 380.6
+      },
+      "turf_mile": {
+        "n": 2883,
+        "best_bet": "trio",
+        "best_roi": 277.6,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 31.1,
+        "trio_roi": 277.6
+      },
+      "turf_sprint": {
+        "n": 1974,
+        "best_bet": "trio",
+        "best_roi": 165.2,
+        "stars": 3,
+        "recommended": true,
+        "trio_hit_rate": 23.9,
+        "trio_roi": 165.2
+      }
+    }
+  }
+}
