@@ -1,46 +1,49 @@
 {
-  "generated_at": "2026-03-09 01:37:51",
-  "version": "nar_v2",
-  "lgb_auc": 0.8673873873873874,
-  "ensemble_auc": 0.8717117117117118,
+  "generated_at": "2026-03-09 01:58:18",
+  "version": "nar_v2a_leakfree",
+  "lgb_auc": 0.8264144144144145,
+  "ensemble_auc": 0.8242522522522522,
+  "leak_pattern": "A",
+  "leak_removed": [
+    "condition_enc",
+    "horse_weight",
+    "odds_log",
+    "pop_rank",
+    "weight_cat"
+  ],
   "condition_results": {
     "A": {
       "bet_type": "trio",
-      "hit_rate": 72.46376811594203,
-      "roi": 296.74948240165634,
-      "stars": 3,
+      "hit_rate": 65.21739130434783,
+      "roi": 366.0248447204969,
       "recommended": true,
       "n": 69
     },
     "B": {
       "bet_type": "trio",
-      "hit_rate": 55.42168674698795,
-      "roi": 248.7263339070568,
-      "stars": 3,
+      "hit_rate": 49.39759036144578,
+      "roi": 431.85886402753874,
       "recommended": true,
       "n": 83
     },
     "C": {
-      "bet_type": "wide",
-      "hit_rate": 100.0,
-      "roi": 262.5,
-      "stars": 3,
-      "recommended": true,
+      "bet_type": "trio",
+      "hit_rate": 50.0,
+      "roi": 66.42857142857143,
+      "recommended": false,
       "n": 2
     },
     "D": {
       "bet_type": "trio",
       "hit_rate": 0,
       "roi": 0,
-      "stars": 0,
       "recommended": false,
       "n": 0
     },
     "E": {
       "bet_type": "umaren",
-      "hit_rate": 73.33333333333333,
-      "roi": 212.16666666666666,
-      "stars": 3,
+      "hit_rate": 60.0,
+      "roi": 349.83333333333337,
       "recommended": true,
       "n": 30
     },
@@ -48,9 +51,56 @@
       "bet_type": "trio",
       "hit_rate": 0,
       "roi": 0,
-      "stars": 0,
       "recommended": false,
       "n": 0
+    }
+  },
+  "pattern_b_reference": {
+    "lgb_auc": 0.8105945945945947,
+    "ensemble_auc": 0.8088288288288288,
+    "condition_results": {
+      "A": {
+        "bet_type": "trio",
+        "hit_rate": 68.11594202898551,
+        "roi": 625.3830227743271,
+        "recommended": true,
+        "n": 69
+      },
+      "B": {
+        "bet_type": "umaren",
+        "hit_rate": 34.93975903614458,
+        "roi": 465.18072289156623,
+        "recommended": true,
+        "n": 83
+      },
+      "C": {
+        "bet_type": "trio",
+        "hit_rate": 100.0,
+        "roi": 259.2857142857143,
+        "recommended": true,
+        "n": 2
+      },
+      "D": {
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0,
+        "recommended": false,
+        "n": 0
+      },
+      "E": {
+        "bet_type": "umaren",
+        "hit_rate": 56.666666666666664,
+        "roi": 322.66666666666663,
+        "recommended": true,
+        "n": 30
+      },
+      "X": {
+        "bet_type": "trio",
+        "hit_rate": 0,
+        "roi": 0,
+        "recommended": false,
+        "n": 0
+      }
     }
   }
 }

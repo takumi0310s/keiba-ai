@@ -20,9 +20,10 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predic
 INVESTMENT_PER_RACE = 700
 
 # 条件別買い目ロジック
-# WF = ウォークフォワードBT 2018-2025 (27,537R, 当日データ除外, 推定配当)
-# LF = リークフリーBT 2023-2025 (300R, 実配当)
-# 全条件でtrio(三連複)が最高ROI → trio推奨に統一
+# V9.2a リークフリーモデル (AUC 0.8083, odds_log/horse_weight/condition_enc除外)
+# Pattern A (本番): 当日前情報のみ使用 → 確定オッズリーク完全排除
+# Pattern B (参考): レース前情報OK (AUC 0.8096) → odds_logのみ除外
+# ※旧V9.2 AUC 0.8456は確定オッズリークによる過大評価
 CONDITION_PROFILES = {
     'A': {
         'label': '条件A',
@@ -31,12 +32,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 128.7,  # LF実配当ROI (N=92) ★★★
-        'hit_rate': 45.1,  # WF的中率 (N=8634)
+        'roi': 0,  # リークフリー: 的中率のみ検証済 (ROI未算出)
+        'hit_rate': 46.9,  # Pattern A trio的中率 (N=2185)
         'recommended': True,
-        'leakfree_n': 92,
-        'wf_n': 8634,
-        'wf_roi_est': 420.7,  # WF推定配当ROI (参考値)
+        'leakfree_n': 2185,
+        # Pattern B参考: hit_rate=47.0% (N=2185)
     },
     'B': {
         'label': '条件B',
@@ -45,13 +45,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 143.2,  # LF実配当ROI (N=9, サンプル少) ★★★
-        'hit_rate': 45.4,  # WF的中率 (N=1067)
+        'roi': 0,
+        'hit_rate': 48.3,  # Pattern A trio的中率 (N=207)
         'recommended': True,
-        'leakfree_n': 9,
-        'wf_n': 1067,
-        'wf_roi_est': 473.8,
-        'small_sample': True,
+        'leakfree_n': 207,
+        # Pattern B参考: hit_rate=51.2% (N=207)
     },
     'C': {
         'label': '条件C',
@@ -60,12 +58,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 160.8,  # LF実配当ROI (N=70) ★★★
-        'hit_rate': 33.4,  # WF的中率 (N=6405)
+        'roi': 0,
+        'hit_rate': 34.4,  # Pattern A trio的中率 (N=1703)
         'recommended': True,
-        'leakfree_n': 70,
-        'wf_n': 6405,
-        'wf_roi_est': 498.6,
+        'leakfree_n': 1703,
+        # Pattern B参考: hit_rate=33.2% (N=1703)
     },
     'D': {
         'label': '条件D',
@@ -74,26 +71,24 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 153.8,  # LF実配当ROI (N=118) ★★★
-        'hit_rate': 28.2,  # WF的中率 (N=9807)
+        'roi': 0,
+        'hit_rate': 29.2,  # Pattern A trio的中率 (N=2390)
         'recommended': True,
-        'leakfree_n': 118,
-        'wf_n': 9807,
-        'wf_roi_est': 247.0,
+        'leakfree_n': 2390,
+        # Pattern B参考: hit_rate=29.9% (N=2390)
     },
     'E': {
         'label': '条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'trio',  # WF検証: trio ROI 330% >> umaren 142% → trio推奨に変更
+        'bet_type': 'trio',
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 330.4,  # WF推定配当ROI (N=569) ★★★
-        'hit_rate': 75.7,  # WF的中率 (N=569)
+        'roi': 0,
+        'hit_rate': 76.0,  # Pattern A trio的中率 (N=196)
         'recommended': True,
-        'leakfree_n': 0,
-        'wf_n': 569,
-        'wf_roi_est': 330.4,
+        'leakfree_n': 196,
+        # Pattern B参考: hit_rate=74.0% (N=196)
     },
     'X': {
         'label': '条件外',
@@ -102,42 +97,43 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 223.2,  # LF実配当ROI (N=11, サンプル少) ★★★
-        'hit_rate': 36.1,  # WF的中率 (N=1055)
+        'roi': 0,
+        'hit_rate': 33.8,  # Pattern A trio的中率 (N=228)
         'recommended': True,
-        'leakfree_n': 11,
-        'wf_n': 1055,
-        'wf_roi_est': 598.2,
-        'small_sample': True,
+        'leakfree_n': 228,
+        # Pattern B参考: hit_rate=34.2% (N=228)
     },
 }
 
 # NAR(地方)専用条件プロファイル
-# V3モデル(AUC 0.872) 184レースBT (O1実オッズ統合, KDSCOPE+netkeiba)
-# O1 = KDSCOPE単勝オッズデータ (2010-2026, 課金42-45)
-# 条件分類: 頭数/距離/馬場 による A-E+X
+# V2a リークフリーモデル (AUC 0.8243, odds_log/horse_weight/condition_enc/pop_rank除外)
+# Pattern A (本番): 確定オッズリーク完全排除
+# Pattern B (参考): AUC 0.8088, odds_log/pop_rankのみ除外
+# ※旧V3 AUC 0.872は確定オッズリーク(O1確定オッズ)による過大評価
 NAR_CONDITION_PROFILES = {
     'A': {
         'label': 'NAR条件A',
         'desc': '8-14頭 / 1600m+ / 良〜稍重',
-        'bet_type': 'trio',  # V3: trio 72.5%的中 296.7% ROI ★★★
+        'bet_type': 'trio',  # PatA: trio 65.2%的中 366.0% ROI ★★★
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 296.7,  # V3 BT (N=69) ★★★
-        'hit_rate': 72.5,  # trio的中率
+        'roi': 366.0,  # Pattern A BT (N=69) ★★★
+        'hit_rate': 65.2,
         'recommended': True,
+        # Pattern B参考: trio 68.1%的中 625.4% ROI (N=69)
     },
     'B': {
         'label': 'NAR条件B',
         'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'trio',  # V3: trio 55.4%的中 248.7% ROI ★★★
+        'bet_type': 'trio',  # PatA: trio 49.4%的中 431.9% ROI ★★★
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 248.7,  # V3 BT (N=83) ★★★
-        'hit_rate': 55.4,
+        'roi': 431.9,  # Pattern A BT (N=83) ★★★
+        'hit_rate': 49.4,
         'recommended': True,
+        # Pattern B参考: umaren 34.9%的中 465.2% ROI (N=83)
     },
     'C': {
         'label': 'NAR条件C',
@@ -146,8 +142,8 @@ NAR_CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 259.3,  # V3 BT (N=2) サンプル不足
-        'hit_rate': 100.0,
+        'roi': 66.4,  # Pattern A BT (N=2) サンプル不足
+        'hit_rate': 50.0,
         'recommended': False,  # N=2, サンプル不足
     },
     'D': {
@@ -164,13 +160,14 @@ NAR_CONDITION_PROFILES = {
     'E': {
         'label': 'NAR条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'umaren',  # V3: umaren 73.3%的中 212.2% ROI ★★★
+        'bet_type': 'umaren',  # PatA: umaren 60.0%的中 349.8% ROI ★★★
         'bet_label': '馬連1軸2流し',
         'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 212.2,  # V3 BT (N=30) ★★★
-        'hit_rate': 73.3,
+        'roi': 349.8,  # Pattern A BT (N=30) ★★★
+        'hit_rate': 60.0,
         'recommended': True,
+        # Pattern B参考: umaren 56.7%的中 322.7% ROI (N=30)
     },
     'X': {
         'label': 'NAR条件外',
@@ -189,7 +186,7 @@ NAR_CONDITION_PROFILES = {
 def classify_race_condition(race_info, num_horses, is_nar=False):
     """レース条件を分類してプロファイルを返す。
     Returns: (condition_key, profile_dict)
-    NARは条件別にROI≥80%の条件のみ買い推奨（条件A wideのみ）。
+    NARは条件A(trio)/B(trio)/E(umaren)推奨。リークフリーモデル使用。
     """
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
@@ -1316,12 +1313,15 @@ else:
 _v9_models = load_v9_models()
 
 def get_model_for_race(is_nar=False):
-    """レースタイプに応じたモデルを返す。中央→V9.1、地方→V8（バックテスト結果に基づく）"""
+    """レースタイプに応じたモデルを返す。リークフリーモデル使用。"""
     if is_nar:
-        # NAR: V8使用（NAR専用モデルAUC 0.789、条件A/B/E推奨）
+        # NAR: V2a リークフリー (AUC 0.8243, odds_log除外)
+        v9_nar = _v9_models.get('nar')
+        if v9_nar and isinstance(v9_nar, dict) and 'model' in v9_nar:
+            return v9_nar, 'nar'
         return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
     else:
-        # 中央: V9.1(調教データ込み) AUC 0.8456
+        # 中央: V9.2a リークフリー (AUC 0.8083, odds_log/horse_weight/condition_enc除外)
         v9_data = _v9_models.get('central')
         if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
             return v9_data, 'central'

@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-03-09 02:08:26",
+  "original_v92": {
+    "lgb": 0.8452010897902001,
+    "xgb": 0.8454379289972416,
+    "ensemble": 0.8456107272478266
+  },
+  "pattern_a": {
+    "lgb": 0.8071856490938786,
+    "xgb": 0.8079069051280776,
+    "ensemble": 0.808252332115048,
+    "features_removed": [
+      "cond_surface",
+      "condition_enc",
+      "horse_weight",
+      "odds_log",
+      "weight_cat",
+      "weight_cat_dist",
+      "weight_change",
+      "weight_change_abs"
+    ],
+    "n_features": 55,
+    "condition_backtest": {
+      "A": {
+        "n": 2185,
+        "trio_hits": 1024,
+        "hit_rate": 46.86498855835241
+      },
+      "B": {
+        "n": 207,
+        "trio_hits": 100,
+        "hit_rate": 48.309178743961354
+      },
+      "C": {
+        "n": 1703,
+        "trio_hits": 586,
+        "hit_rate": 34.40986494421609
+      },
+      "D": {
+        "n": 2390,
+        "trio_hits": 698,
+        "hit_rate": 29.20502092050209
+      },
+      "E": {
+        "n": 196,
+        "trio_hits": 149,
+        "hit_rate": 76.0204081632653
+      },
+      "X": {
+        "n": 228,
+        "trio_hits": 77,
+        "hit_rate": 33.771929824561404
+      }
+    }
+  },
+  "pattern_b": {
+    "lgb": 0.8083898694447799,
+    "xgb": 0.8093561794031637,
+    "ensemble": 0.8096019477788798,
+    "features_removed": [
+      "odds_log"
+    ],
+    "n_features": 62,
+    "condition_backtest": {
+      "A": {
+        "n": 2185,
+        "trio_hits": 1027,
+        "hit_rate": 47.002288329519445
+      },
+      "B": {
+        "n": 207,
+        "trio_hits": 106,
+        "hit_rate": 51.20772946859904
+      },
+      "C": {
+        "n": 1703,
+        "trio_hits": 566,
+        "hit_rate": 33.235466823253084
+      },
+      "D": {
+        "n": 2390,
+        "trio_hits": 714,
+        "hit_rate": 29.8744769874477
+      },
+      "E": {
+        "n": 196,
+        "trio_hits": 145,
+        "hit_rate": 73.9795918367347
+      },
+      "X": {
+        "n": 228,
+        "trio_hits": 78,
+        "hit_rate": 34.21052631578947
+      }
+    }
+  }
+}
