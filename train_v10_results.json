@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-03-09 13:08:19",
+  "training_fix": "horse_id 10->8 digit conversion for training_times.csv",
+  "central": {
+    "wf_auc": {
+      "lgb": 0.8043,
+      "xgb": 0.805,
+      "mlp": 0.7913,
+      "avg": 0.8049,
+      "stack": 0.8042
+    },
+    "best_method": "xgb",
+    "best_wf_auc": 0.805,
+    "current_auc": 0.8083,
+    "improved": false,
+    "final_lgb_auc": 0.8081,
+    "final_xgb_auc": 0.8097,
+    "final_mlp_auc": 0.7996,
+    "final_avg_auc": 0.8097,
+    "final_stack_auc": 0.8078,
+    "n_features": 67,
+    "training_match": {
+      "wood": "17.9%",
+      "sakaro": "27.1%"
+    }
+  },
+  "nar": {
+    "lgb_auc": 0.8129369369369369,
+    "xgb_auc": 0.7973693693693693,
+    "mlp_auc": 0.8068108108108109,
+    "avg_auc": 0.8182702702702702,
+    "stack_auc": 0.8177657657657658,
+    "best_method": "avg",
+    "best_auc": 0.8182702702702702,
+    "current_auc": 0.8243,
+    "improved": false,
+    "weights": {
+      "lgb": 0.3363250093179277,
+      "xgb": 0.32988445769660824,
+      "mlp": 0.3337905329854641
+    },
+    "n_features": 30
+  }
+}
