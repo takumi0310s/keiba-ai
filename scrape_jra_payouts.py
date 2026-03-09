@@ -175,8 +175,31 @@ def get_calendar_links(session, year, month_label):
     return all_race_days
 
 
+def _extract_month_and_day_links(soup, year):
+    """ページから月リンクと開催日リンクを抽出"""
+    month_cnames = {}
+    day_links = []
+
+    for elem in soup.find_all(onclick=True):
+        oc = elem['onclick']
+        t = elem.get_text(strip=True)
+        m = re.search(r"doAction\(['\"]([^'\"]+)['\"],\s*['\"]([^'\"]+)['\"]\)", oc)
+        if not m:
+            continue
+        cname = m.group(2)
+
+        if 'pw01skl10' in cname:
+            ym = re.search(r'pw01skl10(\d{6})', cname)
+            if ym and ym.group(1)[:4] == str(year):
+                month_cnames[ym.group(1)] = cname
+        elif 'pw01srl10' in cname:
+            day_links.append((t, cname))
+
+    return month_cnames, day_links
+
+
 def get_all_race_day_links(session, year):
-    """指定年の全開催日リンクを取得"""
+    """指定年の全開催日リンクを取得（全月巡回）"""
     print(f"  {year}年のカレンダーを取得中...")
 
     # 過去レース結果ページ → 年カレンダー
@@ -205,52 +228,49 @@ def get_all_race_day_links(session, year):
         r.encoding = 'shift_jis'
         time.sleep(0.5)
 
-    # 年カレンダーページから全月＋全開催日リンクを収集
+    # 初期ページから月リンクと開催日リンクを収集
     soup = BeautifulSoup(r.text, 'html.parser')
     all_race_days = []
     seen_cnames = set()
+    visited_months = set()
 
-    # 現在表示月の開催日
-    for elem in soup.find_all(onclick=True):
-        oc = elem['onclick']
-        t = elem.get_text(strip=True)
-        m = re.search(r"doAction\(['\"]([^'\"]+)['\"],\s*['\"]([^'\"]+)['\"]\)", oc)
-        if m and 'pw01srl10' in m.group(2):
-            cname = m.group(2)
-            if cname not in seen_cnames:
-                all_race_days.append((t, cname))
-                seen_cnames.add(cname)
+    month_cnames, day_links = _extract_month_and_day_links(soup, year)
+    for t, cname in day_links:
+        if cname not in seen_cnames:
+            all_race_days.append((t, cname))
+            seen_cnames.add(cname)
 
-    # 月リンクを取得して各月を巡回
-    month_links = []
-    for elem in soup.find_all(onclick=True):
-        oc = elem['onclick']
-        m = re.search(r"doAction\(['\"]([^'\"]+)['\"],\s*['\"]([^'\"]+)['\"]\)", oc)
-        if m and 'pw01skl10' in m.group(2):
-            cname = m.group(2)
-            ym = re.search(r'pw01skl10(\d{6})', cname)
-            if ym and ym.group(1)[:4] == str(year):
-                month_links.append(cname)
+    # 全月を巡回（前月/次月を辿って発見した月も含む）
+    months_to_visit = list(month_cnames.keys())
+    while months_to_visit:
+        ym = months_to_visit.pop(0)
+        if ym in visited_months:
+            continue
+        visited_months.add(ym)
 
-    # 各月ページを巡回
-    for mcname in month_links:
-        r = session.post(JRA_DB_URL, data={'CNAME': mcname},
+        cname = month_cnames.get(ym)
+        if not cname:
+            continue
+
+        r = session.post(JRA_DB_URL, data={'CNAME': cname},
                          headers=HEADERS, timeout=15)
         r.encoding = 'shift_jis'
         soup = BeautifulSoup(r.text, 'html.parser')
         time.sleep(0.3)
 
-        for elem in soup.find_all(onclick=True):
-            oc = elem['onclick']
-            t = elem.get_text(strip=True)
-            m = re.search(r"doAction\(['\"]([^'\"]+)['\"],\s*['\"]([^'\"]+)['\"]\)", oc)
-            if m and 'pw01srl10' in m.group(2):
-                cname = m.group(2)
-                if cname not in seen_cnames:
-                    all_race_days.append((t, cname))
-                    seen_cnames.add(cname)
+        new_months, day_links = _extract_month_and_day_links(soup, year)
+        for t, dc in day_links:
+            if dc not in seen_cnames:
+                all_race_days.append((t, dc))
+                seen_cnames.add(dc)
 
-    print(f"  {year}年: {len(all_race_days)}開催日")
+        # 新たに発見した月リンクをキューに追加
+        for new_ym, new_cname in new_months.items():
+            if new_ym not in visited_months and new_ym not in month_cnames:
+                month_cnames[new_ym] = new_cname
+                months_to_visit.append(new_ym)
+
+    print(f"  {year}年: {len(all_race_days)}開催日 ({len(visited_months)}月巡回)")
     return all_race_days
 
 
