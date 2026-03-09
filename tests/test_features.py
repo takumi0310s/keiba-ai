@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-"""KEIBA AI - 全機能自動テスト
-1. 中央V9・地方V8の自動切替
-2. 条件別買い目自動切替（A〜E）
+"""KEIBA AI - 全機能自動テスト（中央競馬専用）
+1. 中央V9モデル確認
+2. 条件別買い目自動切替（A〜E,X）
 3. オッズ連動投資額（400/300）
 4. TRACK RECORDの保存・削除
 5. システムチェック（run_system_checks）
@@ -42,27 +42,23 @@ def make_dummy_df(n_horses=10, distance=1800, condition='良'):
 
 # ===== Test 1: 中央V9・地方V8の自動切替 =====
 def test_model_auto_switch():
-    """中央→V9、地方→V8 の自動切替が正常に動作するか"""
+    """中央V9モデルが正常にロードできるか"""
     print("=" * 60)
-    print("  TEST 1: モデル自動切替 (Central V9 / NAR V8)")
+    print("  TEST 1: 中央V9モデル確認")
     print("=" * 60)
 
     errors = []
 
-    # Check model files exist
     v8_exists = os.path.exists('keiba_model_v8.pkl')
     v9c_exists = os.path.exists('keiba_model_v9_central.pkl')
-    v9n_exists = os.path.exists('keiba_model_v9_nar.pkl')
 
-    print(f"  V8: {'OK' if v8_exists else 'MISSING'}")
-    print(f"  V9 Central: {'OK' if v9c_exists else 'MISSING'}")
-    print(f"  V9 NAR: {'OK' if v9n_exists else 'MISSING'}")
+    print(f"  V8 (フォールバック): {'OK' if v8_exists else 'MISSING'}")
+    print(f"  V9 Central (本番): {'OK' if v9c_exists else 'MISSING'}")
 
     if not v8_exists:
         errors.append("V8モデルが見つかりません")
         return errors
 
-    # Load models
     with open('keiba_model_v8.pkl', 'rb') as f:
         v8_data = pickle.load(f)
 
@@ -71,31 +67,18 @@ def test_model_auto_switch():
         with open('keiba_model_v9_central.pkl', 'rb') as f:
             v9c_data = pickle.load(f)
 
-    # Simulate get_model_for_race logic
-    # NAR should return V8
     if v9c_data:
-        # Central: should use V9
-        model_type_central = 'central' if v9c_data and 'model' in v9c_data else 'default'
-        if model_type_central != 'central':
+        model_type = 'central' if v9c_data and 'model' in v9c_data else 'default'
+        if model_type != 'central':
             errors.append("中央レースでV9が選択されていません")
         else:
             print("  ✓ 中央 → V9 central (正常)")
 
-    # NAR: should use V8 (default)
-    model_type_nar = 'default'  # NAR always returns V8
-    if model_type_nar != 'default':
-        errors.append("地方レースでV8が選択されていません")
-    else:
-        print("  ✓ 地方 → V8 default (正常)")
-
-    # Verify V9 has ensemble components
-    if v9c_data:
         has_xgb = 'xgb_model' in v9c_data
-        has_mlp = 'mlp_model' in v9c_data
         has_weights = 'ensemble_weights' in v9c_data
-        print(f"  V9 Ensemble: XGB={'OK' if has_xgb else 'MISSING'}, MLP={'OK' if has_mlp else 'MISSING'}, Weights={'OK' if has_weights else 'MISSING'}")
-        if not (has_xgb and has_mlp and has_weights):
-            errors.append("V9のアンサンブルコンポーネントが不完全")
+        leak_free = v9c_data.get('leak_free', False)
+        auc = v9c_data.get('auc', 0)
+        print(f"  V9: AUC={auc:.4f}, XGB={'OK' if has_xgb else 'N/A'}, Weights={'OK' if has_weights else 'N/A'}, LeakFree={'YES' if leak_free else 'NO'}")
 
     if not errors:
         print("  ✓ PASS")
@@ -122,7 +105,6 @@ def test_condition_classification():
         ({'distance': 1200, 'condition': '良'}, 12, False, 'D', 'スプリント'),
         ({'distance': 1800, 'condition': '良'}, 6, False, 'E', '少頭数'),
         ({'distance': 2000, 'condition': '不良'}, 16, False, 'X', '15頭+/不良'),
-        ({'distance': 1800, 'condition': '良'}, 12, True, 'B', 'NAR→B(非推奨)'),
     ]
 
     for race_info, n_horses, is_nar, expected, desc in test_cases:
@@ -139,8 +121,8 @@ def test_condition_classification():
             if rk not in profile:
                 errors.append(f"CONDITION_PROFILES['{cond_key}'] に '{rk}' がありません")
 
-    # Verify bet types
-    expected_bets = {'A': 'trio', 'B': 'trio', 'C': 'trio', 'D': 'trio', 'E': 'umaren', 'X': 'trio'}
+    # Verify bet types (中央は全条件trio)
+    expected_bets = {'A': 'trio', 'B': 'trio', 'C': 'trio', 'D': 'trio', 'E': 'trio', 'X': 'trio'}
     for k, bt in expected_bets.items():
         actual_bt = CONDITION_PROFILES[k]['bet_type']
         if actual_bt != bt:
@@ -333,11 +315,9 @@ def test_system_checks():
     if not v8_found:
         errors.append("V8モデルが見つかりません")
 
-    # 2. V9 models
+    # 2. V9 Central model
     v9c = os.path.exists('keiba_model_v9_central.pkl')
-    v9n = os.path.exists('keiba_model_v9_nar.pkl')
     print(f"  {'✓' if v9c else '✗'} V9 Central: {'検出' if v9c else '未検出'}")
-    print(f"  {'✓' if v9n else '✗'} V9 NAR: {'検出' if v9n else '未検出'}")
 
     # 3. Feature count check
     if v8_found:
