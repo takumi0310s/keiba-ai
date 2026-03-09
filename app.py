@@ -98,73 +98,95 @@ CONDITION_PROFILES = {
     },
 }
 
-# NAR(地方)専用条件プロファイル
-# V2a リークフリーモデル (AUC 0.8243, odds_log/horse_weight/condition_enc/pop_rank除外)
+# NAR(地方)専用条件プロファイル V2
+# 1600m+: V2a リークフリーモデル (AUC 0.8243) ← 実ROI検証済
+# 短距離: KDSCOPE全距離モデル (AUC 0.7628) ← ROI未検証(配当データなし)
 # Pattern A (本番): 確定オッズリーク完全排除
-# Pattern B (参考): AUC 0.8088, odds_log/pop_rankのみ除外
-# ※旧V3 AUC 0.872は確定オッズリーク(O1確定オッズ)による過大評価
+# KDSCOPE短距離データ: 大井/船橋/浦和/川崎 2009-2020, 平均5.4頭
 NAR_CONDITION_PROFILES = {
     'A': {
         'label': 'NAR条件A',
         'desc': '8-14頭 / 1600m+ / 良〜稍重',
-        'bet_type': 'trio',  # PatA: trio 65.2%的中 366.0% ROI ★★★
+        'bet_type': 'trio',  # V2a BT: trio 65.2%的中 366.0% ROI ★★★
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 366.0,  # Pattern A BT (N=69) ★★★
+        'roi': 366.0,  # V2a BT (N=69) ★★★
         'hit_rate': 65.2,
         'recommended': True,
-        # Pattern B参考: trio 68.1%的中 625.4% ROI (N=69)
     },
     'B': {
         'label': 'NAR条件B',
         'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'trio',  # PatA: trio 49.4%的中 431.9% ROI ★★★
+        'bet_type': 'trio',  # V2a BT: trio 49.4%的中 431.9% ROI ★★★
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 431.9,  # Pattern A BT (N=83) ★★★
+        'roi': 431.9,  # V2a BT (N=83) ★★★
         'hit_rate': 49.4,
         'recommended': True,
-        # Pattern B参考: umaren 34.9%的中 465.2% ROI (N=83)
     },
     'C': {
         'label': 'NAR条件C',
-        'desc': '15頭+ / 1600m+ / 良〜稍重',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'desc': '1600m+ / 15頭+',
+        'bet_type': 'wide',  # 多頭数はwide推奨
+        'bet_label': 'ワイド2点',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 66.4,  # Pattern A BT (N=2) サンプル不足
-        'hit_rate': 50.0,
+        'roi': 0,
+        'hit_rate': 0,
         'recommended': False,  # N=2, サンプル不足
     },
     'D': {
         'label': 'NAR条件D',
-        'desc': '1400m以下（スプリント）',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
+        'desc': '短距離(~1400m) / 1-4頭',
+        'bet_type': 'wide',  # KDSCOPE BT: wide 93.9% hit (N=792)
+        'bet_label': 'ワイド2点',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 0,
-        'hit_rate': 0,
-        'recommended': False,  # データなし
+        'roi': 0,  # KDSCOPE: 配当データなし, ROI未検証
+        'hit_rate': 93.9,  # WF avg 90.9%, stability 1.0
+        'recommended': True,  # 的中率は高いがROI未検証注意
+        'note': 'KDSCOPE 2009-2020 backtest, ROI未検証',
     },
     'E': {
         'label': 'NAR条件E',
-        'desc': '7頭以下（少頭数）',
-        'bet_type': 'umaren',  # PatA: umaren 60.0%的中 349.8% ROI ★★★
+        'desc': '1600m+ / 7頭以下',
+        'bet_type': 'umaren',  # V2a BT: umaren 60.0%的中 349.8% ROI ★★★
         'bet_label': '馬連1軸2流し',
         'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
         'investment': 700,
-        'roi': 349.8,  # Pattern A BT (N=30) ★★★
+        'roi': 349.8,  # V2a BT (N=30) ★★★
         'hit_rate': 60.0,
         'recommended': True,
-        # Pattern B参考: umaren 56.7%的中 322.7% ROI (N=30)
+    },
+    'F': {
+        'label': 'NAR条件F',
+        'desc': '短距離(~1400m) / 5-7頭',
+        'bet_type': 'wide',  # KDSCOPE BT: wide 83.0% hit (N=159)
+        'bet_label': 'ワイド2点',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 0,  # KDSCOPE: 配当データなし, ROI未検証
+        'hit_rate': 83.0,  # WF avg ~78%, stability 0.93
+        'recommended': True,  # 的中率は高いがROI未検証注意
+        'note': 'KDSCOPE 2009-2020 backtest, ROI未検証',
+    },
+    'G': {
+        'label': 'NAR条件G',
+        'desc': '短距離(~1400m) / 8頭+',
+        'bet_type': 'wide',
+        'bet_label': 'ワイド2点',
+        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
+        'investment': 700,
+        'roi': 0,
+        'hit_rate': 0,
+        'recommended': False,  # KDSCOPE検証データなし(少頭数のみ)
+        'note': 'KDSCOPE短距離は8頭+データ不足',
     },
     'X': {
         'label': 'NAR条件外',
-        'desc': '15頭+ / 重〜不良',
+        'desc': 'その他',
         'bet_type': 'trio',
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
@@ -179,13 +201,38 @@ NAR_CONDITION_PROFILES = {
 def classify_race_condition(race_info, num_horses, is_nar=False):
     """レース条件を分類してプロファイルを返す。
     Returns: (condition_key, profile_dict)
-    NARは条件A(trio)/B(trio)/E(umaren)推奨。リークフリーモデル使用。
+    NAR: 1600m+はV2aモデル(A/B/C/E), 短距離はKDSCOPEモデル(D/F/G)。
     """
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
     heavy_track = any(c in cond for c in ['重', '不'])
     good_track = not heavy_track
 
+    if is_nar:
+        # NAR: 距離帯と頭数で分類
+        if dist >= 1600:
+            # 1600m+: V2aモデル使用
+            if num_horses <= 7:
+                cond_key = 'E'  # 少頭数 → umaren
+            elif 8 <= num_horses <= 14 and good_track:
+                cond_key = 'A'  # 中頭数/良 → trio ★
+            elif 8 <= num_horses <= 14 and heavy_track:
+                cond_key = 'B'  # 中頭数/重 → trio ★
+            elif num_horses >= 15:
+                cond_key = 'C'  # 多頭数 → wide (サンプル不足)
+            else:
+                cond_key = 'X'
+        else:
+            # 短距離(~1400m): KDSCOPEモデル使用
+            if num_horses <= 4:
+                cond_key = 'D'  # 極少頭数 → wide
+            elif num_horses <= 7:
+                cond_key = 'F'  # 少頭数 → wide
+            else:
+                cond_key = 'G'  # 8頭+ → データ不足
+        return cond_key, NAR_CONDITION_PROFILES.get(cond_key, NAR_CONDITION_PROFILES['X'])
+
+    # 中央: 従来通り
     if num_horses <= 7:
         cond_key = 'E'
     elif dist <= 1400:
@@ -198,10 +245,6 @@ def classify_race_condition(race_info, num_horses, is_nar=False):
         cond_key = 'C'
     else:
         cond_key = 'X'
-
-    if is_nar:
-        # NAR: 条件別にプロファイル返却（ROI≥80%のみrecommended=True）
-        return cond_key, NAR_CONDITION_PROFILES.get(cond_key, NAR_CONDITION_PROFILES['B'])
     return cond_key, CONDITION_PROFILES[cond_key]
 
 def init_db():
