@@ -3469,6 +3469,21 @@ if st.button("🔍 予想する") and url_input:
     # Fetch track bias (当日前レース結果分析)
     with st.spinner("馬場バイアスを分析中..."):
         bias_info = fetch_today_bias(race_id, race_info.get('course', ''), is_nar=is_nar)
+    # Fetch JRA track condition & weather (Pattern B用)
+    jra_track_info = {}
+    weather_info = {}
+    if is_live_model:
+        with st.spinner("馬場情報・天候データを取得中..."):
+            try:
+                from scrape_jra_track import fetch_jra_track_info, get_moisture_rate
+                jra_track_info = fetch_jra_track_info(race_info.get('course', ''))
+            except Exception:
+                jra_track_info = {}
+            try:
+                from scrape_weather import get_weather_features
+                weather_info = get_weather_features(race_info.get('course', ''))
+            except Exception:
+                weather_info = {}
     # Race card
     surf_badge = 'badge-turf' if race_info['surface'] == '芝' else 'badge-dirt'
     surf_icon = '🟢 TURF' if race_info['surface'] == '芝' else '🟤 DIRT'
@@ -3754,6 +3769,32 @@ if st.button("🔍 予想する") and url_input:
         else:
             df['pop_rank'] = 8
 
+        # 馬場指数（JRA公式）
+        surface = race_info.get('surface', '芝')
+        if jra_track_info:
+            df['cushion_value'] = jra_track_info.get('cushion_value') or 0
+            try:
+                from scrape_jra_track import get_moisture_rate
+                mr = get_moisture_rate(jra_track_info, surface)
+                df['moisture_rate'] = mr if mr is not None else 0
+            except Exception:
+                df['moisture_rate'] = 0
+        else:
+            df['cushion_value'] = 0
+            df['moisture_rate'] = 0
+
+        # 天候データ（気象庁）
+        if weather_info:
+            df['temperature'] = weather_info.get('temperature', 0)
+            df['humidity'] = weather_info.get('humidity', 0)
+            df['wind_speed'] = weather_info.get('wind_speed', 0)
+            df['precipitation'] = weather_info.get('precipitation', 0)
+        else:
+            df['temperature'] = 0
+            df['humidity'] = 0
+            df['wind_speed'] = 0
+            df['precipitation'] = 0
+
     # 使用する特徴量リスト（v9モデル時はそのモデルの特徴量を使用）
     use_features = active_features if active_features else FEATURES
     for f in use_features:
@@ -3917,6 +3958,8 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_is_nar'] = is_nar
     st.session_state['pred_is_live_model'] = is_live_model
     st.session_state['pred_pattern_a_auc'] = pattern_a_auc
+    st.session_state['pred_jra_track'] = jra_track_info
+    st.session_state['pred_weather'] = weather_info
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -3979,6 +4022,40 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
             warn_html += f'<span style="color:#fd7e14">{w}</span><br>'
         warn_html += '</div>'
         st.markdown(warn_html, unsafe_allow_html=True)
+    # 馬場・天候情報パネル（Pattern B）
+    p_jra_track = st.session_state.get('pred_jra_track', {})
+    p_weather = st.session_state.get('pred_weather', {})
+    if p_jra_track or p_weather:
+        info_parts = []
+        if p_weather.get('temperature'):
+            info_parts.append(f"気温 {p_weather['temperature']:.1f}℃")
+        if p_weather.get('humidity') and p_weather['humidity'] != 60.0:
+            info_parts.append(f"湿度 {p_weather['humidity']:.0f}%")
+        if p_weather.get('wind_speed'):
+            wd = p_weather.get('wind_direction', '')
+            info_parts.append(f"風速 {p_weather['wind_speed']:.1f}m/s {wd}")
+        if p_weather.get('precipitation', 0) > 0:
+            info_parts.append(f"降水量 {p_weather['precipitation']:.1f}mm/h")
+        if p_weather.get('weather_text'):
+            info_parts.append(f"予報: {p_weather['weather_text']}")
+        if p_jra_track.get('cushion_value'):
+            info_parts.append(f"クッション値 {p_jra_track['cushion_value']:.1f}")
+        if p_jra_track.get('moisture_turf_goal') or p_jra_track.get('moisture_dirt_goal'):
+            surface = race_info.get('surface', '芝')
+            if surface == '芝' and p_jra_track.get('moisture_turf_goal'):
+                info_parts.append(f"含水率(芝) {p_jra_track['moisture_turf_goal']:.1f}%")
+            elif p_jra_track.get('moisture_dirt_goal'):
+                info_parts.append(f"含水率(ダ) {p_jra_track['moisture_dirt_goal']:.1f}%")
+
+        if info_parts:
+            env_html = '<div style="background:rgba(40,152,216,0.1);border:1px solid rgba(40,152,216,0.3);border-radius:8px;padding:10px;margin:8px 0">'
+            env_html += '<b>🌤️ 馬場・天候データ</b> <span style="font-size:0.8em;color:#6a6a80">(Pattern B特徴量に反映済)</span><br>'
+            env_html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">'
+            for part in info_parts:
+                env_html += f'<span style="font-size:0.9em">{part}</span>'
+            env_html += '</div></div>'
+            st.markdown(env_html, unsafe_allow_html=True)
+
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
     p_reason = st.session_state.get('pred_pace_reason', '')

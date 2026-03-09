@@ -54,6 +54,12 @@ OUTPUT_DIR = BASE_DIR
 LIVE_EXTRA_FEATURES = [
     'weather_enc',     # 天候: 晴=0, 曇=1, 雨=2, 小雨=2, 雪=3
     'pop_rank',        # 人気順位（オッズから算出）
+    'cushion_value',   # クッション値（JRA公式, 芝のみ）
+    'moisture_rate',   # 含水率（JRA公式）
+    'temperature',     # 気温（気象庁）
+    'humidity',        # 湿度（気象庁）
+    'wind_speed',      # 風速（気象庁）
+    'precipitation',   # 降水量（気象庁）
 ]
 
 FEATURES_PATTERN_B = FEATURES_V93 + LIVE_EXTRA_FEATURES
@@ -71,8 +77,14 @@ def add_weather_feature(df):
     if 'weather' in df.columns:
         df['weather_enc'] = df['weather'].map(WEATHER_MAP).fillna(0).astype(int)
     else:
-        # 天候データがない場合はデフォルト（晴=0）
         df['weather_enc'] = 0
+
+    # 馬場指数・天候データ（過去データにはないため0で初期化）
+    # 予測時のみ実際の値が入る。モデルは0=欠損として学習する。
+    for feat in ['cushion_value', 'moisture_rate', 'temperature',
+                 'humidity', 'wind_speed', 'precipitation']:
+        if feat not in df.columns:
+            df[feat] = 0
     return df
 
 
