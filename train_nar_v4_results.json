@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-03-09 17:28:13",
+  "data": {
+    "scraped_races": 4821,
+    "scraped_rows": 49213
+  },
+  "lgb_auc": 0.8142,
+  "xgb_auc": 0.8144,
+  "ensemble_auc": 0.8145,
+  "final_auc": 0.8212,
+  "current_auc": 0.8264,
+  "improved": false,
+  "weights": {
+    "lgb": 0.4999,
+    "xgb": 0.5001
+  },
+  "top_features": [
+    [
+      "odds_log",
+      37184.2
+    ],
+    [
+      "pop_rank",
+      16112.6
+    ],
+    [
+      "jockey_place_rate",
+      705.3
+    ],
+    [
+      "horse_weight",
+      558.5
+    ],
+    [
+      "num_horses",
+      371.7
+    ],
+    [
+      "jockey_wr",
+      334.8
+    ],
+    [
+      "weight_carry",
+      334.2
+    ],
+    [
+      "horse_num_ratio",
+      245.4
+    ],
+    [
+      "sex_enc",
+      162.8
+    ],
+    [
+      "distance",
+      147.8
+    ],
+    [
+      "horse_num",
+      124.7
+    ],
+    [
+      "carry_diff",
+      104.2
+    ],
+    [
+      "age",
+      92.4
+    ],
+    [
+      "course_enc",
+      47.5
+    ],
+    [
+      "age_group",
+      25.6
+    ]
+  ]
+}

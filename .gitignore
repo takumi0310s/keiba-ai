@@ -13,3 +13,6 @@ data/target_odds.csv
 data/nar_scraped_cache.json
 data/nar_merged.csv
 data/lap_times.csv
+data/nar_all_races.csv
+data/nar_scrape_progress.json
+data/scrape_nar_log.txt
