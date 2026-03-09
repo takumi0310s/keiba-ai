@@ -3338,9 +3338,12 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
         html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += f'<div style="padding:4px 12px;margin-bottom:4px;">'
         html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#f0c040 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">2列目: <span style="font-family:Oswald;">{hn(t2)}</span>, <span style="font-family:Oswald;">{hn(t3)}</span></div>'
-        himo = [hn(top.iloc[i]) for i in range(1, min(6, len(top)))]
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{",".join(himo)}</span></div>'
+        col2 = sorted([int(t2['馬番']), int(t3['馬番'])])
+        col2_txt = ', '.join(f'<span style="font-family:Oswald;">{n}</span>' for n in col2)
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">2列目: {col2_txt}</div>'
+        himo = sorted([int(top.iloc[i]['馬番']) for i in range(1, min(6, len(top)))])
+        himo_txt = ', '.join(str(n) for n in himo)
+        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{himo_txt}</span></div>'
         html += '</div>'
         html += '<div style="padding:0 12px 8px;display:flex;flex-wrap:wrap;gap:6px;">'
         for b in bets:
