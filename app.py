@@ -1266,14 +1266,16 @@ def load_model():
 def load_v9_models():
     """v9中央/地方モデルを読み込み"""
     import os
+    base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'nar': None}
     for key, fname in [('central', 'keiba_model_v9_central.pkl'), ('nar', 'keiba_model_v9_nar.pkl')]:
-        if os.path.exists(fname):
+        fpath = os.path.join(base, fname)
+        if os.path.exists(fpath):
             try:
-                with open(fname, 'rb') as f:
+                with open(fpath, 'rb') as f:
                     models[key] = pickle.load(f)
-            except:
-                pass
+            except Exception as e:
+                st.warning(f"モデル読み込みエラー ({fname}): {e}")
     return models
 
 @st.cache_resource
@@ -3492,12 +3494,15 @@ if st.button("🔍 予想する") and url_input:
     url_input = url_input.replace("race.sp.netkeiba.com", "race.netkeiba.com")
     # v9モデル自動切替
     active_model_data, active_model_type = get_model_for_race(is_nar)
-    active_model = active_model_data.get('model', model)
-    active_features = active_model_data.get('features', model_features)
-    active_version = active_model_data.get('version', model_version)
-    active_auc = active_model_data.get('auc', 0.0)
-    active_sire_map = active_model_data.get('sire_map', sire_map)
-    active_bms_map = active_model_data.get('bms_map', bms_map)
+    active_model = active_model_data.get('model') if isinstance(active_model_data, dict) else None
+    if active_model is None:
+        active_model = model
+        active_model_type = 'default'
+    active_features = active_model_data.get('features', model_features) if isinstance(active_model_data, dict) else model_features
+    active_version = active_model_data.get('version', model_version) if isinstance(active_model_data, dict) else model_version
+    active_auc = active_model_data.get('auc', 0.0) if isinstance(active_model_data, dict) else 0.0
+    active_sire_map = active_model_data.get('sire_map', sire_map) if isinstance(active_model_data, dict) else sire_map
+    active_bms_map = active_model_data.get('bms_map', bms_map) if isinstance(active_model_data, dict) else bms_map
     # バッジ更新（CENTRAL V9.1 / NAR V8 自動切替）
     if is_nar:
         race_badge = '<span class="model-badge badge-nar">NAR専用 条件A,B,E推奨</span>'
@@ -3813,7 +3818,10 @@ if st.button("🔍 予想する") and url_input:
             df[f] = 0
         df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
     X = df[use_features].values
-    use_model = active_model if active_model_type != 'default' else model
+    use_model = active_model if (active_model is not None and active_model_type != 'default') else model
+    if use_model is None:
+        st.error("モデルが読み込めていません。keiba_model_v8.pkl が存在するか確認してください。")
+        st.stop()
     if hasattr(use_model, 'predict_proba'):
         proba = use_model.predict_proba(X)
         ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
