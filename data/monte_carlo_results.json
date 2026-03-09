@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-03-09 18:28:39",
+  "conditions": {
+    "A": {
+      "hit_rate": 0.451,
+      "avg_return": 6537,
+      "investment": 700,
+      "n": 8634,
+      "roi": 421.2
+    },
+    "B": {
+      "hit_rate": 0.454,
+      "avg_return": 7312,
+      "investment": 700,
+      "n": 1067,
+      "roi": 474.2
+    },
+    "C": {
+      "hit_rate": 0.334,
+      "avg_return": 10461,
+      "investment": 700,
+      "n": 6405,
+      "roi": 499.1
+    },
+    "D": {
+      "hit_rate": 0.282,
+      "avg_return": 6124,
+      "investment": 700,
+      "n": 9807,
+      "roi": 246.7
+    },
+    "E": {
+      "hit_rate": 0.757,
+      "avg_return": 2955,
+      "investment": 700,
+      "n": 569,
+      "roi": 319.6
+    },
+    "X": {
+      "hit_rate": 0.361,
+      "avg_return": 11596,
+      "investment": 700,
+      "n": 1055,
+      "roi": 598.0
+    }
+  },
+  "simulations": {
+    "10000": {
+      "initial_fund": 10000,
+      "num_races": 1000,
+      "num_trials": 5000,
+      "ruin_probability": 0.58,
+      "profit_probability": 99.4,
+      "avg_final_fund": 1549722,
+      "median_final_fund": 1555975,
+      "expected_roi": 15497.2,
+      "ci95_lower": 1305174,
+      "ci95_upper": 1816265,
+      "q25": 1452199,
+      "q75": 1657438,
+      "avg_max_drawdown": 24.9,
+      "worst_max_drawdown": 99.5
+    },
+    "30000": {
+      "initial_fund": 30000,
+      "num_races": 1000,
+      "num_trials": 5000,
+      "ruin_probability": 0.0,
+      "profit_probability": 100.0,
+      "avg_final_fund": 1571744,
+      "median_final_fund": 1567696,
+      "expected_roi": 5239.1,
+      "ci95_lower": 1332890,
+      "ci95_upper": 1829905,
+      "q25": 1468286,
+      "q75": 1667005,
+      "avg_max_drawdown": 11.3,
+      "worst_max_drawdown": 69.6
+    },
+    "100000": {
+      "initial_fund": 100000,
+      "num_races": 1000,
+      "num_trials": 5000,
+      "ruin_probability": 0.0,
+      "profit_probability": 100.0,
+      "avg_final_fund": 1641883,
+      "median_final_fund": 1635890,
+      "expected_roi": 1641.9,
+      "ci95_lower": 1400506,
+      "ci95_upper": 1899628,
+      "q25": 1538412,
+      "q75": 1740966,
+      "avg_max_drawdown": 4.7,
+      "worst_max_drawdown": 19.5
+    }
+  }
+}

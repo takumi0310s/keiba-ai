@@ -4455,3 +4455,97 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
                     st.error(f"DB保存エラー: {e}")
             else:
                 st.error("着順データを取得できませんでした。考えられる原因:\n- レースがまだ確定していない\n- URLが正しくない\n- netkeiba接続エラー")
+
+# ===== 実運用成績ダッシュボード =====
+with st.expander("📈 実運用成績ダッシュボード"):
+    _log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "predictions_log.csv")
+    _mc_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "monte_carlo_results.json")
+    _roi_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "roi_comparison.csv")
+
+    if os.path.exists(_log_path):
+        _log_df = pd.read_csv(_log_path)
+        _settled = _log_df[_log_df['result_status'] == 'settled']
+        _pending = _log_df[_log_df['result_status'] == 'pending']
+
+        st.markdown(f"**総予測数:** {len(_log_df)} | **確定:** {len(_settled)} | **未確定:** {len(_pending)}")
+
+        if len(_settled) > 0:
+            _total_invest = _settled['investment'].sum()
+            _total_payout = _settled['payout'].sum()
+            _total_hits = (_settled['hit'] == 1).sum()
+            _total_roi = _total_payout / _total_invest * 100 if _total_invest > 0 else 0
+
+            col_a, col_b, col_c, col_d = st.columns(4)
+            col_a.metric("的中率", f"{_total_hits/len(_settled)*100:.1f}%", f"{_total_hits}/{len(_settled)}")
+            col_b.metric("投資額", f"{_total_invest:,}円")
+            col_c.metric("回収額", f"{_total_payout:,}円")
+            _profit = _total_payout - _total_invest
+            col_d.metric("ROI", f"{_total_roi:.1f}%", f"{_profit:+,}円")
+
+            # 条件別成績
+            st.markdown("#### 条件別成績")
+            _cond_data = []
+            for _ck in sorted(_settled['cond_key'].unique()):
+                _sub = _settled[_settled['cond_key'] == _ck]
+                _n = len(_sub)
+                _h = (_sub['hit'] == 1).sum()
+                _inv = _sub['investment'].sum()
+                _pay = _sub['payout'].sum()
+                _r = _pay / _inv * 100 if _inv > 0 else 0
+                _cond_data.append({'条件': _ck, 'N': _n, '的中': _h,
+                                   '的中率': f"{_h/_n*100:.1f}%",
+                                   '投資': f"{_inv:,}円", '回収': f"{_pay:,}円",
+                                   'ROI': f"{_r:.1f}%"})
+            st.dataframe(pd.DataFrame(_cond_data), use_container_width=True, hide_index=True)
+
+            # 日別推移
+            if 'predicted_at' in _settled.columns:
+                _sc = _settled.copy()
+                _sc['date'] = pd.to_datetime(_sc['predicted_at']).dt.date
+                _daily = _sc.groupby('date').agg(
+                    N=('hit', 'count'),
+                    hits=('hit', 'sum'),
+                    invest=('investment', 'sum'),
+                    payout=('payout', 'sum'),
+                ).reset_index()
+                _daily['ROI'] = _daily['payout'] / _daily['invest'] * 100
+                _daily['cumulative_profit'] = (_daily['payout'] - _daily['invest']).cumsum()
+
+                st.markdown("#### 累積収支推移")
+                st.line_chart(_daily.set_index('date')['cumulative_profit'])
+
+        # 予測ログ一覧
+        st.markdown("#### 予測ログ一覧")
+        _display_cols = ['predicted_at', 'race_name', 'course', 'distance', 'cond_key',
+                         'bet_type', 'top1_name', 'result_status', 'hit', 'payout']
+        _avail_cols = [c for c in _display_cols if c in _log_df.columns]
+        st.dataframe(_log_df[_avail_cols].tail(20), use_container_width=True, hide_index=True)
+    else:
+        st.info("予測ログがありません。`python predict_and_log.py <URL>` で予測を記録してください。")
+
+    # バックテストROI vs 実配当ROI比較
+    if os.path.exists(_roi_path):
+        st.markdown("---")
+        st.markdown("#### バックテスト推定ROI vs 実配当ROI")
+        _roi_df = pd.read_csv(_roi_path)
+        st.dataframe(_roi_df, use_container_width=True, hide_index=True)
+
+    # モンテカルロシミュレーション結果
+    if os.path.exists(_mc_path):
+        st.markdown("---")
+        st.markdown("#### モンテカルロシミュレーション結果")
+        with open(_mc_path, "r", encoding="utf-8") as _mf:
+            _mc = json.load(_mf)
+
+        for _fund_key, _sim in _mc.get('simulations', {}).items():
+            _fund = _sim['initial_fund']
+            st.markdown(f"**初期資金 {_fund:,}円** ({_sim['num_races']}レース×{_sim['num_trials']:,}回)")
+            _mc_col1, _mc_col2, _mc_col3, _mc_col4 = st.columns(4)
+            _mc_col1.metric("破産確率", f"{_sim['ruin_probability']:.2f}%")
+            _mc_col2.metric("利益確率", f"{_sim['profit_probability']:.1f}%")
+            _mc_col3.metric("期待最終資金", f"{_sim['avg_final_fund']:,}円")
+            _mc_col4.metric("最大DD", f"{_sim['worst_max_drawdown']:.1f}%")
+            st.caption(f"95%CI: {_sim['ci95_lower']:,}円 〜 {_sim['ci95_upper']:,}円")
+
+    if not os.path.exists(_mc_path) and not os.path.exists(_roi_path):
+        st.info("モンテカルロ結果: `python monte_carlo_sim.py` / ROI検証: `python verify_real_roi.py` を実行してください。")
