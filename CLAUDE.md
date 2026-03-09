@@ -8,25 +8,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Streamlit: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app
 - GitHub: https://github.com/takumi0310s/keiba-ai
 
-## 現在のモデル
+## 2段階モデル構成
 
-- 中央V9.3: AUC 0.8095（LGB+XGB ensemble, リークフリー Pattern A）
+### 設計思想
+- **学習・バックテスト評価: Pattern A（リークフリー厳守）** → モデルの真の実力を評価
+- **実運用の予測: Pattern B（当日情報込み）** → 使える情報は全て使って最高精度で予測
+
+### Pattern A（評価用）
+- `keiba_model_v9_central.pkl` - V9.3リークフリー
+- AUC 0.8095（LGB+XGB ensemble）
 - 67特徴量、680,381行の学習データ
-- **当日オッズ(odds_log)、当日馬体重(horse_weight)、condition_enc + 派生特徴量は使用禁止**
+- **当日オッズ(odds_log)、当日馬体重(horse_weight)、condition_enc + 派生特徴量を除外**
+
+### Pattern B（実運用）
+- `keiba_model_v9_central_live.pkl` - V9.3当日情報込み
+- Pattern A特徴量 + 当日特徴量（odds_log, horse_weight, condition_enc, weight_change, weather_enc, pop_rank等）
+- AUCはPattern Aで評価（Pattern BのAUCは参考値のみ）
+- app.pyはPattern Bを優先使用（なければPattern Aにフォールバック）
 
 ## アーキテクチャ
 
 ### app.py（~4360行）- Streamlitメインアプリ
-- モデルロード: `load_model()`, `load_v9_models()`, `get_model_for_race()`
+- モデルロード: `load_v9_models()` → Pattern B優先、A→V8フォールバック
+- 予測フロー: URL入力→出馬表+当日情報取得→Pattern Bで予測→条件判定→買い目生成
+- 当日情報: 馬体重・オッズ・馬場状態・天候を自動取得してモデルに反映
+- 警告: 馬体重急変(±10kg)、混戦オッズを自動検知・表示
 - 条件分類: `classify_race_condition()` → A-E,X条件でtrio 7点買い
-- 予測: LightGBM + XGBoost ensemble、重み付き平均
-- 買い目生成: `render_buy_section()` → 全条件trio 7点（700円/レース）
-- リアルタイム: `fetch_realtime_odds()`, `fetch_lap_times()`, `fetch_training_data()`
 - 記録: SQLiteに予測結果を保存、週次ROIレポート生成
-- 実運用ダッシュボード: 予測ログ・成績・モンテカルロ結果表示
 
 ### モデル構成
-- `keiba_model_v9_central.pkl` - 中央本番（LGB+XGB, 67特徴量）
+- `keiba_model_v9_central_live.pkl` - 実運用（Pattern B, 当日情報込み）
+- `keiba_model_v9_central.pkl` - 評価用（Pattern A, リークフリー）
 - `keiba_model_v8.pkl` - フォールバック用ベースライン
 
 ### 実運用テストツール
@@ -36,8 +48,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `monte_carlo_sim.py` - モンテカルロ破産確率シミュレーション
 
 ### 学習スクリプト
-- `train/train_v92_central.py` - 中央V9.2学習
-- `train/train_v93_leakfree.py` - 中央V9.3リークフリー学習（本番）
+- `train/train_v92_central.py` - 中央V9.2学習（基盤関数群）
+- `train/train_v93_leakfree.py` - Pattern A学習（リークフリー/評価用）
+- `train/train_v93_pattern_b.py` - Pattern B学習（当日情報込み/実運用）
 - `train/train_v10_ensemble.py` - LGB+XGB+MLP 3モデルアンサンブル（参考）
 
 ### データ取得ツール
@@ -90,6 +103,10 @@ python verify_real_roi.py              # 実配当ROI検証
 python monte_carlo_sim.py              # 破産確率シミュレーション
 python monte_carlo_sim.py --trials 50000  # 試行回数指定
 
+# モデル学習
+python train/train_v93_leakfree.py     # Pattern A学習（評価用）
+python train/train_v93_pattern_b.py    # Pattern B学習（実運用）
+
 # バックテスト
 python backtest_central_leakfree.py    # 中央リークフリーBT
 
@@ -102,7 +119,7 @@ streamlit run app.py
 
 ## 重要ルール
 
-1. **データリーク厳禁**: 当日オッズ・確定馬体重・当日馬場状態をモデルの特徴量に使わない
+1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A（リークフリー）。実運用予測はPattern B（当日情報込み）
 2. バックテストは必ずウォークフォワード（時系列分割）で実施
 3. app.pyを変更したら必ずpython構文チェックしてからcommit
 4. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持

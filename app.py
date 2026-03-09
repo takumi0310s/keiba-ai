@@ -1184,17 +1184,26 @@ def load_model():
 
 @st.cache_resource(ttl=3600)
 def load_v9_models():
-    """v9中央モデルを読み込み"""
+    """v9中央モデル（Pattern A + Pattern B）を読み込み"""
     import os
     base = os.path.dirname(os.path.abspath(__file__))
-    models = {'central': None, 'nar': None}
+    models = {'central': None, 'central_live': None}
+    # Pattern A（リークフリー/バックテスト評価用）
     fpath = os.path.join(base, 'keiba_model_v9_central.pkl')
     if os.path.exists(fpath):
         try:
             with open(fpath, 'rb') as f:
                 models['central'] = pickle.load(f)
         except Exception as e:
-            st.warning(f"モデル読み込みエラー: {e}")
+            st.warning(f"Pattern Aモデル読み込みエラー: {e}")
+    # Pattern B（当日情報込み/実運用予測用）
+    fpath_live = os.path.join(base, 'keiba_model_v9_central_live.pkl')
+    if os.path.exists(fpath_live):
+        try:
+            with open(fpath_live, 'rb') as f:
+                models['central_live'] = pickle.load(f)
+        except Exception as e:
+            st.warning(f"Pattern Bモデル読み込みエラー: {e}")
     return models
 
 @st.cache_resource
@@ -1226,8 +1235,15 @@ else:
 # v9中央/地方モデル
 _v9_models = load_v9_models()
 
-def get_model_for_race(is_nar=False):
-    """中央競馬モデルを返す。V9.3リークフリー使用。"""
+def get_model_for_race(is_nar=False, use_live=True):
+    """中央競馬モデルを返す。
+    use_live=True: Pattern B（当日情報込み/実運用）を優先
+    use_live=False: Pattern A（リークフリー/評価用）
+    """
+    if use_live:
+        live_data = _v9_models.get('central_live')
+        if live_data and isinstance(live_data, dict) and 'model' in live_data:
+            return live_data, 'central_live'
     v9_data = _v9_models.get('central')
     if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
         return v9_data, 'central'
@@ -3396,7 +3412,7 @@ if st.button("🔍 予想する") and url_input:
         st.warning("地方競馬(NAR)のURLが入力されました。中央競馬専用モデルのため精度が低下する可能性があります。")
     url_input = url_input.replace("race.sp.netkeiba.com", "race.netkeiba.com")
     # v9モデル自動切替
-    active_model_data, active_model_type = get_model_for_race(is_nar)
+    active_model_data, active_model_type = get_model_for_race(is_nar, use_live=True)
     active_model = active_model_data.get('model') if isinstance(active_model_data, dict) else None
     if active_model is None:
         active_model = model
@@ -3406,7 +3422,12 @@ if st.button("🔍 予想する") and url_input:
     active_auc = active_model_data.get('auc', 0.0) if isinstance(active_model_data, dict) else 0.0
     active_sire_map = active_model_data.get('sire_map', sire_map) if isinstance(active_model_data, dict) else sire_map
     active_bms_map = active_model_data.get('bms_map', bms_map) if isinstance(active_model_data, dict) else bms_map
-    race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
+    is_live_model = active_model_type == 'central_live'
+    pattern_a_auc = active_model_data.get('pattern_a_auc', active_auc) if isinstance(active_model_data, dict) else active_auc
+    if is_live_model:
+        race_badge = f'<span class="model-badge badge-central">LIVE {active_version.upper()} (Pattern B) 評価AUC {pattern_a_auc:.4f}</span>'
+    else:
+        race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge}</div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
@@ -3465,9 +3486,15 @@ if st.button("🔍 予想する") and url_input:
     rc_html += f'<div class="race-meta"><span>📏 {race_info["distance"]}m</span>'
     rc_html += f'<span>🏟️ {race_info["course"]}</span>'
     rc_html += f'<span>💧 {race_info["condition"]}</span>'
+    weather_disp = race_info.get('weather', '')
+    if weather_disp:
+        weather_icon = {'晴':'☀️','曇':'☁️','雨':'🌧️','小雨':'🌦️','雪':'❄️'}.get(weather_disp, '🌤️')
+        rc_html += f'<span>{weather_icon} {weather_disp}</span>'
     rc_html += f'<span>🐎 {num_horses}頭</span>'
     if odds_available:
         rc_html += f'<span>💰 オッズ取得済</span>'
+    if is_live_model:
+        rc_html += f'<span>🔴 Pattern B (当日情報込み)</span>'
     rc_html += '</div>'
     rank_map, pace_scores_map = calc_pace_advantage(
         race_info['distance'], race_info['surface'], race_info['condition'], num_horses, is_nar=is_nar
@@ -3710,6 +3737,23 @@ if st.button("🔍 予想する") and url_input:
     else:
         df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
 
+    # === Pattern B 当日追加特徴量 ===
+    if is_live_model:
+        # 馬体重増減（当日 - 前走）
+        df['weight_change'] = df['場体重増減'].fillna(0)
+        df['weight_change_abs'] = df['weight_change'].abs()
+
+        # 天候エンコード
+        weather_str = str(race_info.get('weather', '晴'))
+        weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
+        df['weather_enc'] = weather_map.get(weather_str, 0)
+
+        # 人気順位（オッズから算出）
+        if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
+            df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
+        else:
+            df['pop_rank'] = 8
+
     # 使用する特徴量リスト（v9モデル時はそのモデルの特徴量を使用）
     use_features = active_features if active_features else FEATURES
     for f in use_features:
@@ -3871,6 +3915,8 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_model_version'] = active_version
     st.session_state['pred_model_auc'] = active_auc
     st.session_state['pred_is_nar'] = is_nar
+    st.session_state['pred_is_live_model'] = is_live_model
+    st.session_state['pred_pattern_a_auc'] = pattern_a_auc
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -3887,9 +3933,52 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     # モデルバッジ更新
     p_model_ver = st.session_state.get('pred_model_version', model_version)
     p_model_auc = st.session_state.get('pred_model_auc', model_auc)
-    p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
+    p_is_live = st.session_state.get('pred_is_live_model', False)
+    p_pattern_a_auc = st.session_state.get('pred_pattern_a_auc', p_model_auc)
+    if p_is_live:
+        p_race_badge = f'<span class="model-badge badge-central">LIVE {p_model_ver.upper()} (Pattern B) 評価AUC {p_pattern_a_auc:.4f}</span>'
+    else:
+        p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge}</div>', unsafe_allow_html=True)
     st.markdown(rc_html, unsafe_allow_html=True)
+
+    # === 当日リアルタイム情報パネル ===
+    weather_str = race_info.get('weather', '')
+    condition_str = race_info.get('condition', '良')
+    rt_items = []
+    if weather_str:
+        rt_items.append(f"天候: {weather_str}")
+    rt_items.append(f"馬場: {condition_str}")
+    if odds_available:
+        rt_items.append("オッズ: 取得済")
+
+    # 馬体重急変警告（±10kg以上）
+    weight_warnings = []
+    if '場体重増減' in df.columns:
+        for _, row in df.iterrows():
+            w_diff = row.get('場体重増減', 0)
+            if abs(w_diff) >= 10:
+                sign = "+" if w_diff > 0 else ""
+                weight_warnings.append(f"{row.get('馬名', '?')}({row.get('馬番', '?')}番): {sign}{w_diff:.0f}kg")
+
+    # オッズ急変警告（1番人気が10倍以上 or 上位人気に大穴）
+    odds_warnings = []
+    if odds_available and '単勝オッズ' in df.columns:
+        odds_vals = df[df['単勝オッズ'] > 0]['単勝オッズ']
+        if len(odds_vals) > 0:
+            min_odds = odds_vals.min()
+            if min_odds >= 10.0:
+                odds_warnings.append(f"1番人気でも{min_odds:.1f}倍 - 混戦レース")
+
+    if weight_warnings or odds_warnings:
+        warn_html = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px;margin:8px 0">'
+        warn_html += '<b>⚠️ 当日アラート</b><br>'
+        for w in weight_warnings:
+            warn_html += f'<span style="color:#dc3545">体重急変: {w}</span><br>'
+        for w in odds_warnings:
+            warn_html += f'<span style="color:#fd7e14">{w}</span><br>'
+        warn_html += '</div>'
+        st.markdown(warn_html, unsafe_allow_html=True)
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
     p_reason = st.session_state.get('pred_pace_reason', '')
@@ -4003,18 +4092,27 @@ if dash_html:
 
 # ===== モデル情報・特徴量重要度 =====
 with st.expander("🤖 モデル情報・特徴量重要度"):
+    if _v9_models.get('central_live'):
+        v9l = _v9_models['central_live']
+        v9l_ver = v9l.get('version', 'v9_live').upper()
+        v9l_auc = v9l.get('ensemble_auc', v9l.get('auc', 0))
+        v9l_pa = v9l.get('pattern_a_auc', 0)
+        st.markdown(f"**{v9l_ver} (実運用/Pattern B):** Ensemble AUC {v9l_auc:.4f} / 評価AUC(Pattern A) {v9l_pa:.4f}")
+        live_feats = v9l.get('live_features', [])
+        if live_feats:
+            st.markdown(f"当日特徴量: `{'`, `'.join(live_feats)}`")
     if _v9_models.get('central'):
         v9c = _v9_models['central']
         v9c_ver = v9c.get('version', 'v9').upper()
         v9c_auc = v9c.get('auc', 0)
         v9c_ens = v9c.get('ensemble_auc', v9c_auc)
-        st.markdown(f"**CENTRAL {v9c_ver} (本番):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
-    else:
+        st.markdown(f"**CENTRAL {v9c_ver} (評価用/Pattern A):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
+    if not _v9_models.get('central') and not _v9_models.get('central_live'):
         st.markdown(f"**V8 (フォールバック):** AUC {model_auc:.4f}")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
-    for src_name, src_data in [('v9 central', _v9_models.get('central')), ('v8', _loaded)]:
+    for src_name, src_data in [('v9 live (Pattern B)', _v9_models.get('central_live')), ('v9 central (Pattern A)', _v9_models.get('central')), ('v8', _loaded)]:
         if src_data and isinstance(src_data, dict) and 'model' in src_data:
             m = src_data['model']
             importances = None
