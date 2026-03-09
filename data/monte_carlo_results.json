@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-03-09 18:28:39",
+  "generated_at": "2026-03-09 18:41:46",
   "conditions": {
     "A": {
       "hit_rate": 0.451,
       "avg_return": 6537,
       "investment": 700,
       "n": 8634,
+      "label": "8-14頭/1600m+/良~稍",
       "roi": 421.2
     },
     "B": {
@@ -13,6 +14,7 @@
       "avg_return": 7312,
       "investment": 700,
       "n": 1067,
+      "label": "8-14頭/1600m+/重~不良",
       "roi": 474.2
     },
     "C": {
@@ -20,6 +22,7 @@
       "avg_return": 10461,
       "investment": 700,
       "n": 6405,
+      "label": "15頭+/1600m+/良~稍",
       "roi": 499.1
     },
     "D": {
@@ -27,22 +30,33 @@
       "avg_return": 6124,
       "investment": 700,
       "n": 9807,
+      "label": "1400m以下",
       "roi": 246.7
     },
     "E": {
       "hit_rate": 0.757,
-      "avg_return": 2955,
+      "avg_return": 2956,
       "investment": 700,
       "n": 569,
-      "roi": 319.6
+      "label": "7頭以下",
+      "roi": 319.7
     },
     "X": {
       "hit_rate": 0.361,
       "avg_return": 11596,
       "investment": 700,
       "n": 1055,
+      "label": "15頭+/重~不良",
       "roi": 598.0
     }
+  },
+  "condition_weights": {
+    "A": 0.3135,
+    "B": 0.0387,
+    "C": 0.2326,
+    "D": 0.3561,
+    "E": 0.0207,
+    "X": 0.0383
   },
   "simulations": {
     "10000": {
@@ -51,13 +65,13 @@
       "num_trials": 5000,
       "ruin_probability": 0.58,
       "profit_probability": 99.4,
-      "avg_final_fund": 1549722,
-      "median_final_fund": 1555975,
-      "expected_roi": 15497.2,
-      "ci95_lower": 1305174,
-      "ci95_upper": 1816265,
-      "q25": 1452199,
-      "q75": 1657438,
+      "avg_final_fund": 1549735,
+      "median_final_fund": 1555984,
+      "expected_roi": 15497.3,
+      "ci95_lower": 1305188,
+      "ci95_upper": 1816272,
+      "q25": 1452209,
+      "q75": 1657447,
       "avg_max_drawdown": 24.9,
       "worst_max_drawdown": 99.5
     },
@@ -67,13 +81,13 @@
       "num_trials": 5000,
       "ruin_probability": 0.0,
       "profit_probability": 100.0,
-      "avg_final_fund": 1571744,
-      "median_final_fund": 1567696,
-      "expected_roi": 5239.1,
-      "ci95_lower": 1332890,
-      "ci95_upper": 1829905,
-      "q25": 1468286,
-      "q75": 1667005,
+      "avg_final_fund": 1571757,
+      "median_final_fund": 1567707,
+      "expected_roi": 5239.2,
+      "ci95_lower": 1332897,
+      "ci95_upper": 1829917,
+      "q25": 1468306,
+      "q75": 1667022,
       "avg_max_drawdown": 11.3,
       "worst_max_drawdown": 69.6
     },
@@ -83,13 +97,13 @@
       "num_trials": 5000,
       "ruin_probability": 0.0,
       "profit_probability": 100.0,
-      "avg_final_fund": 1641883,
-      "median_final_fund": 1635890,
+      "avg_final_fund": 1641896,
+      "median_final_fund": 1635910,
       "expected_roi": 1641.9,
-      "ci95_lower": 1400506,
-      "ci95_upper": 1899628,
-      "q25": 1538412,
-      "q75": 1740966,
+      "ci95_lower": 1400520,
+      "ci95_upper": 1899647,
+      "q25": 1538423,
+      "q75": 1740980,
       "avg_max_drawdown": 4.7,
       "worst_max_drawdown": 19.5
     }

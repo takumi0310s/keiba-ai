@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 from itertools import combinations
 
-st.set_page_config(page_title="KEIBA AI", page_icon="🏇", layout="wide")
+st.set_page_config(page_title="KEIBA AI - 中央競馬専用", page_icon="🏇", layout="wide")
 
 # ===== SQLite DB =====
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
@@ -98,141 +98,19 @@ CONDITION_PROFILES = {
     },
 }
 
-# NAR(地方)専用条件プロファイル V2
-# 1600m+: V2a リークフリーモデル (AUC 0.8243) ← 実ROI検証済
-# 短距離: KDSCOPE全距離モデル (AUC 0.7628) ← ROI未検証(配当データなし)
-# Pattern A (本番): 確定オッズリーク完全排除
-# KDSCOPE短距離データ: 大井/船橋/浦和/川崎 2009-2020, 平均5.4頭
-NAR_CONDITION_PROFILES = {
-    'A': {
-        'label': 'NAR条件A',
-        'desc': '8-14頭 / 1600m+ / 良〜稍重',
-        'bet_type': 'trio',  # V2a BT: trio 65.2%的中 366.0% ROI ★★★
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
-        'investment': 700,
-        'roi': 366.0,  # V2a BT (N=69) ★★★
-        'hit_rate': 65.2,
-        'recommended': True,
-    },
-    'B': {
-        'label': 'NAR条件B',
-        'desc': '8-14頭 / 1600m+ / 重〜不良',
-        'bet_type': 'trio',  # V2a BT: trio 49.4%的中 431.9% ROI ★★★
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
-        'investment': 700,
-        'roi': 431.9,  # V2a BT (N=83) ★★★
-        'hit_rate': 49.4,
-        'recommended': True,
-    },
-    'C': {
-        'label': 'NAR条件C',
-        'desc': '1600m+ / 15頭+',
-        'bet_type': 'wide',  # 多頭数はwide推奨
-        'bet_label': 'ワイド2点',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 700,
-        'roi': 0,
-        'hit_rate': 0,
-        'recommended': False,  # N=2, サンプル不足
-    },
-    'D': {
-        'label': 'NAR条件D',
-        'desc': '短距離(~1400m) / 1-4頭',
-        'bet_type': 'wide',  # KDSCOPE BT: wide 93.9% hit (N=792)
-        'bet_label': 'ワイド2点',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 700,
-        'roi': 0,  # KDSCOPE: 配当データなし, ROI未検証
-        'hit_rate': 93.9,  # WF avg 90.9%, stability 1.0
-        'recommended': True,  # 的中率は高いがROI未検証注意
-        'note': 'KDSCOPE 2009-2020 backtest, ROI未検証',
-    },
-    'E': {
-        'label': 'NAR条件E',
-        'desc': '1600m+ / 7頭以下',
-        'bet_type': 'umaren',  # V2a BT: umaren 60.0%的中 349.8% ROI ★★★
-        'bet_label': '馬連1軸2流し',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 700,
-        'roi': 349.8,  # V2a BT (N=30) ★★★
-        'hit_rate': 60.0,
-        'recommended': True,
-    },
-    'F': {
-        'label': 'NAR条件F',
-        'desc': '短距離(~1400m) / 5-7頭',
-        'bet_type': 'wide',  # KDSCOPE BT: wide 83.0% hit (N=159)
-        'bet_label': 'ワイド2点',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 700,
-        'roi': 0,  # KDSCOPE: 配当データなし, ROI未検証
-        'hit_rate': 83.0,  # WF avg ~78%, stability 0.93
-        'recommended': True,  # 的中率は高いがROI未検証注意
-        'note': 'KDSCOPE 2009-2020 backtest, ROI未検証',
-    },
-    'G': {
-        'label': 'NAR条件G',
-        'desc': '短距離(~1400m) / 8頭+',
-        'bet_type': 'wide',
-        'bet_label': 'ワイド2点',
-        'bet_detail': 'TOP1-TOP2, TOP1-TOP3',
-        'investment': 700,
-        'roi': 0,
-        'hit_rate': 0,
-        'recommended': False,  # KDSCOPE検証データなし(少頭数のみ)
-        'note': 'KDSCOPE短距離は8頭+データ不足',
-    },
-    'X': {
-        'label': 'NAR条件外',
-        'desc': 'その他',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
-        'investment': 700,
-        'roi': 0,
-        'hit_rate': 0,
-        'recommended': False,
-    },
-}
+
+
 
 
 def classify_race_condition(race_info, num_horses, is_nar=False):
-    """レース条件を分類してプロファイルを返す。
+    """レース条件を分類してプロファイルを返す（中央競馬専用）。
     Returns: (condition_key, profile_dict)
-    NAR: 1600m+はV2aモデル(A/B/C/E), 短距離はKDSCOPEモデル(D/F/G)。
     """
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
     heavy_track = any(c in cond for c in ['重', '不'])
     good_track = not heavy_track
 
-    if is_nar:
-        # NAR: 距離帯と頭数で分類
-        if dist >= 1600:
-            # 1600m+: V2aモデル使用
-            if num_horses <= 7:
-                cond_key = 'E'  # 少頭数 → umaren
-            elif 8 <= num_horses <= 14 and good_track:
-                cond_key = 'A'  # 中頭数/良 → trio ★
-            elif 8 <= num_horses <= 14 and heavy_track:
-                cond_key = 'B'  # 中頭数/重 → trio ★
-            elif num_horses >= 15:
-                cond_key = 'C'  # 多頭数 → wide (サンプル不足)
-            else:
-                cond_key = 'X'
-        else:
-            # 短距離(~1400m): KDSCOPEモデル使用
-            if num_horses <= 4:
-                cond_key = 'D'  # 極少頭数 → wide
-            elif num_horses <= 7:
-                cond_key = 'F'  # 少頭数 → wide
-            else:
-                cond_key = 'G'  # 8頭+ → データ不足
-        return cond_key, NAR_CONDITION_PROFILES.get(cond_key, NAR_CONDITION_PROFILES['X'])
-
-    # 中央: 従来通り
     if num_horses <= 7:
         cond_key = 'E'
     elif dist <= 1400:
@@ -471,11 +349,10 @@ def get_dashboard_stats():
     all_rows = [dict(r) for r in c.fetchall()]
     conn.close()
     jra_rows = [r for r in all_rows if not r.get('is_nar', 0)]
-    nar_rows = [r for r in all_rows if r.get('is_nar', 0)]
     stats = {
         'all': _calc_stats_from_rows(all_rows),
         'jra': _calc_stats_from_rows(jra_rows),
-        'nar': _calc_stats_from_rows(nar_rows),
+        'nar': {'total_races': 0, 'total_hits': 0, 'total_payout': 0, 'hit_rate': 0, 'roi': 0},
         'recent': all_rows[:10],
     }
     return stats
@@ -1307,18 +1184,17 @@ def load_model():
 
 @st.cache_resource(ttl=3600)
 def load_v9_models():
-    """v9中央/地方モデルを読み込み"""
+    """v9中央モデルを読み込み"""
     import os
     base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'nar': None}
-    for key, fname in [('central', 'keiba_model_v9_central.pkl'), ('nar', 'keiba_model_v9_nar.pkl')]:
-        fpath = os.path.join(base, fname)
-        if os.path.exists(fpath):
-            try:
-                with open(fpath, 'rb') as f:
-                    models[key] = pickle.load(f)
-            except Exception as e:
-                st.warning(f"モデル読み込みエラー ({fname}): {e}")
+    fpath = os.path.join(base, 'keiba_model_v9_central.pkl')
+    if os.path.exists(fpath):
+        try:
+            with open(fpath, 'rb') as f:
+                models['central'] = pickle.load(f)
+        except Exception as e:
+            st.warning(f"モデル読み込みエラー: {e}")
     return models
 
 @st.cache_resource
@@ -1351,19 +1227,11 @@ else:
 _v9_models = load_v9_models()
 
 def get_model_for_race(is_nar=False):
-    """レースタイプに応じたモデルを返す。リークフリーモデル使用。"""
-    if is_nar:
-        # NAR: V2a リークフリー (AUC 0.8243, odds_log除外)
-        v9_nar = _v9_models.get('nar')
-        if v9_nar and isinstance(v9_nar, dict) and 'model' in v9_nar:
-            return v9_nar, 'nar'
-        return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
-    else:
-        # 中央: V9.2a リークフリー (AUC 0.8083, odds_log/horse_weight/condition_enc除外)
-        v9_data = _v9_models.get('central')
-        if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
-            return v9_data, 'central'
-        return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
+    """中央競馬モデルを返す。V9.3リークフリー使用。"""
+    v9_data = _v9_models.get('central')
+    if v9_data and isinstance(v9_data, dict) and 'model' in v9_data:
+        return v9_data, 'central'
+    return _loaded if isinstance(_loaded, dict) else {'model': _loaded, 'features': None, 'version': 'v1'}, 'default'
 
 jockey_wr = load_jockey_wr()
 
@@ -2497,8 +2365,7 @@ def run_system_checks():
     model_files = ["keiba_model_v8.pkl", "keiba_model_v8.pkl.gz"]
     found = any(os.path.exists(f) for f in model_files)
     v9c = os.path.exists("keiba_model_v9_central.pkl")
-    v9n = os.path.exists("keiba_model_v9_nar.pkl")
-    v9_text = f' / v9: {"中央" if v9c else ""}{"・地方" if v9n else ""}' if (v9c or v9n) else ''
+    v9_text = f' / v9: 中央' if v9c else ''
     checks.append(('モデルファイル', found, f'v8検出{v9_text}' if found else 'モデルファイルが見つかりません'))
     # 2. 特徴量チェック
     try:
@@ -3288,21 +3155,11 @@ def render_dashboard():
     html = '<div class="ev-card">'
     # 全体
     html += _render_stats_block(stats['all'], '&#127942; ALL')
-    # 中央/地方を並列表示（どちらかにデータがあれば）
+    # 中央成績
     has_jra = stats['jra']['total_races'] > 0
-    has_nar = stats['nar']['total_races'] > 0
-    if has_jra or has_nar:
+    if has_jra:
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;"></div>'
-        if has_jra and has_nar:
-            html += '<div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:12px;">'
-            html += f'<div>{_render_stats_block(stats["jra"], "&#127807; JRA")}</div>'
-            html += '<div style="background:rgba(255,255,255,0.06);"></div>'
-            html += f'<div>{_render_stats_block(stats["nar"], "&#127965; NAR")}</div>'
-            html += '</div>'
-        elif has_jra:
-            html += _render_stats_block(stats['jra'], '&#127807; JRA')
-        else:
-            html += _render_stats_block(stats['nar'], '&#127965; NAR')
+        html += _render_stats_block(stats['jra'], '&#127807; JRA CENTRAL')
     # 直近レース結果
     recent = stats['recent']
     if recent:
@@ -3315,11 +3172,10 @@ def render_dashboard():
             date = r.get('predicted_at', '')
             hit_trio = r.get('hit_trio')
             payout = r.get('payout', 0) or 0
-            is_nar_race = r.get('is_nar', 0)
             db_bet_type = r.get('bet_type', 'trio') or 'trio'
             bet_short = BET_SHORT.get(db_bet_type, '三')
             date_short = date[:10] if date else ''
-            tag = '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#1a3a1a;color:#2ecc40 !important;margin-right:4px;">JRA</span>' if not is_nar_race else '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#3a2a1a;color:#e67e22 !important;margin-right:4px;">NAR</span>'
+            tag = '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#1a3a1a;color:#2ecc40 !important;margin-right:4px;">JRA</span>'
             bet_tag = f'<span style="font-size:0.65em;padding:1px 3px;border-radius:2px;background:#2a2a3a;color:#aab !important;margin-right:3px;">{bet_short}</span>'
             if hit_trio is not None:
                 if hit_trio == 1:
@@ -3532,11 +3388,12 @@ else:
     warn_html += '</div>'
     st.markdown(warn_html, unsafe_allow_html=True)
 
-url_input = st.text_input("netkeibaの出馬表URLを入力（中央・地方対応）")
+url_input = st.text_input("netkeibaの出馬表URLを入力（中央競馬専用）")
 
 if st.button("🔍 予想する") and url_input:
-    is_nar = "nar" in url_input
-    url_input = url_input.replace("nar.sp.netkeiba.com", "nar.netkeiba.com")
+    is_nar = False
+    if "nar" in url_input:
+        st.warning("地方競馬(NAR)のURLが入力されました。中央競馬専用モデルのため精度が低下する可能性があります。")
     url_input = url_input.replace("race.sp.netkeiba.com", "race.netkeiba.com")
     # v9モデル自動切替
     active_model_data, active_model_type = get_model_for_race(is_nar)
@@ -3549,11 +3406,7 @@ if st.button("🔍 予想する") and url_input:
     active_auc = active_model_data.get('auc', 0.0) if isinstance(active_model_data, dict) else 0.0
     active_sire_map = active_model_data.get('sire_map', sire_map) if isinstance(active_model_data, dict) else sire_map
     active_bms_map = active_model_data.get('bms_map', bms_map) if isinstance(active_model_data, dict) else bms_map
-    # バッジ更新（CENTRAL V9.1 / NAR V8 自動切替）
-    if is_nar:
-        race_badge = '<span class="model-badge badge-nar">NAR専用 条件A,B,E推奨</span>'
-    else:
-        race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
+    race_badge = f'<span class="model-badge badge-central">CENTRAL {active_version.upper()} AUC {active_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{race_badge}</div>', unsafe_allow_html=True)
     rid_match = re.search(r'race_id=(\d+)', url_input)
     if not rid_match:
@@ -4031,13 +3884,10 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     race_id = st.session_state.get('last_race_id', '')
     is_nar = st.session_state.get('last_is_nar', False)
 
-    # モデルバッジ更新（キャッシュ表示時 - CENTRAL V9.1 / NAR V8 自動切替）
+    # モデルバッジ更新
     p_model_ver = st.session_state.get('pred_model_version', model_version)
     p_model_auc = st.session_state.get('pred_model_auc', model_auc)
-    if is_nar:
-        p_race_badge = '<span class="model-badge badge-nar">NAR専用 条件A,B,E推奨</span>'
-    else:
-        p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
+    p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge}</div>', unsafe_allow_html=True)
     st.markdown(rc_html, unsafe_allow_html=True)
     # 展開予測パネル
@@ -4076,10 +3926,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         if buy_html:
             st.markdown(buy_html, unsafe_allow_html=True)
     else:
-        if is_nar_pred:
-            reason = f'地方184レースバックテスト結果: {cond_profile["label"]}はROI {cond_profile.get("roi", 0):.1f}% (80%未満)。参考表示のみ。条件A/B/Eのみ買い推奨。'
-        else:
-            reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
+        reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
 <div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
 <div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
@@ -4164,12 +4011,10 @@ with st.expander("🤖 モデル情報・特徴量重要度"):
         st.markdown(f"**CENTRAL {v9c_ver} (本番):** LGB AUC {v9c_auc:.4f} / Ensemble AUC {v9c_ens:.4f}")
     else:
         st.markdown(f"**V8 (フォールバック):** AUC {model_auc:.4f}")
-    if _v9_models.get('nar'):
-        st.markdown(f"**NAR V2:** 専用モデル AUC 0.792 (A: trio ROI 382% / B: wide ROI 253% / E: umaren ROI 148% / C,D,X: 非推奨)")
     # Feature importance (top 20)
     fi_model = None
     fi_features = None
-    for src_name, src_data in [('v9 central', _v9_models.get('central')), ('v9 nar', _v9_models.get('nar')), ('v8', _loaded)]:
+    for src_name, src_data in [('v9 central', _v9_models.get('central')), ('v8', _loaded)]:
         if src_data and isinstance(src_data, dict) and 'model' in src_data:
             m = src_data['model']
             importances = None
@@ -4255,8 +4100,7 @@ with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）")
             date = (rec.get('predicted_at', '') or '')[:10]
             hit = rec.get('hit_trio')
             payout = rec.get('payout', 0) or 0
-            is_nar_r = rec.get('is_nar', 0)
-            tag = "NAR" if is_nar_r else "JRA"
+            tag = "JRA"
             bt = rec.get('bet_type', 'trio') or 'trio'
             bt_label = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}.get(bt, '三連複')
             if hit is not None:
@@ -4278,7 +4122,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
     with batch_col1:
         batch_date = st.date_input("開催日を選択", value=datetime.now().date(), key="batch_date")
     with batch_col2:
-        batch_type = st.selectbox("対象", ["JRA（中央）", "NAR（地方）"], key="batch_type")
+        batch_type = "JRA（中央）"
     if st.button("📋 レース一覧を取得", key="fetch_batch"):
         batch_is_nar = batch_type == "NAR（地方）"
         date_str = batch_date.strftime('%Y%m%d')
@@ -4375,7 +4219,7 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
         key="result_url"
     )
     if st.button("結果を取得・保存") and result_url:
-        is_nar_result = "nar" in result_url
+        is_nar_result = False
         rid_match = re.search(r'race_id=(\d+)', result_url)
         if not rid_match:
             # db.netkeiba.com/race/XXXX/ 形式のURL対応
@@ -4384,7 +4228,7 @@ with st.expander("📝 レース結果を登録（的中率集計用）"):
             st.error("URLからrace_idを取得できませんでした。対応URL形式:\n- `https://race.netkeiba.com/race/result.html?race_id=XXXX`\n- `https://db.netkeiba.com/race/XXXX/`")
         else:
             result_race_id = rid_match.group(1)
-            st.info(f"race_id: {result_race_id} ({'NAR' if is_nar_result else 'JRA'})")
+            st.info(f"race_id: {result_race_id} (JRA)")
             try:
                 with st.spinner("レース結果・払戻金を取得中..."):
                     results_dict, result_payouts = fetch_race_results(result_race_id, is_nar=is_nar_result)

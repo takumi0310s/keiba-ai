@@ -4,50 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-競馬AI予測システム（中央・地方対応）
+競馬AI予測システム（中央競馬専用）
 - Streamlit: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app
 - GitHub: https://github.com/takumi0310s/keiba-ai
 
 ## 現在のモデル
 
-- 中央V9.2: AUC 0.8083（リークフリー Pattern A）
-- 地方NAR V2a: AUC 0.8243（リークフリー Pattern A）
-- 全モデルはPattern A（厳密リークフリー）を厳守
-- **当日オッズ(odds_log)、当日馬体重(horse_weight)、weight_changeは特徴量に使用禁止**
+- 中央V9.3: AUC 0.8095（LGB+XGB ensemble, リークフリー Pattern A）
+- 67特徴量、680,381行の学習データ
+- **当日オッズ(odds_log)、当日馬体重(horse_weight)、condition_enc + 派生特徴量は使用禁止**
 
 ## アーキテクチャ
 
-### app.py（~4100行）- Streamlitメインアプリ
-- モデルロード: `load_model()`, `load_v9_models()`, `get_model_for_race(is_nar)`
-- 条件分類: `classify_race_condition()` → A-E,X条件でbet種別を切り替え
+### app.py（~4360行）- Streamlitメインアプリ
+- モデルロード: `load_model()`, `load_v9_models()`, `get_model_for_race()`
+- 条件分類: `classify_race_condition()` → A-E,X条件でtrio 7点買い
 - 予測: LightGBM + XGBoost ensemble、重み付き平均
-- 買い目生成: `render_buy_section()` → 条件別にtrio/wide/umarenを自動選択
+- 買い目生成: `render_buy_section()` → 全条件trio 7点（700円/レース）
 - リアルタイム: `fetch_realtime_odds()`, `fetch_lap_times()`, `fetch_training_data()`
 - 記録: SQLiteに予測結果を保存、週次ROIレポート生成
+- 実運用ダッシュボード: 予測ログ・成績・モンテカルロ結果表示
 
 ### モデル構成
 - `keiba_model_v9_central.pkl` - 中央本番（LGB+XGB, 67特徴量）
-- `keiba_model_v9_nar.pkl` - 地方本番（LGB+XGB, 30特徴量）
 - `keiba_model_v8.pkl` - フォールバック用ベースライン
 
+### 実運用テストツール
+- `predict_and_log.py` - CLI予測ログ記録
+- `check_results.py` - 結果照合・ROI計算
+- `verify_real_roi.py` - 実配当ROI検証（netkeiba scraping）
+- `monte_carlo_sim.py` - モンテカルロ破産確率シミュレーション
+
 ### 学習スクリプト
-- `train/train_v92_central.py` - 中央V9.2学習（jra_races_full.csv使用）
-- `train/train_nar_v4.py` - 地方V4学習（nar_all_races.csv使用）
-- `train/train_v10_ensemble.py` - LGB+XGB+MLP 3モデルアンサンブル
+- `train/train_v92_central.py` - 中央V9.2学習
+- `train/train_v93_leakfree.py` - 中央V9.3リークフリー学習（本番）
+- `train/train_v10_ensemble.py` - LGB+XGB+MLP 3モデルアンサンブル（参考）
 
 ### データ取得ツール
 - `tools/extract_jvdata.py` - TARGET JV (C:\TFJV) → 7CSV抽出
-- `tools/scrape_nar_all.py` - netkeiba NAR全15場スクレイパー（requests+BS4, ~3000R/h）
+
+### アーカイブ
+- `archive/nar/` - 地方(NAR)関連ファイル一式（モデル・学習・バックテスト）
 
 ## データ資産
 
 - 中央: jra_races_full.csv(781,161行), training_times.csv(955,580行), odds_history.csv(778,387行), blood_full.csv(81,986行)
-- 地方: chihou_races_full.csv(17,071行/KDSCOPE/南関4場/730-1500m), chihou_races_2020_2025.csv(1,803行/netkeiba/1600mのみ)
-- 地方追加: nar_all_races.csv(49,915行/2025年/全15場) ※2015-2024はIPブロックで未取得
 - TARGETデータ: C:\TFJV（SE_DATA/CK_DATA/HY_DATA/BR_DATA/KT_DATA）
-- KDSCOPEデータ: C:\KDSCOPE\Data（NS.DAT/NR.DAT/O1等）
+- ※TARGETにはtrio/umaren/wide実配当データなし（単勝オッズのみ）
 
-## 中央条件定義（リークフリーWFバックテスト確認済み）
+## 条件定義（リークフリーWFバックテスト確認済み）
 
 - A: 8-14頭/1600m+/良〜稍重 → trio 7点 ROI 420.7%
 - B: 8-14頭/1600m+/重〜不良 → trio 7点 ROI 473.8%
@@ -58,17 +63,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ※ROIはオッズ推定値。条件間の相対比較は有効
 
-## 地方条件定義
+## モンテカルロシミュレーション結果
 
-- A: 1600m+/8-14頭/良〜稍重 → trio ROI 366%
-- B: 1600m+/8-14頭/重〜不良 → trio ROI 432%
-- D: ~1400m/1-4頭 → wide（ROI未検証）
-- E: 1600m+/7頭以下 → umaren ROI 350%
-- F: ~1400m/5-7頭 → wide（ROI未検証）
-- C: 1600m+/15頭+ → N不足
-- G: ~1400m/8頭+ → データなし
-
-※KDSCOPE(2009-2020)は730-1500mのみ。1600m+はnetkeiba1,803件のみ
+- 初期資金1万円: 破産確率0.58%, 利益確率99.4%, 期待ROI 15,497%
+- 初期資金3万円: 破産確率0.0%, 利益確率100%, 期待ROI 5,239%
+- 初期資金10万円: 破産確率0.0%, 利益確率100%, 期待ROI 1,642%
+- 詳細: data/monte_carlo_results.json
 
 ## コマンド
 
@@ -80,18 +80,21 @@ python -c "import py_compile; py_compile.compile('app.py', doraise=True)"
 python tests/test_features.py          # 5項目自動テスト
 python tests/debug_all.py              # 25項目デバッグテスト
 
-# プロジェクトステータス
-python project_status.py               # 全体確認
-python project_status.py --section model  # モデル精度のみ
-python project_status.py --json        # JSON出力
+# 実運用テスト
+python predict_and_log.py "URL"        # 予測→ログ記録
+python check_results.py                # 結果照合
+python check_results.py --summary      # 成績サマリー
+python verify_real_roi.py              # 実配当ROI検証
+
+# モンテカルロシミュレーション
+python monte_carlo_sim.py              # 破産確率シミュレーション
+python monte_carlo_sim.py --trials 50000  # 試行回数指定
 
 # バックテスト
 python backtest_central_leakfree.py    # 中央リークフリーBT
-python backtest_nar_leakfree.py        # 地方リークフリーBT
 
 # データ取得
 python tools/extract_jvdata.py         # TARGET JV → CSV抽出
-python tools/scrape_nar_all.py         # NAR全場スクレイピング（再開可能）
 
 # Streamlitローカル起動
 streamlit run app.py
@@ -105,12 +108,12 @@ streamlit run app.py
 4. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
 5. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
 6. 買い目の馬番は昇順ソート・カンマスペース区切りで表示
+7. 中央競馬専用 — 地方(NAR)コードはarchive/nar/に保管
 
 ## 未解決の課題
 
-- 地方D/F/G条件のROI未検証（配当データ不足）
-- netkeibaスクレイピング2015-2024年がIPブロックで未取得
-- 実運用テスト（実レースでの予測→結果照合）未実施
+- 実運用テスト未実施（predict_and_log.py → check_results.pyの実戦検証）
+- 実配当ROI検証（verify_real_roi.py）のサンプル蓄積が必要
 - LINE通知未実装
 - GitHub Actionsによる自動化未実装
 
