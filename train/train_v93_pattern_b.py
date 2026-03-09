@@ -193,7 +193,8 @@ def main():
     print(f"\n  Pattern B AUC: LGB {lgb_b_auc:.4f} / XGB {xgb_b_auc:.4f} / Ensemble {b_auc:.4f}")
     print(f"  Pattern A → B improvement: {b_auc - a_auc:+.4f} (参考値)")
 
-    fi_b = show_feature_importance(lgb_b, FEATURES_PATTERN_B, "Pattern B (Live)")
+    fi_b_df = show_feature_importance(lgb_b, FEATURES_PATTERN_B, "Pattern B (Live)")
+    fi_b = dict(zip(fi_b_df['feature'], fi_b_df['importance']))
 
     # === Feature importance analysis: day-of-race features ===
     print("\n  当日特徴量の重要度:")

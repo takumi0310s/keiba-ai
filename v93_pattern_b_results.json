@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-03-09 21:26",
+  "pattern_a": {
+    "lgb": 0.8082,
+    "xgb": 0.8092,
+    "ensemble": 0.8095,
+    "n_features": 67
+  },
+  "pattern_b": {
+    "lgb": 0.8455,
+    "xgb": 0.8455,
+    "ensemble": 0.8458,
+    "n_features": 77
+  },
+  "improvement": 0.0363,
+  "live_features": [
+    "cond_surface",
+    "condition_enc",
+    "horse_weight",
+    "odds_log",
+    "pop_rank",
+    "weather_enc",
+    "weight_cat",
+    "weight_cat_dist",
+    "weight_change",
+    "weight_change_abs"
+  ],
+  "condition_backtest_b": {
+    "A": {
+      "n": 2185,
+      "hit": 1131,
+      "rate": 51.8
+    },
+    "B": {
+      "n": 207,
+      "hit": 103,
+      "rate": 49.8
+    },
+    "C": {
+      "n": 1703,
+      "hit": 649,
+      "rate": 38.1
+    },
+    "D": {
+      "n": 2390,
+      "hit": 839,
+      "rate": 35.1
+    },
+    "E": {
+      "n": 196,
+      "hit": 165,
+      "rate": 84.2
+    },
+    "X": {
+      "n": 228,
+      "hit": 93,
+      "rate": 40.8
+    }
+  }
+}
