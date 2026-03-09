@@ -21,17 +21,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **当日オッズ(odds_log)、当日馬体重(horse_weight)、condition_enc + 派生特徴量を除外**
 
 ### Pattern B（実運用）
-- `keiba_model_v9_central_live.pkl` - V9.3当日情報込み
-- Pattern A特徴量 + 当日特徴量（odds_log, horse_weight, condition_enc, weight_change, weather_enc, pop_rank等）
-- AUCはPattern Aで評価（Pattern BのAUCは参考値のみ）
+- `keiba_model_v9_central_live.pkl` - V9.3当日情報込み（83特徴量）
+- Pattern A + 当日特徴量:
+  - netkeibaから: odds_log, horse_weight, condition_enc, weight_change, pop_rank
+  - JRA公式から: cushion_value（クッション値）, moisture_rate（含水率）
+  - 気象庁APIから: temperature, humidity, wind_speed, precipitation, weather_enc
+- AUCはPattern Aで評価（Pattern BのAUCは参考値: 0.8460）
 - app.pyはPattern Bを優先使用（なければPattern Aにフォールバック）
+- 馬場/天候データ取得失敗時はフォールバック（0=欠損として予測）
 
 ## アーキテクチャ
 
 ### app.py（~4360行）- Streamlitメインアプリ
 - モデルロード: `load_v9_models()` → Pattern B優先、A→V8フォールバック
-- 予測フロー: URL入力→出馬表+当日情報取得→Pattern Bで予測→条件判定→買い目生成
-- 当日情報: 馬体重・オッズ・馬場状態・天候を自動取得してモデルに反映
+- 予測フロー: URL→出馬表→JRA馬場情報→気象庁天候→Pattern B予測→条件判定→買い目
+- 当日情報: 馬体重・オッズ・馬場状態・天候・クッション値・含水率を自動取得
 - 警告: 馬体重急変(±10kg)、混戦オッズを自動検知・表示
 - 条件分類: `classify_race_condition()` → A-E,X条件でtrio 7点買い
 - 記録: SQLiteに予測結果を保存、週次ROIレポート生成
@@ -55,6 +59,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### データ取得ツール
 - `tools/extract_jvdata.py` - TARGET JV (C:\TFJV) → 7CSV抽出
+- `scrape_jra_track.py` - JRA公式からクッション値・含水率取得
+- `scrape_weather.py` - 気象庁APIから気温・湿度・風速・降水量取得
 
 ### アーカイブ
 - `archive/nar/` - 地方(NAR)関連ファイル一式（モデル・学習・バックテスト）

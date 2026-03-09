@@ -1,60 +1,56 @@
 {
-  "generated_at": "2026-03-09 21:26",
+  "generated_at": "2026-03-09 22:17:01",
   "pattern_a": {
-    "lgb": 0.8082,
-    "xgb": 0.8092,
-    "ensemble": 0.8095,
+    "lgb": 0.8081986685752757,
+    "xgb": 0.8091577579500826,
+    "ensemble": 0.809482224194754,
     "n_features": 67
   },
   "pattern_b": {
-    "lgb": 0.8455,
-    "xgb": 0.8455,
-    "ensemble": 0.8458,
-    "n_features": 77
+    "lgb": 0.8455032998368595,
+    "xgb": 0.8457499751299389,
+    "ensemble": 0.8459520580241611,
+    "n_features": 83
   },
-  "improvement": 0.0363,
+  "improvement": 0.03646983382940705,
   "live_features": [
     "cond_surface",
     "condition_enc",
+    "cushion_value",
     "horse_weight",
+    "humidity",
+    "moisture_rate",
     "odds_log",
     "pop_rank",
+    "precipitation",
+    "temperature",
     "weather_enc",
     "weight_cat",
     "weight_cat_dist",
     "weight_change",
-    "weight_change_abs"
+    "weight_change_abs",
+    "wind_speed"
   ],
-  "condition_backtest_b": {
-    "A": {
-      "n": 2185,
-      "hit": 1131,
-      "rate": 51.8
-    },
-    "B": {
-      "n": 207,
-      "hit": 103,
-      "rate": 49.8
-    },
-    "C": {
-      "n": 1703,
-      "hit": 649,
-      "rate": 38.1
-    },
-    "D": {
-      "n": 2390,
-      "hit": 839,
-      "rate": 35.1
-    },
-    "E": {
-      "n": 196,
-      "hit": 165,
-      "rate": 84.2
-    },
-    "X": {
-      "n": 228,
-      "hit": 93,
-      "rate": 40.8
-    }
+  "feature_importance_top20": {
+    "odds_log": 1146891.6534614563,
+    "training_time_filled": 121021.06324195862,
+    "pop_rank": 71417.3662905693,
+    "training_per_dist": 63225.583188056946,
+    "prev_prize": 39804.10150527954,
+    "prev_odds_log": 28972.03369474411,
+    "distance": 22256.405096530914,
+    "surface_dist_enc": 15703.672390937805,
+    "jockey_wr_calc": 9732.01635503769,
+    "horse_career_wr": 9346.292169094086,
+    "surface_enc": 9180.271015167236,
+    "course_enc": 8825.864278316498,
+    "avg_last3f_3r": 8661.500700473785,
+    "prev_finish": 7467.705329418182,
+    "jockey_surface_wr": 7435.099591255188,
+    "trainer_top3_calc": 7357.010859966278,
+    "horse_weight": 7049.36812210083,
+    "carry_diff": 6954.537360191345,
+    "prev_pass4": 6820.24400472641,
+    "num_horses_val": 6578.751679420471
   }
 }
