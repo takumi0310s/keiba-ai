@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-03-10T21:30:00+09:00",
+  "description": "現行モデル vs 提案モデル比較表",
+  "verdict": "現行モデル維持",
+  "current_model": {
+    "name": "V9.3 Pattern A (リークフリー)",
+    "file": "keiba_model_v9_central.pkl",
+    "wf_auc": 0.8095,
+    "features": 67,
+    "training_rows": 680381,
+    "yearly_auc": {
+      "2020": 0.8012,
+      "2021": 0.8043,
+      "2022": 0.8156,
+      "2023": 0.8089,
+      "2024": 0.8101,
+      "2025": 0.8067
+    },
+    "lgb_params": {
+      "num_leaves": 63,
+      "learning_rate": 0.05,
+      "feature_fraction": 0.8,
+      "bagging_fraction": 0.8,
+      "min_child_samples": 50
+    },
+    "condition_performance": {
+      "A": {"hit_rate": 46.9, "estimated_roi": 420.7, "n_races": 2185},
+      "B": {"hit_rate": 49.8, "estimated_roi": 473.8, "n_races": 207},
+      "C": {"hit_rate": 34.3, "estimated_roi": 498.6, "n_races": 1703},
+      "D": {"hit_rate": 28.7, "estimated_roi": 247.0, "n_races": 2390},
+      "E": {"hit_rate": 78.1, "estimated_roi": 330.4, "n_races": 196},
+      "X": {"hit_rate": 34.2, "estimated_roi": 598.2, "n_races": 228}
+    }
+  },
+  "proposed_model": null,
+  "comparison": {
+    "feature_engineering": "未完了 (OOM)",
+    "hyperparameter_tuning": "未完了 (OOM)",
+    "leak_verification": "現行モデルは検証済み (Pattern A = リークフリー)",
+    "robustness_audit": "現行モデルは全年0.80以上で安定"
+  },
+  "recommendation": "現行モデルを維持。次回探索時は1エージェントずつ順次実行してメモリ不足を回避すること。",
+  "past_failures": [
+    "V10 ensemble (LGB+XGB+MLP): WF AUC 0.8050 < 0.8083 (改善せず)",
+    "KDSCOPE+netkeiba統合学習: AUC 0.74 vs 0.82 (データソース特性差)",
+    "odds_log含む学習: リーク (確定オッズ=事後情報)"
+  ]
+}

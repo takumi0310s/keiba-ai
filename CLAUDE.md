@@ -132,25 +132,58 @@ python tools/extract_jvdata.py         # TARGET JV → CSV抽出
 streamlit run app.py
 ```
 
+## 現行モデルのベースライン（これを下回る変更は一切採用しない）
+
+- **Pattern A AUC: 0.8095**（time-split validation, LGB+XGB ensemble）
+- **WF AUC: 0.8017**（walk-forward 2020-2025平均, LGB単体）
+- **年別WF AUC**: 2020=0.7951, 2021=0.7997, 2022=0.8024, 2023=0.8012, 2024=0.8071, 2025=0.8048
+- **実配当ROI**: A=190%, B=241%, C=284%, D=135%, E=105%, X=301%（全条件100%超え）
+- **LGBパラメータ**: num_leaves=63, lr=0.05, feature_fraction=0.8, bagging_fraction=0.8, min_child_samples=50
+
 ## 重要ルール
 
 1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A（リークフリー）。実運用予測はPattern B（当日情報込み）
 2. バックテストは必ずウォークフォワード（時系列分割）で実施
-3. app.pyを変更したら必ずpython構文チェックしてからcommit
-4. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
-5. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
-6. 買い目の馬番は昇順ソート・カンマスペース区切りで表示
-7. 中央競馬専用 — 地方(NAR)コードはarchive/nar/に保管
+3. **改善が確認できない変更は採用しない**: WF AUC > 0.8017 かつ全年AUC > 0.78 かつ 実ROI全条件100%超え
+4. app.pyを変更したら必ずpython構文チェックしてからcommit
+5. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
+6. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
+7. 買い目の馬番は昇順ソート・カンマスペース区切りで表示
+8. 中央競馬専用 — 地方(NAR)コードはarchive/nar/に保管
+
+## 過去の失敗から学んだ教訓（リーク・過学習）
+
+- **odds_log**: 確定オッズでありリーク。絶対に特徴量に使わない
+- **horse_weight, condition_enc**: 当日情報。Pattern Aでは使わない
+- **推定ROI**: 実配当ROIの約2倍に過大評価（実ROIで判断すること）
+- **LGB+XGB+MLPアンサンブル**: 単体LGBに勝てなかった（V10: WF 0.8050 < 0.8083）
+- **コース別専用モデル**: 汎用モデルに勝てなかった（過学習リスク大）
+- **坂路調教**: マッチ率27%でAUC改善なし
+
+## 定期タスク（Windows タスクスケジューラ）
+
+```bash
+# 毎朝8:00 - 当日全レース予測
+python tools/daily_predict.py              # 当日予測
+python tools/daily_predict.py --date 20260308  # 指定日予測
+
+# 毎晩20:00 - 結果照合・ROI計算
+python tools/daily_results.py              # 当日結果
+python tools/daily_results.py --date 20260308  # 指定日結果
+
+# 毎週月曜9:00 - 週次レポート
+python tools/weekly_report.py              # 先週レポート
+```
+
+バッチファイル: `daily_predict.bat`, `daily_results.bat`, `weekly_report.bat`
+ログ: `logs/` ディレクトリ
+
+## Compaction対応
+
+Claude Codeのコンテキスト圧縮時に失われやすい重要情報はこのCLAUDE.mdに集約。
+特に「現行モデルのベースライン」と「過去の失敗から学んだ教訓」は常に参照すること。
 
 ## 未解決の課題
 
-- 実運用テスト未実施（predict_and_log.py → check_results.pyの実戦検証）
 - LINE通知未実装
-- GitHub Actionsによる自動化未実装
-
-## 自動化計画
-
-- GitHub Actions: 毎朝出馬表取得→予測→通知
-- CI/CD: push時に自動テスト（リークチェック・AUC検証・構文チェック）
-- モデル監視: 週次精度レポート自動生成
-- Streamlit監視: エラー自動検知・修正
+- GitHub Actionsによる自動化未実装（現在はWindows タスクスケジューラで代替）
