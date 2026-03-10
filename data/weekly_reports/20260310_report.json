@@ -1,0 +1,23 @@
+{
+  "period": {
+    "start": "20260304",
+    "end": "20260310"
+  },
+  "generated_at": "2026-03-10 21:03:32",
+  "summary": {
+    "total_races": 0,
+    "hit_count": 0,
+    "hit_rate": 0,
+    "total_investment": 0,
+    "total_payout": 0,
+    "total_profit": 0,
+    "roi": 0
+  },
+  "condition_stats": {},
+  "daily_stats": {},
+  "model": {
+    "pattern_a": 0.8081986685752757,
+    "pattern_b": 0.8455032998368595,
+    "version": "v9.3_leakfree"
+  }
+}
