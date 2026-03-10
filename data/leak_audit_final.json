@@ -1,0 +1,498 @@
+{
+  "audit_date": "2026-03-11",
+  "model": "keiba_model_v9_central.pkl (Pattern A)",
+  "model_version": "v9.3_leakfree",
+  "total_features": 67,
+  "leak_features_already_excluded": [
+    "odds_log",
+    "horse_weight",
+    "condition_enc",
+    "weight_change",
+    "weight_change_abs",
+    "weight_cat",
+    "weight_cat_dist",
+    "cond_surface"
+  ],
+  "results": [
+    {
+      "feature": "weight_carry",
+      "status": "safe",
+      "category": "race_entry",
+      "reason": "斤量 is determined by race conditions (grade/age/sex) and published at entry time (枠順確定, 2 days before race)."
+    },
+    {
+      "feature": "age",
+      "status": "safe",
+      "category": "horse_profile",
+      "reason": "Static attribute derived from birth year. Always known."
+    },
+    {
+      "feature": "distance",
+      "status": "safe",
+      "category": "race_program",
+      "reason": "Fixed in race program, published weeks before race day."
+    },
+    {
+      "feature": "course_enc",
+      "status": "safe",
+      "category": "race_program",
+      "reason": "Racecourse venue (札幌/函館/etc.) is fixed in race program."
+    },
+    {
+      "feature": "surface_enc",
+      "status": "safe",
+      "category": "race_program",
+      "reason": "Surface type (芝=0/ダート=1/障害=2) is fixed in race program."
+    },
+    {
+      "feature": "sex_enc",
+      "status": "safe",
+      "category": "horse_profile",
+      "reason": "Static horse attribute (牡=0/牝=1/セン=2). Always known."
+    },
+    {
+      "feature": "num_horses",
+      "status": "safe",
+      "category": "race_entry",
+      "reason": "Number of runners is finalized at entry declaration (枠順確定, 2 days before). May decrease by 1-2 on race morning due to scratches, but entry-time count is available the night before. In practice, app.py uses shutuba-hyo count which is pre-race."
+    },
+    {
+      "feature": "horse_num",
+      "status": "safe",
+      "category": "race_entry",
+      "reason": "馬番 (post position) assigned at entry declaration, 2 days before race."
+    },
+    {
+      "feature": "bracket",
+      "status": "safe",
+      "category": "race_entry_derived",
+      "reason": "枠番 derived from horse_num and num_horses via formula: clip(((horse_num-1)*8//num_horses)+1, 1, 8). Both inputs known at entry time."
+    },
+    {
+      "feature": "jockey_wr_calc",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Jockey career win rate. Expanding window: cumsum(is_win) - current_race_is_win over cumcount (0-indexed). Only past race results used. Bayesian smoothed alpha=30."
+    },
+    {
+      "feature": "jockey_course_wr_calc",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Jockey win rate at specific course. Same expanding window construction as jockey_wr_calc. Only past races. Bayesian smoothed alpha=10."
+    },
+    {
+      "feature": "trainer_top3_calc",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Trainer top-3 rate. Expanding window: cumsum(is_top3) - current over cumcount. Only past races. Bayesian smoothed alpha=20."
+    },
+    {
+      "feature": "prev_finish",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Previous race finishing position. groupby('horse_id').shift(1) on 'finish'. Historical data from completed past race."
+    },
+    {
+      "feature": "prev_last3f",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Previous race last 3F time (上がり3F). shift(1) on agari_3f. Historical data."
+    },
+    {
+      "feature": "prev_pass4",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Previous race 4th corner position. shift(1) on pass4. Historical data."
+    },
+    {
+      "feature": "prev_prize",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Previous race prize money. shift(1) on prize. Historical data."
+    },
+    {
+      "feature": "prev2_finish",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Finish position 2 races ago. shift(2) on finish. Historical data."
+    },
+    {
+      "feature": "prev3_finish",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Finish position 3 races ago. shift(3) on finish. Historical data."
+    },
+    {
+      "feature": "avg_finish_3r",
+      "status": "safe",
+      "category": "horse_lag_aggregate",
+      "reason": "Mean of prev_finish, prev2_finish, prev3_finish. All three are safe historical lag features."
+    },
+    {
+      "feature": "best_finish_3r",
+      "status": "safe",
+      "category": "horse_lag_aggregate",
+      "reason": "Min of prev_finish, prev2_finish, prev3_finish. All three are safe historical lag features."
+    },
+    {
+      "feature": "finish_trend",
+      "status": "safe",
+      "category": "horse_lag_aggregate",
+      "reason": "prev3_finish - prev_finish (positive = improving). Derived from safe lag features."
+    },
+    {
+      "feature": "top3_count_3r",
+      "status": "safe",
+      "category": "horse_lag_aggregate",
+      "reason": "Count of top-3 finishes among prev_finish/prev2_finish/prev3_finish. Derived from safe lag features."
+    },
+    {
+      "feature": "avg_last3f_3r",
+      "status": "safe",
+      "category": "horse_lag_aggregate",
+      "reason": "Mean of prev_last3f and prev2_last3f. Both are safe historical lag features."
+    },
+    {
+      "feature": "prev2_last3f",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Last 3F time from 2 races ago. shift(2) on agari_3f. Historical data."
+    },
+    {
+      "feature": "dist_change",
+      "status": "safe",
+      "category": "race_context",
+      "reason": "Current distance minus previous race distance. Current distance from race program; previous distance is historical. shift(1) on distance."
+    },
+    {
+      "feature": "dist_change_abs",
+      "status": "safe",
+      "category": "race_context",
+      "reason": "abs(dist_change). Derived from safe feature."
+    },
+    {
+      "feature": "rest_days",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "Days since last race (current date_num - shift(1) of date_num). Both dates known before race day. Clipped to 1-365."
+    },
+    {
+      "feature": "rest_category",
+      "status": "safe",
+      "category": "horse_lag_derived",
+      "reason": "Categorical binning of rest_days: [0-6, 7-14, 15-35, 36-63, 64-180, 181+]. Derived from safe feature."
+    },
+    {
+      "feature": "sire_enc",
+      "status": "safe",
+      "category": "pedigree",
+      "reason": "Sire (father) encoded as top-100 frequency rank. Static pedigree data, always known."
+    },
+    {
+      "feature": "bms_enc",
+      "status": "safe",
+      "category": "pedigree",
+      "reason": "Broodmare sire encoded as top-100 frequency rank. Static pedigree data, always known."
+    },
+    {
+      "feature": "dist_cat",
+      "status": "safe",
+      "category": "race_program_derived",
+      "reason": "Distance category bins [0-1200, 1201-1400, 1401-1800, 1801-2200, 2201+]. Derived from race program distance."
+    },
+    {
+      "feature": "age_sex",
+      "status": "safe",
+      "category": "horse_profile_derived",
+      "reason": "age * 10 + sex_enc. Both components are static/always known."
+    },
+    {
+      "feature": "season",
+      "status": "safe",
+      "category": "race_program_derived",
+      "reason": "Season from month: spring(3-5)=0, summer(6-8)=1, autumn(9-11)=2, winter(12-2)=3. Race date is in program."
+    },
+    {
+      "feature": "age_season",
+      "status": "safe",
+      "category": "interaction",
+      "reason": "age * 10 + season. Both components known pre-race."
+    },
+    {
+      "feature": "horse_num_ratio",
+      "status": "safe",
+      "category": "race_entry_derived",
+      "reason": "horse_num / num_horses. Both determined at entry declaration."
+    },
+    {
+      "feature": "bracket_pos",
+      "status": "safe",
+      "category": "race_entry_derived",
+      "reason": "Bracket position category: inner(1-3)=0, middle(4-6)=1, outer(7-8)=2. Derived from bracket."
+    },
+    {
+      "feature": "carry_diff",
+      "status": "safe",
+      "category": "race_entry_derived",
+      "reason": "Horse's weight_carry minus race-average weight_carry. All carry weights published at entry time. Uses groupby('race_id_str').transform('mean')."
+    },
+    {
+      "feature": "age_group",
+      "status": "safe",
+      "category": "horse_profile_derived",
+      "reason": "Age clipped to [2, 7]. Derived from known age."
+    },
+    {
+      "feature": "surface_dist_enc",
+      "status": "safe",
+      "category": "race_program_derived",
+      "reason": "surface_enc * 10 + dist_cat. Both from race program."
+    },
+    {
+      "feature": "course_surface",
+      "status": "safe",
+      "category": "race_program_derived",
+      "reason": "course_enc * 10 + surface_enc. Both from race program."
+    },
+    {
+      "feature": "location_enc",
+      "status": "safe",
+      "category": "horse_profile",
+      "reason": "Training center (美浦=0/栗東=1/地方=2/外国=3). Static registration data, always known."
+    },
+    {
+      "feature": "is_nar",
+      "status": "safe",
+      "category": "constant",
+      "reason": "Hardcoded to 0 for central racing. Constant feature, no information content."
+    },
+    {
+      "feature": "prev_odds_log",
+      "status": "safe",
+      "category": "horse_lag",
+      "reason": "log1p of PREVIOUS race's confirmed tansho odds (shift(1) on tansho_odds). This is historical data from a completed past race - NOT the current race's odds. Distinct from the excluded 'odds_log' which is current-race confirmed odds."
+    },
+    {
+      "feature": "training_time_filled",
+      "status": "safe",
+      "category": "training",
+      "reason": "Training time (調教タイム 4F) from TARGET JV data (training_4f column). This is the officially published training time record, available before race day. NaN filled with global mean."
+    },
+    {
+      "feature": "has_training",
+      "status": "safe",
+      "category": "training",
+      "reason": "Binary flag: training_4f > 0. Whether training time data was recorded. Derived from pre-race training data."
+    },
+    {
+      "feature": "training_per_dist",
+      "status": "safe",
+      "category": "training_derived",
+      "reason": "training_time_filled / (distance/200). Both components available pre-race."
+    },
+    {
+      "feature": "jockey_surface_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Jockey surface-specific win rate. Expanding window: cumsum(is_win) - current over cumcount by (jockey_id, surface_enc). Only past races. Bayesian smoothed alpha=10."
+    },
+    {
+      "feature": "horse_career_races",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Horse career race count. cumcount per horse_id (0-indexed = races before current). Excludes current race by construction."
+    },
+    {
+      "feature": "horse_career_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Horse career win rate. (cumsum(is_win) - current_is_win) / (cumcount + alpha). Excludes current race. Bayesian smoothed alpha=5."
+    },
+    {
+      "feature": "horse_career_top3r",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Horse career top-3 rate. Same construction as horse_career_wr but for is_top3. Excludes current race. Bayesian smoothed alpha=5."
+    },
+    {
+      "feature": "sire_surface_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Sire progeny win rate on surface type. Expanding window by (father, surface_enc). cumsum - current. Bayesian smoothed alpha=50."
+    },
+    {
+      "feature": "sire_dist_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Sire progeny win rate at distance category. Expanding window by (father, dist_cat). cumsum - current. Bayesian smoothed alpha=50."
+    },
+    {
+      "feature": "bms_surface_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "BMS progeny win rate on surface type. Expanding window by (bms, surface_enc). cumsum - current. Bayesian smoothed alpha=50."
+    },
+    {
+      "feature": "wood_best_4f_filled",
+      "status": "safe",
+      "category": "training",
+      "reason": "Best wood training 4F time in 14 days before race from training_times.csv. Condition: d >= race_date - 14 AND d < race_date (strict before). Training data published daily. NaN filled with global mean."
+    },
+    {
+      "feature": "has_wood_training",
+      "status": "safe",
+      "category": "training",
+      "reason": "Binary flag: wood_best_4f is not NaN. Whether horse has wood training data in 14 days before race."
+    },
+    {
+      "feature": "prev_race_first3f",
+      "status": "safe",
+      "category": "horse_lag_pace",
+      "reason": "Previous race's first 3F lap time. shift(1) on race_first3f from lap_times.csv. Historical race-level pace data from completed past race."
+    },
+    {
+      "feature": "prev_race_last3f",
+      "status": "safe",
+      "category": "horse_lag_pace",
+      "reason": "Previous race's last 3F lap time. shift(1) on race_last3f. Historical data from completed past race."
+    },
+    {
+      "feature": "prev_race_pace_diff",
+      "status": "safe",
+      "category": "horse_lag_pace",
+      "reason": "Previous race's pace differential (last3f - first3f). shift(1) on race_pace_diff. Historical data."
+    },
+    {
+      "feature": "prev_agari_relative",
+      "status": "safe",
+      "category": "horse_lag_pace",
+      "reason": "Horse's previous agari (prev_last3f) minus previous race pace (prev_race_last3f). Both are shift(1) lag values from completed past races."
+    },
+    {
+      "feature": "wood_count_2w",
+      "status": "safe",
+      "category": "training",
+      "reason": "Count of wood training sessions in 14 days before race. Condition: d >= race_date - 14 AND d < race_date. Published training data."
+    },
+    {
+      "feature": "sakaro_best_4f_filled",
+      "status": "safe",
+      "category": "training",
+      "reason": "Best sakaro (坂路) training 4F time in 14 days before race. Condition: d >= race_date - 14 AND d < race_date. Published daily. NaN filled with global mean."
+    },
+    {
+      "feature": "sakaro_best_3f_filled",
+      "status": "safe",
+      "category": "training",
+      "reason": "Best sakaro training 3F time in 14 days before race. Same time window as sakaro_best_4f_filled. NaN filled with global mean."
+    },
+    {
+      "feature": "has_sakaro_training",
+      "status": "safe",
+      "category": "training",
+      "reason": "Binary flag: sakaro_best_4f is not NaN. Whether horse has sakaro training in 14 days before race."
+    },
+    {
+      "feature": "total_training_count",
+      "status": "safe",
+      "category": "training_derived",
+      "reason": "wood_count_2w + sakaro_count_2w. Sum of training sessions in 14 days before race. Both components are pre-race data."
+    },
+    {
+      "feature": "horse_dist_top3r",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Horse's top-3 rate at distance category. Expanding window by (horse_id, dist_cat). cumsum(is_top3) - current over cumcount. Bayesian smoothed alpha=5."
+    },
+    {
+      "feature": "horse_surface_top3r",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Horse's top-3 rate on surface type. Expanding window by (horse_id, surface_enc). cumsum(is_top3) - current over cumcount. Bayesian smoothed alpha=5."
+    },
+    {
+      "feature": "frame_course_dist_wr",
+      "status": "safe",
+      "category": "expanding_window_stats",
+      "reason": "Win rate for bracket at course x distance category. Expanding window by frame_key (course_enc + dist_cat + bracket). cumsum(is_win) - current over cumcount. Bayesian smoothed alpha=100."
+    }
+  ],
+  "summary": {
+    "safe": 67,
+    "caution": 0,
+    "leak": 0
+  },
+  "verification_details": {
+    "expanding_window_features_verified": {
+      "count": 13,
+      "features": [
+        "jockey_wr_calc",
+        "jockey_course_wr_calc",
+        "jockey_surface_wr",
+        "trainer_top3_calc",
+        "horse_career_races",
+        "horse_career_wr",
+        "horse_career_top3r",
+        "sire_surface_wr",
+        "sire_dist_wr",
+        "bms_surface_wr",
+        "horse_dist_top3r",
+        "horse_surface_top3r",
+        "frame_course_dist_wr"
+      ],
+      "method": "All use cumsum() - current_race_value or 0-indexed cumcount(). Data sorted by date_num before computation. Current race outcome excluded from all calculations."
+    },
+    "lag_features_verified": {
+      "count": 12,
+      "features": [
+        "prev_finish",
+        "prev_last3f",
+        "prev_pass4",
+        "prev_prize",
+        "prev2_finish",
+        "prev3_finish",
+        "prev2_last3f",
+        "prev_odds_log",
+        "prev_race_first3f",
+        "prev_race_last3f",
+        "prev_race_pace_diff",
+        "prev_agari_relative"
+      ],
+      "method": "All use groupby('horse_id').shift(1/2/3) after sorting by (horse_id, date_num, race_num). Only past completed race data referenced."
+    },
+    "training_features_verified": {
+      "count": 9,
+      "features": [
+        "training_time_filled",
+        "has_training",
+        "training_per_dist",
+        "wood_best_4f_filled",
+        "has_wood_training",
+        "wood_count_2w",
+        "sakaro_best_4f_filled",
+        "sakaro_best_3f_filled",
+        "has_sakaro_training",
+        "total_training_count"
+      ],
+      "method": "training_time_filled from TARGET JV published training data. Wood/sakaro features use strict 14-day lookback (d >= race_date - 14 AND d < race_date). All training times are published pre-race."
+    },
+    "excluded_leak_features_confirmed": {
+      "odds_log": "EXCLUDED - Current race confirmed tansho odds (確定オッズ). Critical leak: determined by betting market during/after wagering.",
+      "horse_weight": "EXCLUDED - Race-day horse weight (馬体重). Announced 70 minutes before race at paddock.",
+      "condition_enc": "EXCLUDED - Track condition (馬場状態: 良/稍/重/不). Determined on race morning and can change during the day.",
+      "weight_change": "EXCLUDED - Derived from horse_weight (current - previous). Race-day data.",
+      "weight_change_abs": "EXCLUDED - abs(weight_change). Race-day data.",
+      "weight_cat": "EXCLUDED - Binned horse_weight. Race-day data.",
+      "weight_cat_dist": "EXCLUDED - weight_cat * 10 + dist_cat. Contains race-day data.",
+      "cond_surface": "EXCLUDED - condition_enc * 10 + surface_enc. Contains race-day data."
+    }
+  },
+  "notes": [
+    "All 67 features in Pattern A pass the leak audit. Every feature is available by the night before race day (前日夜まで).",
+    "The 8 known leak features were correctly excluded from this model and verified in the model's 'leak_removed' metadata.",
+    "prev_odds_log (previous race odds) is safe because it references a completed past race, unlike odds_log which would be the current race's confirmed odds.",
+    "num_horses may decrease on race morning due to scratches, but the entry-declaration count is stable and sufficient for prediction.",
+    "All Bayesian smoothing uses appropriate priors (global rates) to handle cold-start horses/jockeys without leaking information.",
+    "Source code verified: train/train_v92_central.py (base functions) and train/train_v93_leakfree.py (Pattern A training). Feature engineering is consistent with leak-free principles."
+  ]
+}

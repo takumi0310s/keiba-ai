@@ -2558,29 +2558,40 @@ def fetch_race_results(race_id, is_nar=False):
     return results, payouts
 
 # ===== 開催日レース一覧取得 =====
-def fetch_race_list(date_str=None, is_nar=False):
-    """netkeibaから指定日の全レースURLを取得。date_str: 'YYYYMMDD' or None(今日)
-    返り値: [{'race_id': str, 'race_name': str, 'course': str, 'race_num': str, 'time': str}]
+def fetch_race_list(date_str=None):
+    """netkeibaから指定日の中央競馬全レースURLを取得。date_str: 'YYYYMMDD' or None(今日)
+    返り値: ([{race_id, race_name, course, race_num, time}], error_msg or None)
 
     netkeibaのレース一覧はAJAX読み込みのため、race_list_sub.htmlを直接取得する。
+    HTML構造が変わることがあるため、複数のパース戦略を試行する。
     """
     races = []
     if date_str is None:
         date_str = datetime.now().strftime('%Y%m%d')
+    last_error = None
     try:
         # race_list_sub.html: レース一覧のAJAXサブページ（実データが含まれる）
-        if is_nar:
-            url = f"https://nar.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
-        else:
-            url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
-        resp = requests.get(url, headers=HEADERS, timeout=10)
+        url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
+        # リトライ付きHTTP取得（Streamlit Cloud等のネットワーク不安定対策）
+        resp = None
+        for attempt in range(3):
+            try:
+                resp = requests.get(url, headers=HEADERS, timeout=20)
+                if resp.status_code == 200:
+                    break
+            except requests.RequestException:
+                if attempt == 2:
+                    raise
+                import time; time.sleep(1)
+        if resp is None or resp.status_code != 200:
+            last_error = f"HTTP {resp.status_code if resp else 'no response'}"
+            return races
         resp.encoding = "UTF-8"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 開催場所ごとにdl.RaceList_DataListでグループ化されている
+        # --- 戦略1: dl.RaceList_DataList構造（旧レイアウト） ---
         dls = soup.find_all("dl", class_="RaceList_DataList")
         for dl in dls:
-            # コース名をヘッダーから取得（例: "2回中山4日目払戻一覧"）
             course_name = ""
             header = dl.find("div", class_="RaceList_DataHeader_Top")
             if header:
@@ -2589,8 +2600,6 @@ def fetch_race_list(date_str=None, is_nar=False):
                     if cn in header_text:
                         course_name = cn
                         break
-
-            # 各レースのリンクを取得
             for li in dl.find_all("li"):
                 link = li.find("a", href=re.compile(r'race_id=\d+'))
                 if not link:
@@ -2600,19 +2609,12 @@ def fetch_race_list(date_str=None, is_nar=False):
                 if not rid_m:
                     continue
                 rid = rid_m.group(1)
-
-                # レース番号
                 num_div = link.find("div", class_=re.compile(r'Race_Num'))
                 race_num = num_div.get_text(strip=True) if num_div else ""
-
-                # レース名
                 title_span = link.find("span", class_="ItemTitle")
                 race_name = title_span.get_text(strip=True) if title_span else race_num
-
-                # 発走時刻
                 time_span = link.find("span", class_="RaceList_Itemtime")
                 race_time = time_span.get_text(strip=True) if time_span else ""
-
                 races.append({
                     'race_id': rid,
                     'race_name': f"{race_num} {race_name}",
@@ -2621,27 +2623,72 @@ def fetch_race_list(date_str=None, is_nar=False):
                     'time': race_time,
                 })
 
-        # フォールバック: dl構造がない場合、全リンクからrace_idを抽出
+        # --- 戦略2: 全リンクからrace_idを抽出（現行レイアウト対応） ---
         if not races:
+            # コース名マッピング: race_idの場コード(5-6桁目)→コース名
+            # race_id形式: YYYY JJ CC NNRR (年4桁, 場2桁, 回日2桁, レース番号2桁)
+            COURSE_CODE_MAP = {
+                '01': '札幌', '02': '函館', '03': '福島', '04': '新潟',
+                '05': '東京', '06': '中山', '07': '中京', '08': '京都',
+                '09': '阪神', '10': '小倉',
+            }
             seen = set()
             for link in soup.find_all("a", href=re.compile(r'race_id=\d+')):
                 href = link.get("href", "")
+                # movie.htmlリンクはスキップ（result.htmlやshutuba.htmlのみ対象）
+                if 'movie.html' in href:
+                    continue
                 rid_m = re.search(r'race_id=(\d+)', href)
                 if not rid_m or rid_m.group(1) in seen:
                     continue
                 rid = rid_m.group(1)
                 seen.add(rid)
                 text = link.get_text(strip=True)
+
+                # レース番号を抽出
                 num_m = re.search(r'(\d{1,2})R', text)
                 race_num = num_m.group(0) if num_m else ''
+                if not race_num and len(rid) >= 12:
+                    # race_idの末尾2桁からレース番号を推定
+                    try:
+                        race_num = str(int(rid[-2:])) + 'R'
+                    except ValueError:
+                        pass
+
+                # コース名をrace_idから推定 (5-6桁目が場コード)
+                course_name = ''
+                if len(rid) >= 10:
+                    course_code = rid[4:6]
+                    course_name = COURSE_CODE_MAP.get(course_code, '')
+
+                # レース名: テキストから発走時刻・距離なども含む
+                # 例: "1R3歳未勝利10:05 ダ1800m 16頭"
+                race_name = text.strip() if text.strip() else race_num
+
+                # 発走時刻を抽出
+                time_m = re.search(r'(\d{1,2}:\d{2})', text)
+                race_time = time_m.group(1) if time_m else ''
+
                 races.append({
                     'race_id': rid,
-                    'race_name': text if text else race_num,
+                    'race_name': race_name if race_name else race_num,
                     'race_num': race_num,
+                    'course': course_name,
+                    'time': race_time,
                 })
-    except Exception:
-        pass
-    return races
+
+        # レース番号でソート
+        if races:
+            def sort_key(r):
+                nm = re.search(r'(\d+)', r.get('race_num', ''))
+                return (r.get('course', ''), int(nm.group(1)) if nm else 99)
+            races.sort(key=sort_key)
+
+    except Exception as e:
+        last_error = str(e)
+        import traceback
+        traceback.print_exc()
+    return races, last_error
 
 # ===== Parse Shutuba =====
 def parse_shutuba(race_id, is_nar=False):
@@ -4332,16 +4379,18 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
     with batch_col2:
         batch_type = "JRA（中央）"
     if st.button("📋 レース一覧を取得", key="fetch_batch"):
-        batch_is_nar = batch_type == "NAR（地方）"
         date_str = batch_date.strftime('%Y%m%d')
         with st.spinner("レース一覧を取得中..."):
-            race_list = fetch_race_list(date_str, is_nar=batch_is_nar)
+            race_list, fetch_err = fetch_race_list(date_str)
         if race_list:
             st.session_state['batch_races'] = race_list
-            st.session_state['batch_is_nar'] = batch_is_nar
+            st.session_state['batch_is_nar'] = False
             st.success(f"{len(race_list)}レースを取得しました")
         else:
-            st.warning("レースが見つかりませんでした（開催日を確認してください）")
+            msg = "レースが見つかりませんでした（開催日を確認してください）"
+            if fetch_err:
+                msg += f"\n\n詳細: {fetch_err}"
+            st.warning(msg)
     # レース選択UI
     if 'batch_races' in st.session_state:
         batch_races = st.session_state['batch_races']
