@@ -1,20 +1,21 @@
 {
-  "timestamp": "2026-03-10T21:30:00+09:00",
+  "timestamp": "2026-03-10T21:40:00+09:00",
   "description": "現行モデル vs 提案モデル比較表",
-  "verdict": "現行モデル維持",
+  "verdict": "現行モデル維持（有望候補あり・要フル検証）",
   "current_model": {
     "name": "V9.3 Pattern A (リークフリー)",
     "file": "keiba_model_v9_central.pkl",
-    "wf_auc": 0.8095,
+    "wf_auc_lgb_single": 0.80182,
+    "pattern_a_auc_ensemble": 0.8095,
     "features": 67,
     "training_rows": 680381,
-    "yearly_auc": {
-      "2020": 0.8012,
-      "2021": 0.8043,
-      "2022": 0.8156,
-      "2023": 0.8089,
-      "2024": 0.8101,
-      "2025": 0.8067
+    "yearly_wf_auc": {
+      "2020": 0.7954,
+      "2021": 0.7997,
+      "2022": 0.8004,
+      "2023": 0.8018,
+      "2024": 0.8075,
+      "2025": 0.8061
     },
     "lgb_params": {
       "num_leaves": 63,
@@ -32,14 +33,44 @@
       "X": {"hit_rate": 34.2, "estimated_roi": 598.2, "n_races": 228}
     }
   },
-  "proposed_model": null,
-  "comparison": {
-    "feature_engineering": "未完了 (OOM)",
-    "hyperparameter_tuning": "未完了 (OOM)",
-    "leak_verification": "現行モデルは検証済み (Pattern A = リークフリー)",
-    "robustness_audit": "現行モデルは全年0.80以上で安定"
+  "proposed_model": {
+    "name": "V9.4候補 (3新特徴量追加)",
+    "new_features": [
+      "class_change (クラス昇降: 前走class_code差分, delta=+0.00166)",
+      "prev_prize_rank (前走賞金順位比率, delta=+0.00134)",
+      "avg_finish_5r (直近5走平均着順, delta=+0.00010)"
+    ],
+    "features": 70,
+    "wf_auc_lgb_single": 0.80532,
+    "pattern_a_auc_ensemble": "未検証（要フル学習）",
+    "yearly_wf_auc": {
+      "2020": 0.7991,
+      "2021": 0.8037,
+      "2022": 0.8036,
+      "2023": 0.8043,
+      "2024": 0.8113,
+      "2025": 0.8099
+    },
+    "leak_free": true,
+    "leak_verification": "全特徴量shift(1)以上で過去データのみ使用"
   },
-  "recommendation": "現行モデルを維持。次回探索時は1エージェントずつ順次実行してメモリ不足を回避すること。",
+  "comparison": {
+    "wf_auc_delta": "+0.00350 (0.80182 → 0.80532)",
+    "all_years_above_078": true,
+    "min_yearly_auc": 0.7991,
+    "consistent_improvement": "全6年で改善 (+0.0025 ~ +0.0040)",
+    "feature_engineering": "完了 - 3特徴量採用",
+    "hyperparameter_tuning": "未完了 (OOM)",
+    "leak_verification": "3特徴量全てリークフリー確認済み",
+    "robustness_audit": "全年0.799以上で安定"
+  },
+  "next_steps": [
+    "train_v93_leakfree.pyに3特徴量を追加してフル学習→LGB+XBGアンサンブルでPattern A AUC確認",
+    "AUC 0.8095超えならPattern B (train_v93_pattern_b.py) にも追加",
+    "条件別バックテストでROI検証",
+    "全条件ROI維持を確認してからモデル更新"
+  ],
+  "recommendation": "WF AUCで+0.0035の有意な改善。ただしLGB単体での検証のため、フルパイプライン（LGB+XGBアンサンブル）での再検証が必要。現時点では現行モデル維持、次回セッションでフル学習実施を推奨。",
   "past_failures": [
     "V10 ensemble (LGB+XGB+MLP): WF AUC 0.8050 < 0.8083 (改善せず)",
     "KDSCOPE+netkeiba統合学習: AUC 0.74 vs 0.82 (データソース特性差)",

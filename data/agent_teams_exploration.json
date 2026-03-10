@@ -4,22 +4,25 @@
   "agents": {
     "agent_1_feature_engineering": {
       "script": "train/explore_features.py",
-      "status": "terminated_oom",
+      "status": "completed",
+      "elapsed_minutes": 57.7,
       "description": "10候補特徴量のWF AUCテスト",
-      "candidate_features": [
-        "avg_finish_5r (直近5走平均着順)",
-        "jockey_dist_wr (騎手×距離勝率)",
-        "days_since_last_race (休養日数)",
-        "trainer_course_wr (調教師×競馬場勝率)",
-        "avg_prize_5r (直近5走平均賞金)",
-        "horse_age_peak (年齢ピーク距離)",
-        "field_size_norm (頭数正規化)",
-        "weight_trend (馬体重トレンド)",
-        "jockey_trainer_combo (騎手×調教師コンボ)",
-        "distance_change (前走距離差)"
-      ],
-      "result": null,
-      "reason": "Multiple processes exceeded available memory (2-3GB each, total ~10GB+). Processes terminated by OS."
+      "baseline_wf_auc": 0.80182,
+      "candidates": {
+        "class_change": {"wf_auc": 0.80347, "delta": "+0.00166", "status": "ADOPTED"},
+        "prev_prize_rank": {"wf_auc": 0.80316, "delta": "+0.00134", "status": "ADOPTED"},
+        "avg_finish_5r": {"wf_auc": 0.80192, "delta": "+0.00010", "status": "ADOPTED (marginal)"},
+        "jockey_dist_wr": {"wf_auc": 0.80178, "delta": "-0.00004", "status": "rejected"},
+        "horse_course_top3r": {"wf_auc": 0.80178, "delta": "-0.00004", "status": "rejected"},
+        "trainer_jockey_combo_wr": {"wf_auc": 0.80171, "delta": "-0.00011", "status": "rejected"},
+        "horse_avg_prize_3r": {"wf_auc": 0.80168, "delta": "-0.00013", "status": "rejected"},
+        "sire_age_wr": {"wf_auc": 0.80166, "delta": "-0.00016", "status": "rejected"},
+        "days_since_last_race": {"wf_auc": 0.80164, "delta": "-0.00017", "status": "rejected"},
+        "horse_season_wr": {"wf_auc": 0.80164, "delta": "-0.00018", "status": "rejected"}
+      },
+      "combined_wf_auc": 0.80532,
+      "combined_delta": "+0.00350",
+      "result_file": "data/feature_exploration_results.json"
     },
     "agent_2_optuna_tuning": {
       "script": "train/optuna_tune.py",
@@ -57,5 +60,5 @@
     "leak_free": true,
     "roi_improvement": "all conditions >= current"
   },
-  "conclusion": "現行モデル維持 - 探索エージェントがOOMで完了できず改善候補なし。V10 ensemble失敗の前例と一致。"
+  "conclusion": "3新特徴量(class_change, prev_prize_rank, avg_finish_5r)でWF AUC +0.0035改善を確認。全特徴量リークフリー。ただしLGB単体での検証のため、LGB+XGBアンサンブルでのフル学習検証が必要。Optunaチューニングは未完了(OOM)。"
 }
