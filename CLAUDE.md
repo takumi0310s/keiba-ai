@@ -57,10 +57,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `train/train_v93_pattern_b.py` - Pattern B学習（当日情報込み/実運用）
 - `train/train_v10_ensemble.py` - LGB+XGB+MLP 3モデルアンサンブル（参考）
 
-### データ取得ツール
+### データ取得・分析ツール
 - `tools/extract_jvdata.py` - TARGET JV (C:\TFJV) → 7CSV抽出
 - `scrape_jra_track.py` - JRA公式からクッション値・含水率取得
 - `scrape_weather.py` - 気象庁APIから気温・湿度・風速・降水量取得
+- `scrape_jra_payouts.py` - JRA公式DBから配当データ取得
+- `calc_actual_roi.py` - 実配当ROI計算（JRA配当×WFバックテスト）
 
 ### アーカイブ
 - `archive/nar/` - 地方(NAR)関連ファイル一式（モデル・学習・バックテスト）
@@ -68,19 +70,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## データ資産
 
 - 中央: jra_races_full.csv(781,161行), training_times.csv(955,580行), odds_history.csv(778,387行), blood_full.csv(81,986行)
+- 配当: jra_payouts.csv(27,541件, 2018-2025, JRA公式DB)
 - TARGETデータ: C:\TFJV（SE_DATA/CK_DATA/HY_DATA/BR_DATA/KT_DATA）
-- ※TARGETにはtrio/umaren/wide実配当データなし（単勝オッズのみ）
 
-## 条件定義（リークフリーWFバックテスト確認済み）
+## 条件定義（実配当ROI確認済み）
 
-- A: 8-14頭/1600m+/良〜稍重 → trio 7点 ROI 420.7%
-- B: 8-14頭/1600m+/重〜不良 → trio 7点 ROI 473.8%
-- C: 15頭+/1600m+/良〜稍重 → trio 7点 ROI 498.6%
-- D: 1400m以下 → trio 7点 ROI 247.0%
-- E: 7頭以下 → trio 7点 ROI 330.4%
-- X: 15頭+/重〜不良 → trio 7点 ROI 598.2%
+WF 2020-2025, 20,579レース, Pattern A (AUC 0.8017), JRA公式配当データ
 
-※ROIはオッズ推定値。条件間の相対比較は有効
+| 条件 | 条件内容 | trio実ROI | trio推定ROI | 的中率 | N | 推奨 |
+|------|----------|-----------|-------------|--------|------|------|
+| A | 8-14頭/1600m+/良〜稍重 | **190.3%** | 381.0% | 44.7% | 6,438 | ○ |
+| B | 8-14頭/1600m+/重〜不良 | **240.7%** | 478.4% | 45.2% | 847 | ○ |
+| C | 15頭+/1600m+/良〜稍重 | **284.4%** | 511.2% | 33.6% | 4,774 | ○ |
+| D | 1400m以下 | **135.0%** | 230.8% | 27.3% | 7,254 | ○ |
+| E | 7頭以下 | **104.5%** | 300.3% | 75.3% | 461 | ○ |
+| X | 15頭+/重〜不良 | **300.5%** | 490.7% | 35.5% | 805 | ○ |
+
+- 全条件ROI 100%超え（trio 7点推奨）
+- 推定ROIは実ROIの約2倍（推定式 o1*o2*o3*20 が過大評価）
+- 条件Eはumaren(119.1%)がtrio(104.5%)を上回る
+- 詳細: data/actual_roi_results.json
 
 ## モンテカルロシミュレーション結果
 
@@ -136,7 +145,6 @@ streamlit run app.py
 ## 未解決の課題
 
 - 実運用テスト未実施（predict_and_log.py → check_results.pyの実戦検証）
-- 実配当ROI検証（verify_real_roi.py）のサンプル蓄積が必要
 - LINE通知未実装
 - GitHub Actionsによる自動化未実装
 

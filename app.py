@@ -21,8 +21,8 @@ INVESTMENT_PER_RACE = 700
 
 # 条件別買い目ロジック
 # WF backtest 2020-2025 (20,655R) リークフリーPattern A (AUC 0.8017)
-# 推定配当ROI (trio=o1*o2*o3*20, 全条件trio推奨)
-# ★★★=120%+, ★★=100-120%, ★=80-100%, X=80%未満
+# 実配当ROI: JRA公式配当データ(27,541R)×WFバックテスト
+# 推定ROI: trio=o1*o2*o3*20 (参考値、実ROIの約2倍に過大評価)
 CONDITION_PROFILES = {
     'A': {
         'label': '条件A',
@@ -31,10 +31,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 380.9,  # WF trio推定ROI (N=6457) ★★★
-        'hit_rate': 44.7,  # WF trio的中率
+        'roi': 190.3,      # 実配当ROI (JRA公式)
+        'roi_estimated': 381.0,  # 推定ROI (参考値)
+        'hit_rate': 44.7,
         'recommended': True,
-        'wf_n': 6457,
+        'wf_n': 6438,
     },
     'B': {
         'label': '条件B',
@@ -43,10 +44,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 487.6,  # WF trio推定ROI (N=855) ★★★
-        'hit_rate': 45.3,
+        'roi': 240.7,      # 実配当ROI
+        'roi_estimated': 478.4,
+        'hit_rate': 45.2,
         'recommended': True,
-        'wf_n': 855,
+        'wf_n': 847,
     },
     'C': {
         'label': '条件C',
@@ -55,10 +57,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 510.2,  # WF trio推定ROI (N=4788) ★★★
+        'roi': 284.4,      # 実配当ROI
+        'roi_estimated': 511.2,
         'hit_rate': 33.6,
         'recommended': True,
-        'wf_n': 4788,
+        'wf_n': 4774,
     },
     'D': {
         'label': '条件D',
@@ -67,10 +70,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 230.1,  # WF trio推定ROI (N=7280) ★★★
+        'roi': 135.0,      # 実配当ROI
+        'roi_estimated': 230.8,
         'hit_rate': 27.3,
         'recommended': True,
-        'wf_n': 7280,
+        'wf_n': 7254,
     },
     'E': {
         'label': '条件E',
@@ -79,10 +83,13 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 300.0,  # WF trio推定ROI (N=462) ★★★
+        'roi': 104.5,      # 実配当ROI (trio)
+        'roi_estimated': 300.3,
         'hit_rate': 75.3,
         'recommended': True,
-        'wf_n': 462,
+        'wf_n': 461,
+        'alt_bet': 'umaren',  # umaren ROI 119.1% > trio 104.5%
+        'alt_roi': 119.1,
     },
     'X': {
         'label': '条件外',
@@ -91,10 +98,11 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 498.2,  # WF trio推定ROI (N=813) ★★★
-        'hit_rate': 35.7,
+        'roi': 300.5,      # 実配当ROI
+        'roi_estimated': 490.7,
+        'hit_rate': 35.5,
         'recommended': True,
-        'wf_n': 813,
+        'wf_n': 805,
     },
 }
 
@@ -4543,7 +4551,36 @@ with st.expander("📈 実運用成績ダッシュボード"):
         st.info("予測ログがありません。`python predict_and_log.py <URL>` で予測を記録してください。")
 
     # バックテストROI vs 実配当ROI比較
-    if os.path.exists(_roi_path):
+    _actual_roi_path = os.path.join(BASE_DIR, 'data', 'actual_roi_results.json')
+    if os.path.exists(_actual_roi_path):
+        st.markdown("---")
+        st.markdown("#### 実配当ROI (JRA公式配当データ × WFバックテスト)")
+        with open(_actual_roi_path, 'r', encoding='utf-8') as _arf:
+            _ar = json.load(_arf)
+        st.caption(f"WF 2020-2025 / {_ar.get('matched_races', 0):,}レース / "
+                   f"マッチ率 {_ar.get('match_rate', 0):.1f}% / AUC {_ar.get('avg_auc', 0):.4f}")
+        _roi_rows = []
+        for _ck in ['A', 'B', 'C', 'D', 'E', 'X']:
+            _ci = _ar.get('conditions', {}).get(_ck)
+            if not _ci:
+                continue
+            _t = _ci['actual_roi']['trio']
+            _u = _ci['actual_roi']['umaren']
+            _w = _ci['actual_roi']['wide']
+            _et = _ci['estimated_roi']['trio']
+            _roi_rows.append({
+                '条件': _ck,
+                'N': _ci['n'],
+                'trio的中': f"{_t['hit_rate']}%",
+                'trio実ROI': f"{_t['roi']}%",
+                'trio推定ROI': f"{_et['roi']}%",
+                'umaren実ROI': f"{_u['roi']}%",
+                'wide実ROI': f"{_w['roi']}%",
+                '最適券種': _ci['best_bet'],
+                '推奨': '○' if _ci['recommended'] else '×',
+            })
+        st.dataframe(pd.DataFrame(_roi_rows), use_container_width=True, hide_index=True)
+    elif os.path.exists(_roi_path):
         st.markdown("---")
         st.markdown("#### バックテスト推定ROI vs 実配当ROI")
         _roi_df = pd.read_csv(_roi_path)
