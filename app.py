@@ -2561,59 +2561,84 @@ def fetch_race_results(race_id, is_nar=False):
 def fetch_race_list(date_str=None, is_nar=False):
     """netkeibaから指定日の全レースURLを取得。date_str: 'YYYYMMDD' or None(今日)
     返り値: [{'race_id': str, 'race_name': str, 'course': str, 'race_num': str, 'time': str}]
+
+    netkeibaのレース一覧はAJAX読み込みのため、race_list_sub.htmlを直接取得する。
     """
     races = []
     if date_str is None:
         date_str = datetime.now().strftime('%Y%m%d')
     try:
+        # race_list_sub.html: レース一覧のAJAXサブページ（実データが含まれる）
         if is_nar:
-            url = f"https://nar.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+            url = f"https://nar.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
         else:
-            url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+            url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
         resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = "EUC-JP"
+        resp.encoding = "UTF-8"
         soup = BeautifulSoup(resp.text, "html.parser")
-        # レースリンクを取得
-        race_links = soup.find_all("a", href=re.compile(r'race_id=\d+'))
-        seen = set()
-        for link in race_links:
-            href = link.get("href", "")
-            rid_m = re.search(r'race_id=(\d+)', href)
-            if not rid_m:
-                continue
-            rid = rid_m.group(1)
-            if rid in seen:
-                continue
-            seen.add(rid)
-            text = link.get_text(strip=True)
-            # レース番号とレース名を推定
-            num_m = re.search(r'(\d{1,2})R', text)
-            race_num = num_m.group(0) if num_m else ''
-            race_name = text if text else f'{race_num}'
-            races.append({
-                'race_id': rid,
-                'race_name': race_name,
-                'race_num': race_num,
-            })
-        # 開催場所ごとにグループ化されている場合、コース名を取得
-        course_sections = soup.find_all("div", class_=re.compile(r'RaceList_DataTitle|Race_Course'))
-        if course_sections:
-            current_course = ''
-            for elem in soup.find_all(True):
-                cls = ' '.join(elem.get('class', []))
-                if 'RaceList_DataTitle' in cls or 'Race_Course' in cls:
-                    current_course = elem.get_text(strip=True)
-                    # コース名からマッチ
-                    for cn in COURSE_MAP:
-                        if cn in current_course:
-                            current_course = cn
-                            break
-                if elem.name == 'a' and 'race_id=' in elem.get('href', ''):
-                    rid_m = re.search(r'race_id=(\d+)', elem.get('href', ''))
-                    if rid_m:
-                        for r in races:
-                            if r['race_id'] == rid_m.group(1) and 'course' not in r:
-                                r['course'] = current_course
+
+        # 開催場所ごとにdl.RaceList_DataListでグループ化されている
+        dls = soup.find_all("dl", class_="RaceList_DataList")
+        for dl in dls:
+            # コース名をヘッダーから取得（例: "2回中山4日目払戻一覧"）
+            course_name = ""
+            header = dl.find("div", class_="RaceList_DataHeader_Top")
+            if header:
+                header_text = header.get_text(strip=True)
+                for cn in COURSE_MAP:
+                    if cn in header_text:
+                        course_name = cn
+                        break
+
+            # 各レースのリンクを取得
+            for li in dl.find_all("li"):
+                link = li.find("a", href=re.compile(r'race_id=\d+'))
+                if not link:
+                    continue
+                href = link.get("href", "")
+                rid_m = re.search(r'race_id=(\d+)', href)
+                if not rid_m:
+                    continue
+                rid = rid_m.group(1)
+
+                # レース番号
+                num_div = link.find("div", class_=re.compile(r'Race_Num'))
+                race_num = num_div.get_text(strip=True) if num_div else ""
+
+                # レース名
+                title_span = link.find("span", class_="ItemTitle")
+                race_name = title_span.get_text(strip=True) if title_span else race_num
+
+                # 発走時刻
+                time_span = link.find("span", class_="RaceList_Itemtime")
+                race_time = time_span.get_text(strip=True) if time_span else ""
+
+                races.append({
+                    'race_id': rid,
+                    'race_name': f"{race_num} {race_name}",
+                    'race_num': race_num,
+                    'course': course_name,
+                    'time': race_time,
+                })
+
+        # フォールバック: dl構造がない場合、全リンクからrace_idを抽出
+        if not races:
+            seen = set()
+            for link in soup.find_all("a", href=re.compile(r'race_id=\d+')):
+                href = link.get("href", "")
+                rid_m = re.search(r'race_id=(\d+)', href)
+                if not rid_m or rid_m.group(1) in seen:
+                    continue
+                rid = rid_m.group(1)
+                seen.add(rid)
+                text = link.get_text(strip=True)
+                num_m = re.search(r'(\d{1,2})R', text)
+                race_num = num_m.group(0) if num_m else ''
+                races.append({
+                    'race_id': rid,
+                    'race_name': text if text else race_num,
+                    'race_num': race_num,
+                })
     except Exception:
         pass
     return races
@@ -4323,7 +4348,8 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
         st.markdown(f"**{len(batch_races)}レース検出**")
         selected_batch = []
         for r in batch_races:
-            label = f"{r.get('course','')} {r.get('race_num','')} {r['race_name'][:15]}"
+            time_str = f" {r['time']}" if r.get('time') else ""
+            label = f"{r.get('course','')} {r['race_name'][:20]}{time_str}"
             if st.checkbox(label, value=True, key=f"batch_{r['race_id']}"):
                 selected_batch.append(r)
         if selected_batch and st.button(f"🚀 {len(selected_batch)}レースを一括予測", key="run_batch"):
