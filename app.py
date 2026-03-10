@@ -2688,6 +2688,53 @@ def fetch_race_list(date_str=None):
         last_error = str(e)
         import traceback
         traceback.print_exc()
+
+    # --- フォールバック: db.netkeiba.comから取得 ---
+    if not races:
+        try:
+            db_url = f"https://db.netkeiba.com/race/list/{date_str}/"
+            resp2 = requests.get(db_url, headers=HEADERS, timeout=15)
+            resp2.encoding = "EUC-JP"
+            if resp2.status_code == 200 and len(resp2.content) > 500:
+                soup2 = BeautifulSoup(resp2.text, "html.parser")
+                seen = set()
+                VENUE_NAMES = {
+                    '01':'札幌','02':'函館','03':'福島','04':'新潟',
+                    '05':'東京','06':'中山','07':'中京','08':'京都',
+                    '09':'阪神','10':'小倉',
+                }
+                for link in soup2.find_all("a", href=re.compile(r'/race/\d{12}/')):
+                    href = link.get("href", "")
+                    rid_m = re.search(r'/race/(\d{12})/', href)
+                    if not rid_m:
+                        continue
+                    rid = rid_m.group(1)
+                    if rid in seen:
+                        continue
+                    venue_code = int(rid[4:6])
+                    if venue_code > 10:
+                        continue  # JRA以外をスキップ
+                    seen.add(rid)
+                    text = link.get_text(strip=True)
+                    race_num_int = int(rid[-2:])
+                    race_num = f"{race_num_int}R"
+                    course_name = VENUE_NAMES.get(rid[4:6], '')
+                    race_name = text if text else race_num
+                    races.append({
+                        'race_id': rid,
+                        'race_name': f"{race_num} {race_name}",
+                        'race_num': race_num,
+                        'course': course_name,
+                    })
+                races.sort(key=lambda r: (r.get('course', ''), r.get('race_num', '')))
+                if races:
+                    last_error = None  # フォールバック成功
+                    print(f"[INFO] db.netkeiba.comフォールバックで{len(races)}レース取得")
+        except Exception as e2:
+            print(f"[WARN] db.netkeiba.comフォールバックも失敗: {e2}")
+            if last_error is None:
+                last_error = str(e2)
+
     return races, last_error
 
 # ===== Parse Shutuba =====
