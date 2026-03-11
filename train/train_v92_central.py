@@ -197,11 +197,15 @@ def merge_training_features(df, tt_data):
 
     # For each race row, find best wood 4F time in 14 days before race
     # Wood has horse_id for reliable joining
+    # FIX: Wood horse_id is 10-digit (e.g. 2022107287), race horse_id is 8-digit (e.g. 22107287)
+    # Use last 8 digits of wood horse_id to match race horse_id
     wood_best = {}
     if len(wood) > 0 and 'horse_id' in wood.columns:
         wood_clean = wood[wood['horse_id'].astype(str).str.strip() != ''].copy()
         wood_clean['horse_id'] = wood_clean['horse_id'].astype(str).str.strip()
-        for hid, grp in wood_clean.groupby('horse_id'):
+        # Normalize to last 8 digits for matching
+        wood_clean['horse_id_8'] = wood_clean['horse_id'].apply(lambda x: x[-8:] if len(x) > 8 else x)
+        for hid, grp in wood_clean.groupby('horse_id_8'):
             for _, row in grp.iterrows():
                 key = (str(hid), int(row['date']))
                 if key not in wood_best or row['time_4f'] < wood_best[key]:
@@ -216,20 +220,6 @@ def merge_training_features(df, tt_data):
     for hid in horse_wood:
         horse_wood[hid].sort()
 
-    # For each race, find best wood time in 14 days before
-    def get_best_wood(horse_id, race_date):
-        hid = str(horse_id).strip()
-        if hid not in horse_wood:
-            return np.nan
-        entries = horse_wood[hid]
-        best = np.nan
-        for d, t in entries:
-            # Training within 14 days before race
-            if d >= race_date - 14 and d < race_date:
-                if np.isnan(best) or t < best:
-                    best = t
-        return best
-
     # Vectorized approach: group by horse_id
     df['wood_best_4f'] = np.nan
     df['wood_count_2w'] = 0
@@ -242,8 +232,6 @@ def merge_training_features(df, tt_data):
             continue
         for idx in grp_idx:
             race_date = df.loc[idx, 'date_num']
-            # Convert race_date (YYYYMMDD int) to comparable format
-            # Training dates are also YYYYMMDD
             best = np.nan
             count = 0
             for d, t in entries:
@@ -263,12 +251,26 @@ def merge_training_features(df, tt_data):
     df['has_wood_training'] = df['wood_best_4f'].notna().astype(int)
 
     # === Sakaro training features ===
+    # FIX: Sakaro has no horse_id. Use horse_name → horse_id mapping from race data.
     print("  Merging sakaro training features...")
     horse_sakaro = {}
-    if len(sakaro) > 0 and 'horse_id' in sakaro.columns:
-        sak_clean = sakaro[sakaro['horse_id'].astype(str).str.strip() != ''].copy()
-        sak_clean['horse_id'] = sak_clean['horse_id'].astype(str).str.strip()
-        for hid, grp in sak_clean.groupby('horse_id'):
+    if len(sakaro) > 0:
+        # Build horse_name → horse_id mapping from race data
+        name_to_hid = {}
+        for _, r in df.iterrows():
+            n = str(r.get('horse_name', '')).strip()
+            h = str(r['horse_id']).strip()
+            if n and h and n != 'nan' and h != 'nan':
+                name_to_hid[n] = h
+
+        # Map sakaro rows to horse_id via horse_name
+        sak_copy = sakaro.copy()
+        sak_copy['horse_name_stripped'] = sak_copy['horse_name'].astype(str).str.strip()
+        sak_copy['mapped_hid'] = sak_copy['horse_name_stripped'].map(name_to_hid)
+        sak_mapped = sak_copy[sak_copy['mapped_hid'].notna()].copy()
+        print(f"  Sakaro name→horse_id mapped: {len(sak_mapped)}/{len(sakaro)} ({len(sak_mapped)/max(1,len(sakaro))*100:.1f}%)")
+
+        for hid, grp in sak_mapped.groupby('mapped_hid'):
             horse_sakaro[hid] = sorted(
                 [(int(r['date']), r['time_4f'], r['time_3f']) for _, r in grp.iterrows()],
                 key=lambda x: x[0]
