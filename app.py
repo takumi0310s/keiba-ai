@@ -398,6 +398,42 @@ def get_all_race_records():
     conn.close()
     return rows
 
+JRA_VENUES = ['東京', '中山', '阪神', '京都', '小倉', '新潟', '福島', '札幌', '函館', '中京']
+
+def get_track_record_all():
+    """TRACK RECORD用: 全レース結果+開催情報を取得"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("""
+        SELECT r.race_id, r.race_name, r.predicted_at, r.num_horses,
+               r.hit_trio, r.payout, r.bet_condition, r.bet_type,
+               r.trio_bets, r.wide_bets, r.umaren_bets, r.hit_combo,
+               r.buy_recommended,
+               (SELECT course FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as course,
+               (SELECT race_date FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as race_date,
+               (SELECT distance FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as distance,
+               (SELECT surface FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as surface,
+               (SELECT condition FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as track_condition
+        FROM race_results r
+        WHERE r.is_nar = 0
+        ORDER BY r.predicted_at DESC
+    """)
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    return rows
+
+def get_predictions_for_race(race_id):
+    """特定レースの全馬予測データを取得"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("""SELECT horse_name, horse_num, ai_rank, ai_score, odds, actual_finish
+                 FROM predictions WHERE race_id = ? ORDER BY ai_rank ASC""", (race_id,))
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    return rows
+
 def get_weekly_analysis():
     """週次分析データを取得。直近4週分のデータをコース/距離/馬場/頭数別に分析"""
     conn = sqlite3.connect(DB_PATH)
@@ -3334,6 +3370,113 @@ def render_dashboard():
     html += '</div>'
     return html
 
+def render_track_record_race_list(races):
+    """TRACK RECORD: レース一覧をst.expanderで表示（予測詳細付き）"""
+    BET_LABELS = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}
+    BET_KEYS = {'trio': 'trio_bets', 'wide': 'wide_bets', 'umaren': 'umaren_bets'}
+    if not races:
+        st.info("該当するレースがありません。")
+        return
+    for r in races:
+        race_name = r.get('race_name', '不明')
+        race_id = r.get('race_id', '')
+        hit = r.get('hit_trio')
+        payout = r.get('payout', 0) or 0
+        bet_type = r.get('bet_type', 'trio') or 'trio'
+        bet_cond = r.get('bet_condition', '?') or '?'
+        distance = r.get('distance', 0) or 0
+        surface = r.get('surface', '') or ''
+        track_cond = r.get('track_condition', '') or ''
+        num_horses = r.get('num_horses', 0) or 0
+        if hit == 1:
+            status_icon = "✅"
+            status_text = f"+¥{payout - INVESTMENT_PER_RACE:,}"
+        elif hit == 0:
+            status_icon = "❌"
+            status_text = f"-¥{INVESTMENT_PER_RACE}"
+        else:
+            status_icon = "⏳"
+            status_text = "未確定"
+        label = f"{status_icon} {race_name}　[{bet_cond}] {BET_LABELS.get(bet_type, bet_type)} {status_text}"
+        with st.expander(label, expanded=False):
+            # レース情報
+            info_parts = []
+            if surface:
+                info_parts.append(surface)
+            if distance:
+                info_parts.append(f"{distance}m")
+            if track_cond:
+                info_parts.append(track_cond)
+            if num_horses:
+                info_parts.append(f"{num_horses}頭")
+            cond_profile = CONDITION_PROFILES.get(bet_cond, {})
+            cond_desc = cond_profile.get('desc', '')
+            st.markdown(f"**レース情報**: {' / '.join(info_parts)}")
+            st.markdown(f"**条件 {bet_cond}**: {cond_desc}")
+            st.markdown(f"**推奨買い目**: {BET_LABELS.get(bet_type, bet_type)}")
+            # 買い目
+            bets_raw = r.get(BET_KEYS.get(bet_type, 'trio_bets'), '[]')
+            try:
+                bets = json.loads(bets_raw) if bets_raw else []
+            except Exception:
+                bets = []
+            if bets:
+                inv = len(bets) * 100
+                bet_strs = ['  '.join(str(n) for n in sorted(b)) for b in bets]
+                st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
+                bets_html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px 0;">'
+                for bs in bet_strs:
+                    bets_html += f'<span style="background:#1a2a3a;padding:3px 8px;border-radius:4px;font-family:Oswald;font-size:0.85em;color:#b0d0f0 !important;">{bs}</span>'
+                bets_html += '</div>'
+                st.markdown(bets_html, unsafe_allow_html=True)
+            # AI予測上位馬
+            horses = get_predictions_for_race(race_id)
+            if horses:
+                st.markdown("**AI予測スコア**")
+                top_horses = horses[:6]
+                max_score = top_horses[0]['ai_score'] if top_horses else 1
+                horse_html = '<div style="font-size:0.85em;">'
+                for h in top_horses:
+                    rank = h['ai_rank']
+                    name = h['horse_name']
+                    score = h['ai_score']
+                    num = h['horse_num']
+                    finish = h.get('actual_finish')
+                    bar_w = score / max_score * 100 if max_score > 0 else 0
+                    finish_str = ''
+                    finish_color = ''
+                    if finish:
+                        if finish <= 3:
+                            finish_str = f' → <span style="color:#2ecc40 !important;font-weight:bold;">{finish}着</span>'
+                        else:
+                            finish_str = f' → {finish}着'
+                    rank_colors = {1: '#ffd700', 2: '#c0c0c0', 3: '#cd7f32'}
+                    rank_c = rank_colors.get(rank, '#6a6a80')
+                    horse_html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
+                    horse_html += f'<span style="min-width:20px;color:{rank_c} !important;font-weight:bold;font-family:Oswald;">{rank}</span>'
+                    horse_html += f'<span style="min-width:24px;color:#8a8aa0 !important;font-family:Oswald;">{num}番</span>'
+                    horse_html += f'<span style="min-width:80px;">{name}</span>'
+                    horse_html += f'<div style="flex:1;height:10px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
+                    horse_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2898d8,#00e87b);border-radius:3px;"></div></div>'
+                    horse_html += f'<span style="font-family:Oswald;font-size:0.85em;min-width:45px;color:#b0b8c8 !important;">{score:.3f}</span>'
+                    horse_html += f'<span style="font-size:0.82em;">{finish_str}</span>'
+                    horse_html += '</div>'
+                horse_html += '</div>'
+                st.markdown(horse_html, unsafe_allow_html=True)
+            # 結果表示
+            if hit == 1:
+                hit_combo = r.get('hit_combo', '')
+                combo_str = ''
+                if hit_combo:
+                    try:
+                        combo = json.loads(hit_combo)
+                        combo_str = f" ({', '.join(str(n) for n in combo)})"
+                    except Exception:
+                        pass
+                st.success(f"的中！{combo_str} 配当: ¥{payout:,}（収支: +¥{payout - INVESTMENT_PER_RACE:,}）")
+            elif hit == 0:
+                st.error(f"不的中（投資: ¥{INVESTMENT_PER_RACE}）")
+
 def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None, pair_odds=None):
     """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示。
     pair_odds: {(n1,n2): odds} ワイドまたは馬連のペアオッズ
@@ -4288,11 +4431,192 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     # Disclaimer
     st.markdown('<div class="disclaimer">&#9888;&#65039; 本予想はAIによる統計分析です。馬券の購入は自己責任でお願いします。</div>', unsafe_allow_html=True)
 
-# ===== Dashboard & Results Update =====
-dash_html = render_dashboard()
-if dash_html:
-    st.markdown('<div class="sec-title">📈 TRACK RECORD<span class="sec-line"></span></div>', unsafe_allow_html=True)
-    st.markdown(dash_html, unsafe_allow_html=True)
+# ===== TRACK RECORD（全面改修） =====
+st.markdown('<div class="sec-title">📈 TRACK RECORD<span class="sec-line"></span></div>', unsafe_allow_html=True)
+
+_tr_all_data = get_track_record_all()
+if not _tr_all_data:
+    st.info("予測記録がありません。レースを予測すると記録が表示されます。")
+else:
+    # --- サマリー（月別フィルタ付き） ---
+    _tr_all_months = sorted(set(
+        r.get('race_date', r.get('predicted_at', ''))[:7]
+        for r in _tr_all_data
+        if r.get('race_date') or r.get('predicted_at')
+    ), reverse=True)
+    _tr_month_options = ['全期間'] + _tr_all_months
+    _tr_sel_month = st.selectbox("📅 期間フィルタ", _tr_month_options, key="tr_month_filter")
+    if _tr_sel_month == '全期間':
+        _tr_filtered = _tr_all_data
+    else:
+        _tr_filtered = [r for r in _tr_all_data
+                        if (r.get('race_date') or r.get('predicted_at', ''))[:7] == _tr_sel_month]
+    _tr_stats = _calc_stats_from_rows(_tr_filtered)
+    _tr_summary_html = '<div class="ev-card">'
+    _tr_summary_html += _render_stats_block(_tr_stats, f'&#127942; {_tr_sel_month}')
+    _tr_summary_html += '</div>'
+    st.markdown(_tr_summary_html, unsafe_allow_html=True)
+
+    # --- レースブラウザ（2タブ） ---
+    _tr_tab_venue, _tr_tab_date = st.tabs(["🏟️ 場所から探す", "📅 日付から探す"])
+
+    with _tr_tab_venue:
+        # 競馬場ボタン（データあり=緑, なし=グレー）
+        _tr_venues_with_data = {}
+        for r in _tr_all_data:
+            v = r.get('course', '')
+            if v:
+                _tr_venues_with_data[v] = _tr_venues_with_data.get(v, 0) + 1
+        for row_start in [0, 5]:
+            _tr_vcols = st.columns(5)
+            for i in range(5):
+                venue = JRA_VENUES[row_start + i]
+                cnt = _tr_venues_with_data.get(venue, 0)
+                with _tr_vcols[i]:
+                    if cnt > 0:
+                        if st.button(f"🟢 {venue} ({cnt})", key=f"tr_v_{venue}", use_container_width=True):
+                            st.session_state['tr_selected_venue'] = venue
+                            st.session_state.pop('tr_venue_date_idx', None)
+                            st.rerun()
+                    else:
+                        st.button(f"⚫ {venue}", key=f"tr_v_{venue}", disabled=True, use_container_width=True)
+
+        _tr_sv = st.session_state.get('tr_selected_venue')
+        if _tr_sv and _tr_sv in _tr_venues_with_data:
+            st.markdown(f"### {_tr_sv}")
+            _tr_venue_races = [r for r in _tr_all_data if r.get('course') == _tr_sv]
+            _tr_venue_dates = sorted(set(
+                (r.get('race_date') or r.get('predicted_at', ''))[:10]
+                for r in _tr_venue_races
+                if r.get('race_date') or r.get('predicted_at')
+            ), reverse=True)
+            if _tr_venue_dates:
+                _tr_vd_labels = []
+                _tr_weekdays = ['月', '火', '水', '木', '金', '土', '日']
+                for d in _tr_venue_dates:
+                    try:
+                        dt = datetime.strptime(d, '%Y-%m-%d')
+                        wd = _tr_weekdays[dt.weekday()]
+                        day_races = [r for r in _tr_venue_races if (r.get('race_date') or '')[:10] == d]
+                        _tr_vd_labels.append(f"🟢 {d}({wd}) - {len(day_races)}R")
+                    except Exception:
+                        _tr_vd_labels.append(d)
+                _tr_vd_idx = st.selectbox(
+                    "予測済みの日付を選択", range(len(_tr_venue_dates)),
+                    format_func=lambda i: _tr_vd_labels[i],
+                    key="tr_venue_date_idx"
+                )
+                _tr_selected_vd = _tr_venue_dates[_tr_vd_idx]
+                _tr_day_races = [r for r in _tr_venue_races
+                                 if (r.get('race_date') or r.get('predicted_at', ''))[:10] == _tr_selected_vd]
+                _tr_day_races.sort(key=lambda r: r.get('predicted_at', ''))
+                render_track_record_race_list(_tr_day_races)
+
+    with _tr_tab_date:
+        # 日付一覧（予測済みのみ）
+        _tr_all_dates = sorted(set(
+            (r.get('race_date') or r.get('predicted_at', ''))[:10]
+            for r in _tr_all_data
+            if r.get('race_date') or r.get('predicted_at')
+        ), reverse=True)
+        if _tr_all_dates:
+            _tr_d_labels = []
+            _tr_weekdays2 = ['月', '火', '水', '木', '金', '土', '日']
+            for d in _tr_all_dates:
+                try:
+                    dt = datetime.strptime(d, '%Y-%m-%d')
+                    wd = _tr_weekdays2[dt.weekday()]
+                    day_races = [r for r in _tr_all_data if (r.get('race_date') or '')[:10] == d]
+                    venues = set(r.get('course', '') for r in day_races if r.get('course'))
+                    venues_str = '/'.join(sorted(venues)) if venues else ''
+                    _tr_d_labels.append(f"🟢 {d}({wd}) {venues_str} - {len(day_races)}R")
+                except Exception:
+                    _tr_d_labels.append(d)
+            _tr_d_idx = st.selectbox(
+                "予測済みの日付を選択", range(len(_tr_all_dates)),
+                format_func=lambda i: _tr_d_labels[i],
+                key="tr_date_select_idx"
+            )
+            _tr_selected_d = _tr_all_dates[_tr_d_idx]
+            _tr_d_data = [r for r in _tr_all_data
+                          if (r.get('race_date') or r.get('predicted_at', ''))[:10] == _tr_selected_d]
+            _tr_d_venues = sorted(set(r.get('course', '') for r in _tr_d_data if r.get('course')))
+
+            if len(_tr_d_venues) > 1:
+                # 複数開催場：場所選択ボタン
+                _tr_dv_cols = st.columns(len(_tr_d_venues))
+                for i, venue in enumerate(_tr_d_venues):
+                    v_cnt = len([r for r in _tr_d_data if r.get('course') == venue])
+                    with _tr_dv_cols[i]:
+                        if st.button(f"🟢 {venue} ({v_cnt}R)", key=f"tr_dv_{venue}", use_container_width=True):
+                            st.session_state['tr_date_venue'] = venue
+                            st.rerun()
+                _tr_dv = st.session_state.get('tr_date_venue')
+                if _tr_dv and _tr_dv in _tr_d_venues:
+                    st.markdown(f"### {_tr_selected_d} {_tr_dv}")
+                    _tr_dv_races = [r for r in _tr_d_data if r.get('course') == _tr_dv]
+                    _tr_dv_races.sort(key=lambda r: r.get('predicted_at', ''))
+                    render_track_record_race_list(_tr_dv_races)
+                else:
+                    # 場未選択 → 全場表示
+                    for venue in _tr_d_venues:
+                        st.markdown(f"### {venue}")
+                        _tr_venue_d_races = [r for r in _tr_d_data if r.get('course') == venue]
+                        _tr_venue_d_races.sort(key=lambda r: r.get('predicted_at', ''))
+                        render_track_record_race_list(_tr_venue_d_races)
+            elif len(_tr_d_venues) == 1:
+                st.markdown(f"### {_tr_selected_d} {_tr_d_venues[0]}")
+                _tr_d_data.sort(key=lambda r: r.get('predicted_at', ''))
+                render_track_record_race_list(_tr_d_data)
+            else:
+                _tr_d_data.sort(key=lambda r: r.get('predicted_at', ''))
+                render_track_record_race_list(_tr_d_data)
+
+    # --- 管理（削除機能） ---
+    with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
+        all_records = get_all_race_records()
+        if not all_records:
+            st.info("記録されたレースはありません。")
+        else:
+            st.markdown(f"**登録レース数: {len(all_records)}件**")
+            col_del_all, col_spacer = st.columns([1, 2])
+            with col_del_all:
+                if st.button("⚠️ 全件削除", key="delete_all_btn"):
+                    st.session_state['confirm_delete_all'] = True
+            if st.session_state.get('confirm_delete_all'):
+                st.warning("本当に全レコードを削除しますか？この操作は取り消せません。")
+                col_yes, col_no, _ = st.columns([1, 1, 2])
+                with col_yes:
+                    if st.button("はい、全件削除", key="confirm_yes"):
+                        delete_all_race_records()
+                        st.session_state['confirm_delete_all'] = False
+                        st.success("全レコードを削除しました。")
+                        st.rerun()
+                with col_no:
+                    if st.button("キャンセル", key="confirm_no"):
+                        st.session_state['confirm_delete_all'] = False
+                        st.rerun()
+            selected_ids = []
+            for rec in all_records:
+                rid = rec.get('race_id', '')
+                name = rec.get('race_name', '')[:12]
+                date = (rec.get('predicted_at', '') or '')[:10]
+                hit = rec.get('hit_trio')
+                payout = rec.get('payout', 0) or 0
+                bt = rec.get('bet_type', 'trio') or 'trio'
+                bt_label = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}.get(bt, '三連複')
+                if hit is not None:
+                    status = f"✅ +¥{payout - INVESTMENT_PER_RACE:,}" if hit == 1 else f"❌ -¥{INVESTMENT_PER_RACE}"
+                else:
+                    status = "⏳ 未確定"
+                label = f"[JRA] {date} {name} ({bt_label}) {status}"
+                if st.checkbox(label, key=f"del_{rid}"):
+                    selected_ids.append(rid)
+            if selected_ids:
+                if st.button(f"🗑️ 選択した {len(selected_ids)} 件を削除", key="delete_selected_btn"):
+                    delete_race_records(selected_ids)
+                    st.success(f"{len(selected_ids)} 件のレコードを削除しました。")
+                    st.rerun()
 
 # ===== モデル情報・特徴量重要度 =====
 with st.expander("🤖 モデル情報・特徴量重要度"):
@@ -4368,55 +4692,6 @@ with st.expander("🧪 V8 vs V9 Backtest Report"):
         st.markdown(render_5year_report(bt5), unsafe_allow_html=True)
     else:
         st.info("5年バックテスト未実施。`python backtest_v8_v9.py --5year` で2020-2025の拡張検証を実行できます。")
-
-# TRACK RECORD 管理（削除機能）
-with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
-    all_records = get_all_race_records()
-    if not all_records:
-        st.info("記録されたレースはありません。")
-    else:
-        st.markdown(f"**登録レース数: {len(all_records)}件**")
-        # 全件削除ボタン
-        col_del_all, col_spacer = st.columns([1, 2])
-        with col_del_all:
-            if st.button("⚠️ 全件削除", key="delete_all_btn"):
-                st.session_state['confirm_delete_all'] = True
-        if st.session_state.get('confirm_delete_all'):
-            st.warning("本当に全レコードを削除しますか？この操作は取り消せません。")
-            col_yes, col_no, _ = st.columns([1, 1, 2])
-            with col_yes:
-                if st.button("はい、全件削除", key="confirm_yes"):
-                    delete_all_race_records()
-                    st.session_state['confirm_delete_all'] = False
-                    st.success("全レコードを削除しました。")
-                    st.rerun()
-            with col_no:
-                if st.button("キャンセル", key="confirm_no"):
-                    st.session_state['confirm_delete_all'] = False
-                    st.rerun()
-        # チェックボックスで個別選択
-        selected_ids = []
-        for rec in all_records:
-            rid = rec.get('race_id', '')
-            name = rec.get('race_name', '')[:12]
-            date = (rec.get('predicted_at', '') or '')[:10]
-            hit = rec.get('hit_trio')
-            payout = rec.get('payout', 0) or 0
-            tag = "JRA"
-            bt = rec.get('bet_type', 'trio') or 'trio'
-            bt_label = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}.get(bt, '三連複')
-            if hit is not None:
-                status = f"✅ +¥{payout - INVESTMENT_PER_RACE:,}" if hit == 1 else f"❌ -¥{INVESTMENT_PER_RACE}"
-            else:
-                status = "⏳ 未確定"
-            label = f"[{tag}] {date} {name} ({bt_label}) {status}"
-            if st.checkbox(label, key=f"del_{rid}"):
-                selected_ids.append(rid)
-        if selected_ids:
-            if st.button(f"🗑️ 選択した {len(selected_ids)} 件を削除", key="delete_selected_btn"):
-                delete_race_records(selected_ids)
-                st.success(f"{len(selected_ids)} 件のレコードを削除しました。")
-                st.rerun()
 
 # ===== 複数レース一括予測 =====
 with st.expander("🏇 複数レース一括予測（開催日全レース）"):
