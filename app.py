@@ -4693,6 +4693,205 @@ with st.expander("🧪 V8 vs V9 Backtest Report"):
     else:
         st.info("5年バックテスト未実施。`python backtest_v8_v9.py --5year` で2020-2025の拡張検証を実行できます。")
 
+# ===== 一括予測用モデルスコアリング =====
+def _batch_score_race(horses, race_info, is_nar):
+    """バッチ予測用: 特徴量エンジニアリング+モデル予測+スコア計算。
+    Returns: (df_sorted, cond_key, cond_profile, odds_available) or None on error."""
+    try:
+        b_md, b_mt = get_model_for_race(is_nar, use_live=True)
+        b_model = b_md.get('model') if isinstance(b_md, dict) else model
+        if b_model is None:
+            b_model = model
+            b_mt = 'default'
+        b_feats = b_md.get('features', model_features) if isinstance(b_md, dict) else model_features
+        b_ver = b_md.get('version', model_version) if isinstance(b_md, dict) else model_version
+        b_smap = b_md.get('sire_map', sire_map) if isinstance(b_md, dict) else sire_map
+        b_bmap = b_md.get('bms_map', bms_map) if isinstance(b_md, dict) else bms_map
+        b_live = b_mt == 'central_live'
+        n_top = b_md.get('n_top_encode', 80) if isinstance(b_md, dict) else 80
+
+        df = pd.DataFrame(horses)
+        if len(df) < 2:
+            return None
+        num_h = len(df)
+        odds_avail = '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any()
+
+        # === 共通特徴量 ===
+        df['頭数'] = num_h
+        df['斤量平均差'] = df['斤量'] - df['斤量'].mean()
+        dist = race_info['distance']
+        df['距離カテゴリ'] = 0 if dist <= 1400 else (1 if dist <= 1800 else (2 if dist <= 2200 else 3))
+        df['体重カテゴリ'] = df['馬体重'].apply(lambda w: 0 if w <= 440 else (1 if w <= 480 else (2 if w <= 520 else 3)))
+        df['体重変動abs'] = df['場体重増減'].abs()
+        df['年齢性別'] = df['馬齢'] * 10 + df['性別_enc']
+        surf_enc = df['芝ダート_enc'].iloc[0] if len(df) > 0 else 0
+        df['距離馬場'] = df['距離カテゴリ'] * 10 + surf_enc
+        df['枠位置'] = df['枠番'].apply(lambda w: 0 if w <= 3 else (1 if w <= 6 else 2))
+        import datetime as dt_module
+        now_dt = dt_module.datetime.now()
+        df['月'] = now_dt.month
+        m = now_dt.month
+        df['季節'] = 0 if m in [3,4,5] else (1 if m in [6,7,8] else (2 if m in [9,10,11] else 3))
+        df['枠馬場'] = df['枠位置'] * 10 + df['馬場状態_enc']
+        df['馬齢グループ'] = df['馬齢'].clip(2, 7)
+
+        # === v5/v8/v9 特徴量 ===
+        if b_ver in ('v5', 'v6', 'v8', 'v9'):
+            use_smap = b_smap if b_smap else sire_map
+            use_bmap = b_bmap if b_bmap else bms_map
+            df['sire_enc'] = df['父'].apply(lambda x: use_smap.get(x, n_top) if use_smap else n_top)
+            df['bms_enc'] = df['母の父'].apply(lambda x: use_bmap.get(x, n_top) if use_bmap else n_top)
+            def enc_loc(loc):
+                s = str(loc)
+                if '美浦' in s or '美' == s: return 0
+                if '栗東' in s or '栗' == s: return 1
+                if is_nar: return 2
+                return 3
+            df['location_enc'] = df.get('所属地', pd.Series(['']*len(df))).apply(enc_loc)
+            df['horse_weight'] = df['馬体重']
+            df['weight_diff'] = df['場体重増減'].fillna(0)
+            df['weight_carry'] = df['斤量']
+            df['age'] = df['馬齢']
+            df['distance'] = df['距離(m)']
+            df['course_enc'] = df['競馬場コード_enc']
+            df['turf_dirt_enc'] = df['芝ダート_enc']
+            df['condition_enc'] = df['馬場状態_enc']
+            df['sex_enc'] = df['性別_enc']
+            df['jockey_wr'] = df['騎手勝率']
+            df['prev_finish'] = df['前走着順']
+            df['bracket'] = df['枠番']
+            df['horse_num'] = df['馬番']
+            df['num_horses'] = df['頭数']
+            df['carry_diff'] = df['斤量平均差']
+            df['dist_cat'] = pd.cut(df['距離(m)'], bins=[0,1200,1400,1800,2200,9999], labels=[0,1,2,3,4]).astype(float).fillna(2)
+            df['weight_cat'] = pd.cut(df['馬体重'], bins=[0,440,480,520,9999], labels=[0,1,2,3]).astype(float).fillna(1)
+            df['age_sex'] = df['馬齢'] * 10 + df['性別_enc']
+            df['dist_surface'] = df['dist_cat'] * 10 + df['芝ダート_enc']
+            df['bracket_pos'] = pd.cut(df['枠番'], bins=[0,3,6,8], labels=[0,1,2]).astype(float).fillna(1)
+            month_now = datetime.now().month
+            df['month_val'] = month_now
+            df['season'] = 0 if month_now in [3,4,5] else (1 if month_now in [6,7,8] else (2 if month_now in [9,10,11] else 3))
+            df['bracket_cond'] = df['bracket_pos'] * 10 + df['馬場状態_enc']
+            df['age_group'] = df['馬齢'].clip(2, 7)
+            df['prev_pop'] = df.get('前走人気', pd.Series([8]*len(df))).fillna(8)
+            df['prev_odds_log'] = np.log1p(df.get('前走オッズ', pd.Series([15.0]*len(df))).clip(1, 999).fillna(15.0))
+            df['prev_last3f'] = df.get('上がり3F', pd.Series([35.5]*len(df))).fillna(35.5)
+            df['prev_pass1'] = df.get('通過順平均', pd.Series([8.0]*len(df))).fillna(8.0)
+            df['prev_pass4'] = df.get('通過順4', pd.Series([8]*len(df))).fillna(8)
+            df['prev_margin'] = 0
+            df['prev_prize'] = 0
+            for col in ['prev2_finish','prev3_finish','prev4_finish','prev5_finish']:
+                df[col] = df.get(col, pd.Series([5]*len(df))).fillna(5)
+            df['prev2_last3f'] = df.get('prev2_last3f', pd.Series([35.5]*len(df))).fillna(35.5)
+            for col in ['avg_finish_3r','avg_finish_5r']:
+                df[col] = df.get(col, pd.Series([5.0]*len(df))).fillna(5.0)
+            for col in ['best_finish_3r','best_finish_5r']:
+                df[col] = df.get(col, pd.Series([5]*len(df))).fillna(5)
+            for col in ['top3_count_3r','top3_count_5r']:
+                df[col] = df.get(col, pd.Series([0]*len(df))).fillna(0)
+            df['finish_trend'] = df.get('finish_trend', pd.Series([0]*len(df))).fillna(0)
+            df['dist_change'] = 0
+            df['dist_change_abs'] = 0
+            df['rest_days'] = df.get('前走間隔', pd.Series([30]*len(df))).fillna(30)
+            df['rest_category'] = pd.cut(df['rest_days'], bins=[-1,6,14,35,63,180,9999], labels=[0,1,2,3,4,5]).astype(float).fillna(2)
+            df['same_dist_rate'] = 0.3
+            df['same_course_rate'] = 0.3
+            df['same_surface_rate'] = 0.3
+            df['horse_win_rate'] = 0.1
+            df['horse_top3_rate'] = 0.3
+            df['horse_race_count'] = 5
+            df['jockey_course_wr'] = df['騎手勝率']
+            df['jockey_dist_wr'] = df['騎手勝率']
+            df['jockey_top3'] = df['騎手勝率'] * 3
+            df['trainer_wr'] = 0.08
+            df['trainer_top3'] = 0.25
+            df['weight_dist'] = df['馬体重'] * df['距離(m)'] / 10000.0
+            df['age_season'] = df['馬齢'] * 10 + df['season']
+            df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
+            df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
+            df['weight_diff_abs'] = 0
+            df['surface_enc'] = df['芝ダート_enc']
+            df['jockey_wr_calc'] = df['騎手勝率']
+            df['jockey_course_wr_calc'] = df['騎手勝率']
+            df['trainer_top3_calc'] = df['trainer_top3']
+            df['weight_cat_dist'] = df['weight_cat'] * 10 + df['dist_cat']
+            df['surface_dist_enc'] = df['芝ダート_enc'] * 10 + df['dist_cat']
+            df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
+            df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
+            df['is_nar'] = 1 if is_nar else 0
+
+        # === オッズ特徴量 ===
+        if odds_avail and '単勝オッズ' in df.columns:
+            df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
+            has_odds = df['単勝オッズ'] > 0
+            if has_odds.any():
+                if 'prev_odds_log' in df.columns:
+                    df.loc[has_odds, 'prev_odds_log'] = df.loc[has_odds, 'odds_log']
+        else:
+            df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
+
+        # === Pattern B 当日特徴量 ===
+        if b_live:
+            df['weight_change'] = df['場体重増減'].fillna(0)
+            df['weight_change_abs'] = df['weight_change'].abs()
+            weather_str = str(race_info.get('weather', '晴'))
+            weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
+            df['weather_enc'] = weather_map.get(weather_str, 0)
+            if odds_avail and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
+                df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
+            else:
+                df['pop_rank'] = 8
+            df['cushion_value'] = 0
+            df['moisture_rate'] = 0
+            df['temperature'] = 0
+            df['humidity'] = 0
+            df['wind_speed'] = 0
+            df['precipitation'] = 0
+
+        # === モデル予測 ===
+        use_features = b_feats if b_feats else FEATURES
+        for f in use_features:
+            if f not in df.columns:
+                df[f] = 0
+            df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
+        X = df[use_features].values
+        use_model = b_model if (b_model is not None and b_mt != 'default') else model
+        if use_model is None:
+            return None
+        if hasattr(use_model, 'predict_proba'):
+            proba = use_model.predict_proba(X)
+            ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
+        else:
+            ai_scores = use_model.predict(X)
+
+        # === スコア計算 ===
+        pop_scores = df['人気傾向'].values if '人気傾向' in df.columns else np.full(num_h, 0.5)
+        apt_scores = ((df['距離適性'].values if '距離適性' in df.columns else np.full(num_h, 0.5)) +
+                      (df['馬場適性'].values if '馬場適性' in df.columns else np.full(num_h, 0.5))) / 2.0
+        agari_scores = np.clip(1.0 - (df['上がり3F'].values - 33.0) / 5.0, 0.0, 1.0) if '上がり3F' in df.columns else np.full(num_h, 0.5)
+        course_scores = df['コース適性'].values if 'コース適性' in df.columns else np.full(num_h, 0.5)
+        other_scores = ((df['血統スコア'].values if '血統スコア' in df.columns else np.full(num_h, 0.5)) +
+                        (df['複勝率'].values if '複勝率' in df.columns else np.full(num_h, 0.0))) / 2.0
+        if odds_avail:
+            odds_vals = df['単勝オッズ'].replace(0, 15.0)
+            odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
+            final_scores = (ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
+                            + np.full(num_h, 0.5) * 0.06 + agari_scores * 0.05
+                            + course_scores * 0.04 + other_scores * 0.03 + pop_scores * 0.03)
+        else:
+            final_scores = (ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
+                            + np.full(num_h, 0.5) * 0.06 + agari_scores * 0.05
+                            + course_scores * 0.04 + other_scores * 0.03)
+
+        df['スコア'] = final_scores
+        df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
+        df = df.sort_values('AI順位')
+        cond_key, cond_profile = classify_race_condition(race_info, num_h, is_nar=is_nar)
+        return df, cond_key, cond_profile, odds_avail
+    except Exception:
+        return None
+
+
 # ===== 複数レース一括予測 =====
 with st.expander("🏇 複数レース一括予測（開催日全レース）"):
     batch_col1, batch_col2 = st.columns([2, 1])
@@ -4707,6 +4906,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
         if race_list:
             st.session_state['batch_races'] = race_list
             st.session_state['batch_is_nar'] = False
+            st.session_state.pop('batch_results', None)
             st.success(f"{len(race_list)}レースを取得しました")
         else:
             msg = "レースが見つかりませんでした（開催日を確認してください）"
@@ -4716,19 +4916,33 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
     # レース選択UI
     if 'batch_races' in st.session_state:
         batch_races = st.session_state['batch_races']
-        st.markdown(f"**{len(batch_races)}レース検出**")
-        selected_batch = []
+        # 開催場ごとにグルーピング
+        _batch_venues = {}
         for r in batch_races:
-            time_str = f" {r['time']}" if r.get('time') else ""
-            label = f"{r.get('course','')} {r['race_name'][:20]}{time_str}"
-            if st.checkbox(label, value=True, key=f"batch_{r['race_id']}"):
-                selected_batch.append(r)
+            v = r.get('course', '不明')
+            if v not in _batch_venues:
+                _batch_venues[v] = []
+            _batch_venues[v].append(r)
+        st.markdown(f"**{len(batch_races)}レース検出**（{', '.join(_batch_venues.keys())}）")
+        selected_batch = []
+        for venue, races_in_venue in _batch_venues.items():
+            st.markdown(f"**{venue}**")
+            for r in races_in_venue:
+                time_str = f" {r['time']}" if r.get('time') else ""
+                race_num = r.get('race_num', '')
+                label = f"{race_num} {r['race_name'][:20]}{time_str}"
+                if st.checkbox(label, value=True, key=f"batch_{r['race_id']}"):
+                    selected_batch.append(r)
         if selected_batch and st.button(f"🚀 {len(selected_batch)}レースを一括予測", key="run_batch"):
             st.session_state['batch_results'] = []
             batch_is_nar = st.session_state.get('batch_is_nar', False)
             progress = st.progress(0)
+            status_text = st.empty()
             for idx, race in enumerate(selected_batch):
                 rid = race['race_id']
+                rn_short = race['race_name'][:12]
+                course_name = race.get('course', '')
+                status_text.markdown(f"⏳ {course_name} {rn_short} を予測中... ({idx+1}/{len(selected_batch)})")
                 try:
                     rn, horses, hids, rinfo = parse_shutuba(rid, is_nar=batch_is_nar)
                     if not horses:
@@ -4755,41 +4969,125 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                                 h['母の父'] = stats.get('mother_father', '')
                                 h['血統スコア'] = calc_sire_score(stats.get('father',''), rinfo['surface'], rinfo['distance'])
                                 h['騎手勝率'] = h.get('騎手勝率', 0.05)
-                            except:
+                                h['通過順平均'] = stats.get('avg_pass_pos', 8.0)
+                                h['通過順4'] = stats.get('last_pass4', 8)
+                                h['前走オッズ'] = stats.get('last_odds', 15.0)
+                                h['前走人気'] = stats.get('last_pop', 8)
+                                h['所属地'] = stats.get('trainer_loc', '')
+                                h['prev2_finish'] = stats.get('prev2_finish', 5)
+                                h['prev3_finish'] = stats.get('prev3_finish', 5)
+                                h['prev4_finish'] = stats.get('prev4_finish', 5)
+                                h['prev5_finish'] = stats.get('prev5_finish', 5)
+                                h['avg_finish_3r'] = stats.get('avg_finish_3r', 5.0)
+                                h['avg_finish_5r'] = stats.get('avg_finish_5r', 5.0)
+                                h['best_finish_3r'] = stats.get('best_finish_3r', 5)
+                                h['best_finish_5r'] = stats.get('best_finish_5r', 5)
+                                h['top3_count_3r'] = stats.get('top3_count_3r', 0)
+                                h['top3_count_5r'] = stats.get('top3_count_5r', 0)
+                                h['finish_trend'] = stats.get('finish_trend', 0)
+                                h['prev2_last3f'] = stats.get('prev2_last3f', 35.5)
+                            except Exception:
                                 pass
                         time.sleep(0.3)
-                    # 簡易スコア計算（バッチ用）
-                    bdf = pd.DataFrame(horses)
-                    if len(bdf) > 0:
-                        top1 = bdf.iloc[0]['馬名'] if len(bdf) > 0 else '?'
-                        # 人気傾向とオッズから簡易EV計算
-                        top1_odds = bdf.iloc[0].get('単勝オッズ', 0) if '単勝オッズ' in bdf.columns else 0
-                        has_odds = '単勝オッズ' in bdf.columns and (bdf['単勝オッズ'] > 0).any()
-                        avg_score = bdf['人気傾向'].mean() if '人気傾向' in bdf.columns else 0.5
+                    # モデル予測実行
+                    result = _batch_score_race(horses, rinfo, batch_is_nar)
+                    if result is not None:
+                        scored_df, cond_key, cond_profile, has_odds = result
+                        save_prediction(rid, rn, rinfo, scored_df, is_nar=batch_is_nar)
+                        top3 = scored_df.head(3)
+                        top3_info = []
+                        for _, row in top3.iterrows():
+                            top3_info.append({
+                                'num': int(row['馬番']),
+                                'name': row['馬名'],
+                                'score': float(row['スコア']),
+                            })
+                        # 買い目を取得
+                        bets, bet_type_used = generate_bets_for_condition(scored_df, cond_key, cond_profile)
                         st.session_state['batch_results'].append({
-                            'race_id': rid, 'race_name': rn, 'course': rinfo.get('course',''),
-                            'distance': rinfo.get('distance', 0), 'surface': rinfo.get('surface',''),
-                            'num_horses': num_h, 'race_num': race.get('race_num',''),
+                            'race_id': rid, 'race_name': rn,
+                            'course': rinfo.get('course',''),
+                            'distance': rinfo.get('distance', 0),
+                            'surface': rinfo.get('surface',''),
+                            'condition': rinfo.get('condition', ''),
+                            'num_horses': num_h,
+                            'race_num': race.get('race_num',''),
                             'has_odds': has_odds,
+                            'cond_key': cond_key,
+                            'bet_type': cond_profile['bet_type'],
+                            'bets': bets,
+                            'top3': top3_info,
                         })
-                        save_prediction(rid, rn, rinfo, bdf.assign(
-                            スコア=bdf.get('人気傾向', pd.Series([0.5]*len(bdf))),
-                            AI順位=range(1, len(bdf)+1)
-                        ), is_nar=batch_is_nar)
-                except Exception as e:
+                except Exception:
                     pass
                 progress.progress((idx + 1) / len(selected_batch))
                 time.sleep(0.5)
             progress.empty()
-            st.success(f"✅ {len(st.session_state.get('batch_results', []))}レースの予測を完了")
+            status_text.empty()
+            st.success(f"✅ {len(st.session_state.get('batch_results', []))}レースの予測を完了しました")
+            st.rerun()
     # バッチ結果表示
     if st.session_state.get('batch_results'):
         results = st.session_state['batch_results']
-        st.markdown("### 一括予測結果")
+        BET_LABELS_B = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}
+        # サマリー
+        n_total = len(results)
+        cond_counts = {}
         for r in results:
-            label = f"**{r.get('course','')} {r.get('race_num','')}** {r['race_name'][:12]} ({r['surface']}{r['distance']}m / {r['num_horses']}頭)"
-            odds_tag = "💰" if r.get('has_odds') else ""
-            st.markdown(f"- {label} {odds_tag}")
+            ck = r.get('cond_key', '?')
+            cond_counts[ck] = cond_counts.get(ck, 0) + 1
+        total_bets = sum(len(r.get('bets', [])) for r in results)
+        total_inv = total_bets * 100
+        cond_str = '　'.join(f"{k}:{v}" for k, v in sorted(cond_counts.items()))
+        st.markdown(f"### 一括予測結果 ({n_total}R)")
+        st.markdown(f"**条件分布**: {cond_str}　|　**総買い目**: {total_bets}点 (¥{total_inv:,})")
+        # 開催場ごとに表示
+        _br_venues = {}
+        for r in results:
+            v = r.get('course', '不明')
+            if v not in _br_venues:
+                _br_venues[v] = []
+            _br_venues[v].append(r)
+        for venue, venue_results in _br_venues.items():
+            st.markdown(f"#### {venue}")
+            for r in venue_results:
+                rnum = r.get('race_num', '')
+                rname = r.get('race_name', '')
+                ck = r.get('cond_key', '?')
+                bt = r.get('bet_type', 'trio')
+                bets = r.get('bets', [])
+                top3 = r.get('top3', [])
+                n_h = r.get('num_horses', 0)
+                surf = r.get('surface', '')
+                dist = r.get('distance', 0)
+                cond = r.get('condition', '')
+                bt_label = BET_LABELS_B.get(bt, bt)
+                inv = len(bets) * 100
+                header = f"{rnum} {rname}　{surf}{dist}m {cond} {n_h}頭　[{ck}] {bt_label}{len(bets)}点(¥{inv})"
+                with st.expander(header, expanded=False):
+                    # AI予測TOP3
+                    if top3:
+                        top3_html = '<div style="display:flex;gap:12px;margin-bottom:8px;">'
+                        rank_colors = {0: '#ffd700', 1: '#c0c0c0', 2: '#cd7f32'}
+                        for i, h in enumerate(top3):
+                            rc = rank_colors.get(i, '#6a6a80')
+                            top3_html += f'<div style="text-align:center;padding:6px 12px;background:rgba(255,255,255,0.04);border-radius:8px;border-left:3px solid {rc};">'
+                            top3_html += f'<div style="font-family:Oswald;font-size:1.1em;color:{rc} !important;">{i+1}位</div>'
+                            top3_html += f'<div style="font-size:0.9em;">{h["num"]}番 {h["name"]}</div>'
+                            top3_html += f'<div style="font-family:Oswald;font-size:0.8em;color:#b0b8c8 !important;">{h["score"]:.3f}</div>'
+                            top3_html += '</div>'
+                        top3_html += '</div>'
+                        st.markdown(top3_html, unsafe_allow_html=True)
+                    # 条件情報
+                    cond_p = CONDITION_PROFILES.get(ck, {})
+                    st.markdown(f"**条件{ck}**: {cond_p.get('desc', '')}　/　**推奨**: {bt_label}")
+                    # 買い目
+                    if bets:
+                        bets_html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;">'
+                        for b in bets:
+                            bets_html += f'<span style="background:#1a2a3a;padding:3px 8px;border-radius:4px;font-family:Oswald;font-size:0.85em;color:#b0d0f0 !important;">{"  ".join(str(n) for n in sorted(b))}</span>'
+                        bets_html += '</div>'
+                        st.markdown(bets_html, unsafe_allow_html=True)
 
 # Results update section
 with st.expander("📝 レース結果を登録（的中率集計用）"):
