@@ -1,0 +1,401 @@
+{
+  "generated_at": "2026-03-11 10:36:22",
+  "elapsed_minutes": 87.9,
+  "n_trials": 100,
+  "baseline": {
+    "params": {
+      "num_leaves": 63,
+      "learning_rate": 0.05,
+      "feature_fraction": 0.8,
+      "bagging_fraction": 0.8,
+      "bagging_freq": 5,
+      "min_child_samples": 50,
+      "reg_alpha": 0.1,
+      "reg_lambda": 0.1
+    },
+    "wf_auc": 0.8016402563879289,
+    "year_aucs": {
+      "2020": 0.7950806678225133,
+      "2021": 0.7997254393821945,
+      "2022": 0.8020445961649243,
+      "2023": 0.8011708615089388,
+      "2024": 0.8070984919665665,
+      "2025": 0.8047214814824355
+    },
+    "roi": {
+      "A": 190.3,
+      "B": 240.7,
+      "C": 284.4,
+      "D": 135.0,
+      "E": 104.5,
+      "X": 300.5
+    }
+  },
+  "best": {
+    "trial": 82,
+    "params": {
+      "num_leaves": 72,
+      "learning_rate": 0.043563,
+      "feature_fraction": 0.670428,
+      "bagging_fraction": 0.950483,
+      "bagging_freq": 4,
+      "min_child_samples": 57,
+      "reg_alpha": 0.109961,
+      "reg_lambda": 0.09104
+    },
+    "wf_auc": 0.8022,
+    "year_aucs": {
+      "2020": 0.7957,
+      "2021": 0.8003,
+      "2022": 0.8026,
+      "2023": 0.8011,
+      "2024": 0.808,
+      "2025": 0.8054
+    },
+    "min_year_auc": 0.7957,
+    "max_overfit_gap": 0.0078
+  },
+  "criteria": {
+    "auc_target": 0.8095,
+    "auc_pass": false,
+    "min_year_target": 0.78,
+    "min_year_pass": true,
+    "overfit_target": 0.05,
+    "overfit_pass": true,
+    "roi_pass": false,
+    "all_pass": false
+  },
+  "condition_rois": {},
+  "top10_trials": [
+    {
+      "trial": 82,
+      "params": {
+        "num_leaves": 72,
+        "learning_rate": 0.043563,
+        "feature_fraction": 0.670428,
+        "bagging_fraction": 0.950483,
+        "bagging_freq": 4,
+        "min_child_samples": 57,
+        "reg_alpha": 0.109961,
+        "reg_lambda": 0.09104
+      },
+      "avg_auc": 0.8022,
+      "year_aucs": {
+        "2020": 0.7957,
+        "2021": 0.8003,
+        "2022": 0.8026,
+        "2023": 0.8011,
+        "2024": 0.808,
+        "2025": 0.8054
+      },
+      "train_aucs": {
+        "2020": 0.8034,
+        "2021": 0.7966,
+        "2022": 0.7988,
+        "2023": 0.8024,
+        "2024": 0.8035,
+        "2025": 0.8043
+      },
+      "min_year_auc": 0.7957,
+      "max_overfit_gap": 0.0078,
+      "valid": true
+    },
+    {
+      "trial": 81,
+      "params": {
+        "num_leaves": 71,
+        "learning_rate": 0.041615,
+        "feature_fraction": 0.668402,
+        "bagging_fraction": 0.94941,
+        "bagging_freq": 4,
+        "min_child_samples": 56,
+        "reg_alpha": 0.109705,
+        "reg_lambda": 0.091544
+      },
+      "avg_auc": 0.8021,
+      "year_aucs": {
+        "2020": 0.7955,
+        "2021": 0.7999,
+        "2022": 0.8027,
+        "2023": 0.8016,
+        "2024": 0.8076,
+        "2025": 0.8055
+      },
+      "train_aucs": {
+        "2020": 0.8037,
+        "2021": 0.7964,
+        "2022": 0.7989,
+        "2023": 0.8023,
+        "2024": 0.8033,
+        "2025": 0.8044
+      },
+      "min_year_auc": 0.7955,
+      "max_overfit_gap": 0.0082,
+      "valid": true
+    },
+    {
+      "trial": 46,
+      "params": {
+        "num_leaves": 75,
+        "learning_rate": 0.041172,
+        "feature_fraction": 0.652064,
+        "bagging_fraction": 0.8702,
+        "bagging_freq": 4,
+        "min_child_samples": 50,
+        "reg_alpha": 0.103462,
+        "reg_lambda": 0.096165
+      },
+      "avg_auc": 0.8021,
+      "year_aucs": {
+        "2020": 0.7953,
+        "2021": 0.8007,
+        "2022": 0.8025,
+        "2023": 0.8015,
+        "2024": 0.8075,
+        "2025": 0.8051
+      },
+      "train_aucs": {
+        "2020": 0.8035,
+        "2021": 0.7965,
+        "2022": 0.799,
+        "2023": 0.8018,
+        "2024": 0.803,
+        "2025": 0.8044
+      },
+      "min_year_auc": 0.7953,
+      "max_overfit_gap": 0.0082,
+      "valid": true
+    },
+    {
+      "trial": 44,
+      "params": {
+        "num_leaves": 75,
+        "learning_rate": 0.040964,
+        "feature_fraction": 0.656091,
+        "bagging_fraction": 0.925048,
+        "bagging_freq": 4,
+        "min_child_samples": 50,
+        "reg_alpha": 0.103798,
+        "reg_lambda": 0.095479
+      },
+      "avg_auc": 0.8021,
+      "year_aucs": {
+        "2020": 0.7955,
+        "2021": 0.8001,
+        "2022": 0.8021,
+        "2023": 0.8014,
+        "2024": 0.8078,
+        "2025": 0.8055
+      },
+      "train_aucs": {
+        "2020": 0.8037,
+        "2021": 0.7964,
+        "2022": 0.799,
+        "2023": 0.8024,
+        "2024": 0.8034,
+        "2025": 0.8045
+      },
+      "min_year_auc": 0.7955,
+      "max_overfit_gap": 0.0082,
+      "valid": true
+    },
+    {
+      "trial": 93,
+      "params": {
+        "num_leaves": 72,
+        "learning_rate": 0.041221,
+        "feature_fraction": 0.677807,
+        "bagging_fraction": 0.932653,
+        "bagging_freq": 4,
+        "min_child_samples": 59,
+        "reg_alpha": 0.108762,
+        "reg_lambda": 0.087298
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7955,
+        "2021": 0.8005,
+        "2022": 0.8023,
+        "2023": 0.8012,
+        "2024": 0.8076,
+        "2025": 0.8052
+      },
+      "train_aucs": {
+        "2020": 0.8036,
+        "2021": 0.7967,
+        "2022": 0.7989,
+        "2023": 0.8024,
+        "2024": 0.8032,
+        "2025": 0.8044
+      },
+      "min_year_auc": 0.7955,
+      "max_overfit_gap": 0.0081,
+      "valid": true
+    },
+    {
+      "trial": 41,
+      "params": {
+        "num_leaves": 71,
+        "learning_rate": 0.041082,
+        "feature_fraction": 0.650629,
+        "bagging_fraction": 0.871077,
+        "bagging_freq": 4,
+        "min_child_samples": 48,
+        "reg_alpha": 0.105706,
+        "reg_lambda": 0.089164
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7955,
+        "2021": 0.8001,
+        "2022": 0.8024,
+        "2023": 0.8018,
+        "2024": 0.8075,
+        "2025": 0.8049
+      },
+      "train_aucs": {
+        "2020": 0.8033,
+        "2021": 0.7963,
+        "2022": 0.799,
+        "2023": 0.8021,
+        "2024": 0.8035,
+        "2025": 0.8042
+      },
+      "min_year_auc": 0.7955,
+      "max_overfit_gap": 0.0078,
+      "valid": true
+    },
+    {
+      "trial": 45,
+      "params": {
+        "num_leaves": 74,
+        "learning_rate": 0.040996,
+        "feature_fraction": 0.651846,
+        "bagging_fraction": 0.925256,
+        "bagging_freq": 4,
+        "min_child_samples": 50,
+        "reg_alpha": 0.103519,
+        "reg_lambda": 0.0965
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7952,
+        "2021": 0.7999,
+        "2022": 0.8019,
+        "2023": 0.8016,
+        "2024": 0.808,
+        "2025": 0.8054
+      },
+      "train_aucs": {
+        "2020": 0.8036,
+        "2021": 0.7965,
+        "2022": 0.7988,
+        "2023": 0.8023,
+        "2024": 0.8035,
+        "2025": 0.8045
+      },
+      "min_year_auc": 0.7952,
+      "max_overfit_gap": 0.0083,
+      "valid": true
+    },
+    {
+      "trial": 80,
+      "params": {
+        "num_leaves": 71,
+        "learning_rate": 0.04356,
+        "feature_fraction": 0.673993,
+        "bagging_fraction": 0.91692,
+        "bagging_freq": 4,
+        "min_child_samples": 54,
+        "reg_alpha": 0.10971,
+        "reg_lambda": 0.090926
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7956,
+        "2021": 0.8003,
+        "2022": 0.8023,
+        "2023": 0.8012,
+        "2024": 0.8077,
+        "2025": 0.8051
+      },
+      "train_aucs": {
+        "2020": 0.8037,
+        "2021": 0.7965,
+        "2022": 0.799,
+        "2023": 0.8023,
+        "2024": 0.8032,
+        "2025": 0.8047
+      },
+      "min_year_auc": 0.7956,
+      "max_overfit_gap": 0.0081,
+      "valid": true
+    },
+    {
+      "trial": 31,
+      "params": {
+        "num_leaves": 70,
+        "learning_rate": 0.041439,
+        "feature_fraction": 0.675411,
+        "bagging_fraction": 0.792311,
+        "bagging_freq": 6,
+        "min_child_samples": 49,
+        "reg_alpha": 0.100671,
+        "reg_lambda": 0.084916
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7952,
+        "2021": 0.7999,
+        "2022": 0.8028,
+        "2023": 0.8017,
+        "2024": 0.8072,
+        "2025": 0.8054
+      },
+      "train_aucs": {
+        "2020": 0.8033,
+        "2021": 0.7964,
+        "2022": 0.7989,
+        "2023": 0.8022,
+        "2024": 0.8029,
+        "2025": 0.8047
+      },
+      "min_year_auc": 0.7952,
+      "max_overfit_gap": 0.0081,
+      "valid": true
+    },
+    {
+      "trial": 94,
+      "params": {
+        "num_leaves": 72,
+        "learning_rate": 0.041075,
+        "feature_fraction": 0.682436,
+        "bagging_fraction": 0.944203,
+        "bagging_freq": 4,
+        "min_child_samples": 59,
+        "reg_alpha": 0.112501,
+        "reg_lambda": 0.08523
+      },
+      "avg_auc": 0.802,
+      "year_aucs": {
+        "2020": 0.7955,
+        "2021": 0.8,
+        "2022": 0.8022,
+        "2023": 0.8014,
+        "2024": 0.8073,
+        "2025": 0.8056
+      },
+      "train_aucs": {
+        "2020": 0.8036,
+        "2021": 0.7966,
+        "2022": 0.7989,
+        "2023": 0.8026,
+        "2024": 0.803,
+        "2025": 0.8045
+      },
+      "min_year_auc": 0.7955,
+      "max_overfit_gap": 0.0081,
+      "valid": true
+    }
+  ]
+}
