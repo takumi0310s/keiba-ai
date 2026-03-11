@@ -4673,7 +4673,7 @@ with st.expander("📈 実運用成績ダッシュボード"):
         st.info("予測ログがありません。`python predict_and_log.py <URL>` で予測を記録してください。")
 
     # バックテストROI vs 実配当ROI比較
-    _actual_roi_path = os.path.join(BASE_DIR, 'data', 'actual_roi_results.json')
+    _actual_roi_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'actual_roi_results.json')
     if os.path.exists(_actual_roi_path):
         st.markdown("---")
         st.markdown("#### 実配当ROI (JRA公式配当データ × WFバックテスト)")
