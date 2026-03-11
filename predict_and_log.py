@@ -40,7 +40,7 @@ CONDITION_PROFILES = {
     'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':473.8,'hit_rate':45.4,'recommended':True},
     'C': {'bet_type':'trio','label':'条件C','desc':'15頭+/1600m+/良~稍','investment':700,'roi':498.6,'hit_rate':33.4,'recommended':True},
     'D': {'bet_type':'trio','label':'条件D','desc':'1400m以下','investment':700,'roi':247.0,'hit_rate':28.2,'recommended':True},
-    'E': {'bet_type':'trio','label':'条件E','desc':'7頭以下','investment':700,'roi':330.4,'hit_rate':75.7,'recommended':True},
+    'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':200,'roi':118.0,'hit_rate':53.4,'recommended':True},
     'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':598.2,'hit_rate':36.1,'recommended':True},
 }
 NAR_CONDITION_PROFILES = {

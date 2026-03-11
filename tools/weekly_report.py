@@ -24,12 +24,12 @@ INVESTMENT_PER_RACE = 700
 AUC_THRESHOLD = 0.78  # モデルAUC最低ライン
 
 CONDITION_PROFILES = {
-    'A': {'label': '条件A', 'desc': '8-14頭/1600m+/良~稍', 'expected_hit': 44.7, 'expected_roi': 190.3},
-    'B': {'label': '条件B', 'desc': '8-14頭/1600m+/重~不良', 'expected_hit': 45.2, 'expected_roi': 240.7},
-    'C': {'label': '条件C', 'desc': '15頭+/1600m+/良~稍', 'expected_hit': 33.6, 'expected_roi': 284.4},
-    'D': {'label': '条件D', 'desc': '1400m以下', 'expected_hit': 27.3, 'expected_roi': 135.0},
-    'E': {'label': '条件E', 'desc': '7頭以下', 'expected_hit': 75.3, 'expected_roi': 104.5},
-    'X': {'label': '条件X', 'desc': '15頭+/重~不良', 'expected_hit': 35.5, 'expected_roi': 300.5},
+    'A': {'label': '条件A', 'desc': '8-14頭/1600m+/良~稍', 'expected_hit': 44.5, 'expected_roi': 205.3},
+    'B': {'label': '条件B', 'desc': '8-14頭/1600m+/重~不良', 'expected_hit': 45.2, 'expected_roi': 236.9},
+    'C': {'label': '条件C', 'desc': '15頭+/1600m+/良~稍', 'expected_hit': 33.7, 'expected_roi': 285.6},
+    'D': {'label': '条件D', 'desc': '1400m以下', 'expected_hit': 27.0, 'expected_roi': 136.0},
+    'E': {'label': '条件E', 'desc': '7頭以下', 'expected_hit': 53.4, 'expected_roi': 118.0},
+    'X': {'label': '条件X', 'desc': '15頭+/重~不良', 'expected_hit': 35.5, 'expected_roi': 330.5},
 }
 
 
