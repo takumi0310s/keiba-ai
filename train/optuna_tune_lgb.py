@@ -62,8 +62,8 @@ BASELINE_PARAMS = {
 
 # Current baseline ROI (trio, actual)
 BASELINE_ROI = {
-    'A': 190.3, 'B': 240.7, 'C': 284.4,
-    'D': 135.0, 'E': 104.5, 'X': 300.5,
+    'A': 205.3, 'B': 236.9, 'C': 285.6,
+    'D': 136.0, 'E': 118.0, 'X': 330.5,
 }
 
 # Current baseline WF AUC

@@ -31,9 +31,9 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 190.3,      # 実配当ROI (JRA公式)
-        'roi_estimated': 381.0,  # 推定ROI (参考値)
-        'hit_rate': 44.7,
+        'roi': 205.3,      # 実配当ROI (JRA公式)
+        'roi_estimated': 439.6,  # 推定ROI (参考値)
+        'hit_rate': 44.5,
         'recommended': True,
         'wf_n': 6438,
     },
@@ -44,8 +44,8 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 240.7,      # 実配当ROI
-        'roi_estimated': 478.4,
+        'roi': 236.9,      # 実配当ROI
+        'roi_estimated': 445.1,
         'hit_rate': 45.2,
         'recommended': True,
         'wf_n': 847,
@@ -57,9 +57,9 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 284.4,      # 実配当ROI
-        'roi_estimated': 511.2,
-        'hit_rate': 33.6,
+        'roi': 285.6,      # 実配当ROI
+        'roi_estimated': 538.8,
+        'hit_rate': 33.7,
         'recommended': True,
         'wf_n': 4774,
     },
@@ -70,26 +70,24 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 135.0,      # 実配当ROI
-        'roi_estimated': 230.8,
-        'hit_rate': 27.3,
+        'roi': 136.0,      # 実配当ROI
+        'roi_estimated': 236.0,
+        'hit_rate': 27.0,
         'recommended': True,
         'wf_n': 7254,
     },
     'E': {
         'label': '条件E',
         'desc': '7頭以下（少頭数）',
-        'bet_type': 'trio',
-        'bet_label': '三連複7点',
-        'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
-        'investment': 700,
-        'roi': 104.5,      # 実配当ROI (trio)
-        'roi_estimated': 300.3,
-        'hit_rate': 75.3,
+        'bet_type': 'umaren',
+        'bet_label': '馬連1軸2流し',
+        'bet_detail': 'TOP1軸-TOP2,TOP3',
+        'investment': 200,
+        'roi': 118.0,      # 実配当ROI (umaren)
+        'roi_estimated': 145.2,
+        'hit_rate': 53.4,
         'recommended': True,
         'wf_n': 461,
-        'alt_bet': 'umaren',  # umaren ROI 119.1% > trio 104.5%
-        'alt_roi': 119.1,
     },
     'X': {
         'label': '条件外',
@@ -98,8 +96,8 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 300.5,      # 実配当ROI
-        'roi_estimated': 490.7,
+        'roi': 330.5,      # 実配当ROI
+        'roi_estimated': 544.2,
         'hit_rate': 35.5,
         'recommended': True,
         'wf_n': 805,
@@ -733,11 +731,11 @@ def render_5year_report(bt5):
 
         cond_order = [
             ('A', '8-14頭/1600m+/良稍', 'trio'),
-            ('B', '8-14頭/1600m+/重不', 'wide'),
-            ('C', '15頭+/1600m+/良稍', 'wide'),
-            ('D', '1400m以下', 'none'),
+            ('B', '8-14頭/1600m+/重不', 'trio'),
+            ('C', '15頭+/1600m+/良稍', 'trio'),
+            ('D', '1400m以下', 'trio'),
             ('E', '7頭以下', 'umaren'),
-            ('X', '15頭+/重不', 'wide'),
+            ('X', '15頭+/重不', 'trio'),
         ]
         for ck, desc, best_bet in cond_order:
             s = cond_stats.get(ck)

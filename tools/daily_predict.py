@@ -36,12 +36,12 @@ COND_MAP = {'良':0,'稍':1,'稍重':1,'重':2,'不':3,'不良':3}
 SEX_MAP = {'牡':0,'牝':1,'セ':2,'騸':2}
 
 CONDITION_PROFILES = {
-    'A': {'bet_type':'trio','label':'条件A','desc':'8-14頭/1600m+/良~稍','investment':700,'roi':190.3,'hit_rate':44.7,'recommended':True},
-    'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':240.7,'hit_rate':45.2,'recommended':True},
-    'C': {'bet_type':'trio','label':'条件C','desc':'15頭+/1600m+/良~稍','investment':700,'roi':284.4,'hit_rate':33.6,'recommended':True},
-    'D': {'bet_type':'trio','label':'条件D','desc':'1400m以下','investment':700,'roi':135.0,'hit_rate':27.3,'recommended':True},
-    'E': {'bet_type':'trio','label':'条件E','desc':'7頭以下','investment':700,'roi':104.5,'hit_rate':75.3,'recommended':True},
-    'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':300.5,'hit_rate':35.5,'recommended':True},
+    'A': {'bet_type':'trio','label':'条件A','desc':'8-14頭/1600m+/良~稍','investment':700,'roi':205.3,'hit_rate':44.5,'recommended':True},
+    'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':236.9,'hit_rate':45.2,'recommended':True},
+    'C': {'bet_type':'trio','label':'条件C','desc':'15頭+/1600m+/良~稍','investment':700,'roi':285.6,'hit_rate':33.7,'recommended':True},
+    'D': {'bet_type':'trio','label':'条件D','desc':'1400m以下','investment':700,'roi':136.0,'hit_rate':27.0,'recommended':True},
+    'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':200,'roi':118.0,'hit_rate':53.4,'recommended':True},
+    'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':330.5,'hit_rate':35.5,'recommended':True},
 }
 
 MODERN_JOCKEY_WR = {
@@ -154,6 +154,28 @@ def generate_trio_bets(df_sorted):
             if len(combo) == 3:
                 bets.add(combo)
     return [list(b) for b in sorted(bets)]
+
+
+def generate_wide_bets(df_sorted):
+    """TOP1軸 - TOP2,TOP3 のワイド1軸2流し(2点)"""
+    if len(df_sorted) < 3:
+        return []
+    nums = [int(df_sorted.iloc[i]['馬番']) for i in range(min(3, len(df_sorted)))]
+    bets = [sorted([nums[0], nums[1]]), sorted([nums[0], nums[2]])]
+    if bets[0] == bets[1]:
+        return [bets[0]]
+    return bets
+
+
+def generate_umaren_bets(df_sorted):
+    """TOP1軸 - TOP2,TOP3 の馬連1軸2流し(2点)"""
+    if len(df_sorted) < 3:
+        return []
+    nums = [int(df_sorted.iloc[i]['馬番']) for i in range(min(3, len(df_sorted)))]
+    bets = [sorted([nums[0], nums[1]]), sorted([nums[0], nums[2]])]
+    if bets[0] == bets[1]:
+        return [bets[0]]
+    return bets
 
 
 # ===== モデルロード =====
@@ -1035,15 +1057,24 @@ def run_daily_predict(date_str):
             # 条件分類
             cond_key, cond_profile = classify_race_condition(race_info, num_horses)
 
-            # 買い目生成
+            # 買い目生成（条件に応じた買い目種別）
             sorted_df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
-            trio_bets = generate_trio_bets(sorted_df)
+            bet_type = cond_profile['bet_type']
+            if bet_type == 'umaren':
+                bets = generate_umaren_bets(sorted_df)
+                bet_label = '馬連'
+            elif bet_type == 'wide':
+                bets = generate_wide_bets(sorted_df)
+                bet_label = 'ワイド'
+            else:
+                bets = generate_trio_bets(sorted_df)
+                bet_label = '三連複'
 
             top1 = sorted_df.iloc[0] if len(sorted_df) > 0 else None
             top2 = sorted_df.iloc[1] if len(sorted_df) > 1 else None
             top3 = sorted_df.iloc[2] if len(sorted_df) > 2 else None
 
-            trio_str = "; ".join([f"{b[0]}-{b[1]}-{b[2]}" for b in trio_bets])
+            bets_str = "; ".join(["-".join(str(n) for n in b) for b in bets])
             race_num_int = 0
             nm = re.search(r'(\d+)', str(race_info.get('race_num', '')))
             if nm:
@@ -1066,7 +1097,7 @@ def run_daily_predict(date_str):
                 'top2_name': top2['馬名'] if top2 is not None else '',
                 'top3_num': int(top3['馬番']) if top3 is not None else 0,
                 'top3_name': top3['馬名'] if top3 is not None else '',
-                'trio_bets': trio_str,
+                'trio_bets': bets_str,
                 'bet_type': cond_profile['bet_type'],
                 'investment': cond_profile['investment'],
             }
@@ -1075,7 +1106,7 @@ def run_daily_predict(date_str):
             # コンソール出力
             print(f"  条件: {cond_key} ({cond_profile['desc']})")
             print(f"  TOP3: {top1['馬名']}({int(top1['馬番'])}) / {top2['馬名']}({int(top2['馬番'])}) / {top3['馬名']}({int(top3['馬番'])})")
-            print(f"  三連複 {len(trio_bets)}点: {trio_str}")
+            print(f"  {bet_label} {len(bets)}点: {bets_str}")
 
         except Exception as e:
             print(f"  [ERROR] 予測失敗: {e}")
