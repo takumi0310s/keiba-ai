@@ -24,7 +24,7 @@ from train_v92_central import (
     merge_training_features, compute_jockey_wr, compute_trainer_stats,
     compute_horse_career, compute_sire_performance, load_lap_data,
     compute_lag_features, build_features, COURSE_MAP, N_TOP_SIRE,
-    FEATURES_V92, FEATURES_V92_PKL,
+    FEATURES_V92, FEATURES_V93, FEATURES_V92_PKL,
     train_lgb, train_xgb, show_feature_importance,
 )
 
@@ -58,8 +58,9 @@ LEAK_FEATURES_B = {
     'odds_log',          # FINAL confirmed odds - only this is truly leaked
 }
 
-FEATURES_PATTERN_A = [f for f in FEATURES_V92 if f not in LEAK_FEATURES_A]
-FEATURES_PATTERN_B = [f for f in FEATURES_V92 if f not in LEAK_FEATURES_B]
+# Use V9.3 features (67 Pattern A features = V9.3 all - leak features)
+FEATURES_PATTERN_A = [f for f in FEATURES_V93 if f not in LEAK_FEATURES_A]
+FEATURES_PATTERN_B = [f for f in FEATURES_V93 if f not in LEAK_FEATURES_B]
 FEATURES_PATTERN_A_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_PATTERN_A]
 FEATURES_PATTERN_B_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_PATTERN_B]
 

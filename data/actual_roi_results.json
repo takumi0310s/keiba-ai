@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-03-10 09:25:40",
+  "generated_at": "2026-03-11 10:12:10",
   "model": "v9.3_leakfree (Pattern A)",
-  "n_features": 55,
+  "n_features": 67,
   "test_years": [
     2020,
     2021,
@@ -14,252 +14,252 @@
   "matched_races": 20579,
   "match_rate": 99.6,
   "fold_aucs": {
-    "2020": 0.7950806678225133,
-    "2021": 0.7997254393821945,
-    "2022": 0.8023635164140268,
-    "2023": 0.8012147869099056,
-    "2024": 0.8070984919665665,
-    "2025": 0.8048084774006996
+    "2020": 0.7947866872150516,
+    "2021": 0.7997100347681878,
+    "2022": 0.7997452302693463,
+    "2023": 0.801632594082008,
+    "2024": 0.8068412931610229,
+    "2025": 0.8064704115115673
   },
-  "avg_auc": 0.8017,
+  "avg_auc": 0.8015,
   "conditions": {
     "A": {
       "n": 6438,
       "best_bet": "trio",
-      "best_roi_actual": 190.3,
+      "best_roi_actual": 205.3,
       "recommended": true,
       "actual_roi": {
         "trio": {
-          "hits": 2875,
-          "hit_rate": 44.7,
+          "hits": 2865,
+          "hit_rate": 44.5,
           "investment": 4506600,
-          "payout": 8576750,
-          "roi": 190.3
+          "payout": 9254130,
+          "roi": 205.3
         },
         "umaren": {
-          "hits": 2097,
-          "hit_rate": 32.6,
+          "hits": 2081,
+          "hit_rate": 32.3,
           "investment": 4506600,
-          "payout": 6909875,
-          "roi": 153.3
+          "payout": 6996185,
+          "roi": 155.2
         },
         "wide": {
-          "hits": 3632,
-          "hit_rate": 56.4,
+          "hits": 3635,
+          "hit_rate": 56.5,
           "investment": 4506600,
-          "payout": 6132875,
-          "roi": 136.1
+          "payout": 6097245,
+          "roi": 135.3
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 381.0
+          "roi": 439.6
         },
         "umaren": {
-          "roi": 165.3
+          "roi": 168.8
         },
         "wide": {
-          "roi": 127.3
+          "roi": 127.2
         }
       }
     },
     "B": {
       "n": 847,
       "best_bet": "trio",
-      "best_roi_actual": 240.7,
+      "best_roi_actual": 236.9,
       "recommended": true,
       "actual_roi": {
         "trio": {
           "hits": 383,
           "hit_rate": 45.2,
           "investment": 592900,
-          "payout": 1427010,
-          "roi": 240.7
+          "payout": 1404790,
+          "roi": 236.9
         },
         "umaren": {
-          "hits": 273,
-          "hit_rate": 32.2,
+          "hits": 270,
+          "hit_rate": 31.9,
           "investment": 592900,
-          "payout": 1145375,
-          "roi": 193.2
+          "payout": 1056230,
+          "roi": 178.1
         },
         "wide": {
-          "hits": 467,
-          "hit_rate": 55.1,
+          "hits": 475,
+          "hit_rate": 56.1,
           "investment": 592900,
-          "payout": 913605,
-          "roi": 154.1
+          "payout": 907550,
+          "roi": 153.1
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 478.4
+          "roi": 445.1
         },
         "umaren": {
-          "roi": 227.1
+          "roi": 191.7
         },
         "wide": {
-          "roi": 152.6
+          "roi": 141.7
         }
       }
     },
     "C": {
       "n": 4774,
       "best_bet": "trio",
-      "best_roi_actual": 284.4,
+      "best_roi_actual": 285.6,
       "recommended": true,
       "actual_roi": {
         "trio": {
-          "hits": 1604,
-          "hit_rate": 33.6,
+          "hits": 1609,
+          "hit_rate": 33.7,
           "investment": 3341800,
-          "payout": 9503470,
-          "roi": 284.4
+          "payout": 9542740,
+          "roi": 285.6
         },
         "umaren": {
-          "hits": 1279,
-          "hit_rate": 26.8,
+          "hits": 1297,
+          "hit_rate": 27.2,
           "investment": 3341800,
-          "payout": 6118420,
-          "roi": 183.1
+          "payout": 6667255,
+          "roi": 199.5
         },
         "wide": {
-          "hits": 2349,
-          "hit_rate": 49.2,
+          "hits": 2352,
+          "hit_rate": 49.3,
           "investment": 3341800,
-          "payout": 5580015,
-          "roi": 167.0
+          "payout": 5678785,
+          "roi": 169.9
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 511.2
+          "roi": 538.8
         },
         "umaren": {
-          "roi": 188.0
+          "roi": 204.5
         },
         "wide": {
-          "roi": 153.0
+          "roi": 153.5
         }
       }
     },
     "D": {
       "n": 7254,
       "best_bet": "trio",
-      "best_roi_actual": 135.0,
+      "best_roi_actual": 136.0,
       "recommended": true,
       "actual_roi": {
         "trio": {
-          "hits": 1983,
-          "hit_rate": 27.3,
+          "hits": 1959,
+          "hit_rate": 27.0,
           "investment": 5077800,
-          "payout": 6857500,
-          "roi": 135.0
+          "payout": 6906000,
+          "roi": 136.0
         },
         "umaren": {
-          "hits": 1627,
-          "hit_rate": 22.4,
+          "hits": 1582,
+          "hit_rate": 21.8,
           "investment": 5077800,
-          "payout": 6440455,
-          "roi": 126.8
+          "payout": 5993050,
+          "roi": 118.0
         },
         "wide": {
-          "hits": 3074,
-          "hit_rate": 42.4,
+          "hits": 3061,
+          "hit_rate": 42.2,
           "investment": 5077800,
-          "payout": 5844440,
-          "roi": 115.1
+          "payout": 5775805,
+          "roi": 113.7
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 230.8
+          "roi": 236.0
         },
         "umaren": {
-          "roi": 130.5
+          "roi": 120.7
         },
         "wide": {
-          "roi": 96.9
+          "roi": 95.3
         }
       }
     },
     "E": {
       "n": 461,
       "best_bet": "umaren",
-      "best_roi_actual": 119.1,
+      "best_roi_actual": 118.0,
       "recommended": true,
       "actual_roi": {
         "trio": {
-          "hits": 347,
-          "hit_rate": 75.3,
+          "hits": 344,
+          "hit_rate": 74.6,
           "investment": 322700,
-          "payout": 337260,
-          "roi": 104.5
+          "payout": 331840,
+          "roi": 102.8
         },
         "umaren": {
-          "hits": 248,
-          "hit_rate": 53.8,
+          "hits": 246,
+          "hit_rate": 53.4,
           "investment": 322700,
-          "payout": 384370,
-          "roi": 119.1
+          "payout": 380730,
+          "roi": 118.0
         },
         "wide": {
-          "hits": 356,
-          "hit_rate": 77.2,
+          "hits": 351,
+          "hit_rate": 76.1,
           "investment": 322700,
-          "payout": 355775,
-          "roi": 110.2
+          "payout": 330050,
+          "roi": 102.3
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 300.3
+          "roi": 318.2
         },
         "umaren": {
-          "roi": 148.5
+          "roi": 145.2
         },
         "wide": {
-          "roi": 121.6
+          "roi": 111.1
         }
       }
     },
     "X": {
       "n": 805,
       "best_bet": "trio",
-      "best_roi_actual": 300.5,
+      "best_roi_actual": 330.5,
       "recommended": true,
       "actual_roi": {
         "trio": {
           "hits": 286,
           "hit_rate": 35.5,
           "investment": 563500,
-          "payout": 1693200,
-          "roi": 300.5
+          "payout": 1862220,
+          "roi": 330.5
         },
         "umaren": {
-          "hits": 224,
-          "hit_rate": 27.8,
+          "hits": 221,
+          "hit_rate": 27.5,
           "investment": 563500,
-          "payout": 1133265,
-          "roi": 201.1
+          "payout": 1292270,
+          "roi": 229.3
         },
         "wide": {
-          "hits": 399,
-          "hit_rate": 49.6,
+          "hits": 401,
+          "hit_rate": 49.8,
           "investment": 563500,
-          "payout": 1006110,
-          "roi": 178.5
+          "payout": 1058400,
+          "roi": 187.8
         }
       },
       "estimated_roi": {
         "trio": {
-          "roi": 490.7
+          "roi": 544.2
         },
         "umaren": {
-          "roi": 200.4
+          "roi": 230.2
         },
         "wide": {
-          "roi": 164.0
+          "roi": 177.4
         }
       }
     }
@@ -269,37 +269,37 @@
       "A": {
         "n": 1002,
         "trio": {
-          "hits": 421,
-          "hit_rate": 42.0,
-          "actual_roi": 200.4,
-          "estimated_roi": 350.2
+          "hits": 419,
+          "hit_rate": 41.8,
+          "actual_roi": 194.1,
+          "estimated_roi": 348.5
         }
       },
       "B": {
         "n": 184,
         "trio": {
-          "hits": 83,
-          "hit_rate": 45.1,
-          "actual_roi": 247.7,
-          "estimated_roi": 452.7
+          "hits": 82,
+          "hit_rate": 44.6,
+          "actual_roi": 241.4,
+          "estimated_roi": 397.8
         }
       },
       "C": {
         "n": 784,
         "trio": {
-          "hits": 259,
-          "hit_rate": 33.0,
-          "actual_roi": 271.2,
-          "estimated_roi": 477.3
+          "hits": 264,
+          "hit_rate": 33.7,
+          "actual_roi": 278.4,
+          "estimated_roi": 484.5
         }
       },
       "D": {
         "n": 1237,
         "trio": {
-          "hits": 314,
-          "hit_rate": 25.4,
-          "actual_roi": 125.5,
-          "estimated_roi": 210.0
+          "hits": 296,
+          "hit_rate": 23.9,
+          "actual_roi": 124.9,
+          "estimated_roi": 216.2
         }
       },
       "E": {
@@ -307,17 +307,17 @@
         "trio": {
           "hits": 44,
           "hit_rate": 80.0,
-          "actual_roi": 97.5,
-          "estimated_roi": 219.6
+          "actual_roi": 85.2,
+          "estimated_roi": 208.9
         }
       },
       "X": {
         "n": 163,
         "trio": {
-          "hits": 47,
-          "hit_rate": 28.8,
-          "actual_roi": 319.5,
-          "estimated_roi": 593.2
+          "hits": 52,
+          "hit_rate": 31.9,
+          "actual_roi": 334.9,
+          "estimated_roi": 622.5
         }
       }
     },
@@ -325,55 +325,55 @@
       "A": {
         "n": 1055,
         "trio": {
-          "hits": 477,
-          "hit_rate": 45.2,
-          "actual_roi": 207.1,
-          "estimated_roi": 364.4
+          "hits": 471,
+          "hit_rate": 44.6,
+          "actual_roi": 217.2,
+          "estimated_roi": 414.1
         }
       },
       "B": {
         "n": 163,
         "trio": {
-          "hits": 74,
-          "hit_rate": 45.4,
-          "actual_roi": 247.3,
-          "estimated_roi": 477.5
+          "hits": 77,
+          "hit_rate": 47.2,
+          "actual_roi": 256.1,
+          "estimated_roi": 489.4
         }
       },
       "C": {
         "n": 767,
         "trio": {
-          "hits": 270,
-          "hit_rate": 35.2,
-          "actual_roi": 246.6,
-          "estimated_roi": 391.4
+          "hits": 263,
+          "hit_rate": 34.3,
+          "actual_roi": 280.9,
+          "estimated_roi": 544.2
         }
       },
       "D": {
         "n": 1229,
         "trio": {
-          "hits": 309,
-          "hit_rate": 25.1,
-          "actual_roi": 125.9,
-          "estimated_roi": 208.8
+          "hits": 307,
+          "hit_rate": 25.0,
+          "actual_roi": 126.8,
+          "estimated_roi": 206.2
         }
       },
       "E": {
         "n": 62,
         "trio": {
-          "hits": 48,
-          "hit_rate": 77.4,
-          "actual_roi": 122.5,
-          "estimated_roi": 294.6
+          "hits": 43,
+          "hit_rate": 69.4,
+          "actual_roi": 107.8,
+          "estimated_roi": 289.9
         }
       },
       "X": {
         "n": 143,
         "trio": {
-          "hits": 52,
-          "hit_rate": 36.4,
-          "actual_roi": 358.9,
-          "estimated_roi": 496.2
+          "hits": 53,
+          "hit_rate": 37.1,
+          "actual_roi": 353.1,
+          "estimated_roi": 484.4
         }
       }
     },
@@ -381,46 +381,46 @@
       "A": {
         "n": 1177,
         "trio": {
-          "hits": 529,
-          "hit_rate": 44.9,
-          "actual_roi": 204.8,
-          "estimated_roi": 450.8
+          "hits": 506,
+          "hit_rate": 43.0,
+          "actual_roi": 192.4,
+          "estimated_roi": 425.7
         }
       },
       "B": {
         "n": 105,
         "trio": {
-          "hits": 44,
-          "hit_rate": 41.9,
-          "actual_roi": 199.3,
-          "estimated_roi": 351.6
+          "hits": 45,
+          "hit_rate": 42.9,
+          "actual_roi": 365.2,
+          "estimated_roi": 725.2
         }
       },
       "C": {
         "n": 750,
         "trio": {
-          "hits": 251,
-          "hit_rate": 33.5,
-          "actual_roi": 220.0,
-          "estimated_roi": 336.4
+          "hits": 248,
+          "hit_rate": 33.1,
+          "actual_roi": 218.5,
+          "estimated_roi": 341.3
         }
       },
       "D": {
         "n": 1216,
         "trio": {
-          "hits": 340,
-          "hit_rate": 28.0,
-          "actual_roi": 120.7,
-          "estimated_roi": 223.1
+          "hits": 332,
+          "hit_rate": 27.3,
+          "actual_roi": 123.0,
+          "estimated_roi": 243.8
         }
       },
       "E": {
         "n": 77,
         "trio": {
-          "hits": 55,
-          "hit_rate": 71.4,
-          "actual_roi": 123.5,
-          "estimated_roi": 371.1
+          "hits": 57,
+          "hit_rate": 74.0,
+          "actual_roi": 129.9,
+          "estimated_roi": 378.7
         }
       },
       "X": {
@@ -428,8 +428,8 @@
         "trio": {
           "hits": 46,
           "hit_rate": 38.3,
-          "actual_roi": 231.5,
-          "estimated_roi": 348.6
+          "actual_roi": 235.6,
+          "estimated_roi": 404.2
         }
       }
     },
@@ -437,46 +437,46 @@
       "A": {
         "n": 1038,
         "trio": {
-          "hits": 454,
-          "hit_rate": 43.7,
-          "actual_roi": 170.3,
-          "estimated_roi": 381.5
+          "hits": 449,
+          "hit_rate": 43.3,
+          "actual_roi": 166.0,
+          "estimated_roi": 350.3
         }
       },
       "B": {
         "n": 189,
         "trio": {
-          "hits": 85,
-          "hit_rate": 45.0,
-          "actual_roi": 183.0,
-          "estimated_roi": 337.1
+          "hits": 79,
+          "hit_rate": 41.8,
+          "actual_roi": 146.6,
+          "estimated_roi": 262.5
         }
       },
       "C": {
         "n": 787,
         "trio": {
-          "hits": 265,
-          "hit_rate": 33.7,
-          "actual_roi": 265.0,
-          "estimated_roi": 464.0
+          "hits": 267,
+          "hit_rate": 33.9,
+          "actual_roi": 280.2,
+          "estimated_roi": 501.2
         }
       },
       "D": {
         "n": 1199,
         "trio": {
-          "hits": 339,
-          "hit_rate": 28.3,
-          "actual_roi": 148.9,
-          "estimated_roi": 252.4
+          "hits": 335,
+          "hit_rate": 27.9,
+          "actual_roi": 131.0,
+          "estimated_roi": 228.2
         }
       },
       "E": {
         "n": 72,
         "trio": {
-          "hits": 54,
-          "hit_rate": 75.0,
-          "actual_roi": 114.1,
-          "estimated_roi": 353.9
+          "hits": 53,
+          "hit_rate": 73.6,
+          "actual_roi": 109.3,
+          "estimated_roi": 347.2
         }
       },
       "X": {
@@ -484,8 +484,8 @@
         "trio": {
           "hits": 62,
           "hit_rate": 40.5,
-          "actual_roi": 253.4,
-          "estimated_roi": 400.7
+          "actual_roi": 225.6,
+          "estimated_roi": 356.8
         }
       }
     },
@@ -493,55 +493,55 @@
       "A": {
         "n": 1111,
         "trio": {
-          "hits": 497,
-          "hit_rate": 44.7,
-          "actual_roi": 174.3,
-          "estimated_roi": 354.8
+          "hits": 506,
+          "hit_rate": 45.5,
+          "actual_roi": 247.2,
+          "estimated_roi": 630.2
         }
       },
       "B": {
         "n": 115,
         "trio": {
-          "hits": 55,
-          "hit_rate": 47.8,
-          "actual_roi": 262.3,
-          "estimated_roi": 565.1
+          "hits": 58,
+          "hit_rate": 50.4,
+          "actual_roi": 277.8,
+          "estimated_roi": 546.5
         }
       },
       "C": {
         "n": 813,
         "trio": {
-          "hits": 269,
-          "hit_rate": 33.1,
-          "actual_roi": 376.6,
-          "estimated_roi": 600.3
+          "hits": 274,
+          "hit_rate": 33.7,
+          "actual_roi": 251.5,
+          "estimated_roi": 426.2
         }
       },
       "D": {
         "n": 1191,
         "trio": {
-          "hits": 370,
-          "hit_rate": 31.1,
-          "actual_roi": 142.2,
-          "estimated_roi": 227.0
+          "hits": 367,
+          "hit_rate": 30.8,
+          "actual_roi": 140.4,
+          "estimated_roi": 222.9
         }
       },
       "E": {
         "n": 95,
         "trio": {
-          "hits": 65,
-          "hit_rate": 68.4,
-          "actual_roi": 71.9,
-          "estimated_roi": 184.3
+          "hits": 64,
+          "hit_rate": 67.4,
+          "actual_roi": 73.4,
+          "estimated_roi": 260.9
         }
       },
       "X": {
         "n": 114,
         "trio": {
-          "hits": 38,
-          "hit_rate": 33.3,
-          "actual_roi": 186.6,
-          "estimated_roi": 306.9
+          "hits": 33,
+          "hit_rate": 28.9,
+          "actual_roi": 206.7,
+          "estimated_roi": 303.7
         }
       }
     },
@@ -549,10 +549,10 @@
       "A": {
         "n": 1055,
         "trio": {
-          "hits": 497,
-          "hit_rate": 47.1,
-          "actual_roi": 184.3,
-          "estimated_roi": 376.0
+          "hits": 514,
+          "hit_rate": 48.7,
+          "actual_roi": 213.3,
+          "estimated_roi": 454.2
         }
       },
       "B": {
@@ -560,44 +560,44 @@
         "trio": {
           "hits": 42,
           "hit_rate": 46.2,
-          "actual_roi": 354.9,
-          "estimated_roi": 862.6
+          "actual_roi": 181.5,
+          "estimated_roi": 389.4
         }
       },
       "C": {
         "n": 873,
         "trio": {
-          "hits": 290,
-          "hit_rate": 33.2,
-          "actual_roi": 316.3,
-          "estimated_roi": 756.5
+          "hits": 293,
+          "hit_rate": 33.6,
+          "actual_roi": 390.3,
+          "estimated_roi": 891.2
         }
       },
       "D": {
         "n": 1182,
         "trio": {
-          "hits": 311,
-          "hit_rate": 26.3,
-          "actual_roi": 148.0,
-          "estimated_roi": 265.1
+          "hits": 322,
+          "hit_rate": 27.2,
+          "actual_roi": 171.2,
+          "estimated_roi": 300.6
         }
       },
       "E": {
         "n": 100,
         "trio": {
-          "hits": 81,
-          "hit_rate": 81.0,
-          "actual_roi": 106.7,
-          "estimated_roi": 365.3
+          "hits": 83,
+          "hit_rate": 83.0,
+          "actual_roi": 111.8,
+          "estimated_roi": 382.9
         }
       },
       "X": {
         "n": 112,
         "trio": {
-          "hits": 41,
-          "hit_rate": 36.6,
-          "actual_roi": 452.4,
-          "estimated_roi": 796.8
+          "hits": 40,
+          "hit_rate": 35.7,
+          "actual_roi": 666.0,
+          "estimated_roi": 1157.6
         }
       }
     }
@@ -605,32 +605,32 @@
   "optimal_bets": {
     "A": {
       "bet_type": "trio",
-      "roi": 190.3,
+      "roi": 205.3,
       "recommended": true
     },
     "B": {
       "bet_type": "trio",
-      "roi": 240.7,
+      "roi": 236.9,
       "recommended": true
     },
     "C": {
       "bet_type": "trio",
-      "roi": 284.4,
+      "roi": 285.6,
       "recommended": true
     },
     "D": {
       "bet_type": "trio",
-      "roi": 135.0,
+      "roi": 136.0,
       "recommended": true
     },
     "E": {
       "bet_type": "umaren",
-      "roi": 119.1,
+      "roi": 118.0,
       "recommended": true
     },
     "X": {
       "bet_type": "trio",
-      "roi": 300.5,
+      "roi": 330.5,
       "recommended": true
     }
   }
