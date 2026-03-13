@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-03-14 00:48:22",
+  "current_target": "Place (finish <= 3)",
+  "patterns": {
+    "win": {
+      "label": "Win (1着=1)",
+      "avg_auc": 0.795,
+      "fold_aucs": {
+        "2020": 0.7906,
+        "2021": 0.7931,
+        "2022": 0.7937,
+        "2023": 0.795,
+        "2024": 0.7993,
+        "2025": 0.7984
+      },
+      "overall_estimated_roi": 351.0,
+      "condition_roi": {
+        "A": {
+          "n": 6457,
+          "bet_type": "trio",
+          "hit_rate": 43.3,
+          "roi": 388.5
+        },
+        "B": {
+          "n": 855,
+          "bet_type": "trio",
+          "hit_rate": 43.0,
+          "roi": 396.1
+        },
+        "C": {
+          "n": 4788,
+          "bet_type": "trio",
+          "hit_rate": 32.9,
+          "roi": 473.9
+        },
+        "D": {
+          "n": 7280,
+          "bet_type": "trio",
+          "hit_rate": 25.7,
+          "roi": 206.1
+        },
+        "E": {
+          "n": 462,
+          "bet_type": "umaren",
+          "hit_rate": 52.4,
+          "roi": 145.2
+        },
+        "X": {
+          "n": 813,
+          "bet_type": "trio",
+          "hit_rate": 36.9,
+          "roi": 610.4
+        }
+      },
+      "n_races": 20655
+    },
+    "place_current": {
+      "label": "Place (3着以内=1)",
+      "avg_auc": 0.8019,
+      "fold_aucs": {
+        "2020": 0.7954,
+        "2021": 0.7999,
+        "2022": 0.8002,
+        "2023": 0.8021,
+        "2024": 0.8074,
+        "2025": 0.8065
+      },
+      "overall_estimated_roi": 368.8,
+      "condition_roi": {
+        "A": {
+          "n": 6457,
+          "bet_type": "trio",
+          "hit_rate": 44.5,
+          "roi": 379.0
+        },
+        "B": {
+          "n": 855,
+          "bet_type": "trio",
+          "hit_rate": 45.4,
+          "roi": 501.8
+        },
+        "C": {
+          "n": 4788,
+          "bet_type": "trio",
+          "hit_rate": 33.9,
+          "roi": 508.0
+        },
+        "D": {
+          "n": 7280,
+          "bet_type": "trio",
+          "hit_rate": 26.7,
+          "roi": 222.4
+        },
+        "E": {
+          "n": 462,
+          "bet_type": "umaren",
+          "hit_rate": 50.9,
+          "roi": 127.9
+        },
+        "X": {
+          "n": 813,
+          "bet_type": "trio",
+          "hit_rate": 37.6,
+          "roi": 666.3
+        }
+      },
+      "n_races": 20655
+    },
+    "ev_weighted": {
+      "label": "EV weighted (着順重み付け)",
+      "avg_auc": 0.8003,
+      "fold_aucs": {
+        "2020": 0.7936,
+        "2021": 0.7983,
+        "2022": 0.7992,
+        "2023": 0.8003,
+        "2024": 0.8058,
+        "2025": 0.8043
+      },
+      "overall_estimated_roi": 396.2,
+      "condition_roi": {
+        "A": {
+          "n": 6457,
+          "bet_type": "trio",
+          "hit_rate": 44.8,
+          "roi": 428.0
+        },
+        "B": {
+          "n": 855,
+          "bet_type": "trio",
+          "hit_rate": 45.3,
+          "roi": 521.5
+        },
+        "C": {
+          "n": 4788,
+          "bet_type": "trio",
+          "hit_rate": 33.4,
+          "roi": 504.3
+        },
+        "D": {
+          "n": 7280,
+          "bet_type": "trio",
+          "hit_rate": 27.2,
+          "roi": 269.3
+        },
+        "E": {
+          "n": 462,
+          "bet_type": "umaren",
+          "hit_rate": 51.3,
+          "roi": 138.0
+        },
+        "X": {
+          "n": 813,
+          "bet_type": "trio",
+          "hit_rate": 36.5,
+          "roi": 549.3
+        }
+      },
+      "n_races": 20655
+    }
+  },
+  "comparison": {
+    "best_auc": 0.8019,
+    "best_roi": 396.2,
+    "recommendation": "AUC最高: place_current (0.8019), ROI最高: ev_weighted (396.2%). 現行(place)のAUC=0.8019は実績があり、変更リスクに見合わない場合は現状維持推奨。",
+    "best_auc_pattern": "place_current",
+    "best_roi_pattern": "ev_weighted"
+  }
+}

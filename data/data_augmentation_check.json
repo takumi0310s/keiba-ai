@@ -1,0 +1,130 @@
+{
+  "generated_at": "2026-03-14 00:36:43",
+  "pattern_a_features": 67,
+  "feature_checks": {
+    "lap_times": {
+      "status": "USED",
+      "features": [
+        "prev_race_first3f (前走のレース前半3F)",
+        "prev_race_last3f (前走のレース後半3F)",
+        "prev_race_pace_diff (前走ペース差)",
+        "prev_agari_relative (前走の上がり相対値)"
+      ],
+      "matched_in_pattern_a": [
+        "prev_race_first3f",
+        "prev_race_last3f",
+        "prev_race_pace_diff",
+        "prev_agari_relative"
+      ],
+      "note": "lap_times.csvからレースレベルのペースデータをロードし、前走シフトで使用。V9.3で追加済み。"
+    },
+    "track_condition_index": {
+      "status": "PATTERN_B_ONLY",
+      "features": [
+        "cushion_value (クッション値) - JRA公式",
+        "moisture_rate (含水率) - JRA公式"
+      ],
+      "in_pattern_a": false,
+      "in_pattern_b": true,
+      "reason": "クッション値・含水率は当日朝の計測値。Pattern A（リークフリー）では使用不可。Pattern B（実運用）では使用済み。",
+      "note": "Pattern Aには代わりにcondition_encの除外が適用されている（当日情報のため）。"
+    },
+    "course_features": {
+      "status": "PARTIALLY_USED",
+      "used_features": [
+        "course_enc (コース10場のエンコード)",
+        "course_surface (コース×馬場の組合せ)",
+        "frame_course_dist_wr (枠番×コース×距離の勝率)",
+        "jockey_course_wr_calc (騎手×コースの勝率)"
+      ],
+      "not_used": [
+        "horse_course_wr (馬×コース勝率) - 未実装"
+      ],
+      "reason_not_used": "馬の出走回数はコース別だと少なすぎ（平均2-3回）。expanding windowでも統計的に不安定。",
+      "estimated_auc_impact": "0.0000-0.0005（過学習リスクが利益を上回る）",
+      "recommendation": "現状維持。馬×コースは過学習リスク大。"
+    },
+    "jockey_course_wr": {
+      "status": "USED",
+      "feature": "jockey_course_wr_calc",
+      "method": "Expanding window, alpha=10 Bayesian smoothing",
+      "note": "V9.1から使用済み。全10場×騎手の勝率を累積計算。"
+    },
+    "gate_running_style": {
+      "status": "PARTIALLY_USED",
+      "used_features": [
+        "bracket (枠番: 1-8)",
+        "bracket_pos (枠位置: 内/中/外の3分類)",
+        "horse_num_ratio (馬番/頭数)",
+        "frame_course_dist_wr (枠×コース×距離の勝率)"
+      ],
+      "not_used": [
+        "running_style (脚質分類: 逃げ/先行/差し/追込) - 未実装",
+        "gate × running_style interaction - 未実装"
+      ],
+      "reason_not_used": {
+        "running_style": "pass1-pass4（通過順位）データは存在するが、脚質の明示的な分類は未実装。前走の通過順位(prev_pass4)は使用中。",
+        "interaction": "枠順×脚質の交互作用は、枠番とprev_pass4の情報をLGBが自動的に学習可能。明示的な交互作用特徴量は過学習リスクあり。"
+      },
+      "estimated_auc_impact": {
+        "running_style_class": "0.0000-0.0010（LGBがprev_pass4から自動学習済みのため限定的）",
+        "gate_x_style": "0.0000-0.0005"
+      },
+      "recommendation": "現状維持。LGBは非線形交互作用を自動学習するため、明示的特徴量の追加効果は限定的。"
+    },
+    "additional_candidates": {
+      "blood_features": {
+        "status": "PARTIALLY_USED",
+        "used": [
+          "sire_enc",
+          "bms_enc",
+          "sire_surface_wr",
+          "sire_dist_wr",
+          "bms_surface_wr"
+        ],
+        "not_used": [
+          "母父の父 (broodmare sire of sire)",
+          "近親交配係数"
+        ],
+        "note": "血統データ(blood_full.csv)からの追加抽出は可能だが、sire/bmsで主要な情報はカバー済み。"
+      },
+      "class_code": {
+        "status": "NOT_USED",
+        "reason": "class_codeはレースのグレード（新馬/未勝利/1勝/...G1）。特徴量に含めると条件分類との重複が大きい。",
+        "estimated_impact": "0.0000-0.0003"
+      },
+      "weather": {
+        "status": "PATTERN_B_ONLY",
+        "features": [
+          "temperature",
+          "humidity",
+          "wind_speed",
+          "precipitation",
+          "weather_enc"
+        ],
+        "note": "気象データは当日情報のためPattern Bのみ使用。"
+      }
+    }
+  },
+  "conclusion": {
+    "fully_used": [
+      "lap_times",
+      "jockey_course_wr"
+    ],
+    "pattern_b_only": [
+      "cushion_value",
+      "moisture_rate",
+      "weather"
+    ],
+    "partially_used": [
+      "course_features",
+      "gate_running_style"
+    ],
+    "not_worth_adding": [
+      "horse_course_wr",
+      "running_style_classification",
+      "gate_x_style_interaction"
+    ],
+    "recommendation": "現行67特徴量で主要な情報源はカバー済み。追加候補はいずれも過学習リスクが改善効果を上回るため、不採用推奨。現行AUC 0.8015を維持。"
+  }
+}

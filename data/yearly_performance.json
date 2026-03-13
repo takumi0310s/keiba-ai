@@ -1,0 +1,369 @@
+{
+  "generated_at": "2026-03-14 00:49:38",
+  "test_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "yearly_data": {
+    "2020": {
+      "auc": 0.7954,
+      "conditions": {
+        "A": {
+          "n": 1002,
+          "bet_type": "trio",
+          "hit_rate": 43.8,
+          "actual_roi": 191.2,
+          "trio_roi": 191.2,
+          "umaren_roi": 134.6
+        },
+        "B": {
+          "n": 184,
+          "bet_type": "trio",
+          "hit_rate": 42.9,
+          "actual_roi": 225.9,
+          "trio_roi": 225.9,
+          "umaren_roi": 179.8
+        },
+        "C": {
+          "n": 784,
+          "bet_type": "trio",
+          "hit_rate": 34.8,
+          "actual_roi": 295.3,
+          "trio_roi": 295.3,
+          "umaren_roi": 183.9
+        },
+        "D": {
+          "n": 1237,
+          "bet_type": "trio",
+          "hit_rate": 25.0,
+          "actual_roi": 116.5,
+          "trio_roi": 116.5,
+          "umaren_roi": 109.6
+        },
+        "E": {
+          "n": 55,
+          "bet_type": "umaren",
+          "hit_rate": 61.8,
+          "actual_roi": 154.2,
+          "trio_roi": 96.9,
+          "umaren_roi": 154.2
+        },
+        "X": {
+          "n": 163,
+          "bet_type": "trio",
+          "hit_rate": 34.4,
+          "actual_roi": 357.7,
+          "trio_roi": 357.7,
+          "umaren_roi": 118.4
+        }
+      },
+      "overall": {
+        "total_races": 3425,
+        "trio_roi": 196.3,
+        "umaren_roi": 138.8
+      }
+    },
+    "2021": {
+      "auc": 0.7999,
+      "conditions": {
+        "A": {
+          "n": 1055,
+          "bet_type": "trio",
+          "hit_rate": 44.4,
+          "actual_roi": 203.2,
+          "trio_roi": 203.2,
+          "umaren_roi": 148.4
+        },
+        "B": {
+          "n": 163,
+          "bet_type": "trio",
+          "hit_rate": 49.1,
+          "actual_roi": 263.1,
+          "trio_roi": 263.1,
+          "umaren_roi": 196.4
+        },
+        "C": {
+          "n": 767,
+          "bet_type": "trio",
+          "hit_rate": 36.6,
+          "actual_roi": 258.5,
+          "trio_roi": 258.5,
+          "umaren_roi": 188.8
+        },
+        "D": {
+          "n": 1229,
+          "bet_type": "trio",
+          "hit_rate": 24.1,
+          "actual_roi": 125.3,
+          "trio_roi": 125.3,
+          "umaren_roi": 100.3
+        },
+        "E": {
+          "n": 62,
+          "bet_type": "umaren",
+          "hit_rate": 46.8,
+          "actual_roi": 85.2,
+          "trio_roi": 104.0,
+          "umaren_roi": 85.2
+        },
+        "X": {
+          "n": 143,
+          "bet_type": "trio",
+          "hit_rate": 37.1,
+          "actual_roi": 340.0,
+          "trio_roi": 340.0,
+          "umaren_roi": 275.0
+        }
+      },
+      "overall": {
+        "total_races": 3419,
+        "trio_roi": 194.4,
+        "umaren_roi": 146.6
+      }
+    },
+    "2022": {
+      "auc": 0.8002,
+      "conditions": {
+        "A": {
+          "n": 1177,
+          "bet_type": "trio",
+          "hit_rate": 43.2,
+          "actual_roi": 187.0,
+          "trio_roi": 187.0,
+          "umaren_roi": 168.5
+        },
+        "B": {
+          "n": 105,
+          "bet_type": "trio",
+          "hit_rate": 41.9,
+          "actual_roi": 390.5,
+          "trio_roi": 390.5,
+          "umaren_roi": 185.8
+        },
+        "C": {
+          "n": 750,
+          "bet_type": "trio",
+          "hit_rate": 32.7,
+          "actual_roi": 217.8,
+          "trio_roi": 217.8,
+          "umaren_roi": 168.6
+        },
+        "D": {
+          "n": 1216,
+          "bet_type": "trio",
+          "hit_rate": 27.1,
+          "actual_roi": 120.2,
+          "trio_roi": 120.2,
+          "umaren_roi": 120.2
+        },
+        "E": {
+          "n": 77,
+          "bet_type": "umaren",
+          "hit_rate": 50.6,
+          "actual_roi": 137.7,
+          "trio_roi": 146.9,
+          "umaren_roi": 137.7
+        },
+        "X": {
+          "n": 120,
+          "bet_type": "trio",
+          "hit_rate": 41.7,
+          "actual_roi": 241.5,
+          "trio_roi": 241.5,
+          "umaren_roi": 246.0
+        }
+      },
+      "overall": {
+        "total_races": 3445,
+        "trio_roi": 177.3,
+        "umaren_roi": 154.0
+      }
+    },
+    "2023": {
+      "auc": 0.8021,
+      "conditions": {
+        "A": {
+          "n": 1038,
+          "bet_type": "trio",
+          "hit_rate": 43.3,
+          "actual_roi": 158.3,
+          "trio_roi": 158.3,
+          "umaren_roi": 147.8
+        },
+        "B": {
+          "n": 189,
+          "bet_type": "trio",
+          "hit_rate": 42.3,
+          "actual_roi": 150.1,
+          "trio_roi": 150.1,
+          "umaren_roi": 180.4
+        },
+        "C": {
+          "n": 787,
+          "bet_type": "trio",
+          "hit_rate": 33.8,
+          "actual_roi": 289.3,
+          "trio_roi": 289.3,
+          "umaren_roi": 184.3
+        },
+        "D": {
+          "n": 1199,
+          "bet_type": "trio",
+          "hit_rate": 27.9,
+          "actual_roi": 127.8,
+          "trio_roi": 127.8,
+          "umaren_roi": 109.3
+        },
+        "E": {
+          "n": 72,
+          "bet_type": "umaren",
+          "hit_rate": 47.2,
+          "actual_roi": 81.7,
+          "trio_roi": 102.8,
+          "umaren_roi": 81.7
+        },
+        "X": {
+          "n": 153,
+          "bet_type": "trio",
+          "hit_rate": 41.2,
+          "actual_roi": 249.3,
+          "trio_roi": 249.3,
+          "umaren_roi": 212.9
+        }
+      },
+      "overall": {
+        "total_races": 3438,
+        "trio_roi": 180.1,
+        "umaren_roi": 146.1
+      }
+    },
+    "2024": {
+      "auc": 0.8074,
+      "conditions": {
+        "A": {
+          "n": 1111,
+          "bet_type": "trio",
+          "hit_rate": 45.4,
+          "actual_roi": 176.1,
+          "trio_roi": 176.1,
+          "umaren_roi": 170.9
+        },
+        "B": {
+          "n": 115,
+          "bet_type": "trio",
+          "hit_rate": 53.0,
+          "actual_roi": 332.0,
+          "trio_roi": 332.0,
+          "umaren_roi": 171.0
+        },
+        "C": {
+          "n": 813,
+          "bet_type": "trio",
+          "hit_rate": 32.1,
+          "actual_roi": 254.6,
+          "trio_roi": 254.6,
+          "umaren_roi": 203.2
+        },
+        "D": {
+          "n": 1191,
+          "bet_type": "trio",
+          "hit_rate": 29.3,
+          "actual_roi": 128.5,
+          "trio_roi": 128.5,
+          "umaren_roi": 129.9
+        },
+        "E": {
+          "n": 95,
+          "bet_type": "umaren",
+          "hit_rate": 42.1,
+          "actual_roi": 68.8,
+          "trio_roi": 90.8,
+          "umaren_roi": 68.8
+        },
+        "X": {
+          "n": 114,
+          "bet_type": "trio",
+          "hit_rate": 31.6,
+          "actual_roi": 184.6,
+          "trio_roi": 184.6,
+          "umaren_roi": 118.6
+        }
+      },
+      "overall": {
+        "total_races": 3439,
+        "trio_roi": 181.3,
+        "umaren_roi": 159.8
+      }
+    },
+    "2025": {
+      "auc": 0.8065,
+      "conditions": {
+        "A": {
+          "n": 1055,
+          "bet_type": "trio",
+          "hit_rate": 47.1,
+          "actual_roi": 205.7,
+          "trio_roi": 205.7,
+          "umaren_roi": 148.1
+        },
+        "B": {
+          "n": 91,
+          "bet_type": "trio",
+          "hit_rate": 44.0,
+          "actual_roi": 174.9,
+          "trio_roi": 174.9,
+          "umaren_roi": 92.3
+        },
+        "C": {
+          "n": 873,
+          "bet_type": "trio",
+          "hit_rate": 33.7,
+          "actual_roi": 337.8,
+          "trio_roi": 337.8,
+          "umaren_roi": 224.7
+        },
+        "D": {
+          "n": 1182,
+          "bet_type": "trio",
+          "hit_rate": 27.3,
+          "actual_roi": 158.8,
+          "trio_roi": 158.8,
+          "umaren_roi": 147.0
+        },
+        "E": {
+          "n": 100,
+          "bet_type": "umaren",
+          "hit_rate": 58.0,
+          "actual_roi": 108.2,
+          "trio_roi": 107.7,
+          "umaren_roi": 108.2
+        },
+        "X": {
+          "n": 112,
+          "bet_type": "trio",
+          "hit_rate": 39.3,
+          "actual_roi": 806.3,
+          "trio_roi": 806.3,
+          "umaren_roi": 365.7
+        }
+      },
+      "overall": {
+        "total_races": 3413,
+        "trio_roi": 239.3,
+        "umaren_roi": 171.8
+      }
+    }
+  },
+  "summary": {
+    "avg_auc": 0.8019,
+    "std_auc": 0.0041,
+    "min_auc": 0.7954,
+    "max_auc": 0.8074,
+    "auc_trend": "stable"
+  },
+  "warnings": []
+}

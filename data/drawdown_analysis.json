@@ -1,0 +1,289 @@
+{
+  "generated_at": "2026-03-14 00:36:19",
+  "parameters": {
+    "num_races": 1000,
+    "num_trials": 10000,
+    "initial_funds": [
+      10000,
+      30000,
+      100000
+    ]
+  },
+  "conditions": {
+    "A": {
+      "hit_rate": 0.451,
+      "avg_return": 6537,
+      "investment": 700,
+      "n": 8634,
+      "label": "8-14頭/1600m+/良~稍"
+    },
+    "B": {
+      "hit_rate": 0.454,
+      "avg_return": 7312,
+      "investment": 700,
+      "n": 1067,
+      "label": "8-14頭/1600m+/重~不良"
+    },
+    "C": {
+      "hit_rate": 0.334,
+      "avg_return": 10461,
+      "investment": 700,
+      "n": 6405,
+      "label": "15頭+/1600m+/良~稍"
+    },
+    "D": {
+      "hit_rate": 0.282,
+      "avg_return": 6124,
+      "investment": 700,
+      "n": 9807,
+      "label": "1400m以下"
+    },
+    "E": {
+      "hit_rate": 0.757,
+      "avg_return": 2956,
+      "investment": 700,
+      "n": 569,
+      "label": "7頭以下"
+    },
+    "X": {
+      "hit_rate": 0.361,
+      "avg_return": 11596,
+      "investment": 700,
+      "n": 1055,
+      "label": "15頭+/重~不良"
+    }
+  },
+  "simulations": {
+    "10000": {
+      "initial_fund": 10000,
+      "num_races": 1000,
+      "num_trials": 10000,
+      "ruin_probability": 0.59,
+      "profit_probability": 99.4,
+      "avg_final_fund": 1545166,
+      "median_final_fund": 1549446,
+      "expected_roi": 15451.7,
+      "max_drawdown": {
+        "avg_pct": 25.2,
+        "median_pct": 21.0,
+        "worst_pct": 99.7,
+        "p95_pct": 58.7,
+        "avg_amount": 11274,
+        "worst_amount": 32698
+      },
+      "recovery": {
+        "avg_races_to_recover": 9.0,
+        "median_races_to_recover": 3.0,
+        "p95_races_to_recover": 4.0
+      },
+      "drawdown_frequency": {
+        "avg_fraction_below_peak": 71.5,
+        "note": "資金がピークを下回っている期間の割合"
+      },
+      "consecutive_losses": {
+        "avg_max": 13.7,
+        "median_max": 13,
+        "worst": 37,
+        "p95": 19
+      },
+      "condition_loss_streaks": {
+        "A": {
+          "avg_max": 8.7,
+          "worst": 23,
+          "p95": 13
+        },
+        "B": {
+          "avg_max": 5.2,
+          "worst": 20,
+          "p95": 9
+        },
+        "C": {
+          "avg_max": 11.5,
+          "worst": 29,
+          "p95": 17
+        },
+        "D": {
+          "avg_max": 15.1,
+          "worst": 45,
+          "p95": 22
+        },
+        "E": {
+          "avg_max": 1.9,
+          "worst": 7,
+          "p95": 3
+        },
+        "X": {
+          "avg_max": 6.6,
+          "worst": 25,
+          "p95": 11
+        }
+      }
+    },
+    "30000": {
+      "initial_fund": 30000,
+      "num_races": 1000,
+      "num_trials": 10000,
+      "ruin_probability": 0.0,
+      "profit_probability": 100.0,
+      "avg_final_fund": 1574242,
+      "median_final_fund": 1569751,
+      "expected_roi": 5247.5,
+      "max_drawdown": {
+        "avg_pct": 11.1,
+        "median_pct": 9.7,
+        "worst_pct": 53.9,
+        "p95_pct": 22.4,
+        "avg_amount": 11298,
+        "worst_amount": 32698
+      },
+      "recovery": {
+        "avg_races_to_recover": 3.0,
+        "median_races_to_recover": 3.0,
+        "p95_races_to_recover": 4.0
+      },
+      "drawdown_frequency": {
+        "avg_fraction_below_peak": 71.4,
+        "note": "資金がピークを下回っている期間の割合"
+      },
+      "consecutive_losses": {
+        "avg_max": 13.7,
+        "median_max": 13,
+        "worst": 37,
+        "p95": 19
+      },
+      "condition_loss_streaks": {
+        "A": {
+          "avg_max": 8.7,
+          "worst": 23,
+          "p95": 13
+        },
+        "B": {
+          "avg_max": 5.2,
+          "worst": 20,
+          "p95": 9
+        },
+        "C": {
+          "avg_max": 11.6,
+          "worst": 30,
+          "p95": 17
+        },
+        "D": {
+          "avg_max": 15.1,
+          "worst": 45,
+          "p95": 22
+        },
+        "E": {
+          "avg_max": 1.9,
+          "worst": 7,
+          "p95": 3
+        },
+        "X": {
+          "avg_max": 6.7,
+          "worst": 22,
+          "p95": 11
+        }
+      }
+    },
+    "100000": {
+      "initial_fund": 100000,
+      "num_races": 1000,
+      "num_trials": 10000,
+      "ruin_probability": 0.0,
+      "profit_probability": 100.0,
+      "avg_final_fund": 1644242,
+      "median_final_fund": 1639751,
+      "expected_roi": 1644.2,
+      "max_drawdown": {
+        "avg_pct": 4.6,
+        "median_pct": 4.2,
+        "worst_pct": 16.2,
+        "p95_pct": 8.3,
+        "avg_amount": 11298,
+        "worst_amount": 32698
+      },
+      "recovery": {
+        "avg_races_to_recover": 3.0,
+        "median_races_to_recover": 3.0,
+        "p95_races_to_recover": 4.0
+      },
+      "drawdown_frequency": {
+        "avg_fraction_below_peak": 71.4,
+        "note": "資金がピークを下回っている期間の割合"
+      },
+      "consecutive_losses": {
+        "avg_max": 13.7,
+        "median_max": 13,
+        "worst": 37,
+        "p95": 19
+      },
+      "condition_loss_streaks": {
+        "A": {
+          "avg_max": 8.7,
+          "worst": 23,
+          "p95": 13
+        },
+        "B": {
+          "avg_max": 5.2,
+          "worst": 20,
+          "p95": 9
+        },
+        "C": {
+          "avg_max": 11.6,
+          "worst": 30,
+          "p95": 17
+        },
+        "D": {
+          "avg_max": 15.1,
+          "worst": 45,
+          "p95": 22
+        },
+        "E": {
+          "avg_max": 1.9,
+          "worst": 7,
+          "p95": 3
+        },
+        "X": {
+          "avg_max": 6.7,
+          "worst": 22,
+          "p95": 11
+        }
+      }
+    }
+  },
+  "assumptions_verification": {
+    "hit_rates": {
+      "source": "Walk-forward backtest 2020-2025 (Pattern A, AUC 0.8017)",
+      "method": "6年間の年別独立予測の集計値",
+      "inflation_risk": "LOW",
+      "note": "WF方式のため過学習リスクは低い。ただし2026年以降の外挿になるため、5-10%の劣化を想定すべき"
+    },
+    "payout_distribution": {
+      "model": "対数正規分布 (log_std=0.8)",
+      "actual_distribution": "実際の競馬配当も対数正規分布に従うことが知られている",
+      "avg_return_source": "バックテスト的中レースの配当合計 / 的中数",
+      "concern": "log_std=0.8は比較的大きな分散。実配当の分散と要照合。",
+      "inflation_risk": "MEDIUM",
+      "note": "対数正規分布の性質上、平均は中央値より高くなる。log_mean = log(avg) - 0.5 で補正しているが、完全ではない可能性あり。"
+    },
+    "condition_frequency": {
+      "source": "バックテスト期間の実績頻度",
+      "inflation_risk": "LOW",
+      "note": "条件分類は頭数・距離・馬場に基づくため、年による変動は小さい"
+    },
+    "independence": {
+      "assumption": "各レースの的中/不的中は独立",
+      "reality": "おおむね独立だが、同日の同コースレースは馬場状態が共通するため完全独立ではない",
+      "inflation_risk": "LOW",
+      "note": "依存性があると連敗が実際より長くなる可能性があるが、条件をランダム選択しているため影響は限定的"
+    },
+    "overall": {
+      "optimism_level": "SLIGHTLY_OPTIMISTIC",
+      "main_risks": [
+        "2026年以降のモデル劣化（的中率低下5-10%）",
+        "配当分布の対数正規近似の精度",
+        "投票による市場インパクト（大口投資時）"
+      ],
+      "conservative_adjustment": "実運用では期待ROIの60-70%を見込むのが妥当"
+    }
+  }
+}
