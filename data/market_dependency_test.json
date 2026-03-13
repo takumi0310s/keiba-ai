@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-03-14 01:16:34",
+  "removed_features": [
+    "prev_odds_log"
+  ],
+  "note": "Pattern A already excludes odds_log. This test additionally removes prev_odds_log.",
+  "baseline": {
+    "label": "Pattern A (baseline)",
+    "n_features": 67,
+    "avg_auc": 0.8019,
+    "fold_aucs": {
+      "2020": 0.7954,
+      "2021": 0.7999,
+      "2022": 0.8002,
+      "2023": 0.8021,
+      "2024": 0.8074,
+      "2025": 0.8065
+    },
+    "overall_roi": 194.6,
+    "condition_roi": {
+      "A": {
+        "n": 6438,
+        "bet_type": "trio",
+        "hit_rate": 44.5,
+        "roi": 186.9
+      },
+      "B": {
+        "n": 847,
+        "bet_type": "trio",
+        "hit_rate": 45.3,
+        "roi": 245.5
+      },
+      "C": {
+        "n": 4774,
+        "bet_type": "trio",
+        "hit_rate": 33.9,
+        "roi": 277.1
+      },
+      "D": {
+        "n": 7254,
+        "bet_type": "trio",
+        "hit_rate": 26.8,
+        "roi": 129.3
+      },
+      "E": {
+        "n": 461,
+        "bet_type": "umaren",
+        "hit_rate": 50.8,
+        "roi": 103.3
+      },
+      "X": {
+        "n": 805,
+        "bet_type": "trio",
+        "hit_rate": 37.5,
+        "roi": 354.5
+      }
+    },
+    "n_races": 20579
+  },
+  "no_odds": {
+    "label": "No-odds",
+    "n_features": 66,
+    "avg_auc": 0.7993,
+    "fold_aucs": {
+      "2020": 0.7931,
+      "2021": 0.7969,
+      "2022": 0.7979,
+      "2023": 0.7991,
+      "2024": 0.8051,
+      "2025": 0.8037
+    },
+    "overall_roi": 204.4,
+    "condition_roi": {
+      "A": {
+        "n": 6438,
+        "bet_type": "trio",
+        "hit_rate": 44.6,
+        "roi": 213.7
+      },
+      "B": {
+        "n": 847,
+        "bet_type": "trio",
+        "hit_rate": 44.3,
+        "roi": 219.5
+      },
+      "C": {
+        "n": 4774,
+        "bet_type": "trio",
+        "hit_rate": 33.7,
+        "roi": 275.3
+      },
+      "D": {
+        "n": 7254,
+        "bet_type": "trio",
+        "hit_rate": 26.8,
+        "roi": 139.5
+      },
+      "E": {
+        "n": 461,
+        "bet_type": "umaren",
+        "hit_rate": 52.7,
+        "roi": 129.3
+      },
+      "X": {
+        "n": 805,
+        "bet_type": "trio",
+        "hit_rate": 34.4,
+        "roi": 322.2
+      }
+    },
+    "n_races": 20579
+  },
+  "comparison": {
+    "auc_diff": -0.0026,
+    "roi_diff": 9.8,
+    "dependency_level": "LOW",
+    "judgment": "True ability prediction model",
+    "detail": "AUC drop < 0.02 and ROI maintained > 100%. Model relies on genuine horse ability, not market information."
+  }
+}
