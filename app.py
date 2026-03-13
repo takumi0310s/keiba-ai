@@ -4381,6 +4381,18 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
                         e['ev'] = e['prob'] * trio_odds[key]
         ev_display = [e for e in ev_list if e['ev'] > 0]
         st.markdown(render_ev_section(ev_display), unsafe_allow_html=True)
+        # レース全体のEVサマリー
+        trio_evs = [e for e in ev_display if e['type'] == '三連複']
+        if trio_evs:
+            race_ev = sum(e['ev'] for e in trio_evs) / len(trio_evs) if trio_evs else 0
+            max_ev = max(e['ev'] for e in trio_evs) if trio_evs else 0
+            ev_above_1 = sum(1 for e in trio_evs if e['ev'] >= 1.0)
+            ev_color = '#2ecc40' if race_ev >= 1.0 else ('#f0c040' if race_ev >= 0.7 else '#ff4060')
+            st.markdown(f'''<div style="margin:8px 0;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;display:flex;gap:20px;align-items:center;">
+<span style="font-size:0.85em;color:#8890a0 !important;">Race EV:</span>
+<span style="font-family:Oswald;font-size:1.1em;color:{ev_color} !important;font-weight:bold;">{race_ev:.2f}</span>
+<span style="font-size:0.8em;color:#6a6a80 !important;">Max: {max_ev:.2f} | EV&gt;1.0: {ev_above_1}/{len(trio_evs)}点</span>
+</div>''', unsafe_allow_html=True)
         # EV>=1.0の三連複買い目をハイライト
         hot_trio = [e for e in ev_display if e['type'] == '三連複' and e['ev'] >= 1.0]
         if hot_trio:

@@ -1,0 +1,338 @@
+{
+  "generated_at": "2026-03-14 00:54:17",
+  "total_races": 20655,
+  "ticket_types": [
+    "tansho",
+    "umaren",
+    "wide",
+    "trio",
+    "tierce"
+  ],
+  "ticket_names": {
+    "tansho": "単勝",
+    "umaren": "馬連",
+    "wide": "ワイド",
+    "trio": "三連複",
+    "tierce": "三連単"
+  },
+  "condition_ticket_roi": {
+    "A": {
+      "n": 6464,
+      "tansho": {
+        "hits": 2327,
+        "hit_rate": 36.0,
+        "roi": 108.6,
+        "total_return": 4911690,
+        "total_investment": 4524800
+      },
+      "umaren": {
+        "hits": 2102,
+        "hit_rate": 32.5,
+        "roi": 153.4,
+        "total_return": 6940990,
+        "total_investment": 4524800
+      },
+      "wide": {
+        "hits": 3656,
+        "hit_rate": 56.6,
+        "roi": 134.6,
+        "total_return": 6090280,
+        "total_investment": 4524800
+      },
+      "trio": {
+        "hits": 2877,
+        "hit_rate": 44.5,
+        "roi": 186.9,
+        "total_return": 8455050,
+        "total_investment": 4524800
+      },
+      "tierce": {
+        "hits": 219,
+        "hit_rate": 3.4,
+        "roi": 274.7,
+        "total_return": 12427590,
+        "total_investment": 4524800
+      },
+      "best_ticket": "tierce",
+      "best_roi": 274.7
+    },
+    "B": {
+      "n": 850,
+      "tansho": {
+        "hits": 316,
+        "hit_rate": 37.2,
+        "roi": 127.9,
+        "total_return": 761040,
+        "total_investment": 595000
+      },
+      "umaren": {
+        "hits": 262,
+        "hit_rate": 30.8,
+        "roi": 172.7,
+        "total_return": 1027320,
+        "total_investment": 595000
+      },
+      "wide": {
+        "hits": 471,
+        "hit_rate": 55.4,
+        "roi": 157.4,
+        "total_return": 936565,
+        "total_investment": 595000
+      },
+      "trio": {
+        "hits": 384,
+        "hit_rate": 45.2,
+        "roi": 244.6,
+        "total_return": 1455420,
+        "total_investment": 595000
+      },
+      "tierce": {
+        "hits": 34,
+        "hit_rate": 4.0,
+        "roi": 198.9,
+        "total_return": 1183490,
+        "total_investment": 595000
+      },
+      "best_ticket": "trio",
+      "best_roi": 244.6
+    },
+    "C": {
+      "n": 4792,
+      "tansho": {
+        "hits": 1557,
+        "hit_rate": 32.5,
+        "roi": 118.9,
+        "total_return": 3989440,
+        "total_investment": 3354400
+      },
+      "umaren": {
+        "hits": 1283,
+        "hit_rate": 26.8,
+        "roi": 193.3,
+        "total_return": 6483015,
+        "total_investment": 3354400
+      },
+      "wide": {
+        "hits": 2366,
+        "hit_rate": 49.4,
+        "roi": 165.7,
+        "total_return": 5558910,
+        "total_investment": 3354400
+      },
+      "trio": {
+        "hits": 1629,
+        "hit_rate": 34.0,
+        "roi": 277.3,
+        "total_return": 9300290,
+        "total_investment": 3354400
+      },
+      "tierce": {
+        "hits": 107,
+        "hit_rate": 2.2,
+        "roi": 274.9,
+        "total_return": 9221170,
+        "total_investment": 3354400
+      },
+      "best_ticket": "trio",
+      "best_roi": 277.3
+    },
+    "D": {
+      "n": 7278,
+      "tansho": {
+        "hits": 2165,
+        "hit_rate": 29.7,
+        "roi": 102.9,
+        "total_return": 5243350,
+        "total_investment": 5094600
+      },
+      "umaren": {
+        "hits": 1599,
+        "hit_rate": 22.0,
+        "roi": 118.9,
+        "total_return": 6055945,
+        "total_investment": 5094600
+      },
+      "wide": {
+        "hits": 3063,
+        "hit_rate": 42.1,
+        "roi": 112.6,
+        "total_return": 5734610,
+        "total_investment": 5094600
+      },
+      "trio": {
+        "hits": 1944,
+        "hit_rate": 26.7,
+        "roi": 129.2,
+        "total_return": 6579870,
+        "total_investment": 5094600
+      },
+      "tierce": {
+        "hits": 107,
+        "hit_rate": 1.5,
+        "roi": 142.6,
+        "total_return": 7263060,
+        "total_investment": 5094600
+      },
+      "best_ticket": "tierce",
+      "best_roi": 142.6
+    },
+    "E": {
+      "n": 462,
+      "tansho": {
+        "hits": 210,
+        "hit_rate": 45.5,
+        "roi": 103.5,
+        "total_return": 334600,
+        "total_investment": 323400
+      },
+      "umaren": {
+        "hits": 235,
+        "hit_rate": 50.9,
+        "roi": 103.6,
+        "total_return": 334950,
+        "total_investment": 323400
+      },
+      "wide": {
+        "hits": 354,
+        "hit_rate": 76.6,
+        "roi": 105.7,
+        "total_return": 341880,
+        "total_investment": 323400
+      },
+      "trio": {
+        "hits": 348,
+        "hit_rate": 75.3,
+        "roi": 108.1,
+        "total_return": 349610,
+        "total_investment": 323400
+      },
+      "tierce": {
+        "hits": 40,
+        "hit_rate": 8.7,
+        "roi": 158.1,
+        "total_return": 511140,
+        "total_investment": 323400
+      },
+      "best_ticket": "tierce",
+      "best_roi": 158.1
+    },
+    "X": {
+      "n": 809,
+      "tansho": {
+        "hits": 261,
+        "hit_rate": 32.3,
+        "roi": 124.4,
+        "total_return": 704410,
+        "total_investment": 566300
+      },
+      "umaren": {
+        "hits": 229,
+        "hit_rate": 28.3,
+        "roi": 216.6,
+        "total_return": 1226365,
+        "total_investment": 566300
+      },
+      "wide": {
+        "hits": 418,
+        "hit_rate": 51.7,
+        "roi": 184.3,
+        "total_return": 1043560,
+        "total_investment": 566300
+      },
+      "trio": {
+        "hits": 303,
+        "hit_rate": 37.5,
+        "roi": 353.3,
+        "total_return": 2000740,
+        "total_investment": 566300
+      },
+      "tierce": {
+        "hits": 15,
+        "hit_rate": 1.9,
+        "roi": 746.4,
+        "total_return": 4226600,
+        "total_investment": 566300
+      },
+      "best_ticket": "tierce",
+      "best_roi": 746.4
+    },
+    "ALL": {
+      "n": 20655,
+      "tansho": {
+        "hits": 6836,
+        "hit_rate": 33.1,
+        "roi": 110.3,
+        "total_return": 15944530,
+        "total_investment": 14458500
+      },
+      "umaren": {
+        "hits": 5710,
+        "hit_rate": 27.6,
+        "roi": 152.6,
+        "total_return": 22068585,
+        "total_investment": 14458500
+      },
+      "wide": {
+        "hits": 10328,
+        "hit_rate": 50.0,
+        "roi": 136.3,
+        "total_return": 19705805,
+        "total_investment": 14458500
+      },
+      "trio": {
+        "hits": 7485,
+        "hit_rate": 36.2,
+        "roi": 194.6,
+        "total_return": 28140980,
+        "total_investment": 14458500
+      },
+      "tierce": {
+        "hits": 522,
+        "hit_rate": 2.5,
+        "roi": 240.9,
+        "total_return": 34833050,
+        "total_investment": 14458500
+      },
+      "best_ticket": "tierce",
+      "best_roi": 240.9
+    }
+  },
+  "optimal_strategy": {
+    "A": {
+      "best_ticket": "tierce",
+      "best_roi": 274.7,
+      "current_ticket": "trio",
+      "current_roi": 186.9
+    },
+    "B": {
+      "best_ticket": "trio",
+      "best_roi": 244.6,
+      "current_ticket": "trio",
+      "current_roi": 244.6
+    },
+    "C": {
+      "best_ticket": "trio",
+      "best_roi": 277.3,
+      "current_ticket": "trio",
+      "current_roi": 277.3
+    },
+    "D": {
+      "best_ticket": "tierce",
+      "best_roi": 142.6,
+      "current_ticket": "trio",
+      "current_roi": 129.2
+    },
+    "E": {
+      "best_ticket": "tierce",
+      "best_roi": 158.1,
+      "current_ticket": "umaren",
+      "current_roi": 103.6
+    },
+    "X": {
+      "best_ticket": "tierce",
+      "best_roi": 746.4,
+      "current_ticket": "trio",
+      "current_roi": 353.3
+    }
+  }
+}

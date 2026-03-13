@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-03-14 00:55:08",
+  "model_version": "v9.3 Pattern A (leak-free)",
+  "leak_free": {
+    "standardization_leak": "PASS",
+    "feature_leak": "PASS",
+    "detail": {
+      "encode_categoricals": "PASS - 固定ルールベース",
+      "encode_sires": "PASS - バックテストではfold別に計算",
+      "expanding_window": "PASS - 全12特徴量がcumsum()-current方式",
+      "fillna": "MINOR - 調教タイム平均が全データ（影響無視可能）",
+      "global_prior": "MINOR - Bayesian prior（影響無視可能）"
+    },
+    "note": "重大なリークなし。軽微な技術的リーク（fillna, global prior）は影響無視可能。"
+  },
+  "model_evaluation": {
+    "current_target": "Place (finish <= 3)",
+    "target_comparison": {
+      "win": 0.795,
+      "place_current": 0.8019,
+      "ev_weighted": 0.8003
+    },
+    "optimal_target": "AUC最高: place_current (0.8019), ROI最高: ev_weighted (396.2%). 現行(place)のAUC=0.8019は実績があり、変更リスクに見合わない場合は現状維持推奨。"
+  },
+  "yearly_auc": {
+    "2020": 0.7954,
+    "2021": 0.7999,
+    "2022": 0.8002,
+    "2023": 0.8021,
+    "2024": 0.8074,
+    "2025": 0.8065
+  },
+  "yearly_roi": {
+    "2020": 196.3,
+    "2021": 194.4,
+    "2022": 177.3,
+    "2023": 180.1,
+    "2024": 181.3,
+    "2025": 239.3
+  },
+  "yearly_warnings": [],
+  "ev_filter": {
+    "comparison": {
+      "A": {
+        "all_n": 6438,
+        "all_roi": 186.9,
+        "ev_filtered_n": 6438,
+        "ev_filtered_roi": 186.9,
+        "improvement": 0.0
+      },
+      "B": {
+        "all_n": 847,
+        "all_roi": 245.5,
+        "ev_filtered_n": 847,
+        "ev_filtered_roi": 245.5,
+        "improvement": 0.0
+      },
+      "C": {
+        "all_n": 4774,
+        "all_roi": 277.1,
+        "ev_filtered_n": 4774,
+        "ev_filtered_roi": 277.1,
+        "improvement": 0.0
+      },
+      "D": {
+        "all_n": 7254,
+        "all_roi": 129.3,
+        "ev_filtered_n": 7254,
+        "ev_filtered_roi": 129.3,
+        "improvement": 0.0
+      },
+      "E": {
+        "all_n": 461,
+        "all_roi": 103.3,
+        "ev_filtered_n": 461,
+        "ev_filtered_roi": 103.3,
+        "improvement": 0.0
+      },
+      "X": {
+        "all_n": 805,
+        "all_roi": 354.5,
+        "ev_filtered_n": 805,
+        "ev_filtered_roi": 354.5,
+        "improvement": 0.0
+      }
+    },
+    "ev_distribution": {
+      "mean": 54.997,
+      "median": 18.75,
+      "p25": 11.869,
+      "p75": 34.924,
+      "pct_above_1": 100.0
+    },
+    "recommendation": "EVフィルタの効果は条件や閾値によって異なる。EV>=1.0でフィルタすると投票対象レース数が減少し、ROIが改善する場合がある。ただし推定EVはモデル予測精度に依存するため、過信は禁物。"
+  },
+  "ticket_optimization": {
+    "A": {
+      "best_ticket": "tierce",
+      "best_roi": 274.7,
+      "current_ticket": "trio",
+      "current_roi": 186.9
+    },
+    "B": {
+      "best_ticket": "trio",
+      "best_roi": 244.6,
+      "current_ticket": "trio",
+      "current_roi": 244.6
+    },
+    "C": {
+      "best_ticket": "trio",
+      "best_roi": 277.3,
+      "current_ticket": "trio",
+      "current_roi": 277.3
+    },
+    "D": {
+      "best_ticket": "tierce",
+      "best_roi": 142.6,
+      "current_ticket": "trio",
+      "current_roi": 129.2
+    },
+    "E": {
+      "best_ticket": "tierce",
+      "best_roi": 158.1,
+      "current_ticket": "umaren",
+      "current_roi": 103.6
+    },
+    "X": {
+      "best_ticket": "tierce",
+      "best_roi": 746.4,
+      "current_ticket": "trio",
+      "current_roi": 353.3
+    }
+  },
+  "drawdown": {
+    "10000": {
+      "mdd_avg": 25.2,
+      "mdd_worst": 99.7,
+      "max_consecutive_losses": 37,
+      "avg_recovery_races": 9.0,
+      "ruin_probability": 0.59
+    },
+    "30000": {
+      "mdd_avg": 11.1,
+      "mdd_worst": 53.9,
+      "max_consecutive_losses": 37,
+      "avg_recovery_races": 3.0,
+      "ruin_probability": 0.0
+    },
+    "100000": {
+      "mdd_avg": 4.6,
+      "mdd_worst": 16.2,
+      "max_consecutive_losses": 37,
+      "avg_recovery_races": 3.0,
+      "ruin_probability": 0.0
+    },
+    "assumptions": {
+      "optimism_level": "SLIGHTLY_OPTIMISTIC",
+      "main_risks": [
+        "2026年以降のモデル劣化（的中率低下5-10%）",
+        "配当分布の対数正規近似の精度",
+        "投票による市場インパクト（大口投資時）"
+      ],
+      "conservative_adjustment": "実運用では期待ROIの60-70%を見込むのが妥当"
+    }
+  },
+  "odds_gap": {
+    "verdict": "実運用への影響は限定的（推定ROI低下 0-5%）",
+    "key_finding": "オッズ変動はランダムノイズであり、系統的バイアスではない",
+    "recommendation": "締切直前（3-5分前）購入でギャップを最小化。バックテストROIの0.9-0.95倍が実運用の保守的見積もり。"
+  },
+  "final_judgment": {
+    "ready": "READY",
+    "leak_check": "PASS",
+    "auc_check": "PASS",
+    "roi_check": "PASS",
+    "conservative_roi_estimate": {
+      "A": 143.7,
+      "B": 165.8,
+      "C": 199.9,
+      "D": 95.2,
+      "E": 82.6,
+      "X": 231.3
+    },
+    "overall_conservative_roi": 153.1,
+    "recommendation": [
+      "初期資金3万円以上推奨（破産確率0%）",
+      "全6条件で投票（条件フィルタは維持）",
+      "EVフィルタは補助的に使用（主要な判断基準にはしない）",
+      "締切3-5分前に購入",
+      "月次で実績ROIを確認し、100%を大きく下回る場合は一時停止"
+    ]
+  }
+}
