@@ -82,7 +82,7 @@ CONDITION_PROFILES = {
         'bet_type': 'umaren',
         'bet_label': '馬連1軸2流し',
         'bet_detail': 'TOP1軸-TOP2,TOP3',
-        'investment': 200,
+        'investment': 700,
         'roi': 118.0,      # 実配当ROI (umaren)
         'roi_estimated': 145.2,
         'hit_rate': 53.4,
