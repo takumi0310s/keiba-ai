@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-14 00:55:08",
+  "generated_at": "2026-03-14 01:18:43",
   "model_version": "v9.3 Pattern A (leak-free)",
   "leak_free": {
     "standardization_leak": "PASS",
@@ -168,6 +168,127 @@
     "key_finding": "オッズ変動はランダムノイズであり、系統的バイアスではない",
     "recommendation": "締切直前（3-5分前）購入でギャップを最小化。バックテストROIの0.9-0.95倍が実運用の保守的見積もり。"
   },
+  "market_dependency": {
+    "baseline_auc": 0.8019,
+    "no_odds_auc": 0.7993,
+    "auc_diff": -0.0026,
+    "baseline_roi": 194.6,
+    "no_odds_roi": 204.4,
+    "dependency_level": "LOW",
+    "judgment": "True ability prediction model"
+  },
+  "sample_size": {
+    "total_purchased": 20579,
+    "purchase_rate": 99.6,
+    "reliability": "HIGH",
+    "conditions": {
+      "A": {
+        "n": 6438,
+        "roi_ci_95": [
+          197.8,
+          212.8
+        ],
+        "reliability": "HIGH"
+      },
+      "B": {
+        "n": 847,
+        "roi_ci_95": [
+          213.2,
+          260.6
+        ],
+        "reliability": "LOW"
+      },
+      "C": {
+        "n": 4774,
+        "roi_ci_95": [
+          271.6,
+          299.6
+        ],
+        "reliability": "MEDIUM"
+      },
+      "D": {
+        "n": 7254,
+        "roi_ci_95": [
+          130.0,
+          142.0
+        ],
+        "reliability": "HIGH"
+      },
+      "E": {
+        "n": 461,
+        "roi_ci_95": [
+          103.3,
+          132.7
+        ],
+        "reliability": "LOW"
+      },
+      "X": {
+        "n": 805,
+        "roi_ci_95": [
+          292.2,
+          368.8
+        ],
+        "reliability": "LOW"
+      }
+    }
+  },
+  "conservative_roi": {
+    "factor": 0.7,
+    "backtest_roi": 203.7,
+    "conservative_roi": 142.6,
+    "monthly_profit": 28953,
+    "condition_results": {
+      "A": {
+        "n_races": 6438,
+        "bet_type": "trio",
+        "backtest_roi": 205.3,
+        "conservative_roi": 143.7,
+        "hit_rate": 44.5,
+        "verdict": "PROFIT"
+      },
+      "B": {
+        "n_races": 847,
+        "bet_type": "trio",
+        "backtest_roi": 236.9,
+        "conservative_roi": 165.8,
+        "hit_rate": 45.2,
+        "verdict": "PROFIT"
+      },
+      "C": {
+        "n_races": 4774,
+        "bet_type": "trio",
+        "backtest_roi": 285.6,
+        "conservative_roi": 199.9,
+        "hit_rate": 33.7,
+        "verdict": "PROFIT"
+      },
+      "D": {
+        "n_races": 7254,
+        "bet_type": "trio",
+        "backtest_roi": 136.0,
+        "conservative_roi": 95.2,
+        "hit_rate": 27.0,
+        "verdict": "BREAK-EVEN"
+      },
+      "E": {
+        "n_races": 461,
+        "bet_type": "umaren",
+        "backtest_roi": 118.0,
+        "conservative_roi": 82.6,
+        "hit_rate": 53.4,
+        "verdict": "LOSS"
+      },
+      "X": {
+        "n_races": 805,
+        "bet_type": "trio",
+        "backtest_roi": 330.5,
+        "conservative_roi": 231.3,
+        "hit_rate": 35.5,
+        "verdict": "PROFIT"
+      }
+    }
+  },
+  "roi_integrity": "PASS",
   "final_judgment": {
     "ready": "READY",
     "leak_check": "PASS",

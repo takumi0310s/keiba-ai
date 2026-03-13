@@ -166,9 +166,71 @@ def main():
         print(f"  {conclusion.get('verdict', 'N/A')}")
         print(f"  推奨: {conclusion.get('recommendation', 'N/A')}")
 
-    # === 6. 最終判定 ===
+    # === 6. 市場依存性 (Phase 10) ===
+    print("\n### 市場依存性")
+    market_dep = load_json('market_dependency_test.json')
+    if market_dep:
+        comp = market_dep.get('comparison', {})
+        baseline = market_dep.get('baseline', {})
+        no_odds = market_dep.get('no_odds', {})
+        report['market_dependency'] = {
+            'baseline_auc': baseline.get('avg_auc', 'N/A'),
+            'no_odds_auc': no_odds.get('avg_auc', 'N/A'),
+            'auc_diff': comp.get('auc_diff', 'N/A'),
+            'baseline_roi': baseline.get('overall_roi', 'N/A'),
+            'no_odds_roi': no_odds.get('overall_roi', 'N/A'),
+            'dependency_level': comp.get('dependency_level', 'N/A'),
+            'judgment': comp.get('judgment', 'N/A'),
+        }
+        print(f"  Baseline AUC: {baseline.get('avg_auc', 'N/A')}")
+        print(f"  No-odds AUC:  {no_odds.get('avg_auc', 'N/A')} (diff: {comp.get('auc_diff', 'N/A')})")
+        print(f"  Dependency:   {comp.get('dependency_level', 'N/A')} - {comp.get('judgment', 'N/A')}")
+
+    # === 7. サンプルサイズ (Phase 11) ===
+    print("\n### サンプルサイズ")
+    sample_size = load_json('sample_size_validation.json')
+    if sample_size:
+        overall = sample_size.get('overall', {})
+        report['sample_size'] = {
+            'total_purchased': overall.get('total_purchased', 'N/A'),
+            'purchase_rate': overall.get('purchase_rate', 'N/A'),
+            'reliability': overall.get('reliability', 'N/A'),
+            'conditions': {},
+        }
+        for cond, data in sample_size.get('conditions', {}).items():
+            report['sample_size']['conditions'][cond] = {
+                'n': data.get('n_races', 0),
+                'roi_ci_95': data.get('roi_ci_95', []),
+                'reliability': data.get('reliability', 'N/A'),
+            }
+            ci = data.get('roi_ci_95', [0, 0])
+            print(f"  {cond}: N={data.get('n_races', 0)}, ROI 95%CI=[{ci[0]:.0f}%, {ci[1]:.0f}%], {data.get('reliability', 'N/A')}")
+        print(f"  Overall: N={overall.get('total_purchased', 'N/A')}, {overall.get('reliability', 'N/A')}")
+
+    # === 8. 実運用保守ROI (Phase 13) ===
+    print("\n### 実運用保守ROI")
+    conservative = load_json('conservative_roi_estimate.json')
+    if conservative:
+        overall_cons = conservative.get('overall', {})
+        report['conservative_roi'] = {
+            'factor': conservative.get('conservative_factor', 0.7),
+            'backtest_roi': overall_cons.get('backtest_roi', 'N/A'),
+            'conservative_roi': overall_cons.get('conservative_roi', 'N/A'),
+            'monthly_profit': conservative.get('monthly_summary', {}).get('expected_profit', 'N/A'),
+            'condition_results': conservative.get('condition_results', {}),
+        }
+        for cond, data in conservative.get('condition_results', {}).items():
+            print(f"  {cond}: BT={data.get('backtest_roi', 0):.1f}% -> Conservative={data.get('conservative_roi', 0):.1f}% ({data.get('verdict', '')})")
+        print(f"  Overall: {overall_cons.get('conservative_roi', 'N/A')}%")
+
+    # === 9. ROI計算整合性 (Phase 12) ===
+    roi_integrity = load_json('roi_calculation_validation.json')
+    if roi_integrity:
+        report['roi_integrity'] = roi_integrity.get('overall_verdict', 'N/A')
+
+    # === 最終判定 ===
     print(f"\n{'=' * 70}")
-    print("### 最終判定")
+    print("### Final Judgment")
     print(f"{'=' * 70}")
 
     # Determine readiness

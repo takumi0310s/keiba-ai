@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-03-14 01:10:36",
+  "overall_verdict": "PASS",
+  "formula_checks": [
+    {
+      "file": "calc_actual_roi.py",
+      "correct": true,
+      "note": "Uses actual race-by-race payouts from JRA official DB, not averaged estimates"
+    },
+    {
+      "file": "backtest_central_leakfree.py",
+      "correct": true,
+      "note": "Estimated from tansho odds. Overestimates actual payouts by ~2x. Used only for comparison, NOT for final ROI."
+    },
+    {
+      "file": "monte_carlo_sim.py",
+      "correct": true,
+      "note": "Uses average return per hit from backtest results, not theoretical estimates"
+    },
+    {
+      "file": "data/actual_roi_results.json",
+      "correct": true,
+      "note": ""
+    }
+  ],
+  "purchase_basis": {
+    "is_purchase_based": true,
+    "method": "Walk-forward backtest with race-by-race evaluation",
+    "detail": [
+      "Each test year (2020-2025) uses model trained on all prior data",
+      "For each race: AI ranks horses, generates bet combinations",
+      "Trio: TOP1-axis, TOP2,3 second, TOP2-6 third = 7 combinations",
+      "Umaren: TOP1-TOP2, TOP1-TOP3 = 2 combinations",
+      "Each combination checked against JRA official results",
+      "Payout = JRA official amount (100-yen basis, multiplied by bet unit)",
+      "Investment = fixed 700 yen per race (regardless of outcome)"
+    ],
+    "not_averaged": true,
+    "note": "ROI is calculated from individual race outcomes, NOT from averaged statistics. Each race contributes its actual payout (or 0 if miss) to the total."
+  },
+  "yearly_cross_check": {
+    "2020": {
+      "auc": 0.7954,
+      "trio_roi": 196.3,
+      "reasonable": true
+    },
+    "2021": {
+      "auc": 0.7999,
+      "trio_roi": 194.4,
+      "reasonable": true
+    },
+    "2022": {
+      "auc": 0.8002,
+      "trio_roi": 177.3,
+      "reasonable": true
+    },
+    "2023": {
+      "auc": 0.8021,
+      "trio_roi": 180.1,
+      "reasonable": true
+    },
+    "2024": {
+      "auc": 0.8074,
+      "trio_roi": 181.3,
+      "reasonable": true
+    },
+    "2025": {
+      "auc": 0.8065,
+      "trio_roi": 239.3,
+      "reasonable": true
+    }
+  },
+  "summary": {
+    "roi_formula": "ROI = total_actual_payout / total_investment * 100",
+    "investment_per_race": "700 yen (fixed for all conditions)",
+    "payout_source": "JRA official database (jra_payouts.csv)",
+    "method": "Race-by-race walk-forward backtest (not averaged)",
+    "all_checks_pass": true
+  }
+}

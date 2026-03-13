@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-03-14 01:10:35",
+  "total_test_races": 20655,
+  "matched_races": 20579,
+  "conditions": {
+    "A": {
+      "n_races": 6438,
+      "hits": 2865,
+      "hit_rate": 44.5,
+      "hit_rate_ci": [
+        43.29,
+        45.72
+      ],
+      "roi": 205.3,
+      "roi_ci_95": [
+        197.8,
+        212.8
+      ],
+      "roi_std": 3.8,
+      "reliability": "HIGH",
+      "bet_type": "trio"
+    },
+    "B": {
+      "n_races": 847,
+      "hits": 383,
+      "hit_rate": 45.22,
+      "hit_rate_ci": [
+        41.9,
+        48.58
+      ],
+      "roi": 236.9,
+      "roi_ci_95": [
+        213.2,
+        260.6
+      ],
+      "roi_std": 12.1,
+      "reliability": "LOW",
+      "bet_type": "trio"
+    },
+    "C": {
+      "n_races": 4774,
+      "hits": 1609,
+      "hit_rate": 33.7,
+      "hit_rate_ci": [
+        32.38,
+        35.06
+      ],
+      "roi": 285.6,
+      "roi_ci_95": [
+        271.6,
+        299.6
+      ],
+      "roi_std": 7.1,
+      "reliability": "MEDIUM",
+      "bet_type": "trio"
+    },
+    "D": {
+      "n_races": 7254,
+      "hits": 1959,
+      "hit_rate": 27.01,
+      "hit_rate_ci": [
+        26.0,
+        28.04
+      ],
+      "roi": 136.0,
+      "roi_ci_95": [
+        130.0,
+        142.0
+      ],
+      "roi_std": 3.1,
+      "reliability": "HIGH",
+      "bet_type": "trio"
+    },
+    "E": {
+      "n_races": 461,
+      "hits": 246,
+      "hit_rate": 53.36,
+      "hit_rate_ci": [
+        48.8,
+        57.87
+      ],
+      "roi": 118.0,
+      "roi_ci_95": [
+        103.3,
+        132.7
+      ],
+      "roi_std": 7.5,
+      "reliability": "LOW",
+      "bet_type": "umaren"
+    },
+    "X": {
+      "n_races": 805,
+      "hits": 286,
+      "hit_rate": 35.53,
+      "hit_rate_ci": [
+        32.3,
+        38.9
+      ],
+      "roi": 330.5,
+      "roi_ci_95": [
+        292.2,
+        368.8
+      ],
+      "roi_std": 19.5,
+      "reliability": "LOW",
+      "bet_type": "trio"
+    }
+  },
+  "overall": {
+    "total_purchased": 20579,
+    "purchase_rate": 99.6,
+    "total_hits": 7102,
+    "overall_hit_rate": 34.5,
+    "overall_roi": 203.7,
+    "total_investment": 14405300,
+    "total_payout": 29349770,
+    "reliability": "HIGH"
+  },
+  "assessment": {
+    "total_sample_verdict": "N=20579: HIGH reliability",
+    "weakest_condition": "E",
+    "strongest_condition": "D",
+    "note": "Conditions B and E have relatively few samples (<1100). Monitor these closely in live trading."
+  }
+}

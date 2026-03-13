@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-03-14 01:10:37",
+  "correction_factors": {
+    "odds_gap": {
+      "factor": 0.925,
+      "description": "Purchase-time odds vs confirmed odds gap",
+      "range": "[-5%, -10%]"
+    },
+    "model_degradation": {
+      "factor": 0.9,
+      "description": "Model accuracy degradation over time (data drift)",
+      "range": "-10%"
+    },
+    "condition_overfitting": {
+      "factor": 0.9,
+      "description": "Condition classification may be overfit to backtest period",
+      "range": "-10%"
+    }
+  },
+  "conservative_factor": 0.7,
+  "computed_factor": 0.749,
+  "condition_results": {
+    "A": {
+      "n_races": 6438,
+      "bet_type": "trio",
+      "backtest_roi": 205.3,
+      "conservative_roi": 143.7,
+      "hit_rate": 44.5,
+      "verdict": "PROFIT"
+    },
+    "B": {
+      "n_races": 847,
+      "bet_type": "trio",
+      "backtest_roi": 236.9,
+      "conservative_roi": 165.8,
+      "hit_rate": 45.2,
+      "verdict": "PROFIT"
+    },
+    "C": {
+      "n_races": 4774,
+      "bet_type": "trio",
+      "backtest_roi": 285.6,
+      "conservative_roi": 199.9,
+      "hit_rate": 33.7,
+      "verdict": "PROFIT"
+    },
+    "D": {
+      "n_races": 7254,
+      "bet_type": "trio",
+      "backtest_roi": 136.0,
+      "conservative_roi": 95.2,
+      "hit_rate": 27.0,
+      "verdict": "BREAK-EVEN"
+    },
+    "E": {
+      "n_races": 461,
+      "bet_type": "umaren",
+      "backtest_roi": 118.0,
+      "conservative_roi": 82.6,
+      "hit_rate": 53.4,
+      "verdict": "LOSS"
+    },
+    "X": {
+      "n_races": 805,
+      "bet_type": "trio",
+      "backtest_roi": 330.5,
+      "conservative_roi": 231.3,
+      "hit_rate": 35.5,
+      "verdict": "PROFIT"
+    }
+  },
+  "overall": {
+    "backtest_roi": 203.7,
+    "conservative_roi": 142.6,
+    "risk_level": "LOW",
+    "recommendation": "Strong edge. Proceed with fixed bet sizing."
+  },
+  "bet_sizing": {
+    "A": {
+      "bet_per_race": 700,
+      "monthly_races": 30,
+      "monthly_investment": 21000,
+      "monthly_expected_profit": 9176
+    },
+    "B": {
+      "bet_per_race": 700,
+      "monthly_races": 5,
+      "monthly_investment": 3500,
+      "monthly_expected_profit": 2303
+    },
+    "C": {
+      "bet_per_race": 700,
+      "monthly_races": 22,
+      "monthly_investment": 15400,
+      "monthly_expected_profit": 15384
+    },
+    "D": {
+      "bet_per_race": 700,
+      "monthly_races": 40,
+      "monthly_investment": 28000,
+      "monthly_expected_profit": -1343
+    },
+    "E": {
+      "bet_per_race": 700,
+      "monthly_races": 2,
+      "monthly_investment": 1400,
+      "monthly_expected_profit": -243
+    },
+    "X": {
+      "bet_per_race": 700,
+      "monthly_races": 4,
+      "monthly_investment": 2800,
+      "monthly_expected_profit": 3676
+    }
+  },
+  "monthly_summary": {
+    "total_investment": 72100,
+    "expected_profit": 28953,
+    "monthly_roi": 140.2,
+    "annual_expected_profit": 347436
+  }
+}
