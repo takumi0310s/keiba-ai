@@ -96,65 +96,56 @@ def fetch_race_result(race_id):
         result['trio_nums'] = sorted([n for _, n in top3_nums[:3]])
 
     # 払戻金テーブルの解析
+    # NOTE: netkeibaのEUC-JPページをデコードすると「三」が「3」に文字化けする
+    # ことがあるため、th要素のUTF-8バイト列のhex表現で券種を判定する。
+    # 各券種のUTF-8 hex:
+    #   単勝: e58d98e58b9d / 複勝: e8a487e58b9d / 枠連: e69ea0e980a3
+    #   馬連: e9a6ace980a3 / 馬単: e9a6ace58d98 / ワイド: e383afe382a4e38389
+    #   三連複(文字化け時): 33e980a3e8a487 / 三連単(文字化け時): 33e980a3e58d98
+    BET_TYPE_HEX = {
+        'tansho':  'e58d98e58b9d',      # 単勝
+        'umaren':  'e9a6ace980a3',       # 馬連
+        'umatan':  'e9a6ace58d98',       # 馬単
+        'wide':    'e383afe382a4e38389', # ワイド
+        'trio_g':  '33e980a3e8a487',     # 3連複 (文字化け版)
+        'tierce_g':'33e980a3e58d98',     # 3連単 (文字化け版)
+    }
+
     payout_tables = soup.find_all("table", class_="Payout_Detail_Table")
     if not payout_tables:
         payout_tables = soup.find_all("table", class_="pay_table_01")
 
     for pt in payout_tables:
         for row in pt.find_all("tr"):
-            tds = row.find_all("td")
             th = row.find("th")
             if not th:
                 continue
-            bet_type_text = th.get_text(strip=True)
+            th_text = th.get_text(strip=True)
+            th_hex = th_text.encode('utf-8').hex()
 
-            # 各種配当を取得
-            payout_val = 0
+            # 各種配当を取得（円表記の数値を抽出）
+            tds = row.find_all("td")
+            payout_vals = []
             for td in tds:
-                t = td.get_text(strip=True).replace(',', '').replace('円', '').replace('¥', '')
-                try:
-                    v = int(t)
-                    if v >= 100:
-                        payout_val = v
-                        break
-                except:
-                    # 複数配当がある場合（ワイドなど）
-                    nums = re.findall(r'[\d,]+', td.get_text(strip=True).replace(',', ''))
-                    for n in nums:
-                        try:
-                            v = int(n)
-                            if v >= 100:
-                                payout_val = v
-                                break
-                        except:
-                            continue
-                    if payout_val > 0:
-                        break
+                for m in re.finditer(r'([\d,]+)円', td.get_text(strip=True)):
+                    payout_vals.append(int(m.group(1).replace(',', '')))
 
-            if '単勝' in bet_type_text:
+            if not payout_vals:
+                continue
+            payout_val = payout_vals[0]
+
+            # テキストマッチ（正常デコード時）+ hexマッチ（文字化け時）
+            if '単勝' in th_text or (BET_TYPE_HEX['tansho'] in th_hex and '連' not in th_text and 'e980a3' not in th_hex):
                 result['payouts']['tansho'] = payout_val
-            elif '馬連' in bet_type_text and '三' not in bet_type_text:
-                result['payouts']['umaren'] = payout_val
-            elif '三連複' in bet_type_text:
+            elif '三連複' in th_text or BET_TYPE_HEX['trio_g'] in th_hex:
                 result['payouts']['trio'] = payout_val
-            elif 'ワイド' in bet_type_text:
-                # ワイドは最初の配当のみ取得（簡易）
+            elif '馬連' in th_text and '三' not in th_text and '単' not in th_text:
+                result['payouts']['umaren'] = payout_val
+            elif BET_TYPE_HEX['umaren'] in th_hex and BET_TYPE_HEX['umatan'] not in th_hex and '33' not in th_hex:
+                result['payouts']['umaren'] = payout_val
+            elif 'ワイド' in th_text or BET_TYPE_HEX['wide'] in th_hex:
                 if result['payouts']['wide'] == 0:
                     result['payouts']['wide'] = payout_val
-
-    # 払戻テーブルが見つからない場合の別解析
-    if result['payouts']['trio'] == 0 and result['payouts']['tansho'] == 0:
-        # ページ全体からパターンマッチ
-        all_text = soup.get_text()
-        trio_match = re.search(r'三連複[^\d]*?([\d,]+)\s*円', all_text)
-        if trio_match:
-            result['payouts']['trio'] = int(trio_match.group(1).replace(',', ''))
-        umaren_match = re.search(r'馬連[^\d]*?([\d,]+)\s*円', all_text)
-        if umaren_match:
-            result['payouts']['umaren'] = int(umaren_match.group(1).replace(',', ''))
-        tansho_match = re.search(r'単勝[^\d]*?([\d,]+)\s*円', all_text)
-        if tansho_match:
-            result['payouts']['tansho'] = int(tansho_match.group(1).replace(',', ''))
 
     return result
 
