@@ -4634,6 +4634,88 @@ else:
                 _tr_d_data.sort(key=lambda r: r.get('predicted_at', ''))
                 render_track_record_race_list(_tr_d_data)
 
+    # --- 結果を再取得 ---
+    with st.expander("🔄 結果を再取得（的中判定を再実行）"):
+        st.markdown("未確定または既存のレース結果をnetkeibaから再取得し、的中判定を再実行します。")
+        # 日付選択
+        _refetch_dates = sorted(set(
+            (r.get('race_date') or r.get('predicted_at', ''))[:10]
+            for r in _tr_all_data
+            if r.get('race_date') or r.get('predicted_at')
+        ), reverse=True)
+        if _refetch_dates:
+            _refetch_sel = st.selectbox("対象日を選択", _refetch_dates, key="refetch_date_sel")
+            _refetch_races = [r for r in _tr_all_data
+                              if (r.get('race_date') or r.get('predicted_at', ''))[:10] == _refetch_sel]
+            _pending_count = sum(1 for r in _refetch_races if r.get('hit_trio') is None)
+            _settled_count = sum(1 for r in _refetch_races if r.get('hit_trio') is not None)
+            st.markdown(f"**{_refetch_sel}**: {len(_refetch_races)}R （確定: {_settled_count} / 未確定: {_pending_count}）")
+
+            col_refetch_all, col_refetch_pending = st.columns(2)
+            with col_refetch_all:
+                _do_refetch_all = st.button("全レース再取得", key="refetch_all_btn", use_container_width=True)
+            with col_refetch_pending:
+                _do_refetch_pending = st.button("未確定のみ再取得", key="refetch_pending_btn",
+                                                 use_container_width=True, disabled=_pending_count == 0)
+
+            if _do_refetch_all or _do_refetch_pending:
+                if _do_refetch_all:
+                    _target_races = _refetch_races
+                else:
+                    _target_races = [r for r in _refetch_races if r.get('hit_trio') is None]
+
+                _refetch_progress = st.progress(0)
+                _refetch_status = st.empty()
+                _refetch_hits = 0
+                _refetch_total_payout = 0
+                _refetch_errors = 0
+
+                for i, race in enumerate(_target_races):
+                    rid = race.get('race_id', '')
+                    rname = race.get('race_name', '')
+                    _refetch_status.markdown(f"取得中... **{rname}** ({i+1}/{len(_target_races)})")
+                    _refetch_progress.progress((i + 1) / len(_target_races))
+
+                    try:
+                        results_dict, result_payouts = fetch_race_results(rid, is_nar=False)
+                        if results_dict:
+                            update_actual_results(rid, results_dict, result_payouts)
+                            # 結果確認
+                            conn_check = sqlite3.connect(DB_PATH)
+                            conn_check.row_factory = sqlite3.Row
+                            c_check = conn_check.cursor()
+                            c_check.execute("SELECT hit_trio, payout FROM race_results WHERE race_id = ?", (rid,))
+                            row_check = c_check.fetchone()
+                            conn_check.close()
+                            if row_check and row_check['hit_trio'] == 1:
+                                _refetch_hits += 1
+                                _refetch_total_payout += (row_check['payout'] or 0)
+                        else:
+                            _refetch_errors += 1
+                    except Exception as e:
+                        _refetch_errors += 1
+
+                    import time as _time_mod
+                    _time_mod.sleep(0.8)  # netkeiba負荷対策
+
+                _refetch_progress.progress(1.0)
+                _refetch_inv = len(_target_races) * INVESTMENT_PER_RACE
+                _refetch_roi = (_refetch_total_payout / _refetch_inv * 100) if _refetch_inv > 0 else 0
+                _refetch_status.empty()
+
+                if _refetch_errors > 0:
+                    st.warning(f"{_refetch_errors}レースの結果取得に失敗しました。")
+
+                st.success(
+                    f"再取得完了: {len(_target_races)}R / "
+                    f"的中: {_refetch_hits} / "
+                    f"払戻: {_refetch_total_payout:,}円 / "
+                    f"ROI: {_refetch_roi:.1f}%"
+                )
+                st.rerun()
+        else:
+            st.info("再取得対象の日付がありません。")
+
     # --- 管理（削除機能） ---
     with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
         all_records = get_all_race_records()
