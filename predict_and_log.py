@@ -39,7 +39,7 @@ CONDITION_PROFILES = {
     'A': {'bet_type':'trio','label':'条件A','desc':'8-14頭/1600m+/良~稍','investment':700,'roi':420.7,'hit_rate':45.1,'recommended':True},
     'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':473.8,'hit_rate':45.4,'recommended':True},
     'C': {'bet_type':'trio','label':'条件C','desc':'15頭+/1600m+/良~稍','investment':700,'roi':498.6,'hit_rate':33.4,'recommended':True},
-    'D': {'bet_type':'trio','label':'条件D','desc':'1400m以下','investment':700,'roi':247.0,'hit_rate':28.2,'recommended':True},
+    'D': {'bet_type':'trio','label':'条件D','desc':'1200-1400m','investment':700,'roi':247.0,'hit_rate':28.2,'recommended':True},
     'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':200,'roi':118.0,'hit_rate':53.4,'recommended':True},
     'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':598.2,'hit_rate':36.1,'recommended':True},
 }
@@ -145,7 +145,12 @@ def classify_race_condition(race_info, num_horses, is_nar=False):
         cond_key = 'C'
     else:
         cond_key = 'X'
-    return cond_key, CONDITION_PROFILES[cond_key]
+
+    profile = dict(CONDITION_PROFILES[cond_key])
+    if cond_key == 'D' and dist <= 1000:
+        profile['recommended'] = False
+        profile['desc'] = '1000m以下（非推奨：ROI 85%）'
+    return cond_key, profile
 
 
 def parse_shutuba(race_id, is_nar=False):

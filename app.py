@@ -65,12 +65,12 @@ CONDITION_PROFILES = {
     },
     'D': {
         'label': '条件D',
-        'desc': '1400m以下（スプリント）',
+        'desc': '1200-1400m（スプリント）',
         'bet_type': 'trio',
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 136.0,      # 実配当ROI
+        'roi': 136.0,      # 実配当ROI (1200-1400m)
         'roi_estimated': 236.0,
         'hit_rate': 27.0,
         'recommended': True,
@@ -111,6 +111,7 @@ CONDITION_PROFILES = {
 def classify_race_condition(race_info, num_horses, is_nar=False):
     """レース条件を分類してプロファイルを返す（中央競馬専用）。
     Returns: (condition_key, profile_dict)
+    1000m以下は条件Dだが購入非推奨(recommended=False)。
     """
     dist = race_info.get('distance', 0)
     cond = str(race_info.get('condition', '良'))
@@ -129,7 +130,13 @@ def classify_race_condition(race_info, num_horses, is_nar=False):
         cond_key = 'C'
     else:
         cond_key = 'X'
-    return cond_key, CONDITION_PROFILES[cond_key]
+
+    profile = dict(CONDITION_PROFILES[cond_key])  # コピーして変更
+    # 1000m以下は非推奨
+    if cond_key == 'D' and dist <= 1000:
+        profile['recommended'] = False
+        profile['desc'] = '1000m以下（非推奨：ROI 85%）'
+    return cond_key, profile
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -4401,9 +4408,13 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         if buy_html:
             st.markdown(buy_html, unsafe_allow_html=True)
     else:
-        reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
+        dist_val = race_info.get('distance', 0)
+        if cond_key == 'D' and dist_val <= 1000:
+            reason = f'1000m以下：非推奨（WFバックテスト ROI 85.0%, N=534）。購入非推奨。'
+        else:
+            reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
         st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
-<div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">NOT RECOMMENDED</div>
+<div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">&#9888;&#65039; NOT RECOMMENDED</div>
 <div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
 <div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">{reason}</div>
 </div>''', unsafe_allow_html=True)
@@ -5135,7 +5146,12 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                         st.markdown(top3_html, unsafe_allow_html=True)
                     # 条件情報
                     cond_p = CONDITION_PROFILES.get(ck, {})
-                    st.markdown(f"**条件{ck}**: {cond_p.get('desc', '')}　/　**推奨**: {bt_label}")
+                    is_1000m = ck == 'D' and dist <= 1000
+                    if is_1000m:
+                        st.markdown(f"**条件{ck}**: 1000m以下（非推奨：ROI 85%）　/　**購入非推奨**")
+                        st.warning("1000m以下：非推奨（WFバックテスト ROI 85.0%, N=534）")
+                    else:
+                        st.markdown(f"**条件{ck}**: {cond_p.get('desc', '')}　/　**推奨**: {bt_label}")
                     # 買い目
                     if bets:
                         # フォーメーション構造表示
