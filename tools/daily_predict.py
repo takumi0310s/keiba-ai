@@ -1202,6 +1202,7 @@ def run_daily_predict(date_str):
             if bet_type == 'umaren':
                 bets = generate_umaren_bets(sorted_df)
                 bet_label = '馬連'
+                umaren_amts = [400, 300]  # TOP2=400円, TOP3=300円
             elif bet_type == 'wide':
                 bets = generate_wide_bets(sorted_df)
                 bet_label = 'ワイド'
@@ -1245,7 +1246,12 @@ def run_daily_predict(date_str):
             # コンソール出力
             print(f"  条件: {cond_key} ({cond_profile['desc']})")
             print(f"  TOP3: {top1['馬名']}({int(top1['馬番'])}) / {top2['馬名']}({int(top2['馬番'])}) / {top3['馬名']}({int(top3['馬番'])})")
-            print(f"  {bet_label} {len(bets)}点: {bets_str}")
+            if bet_type == 'umaren' and len(bets) == 2:
+                amts = [400, 300]
+                bet_detail = ' / '.join(f'{"-".join(str(n) for n in b)}: {amts[i]}円' for i, b in enumerate(bets))
+                print(f"  {bet_label} 2点: {bet_detail} (計700円)")
+            else:
+                print(f"  {bet_label} {len(bets)}点: {bets_str}")
 
         except Exception as e:
             print(f"  [ERROR] 予測失敗: {e}")
