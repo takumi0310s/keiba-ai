@@ -16,3 +16,6 @@ data/lap_times.csv
 data/nar_all_races.csv
 data/nar_scrape_progress.json
 data/scrape_nar_log.txt
+data/feature_lookups.pkl
+data/jra_payouts.csv
+data/jra_payout_progress.json

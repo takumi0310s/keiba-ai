@@ -28,6 +28,26 @@ sys.path.insert(0, BASE_DIR)
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 INVESTMENT_PER_RACE = 700
 
+# === ルックアップテーブル ===
+_FEATURE_LOOKUPS = None
+
+def load_feature_lookups():
+    """事前計算済み特徴量ルックアップテーブルをロード"""
+    global _FEATURE_LOOKUPS
+    if _FEATURE_LOOKUPS is not None:
+        return _FEATURE_LOOKUPS
+    lookup_path = os.path.join(BASE_DIR, "data", "feature_lookups.pkl")
+    if os.path.exists(lookup_path):
+        try:
+            with open(lookup_path, 'rb') as f:
+                _FEATURE_LOOKUPS = pickle.load(f)
+            print(f"[LOOKUP] ルックアップテーブルロード完了 ({len(_FEATURE_LOOKUPS.get('horse_stats', {}))}馬)")
+            return _FEATURE_LOOKUPS
+        except Exception as e:
+            print(f"[WARN] ルックアップテーブルロード失敗: {e}")
+    _FEATURE_LOOKUPS = {}
+    return _FEATURE_LOOKUPS
+
 COURSE_MAP = {
     '札幌':0,'函館':1,'福島':2,'新潟':3,'東京':4,'中山':5,'中京':6,'京都':7,'阪神':8,'小倉':9,
 }
@@ -40,7 +60,7 @@ CONDITION_PROFILES = {
     'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':236.9,'hit_rate':45.2,'recommended':True},
     'C': {'bet_type':'trio','label':'条件C','desc':'15頭+/1600m+/良~稍','investment':700,'roi':285.6,'hit_rate':33.7,'recommended':True},
     'D': {'bet_type':'trio','label':'条件D','desc':'1400m以下','investment':700,'roi':136.0,'hit_rate':27.0,'recommended':True},
-    'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':200,'roi':118.0,'hit_rate':53.4,'recommended':True},
+    'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':700,'roi':118.0,'hit_rate':53.4,'recommended':True},
     'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':330.5,'hit_rate':35.5,'recommended':True},
 }
 
@@ -445,6 +465,7 @@ def parse_shutuba(race_id):
             '騎手勝率': find_jockey_wr(jockey_name),
             '騎手名': jockey_name, '枠番': waku, '馬番': umaban,
             '調教師': trainer, '性別': sex,
+            'horse_id_val': int(horse_id) if horse_id and horse_id.isdigit() else 0,
         })
         horse_ids.append(horse_id)
 
@@ -762,17 +783,104 @@ def build_features(horses, race_info, model_data, odds_dict=None,
             df['rest_days'] = df['前走間隔']
         df['rest_category'] = pd.cut(df['rest_days'], bins=[-1, 6, 14, 35, 63, 180, 9999], labels=[0, 1, 2, 3, 4, 5]).astype(float).fillna(2)
 
+        # ルックアップテーブルから特徴量を取得
+        lookups = load_feature_lookups()
+        sire_surf_wr = lookups.get('sire_surface_wr', {})
+        sire_dist_wr_map = lookups.get('sire_dist_wr', {})
+        bms_surf_wr = lookups.get('bms_surface_wr', {})
+        trainer_top3_map = lookups.get('trainer_top3', {})
+        jockey_surf_wr = lookups.get('jockey_surface_wr', {})
+        frame_cd_wr = lookups.get('frame_course_dist_wr', {})
+        horse_stats_map = lookups.get('horse_stats', {})
+        training_mean = lookups.get('training_mean', 52.0)
+
+        cur_surface = int(df['芝ダート_enc'].iloc[0]) if len(df) > 0 else 0
+        cur_dist_cat = int(df['距離カテゴリ'].iloc[0]) if len(df) > 0 else 2
+        cur_course = int(df['競馬場コード_enc'].iloc[0]) if len(df) > 0 else 4
+
+        # Sire/BMS/Trainer/Jockey lookups
+        df['sire_surface_wr'] = df['父'].apply(
+            lambda s: sire_surf_wr.get((s, cur_surface), 0.1))
+        df['sire_dist_wr'] = df['父'].apply(
+            lambda s: sire_dist_wr_map.get((s, cur_dist_cat), 0.1))
+        df['bms_surface_wr'] = df['母の父'].apply(
+            lambda s: bms_surf_wr.get((s, cur_surface), 0.1))
+
+        # Trainer top3 rate
+        if '調教師' in df.columns:
+            df['trainer_top3_calc'] = df['調教師'].apply(
+                lambda t: trainer_top3_map.get(t, 0.25))
+        else:
+            df['trainer_top3_calc'] = 0.25
+
+        # Jockey surface win rate
+        if '騎手名' in df.columns:
+            df['jockey_surface_wr'] = df['騎手名'].apply(
+                lambda j: jockey_surf_wr.get((j, cur_surface), 0.05))
+        else:
+            df['jockey_surface_wr'] = df['騎手勝率']
+
+        # Frame × Course × Distance win rate
+        df['frame_course_dist_wr'] = df['枠位置'].apply(
+            lambda bp: frame_cd_wr.get((int(bp), cur_course, cur_dist_cat), 0.1))
+
+        # Horse career stats from lookup
+        horse_ids_col = df.get('horse_id_val', pd.Series([0] * len(df)))
+        df['horse_career_races'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('career_races', 5) if hid else 5)
+        df['horse_career_wr'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('career_wr', 0.1) if hid else 0.1)
+        df['horse_career_top3r'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('career_top3r', 0.3) if hid else 0.3)
+        df['horse_dist_top3r'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('dist_top3', {}).get(cur_dist_cat, 0.3) if hid else 0.3)
+        df['horse_surface_top3r'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('surf_top3', {}).get(cur_surface, 0.3) if hid else 0.3)
+
+        # dist_change (前走からの距離変更)
+        df['dist_change'] = horse_ids_col.apply(
+            lambda hid: dist - horse_stats_map.get(int(hid), {}).get('last_distance', dist) if hid else 0)
+        df['dist_change_abs'] = df['dist_change'].abs()
+
+        # prev_prize (前走賞金)
+        df['prev_prize'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('last_prize', 0) if hid else 0)
+
+        # prev_agari_relative (前走上がり相対値)
+        df['prev_agari_relative'] = 0  # レース全体の平均が必要なため近似
+
+        # Training features
+        df['training_time_filled'] = horse_ids_col.apply(
+            lambda hid: horse_stats_map.get(int(hid), {}).get('last_training_4f', 0) if hid else 0)
+        df['training_time_filled'] = df['training_time_filled'].replace(0, training_mean)
+        df['has_training'] = (df['training_time_filled'] != training_mean).astype(int)
+        df['training_per_dist'] = df['training_time_filled'] / (dist / 1000.0) if dist > 0 else 0
+
+        # 調教関連（未対応 → デフォルト）
+        df['wood_best_4f_filled'] = training_mean
+        df['has_wood_training'] = 0
+        df['wood_count_2w'] = 0
+        df['sakaro_best_4f_filled'] = training_mean + 1.0
+        df['sakaro_best_3f_filled'] = training_mean - 13.0
+        df['has_sakaro_training'] = 0
+        df['total_training_count'] = 0
+
+        # ペース関連（未対応 → デフォルト）
+        df['prev_race_first3f'] = 0
+        df['prev_race_last3f'] = 0
+        df['prev_race_pace_diff'] = 0
+
         df['same_dist_rate'] = 0.3
         df['same_course_rate'] = 0.3
         df['same_surface_rate'] = 0.3
-        df['horse_win_rate'] = 0.1
-        df['horse_top3_rate'] = 0.3
-        df['horse_race_count'] = 5
+        df['horse_win_rate'] = df['horse_career_wr']
+        df['horse_top3_rate'] = df['horse_career_top3r']
+        df['horse_race_count'] = df['horse_career_races']
         df['jockey_course_wr'] = df['騎手勝率']
         df['jockey_dist_wr'] = df['騎手勝率']
         df['jockey_top3'] = df['騎手勝率'] * 3
         df['trainer_wr'] = 0.08
-        df['trainer_top3'] = 0.25
+        df['trainer_top3'] = df['trainer_top3_calc']
         df['weight_dist'] = df['馬体重'] * df['距離(m)'] / 10000.0
         df['age_season'] = df['馬齢'] * 10 + df['season']
         df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
@@ -781,7 +889,6 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['surface_enc'] = df['芝ダート_enc']
         df['jockey_wr_calc'] = df['騎手勝率']
         df['jockey_course_wr_calc'] = df['騎手勝率']
-        df['trainer_top3_calc'] = df['trainer_top3']
         df['weight_cat_dist'] = df['weight_cat'] * 10 + df['dist_cat']
         df['surface_dist_enc'] = df['芝ダート_enc'] * 10 + df['dist_cat']
         df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
