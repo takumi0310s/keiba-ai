@@ -4716,6 +4716,80 @@ else:
         else:
             st.info("再取得対象の日付がありません。")
 
+    # --- 手動結果登録 ---
+    with st.expander("✏️ 手動結果登録（的中/不的中・払戻額を手入力）"):
+        _manual_dates = sorted(set(
+            (r.get('race_date') or r.get('predicted_at', ''))[:10]
+            for r in _tr_all_data
+            if r.get('race_date') or r.get('predicted_at')
+        ), reverse=True)
+        if _manual_dates:
+            _manual_sel_date = st.selectbox("対象日を選択", _manual_dates, key="manual_date_sel")
+            _manual_races = [r for r in _tr_all_data
+                             if (r.get('race_date') or r.get('predicted_at', ''))[:10] == _manual_sel_date]
+            _manual_races.sort(key=lambda r: r.get('race_id', ''))
+
+            st.markdown(f"**{_manual_sel_date}**: {len(_manual_races)}R")
+            st.markdown("各レースの的中/不的中をチェックし、的中の場合は払戻額を入力してください。")
+
+            _manual_changes = {}
+            for race in _manual_races:
+                rid = race.get('race_id', '')
+                rname = race.get('race_name', '')
+                cond = race.get('bet_condition', '')
+                bt = race.get('bet_type', 'trio') or 'trio'
+                bt_label = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}.get(bt, '三連複')
+                current_hit = race.get('hit_trio')
+                current_payout = race.get('payout', 0) or 0
+
+                col_check, col_payout = st.columns([2, 1])
+                with col_check:
+                    default_hit = current_hit == 1
+                    is_hit = st.checkbox(
+                        f"{rname} [{cond}] {bt_label}",
+                        value=default_hit,
+                        key=f"manual_hit_{rid}"
+                    )
+                with col_payout:
+                    if is_hit:
+                        payout_val = st.number_input(
+                            "払戻額(円)", min_value=0, value=current_payout,
+                            step=100, key=f"manual_payout_{rid}",
+                            label_visibility="collapsed"
+                        )
+                    else:
+                        payout_val = 0
+                        st.markdown("<span style='color:#666;font-size:0.85em;'>-</span>", unsafe_allow_html=True)
+
+                _manual_changes[rid] = {'hit': is_hit, 'payout': payout_val}
+
+            # プレビュー
+            _m_hit_count = sum(1 for v in _manual_changes.values() if v['hit'])
+            _m_total_payout = sum(v['payout'] for v in _manual_changes.values() if v['hit'])
+            _m_inv = len(_manual_changes) * INVESTMENT_PER_RACE
+            _m_profit = _m_total_payout - _m_inv
+            _m_roi = (_m_total_payout / _m_inv * 100) if _m_inv > 0 else 0
+            st.markdown(f"**プレビュー**: 的中 {_m_hit_count}/{len(_manual_changes)} / "
+                        f"払戻 {_m_total_payout:,}円 / 投資 {_m_inv:,}円 / "
+                        f"収支 {'+'if _m_profit>=0 else ''}{_m_profit:,}円 / ROI {_m_roi:.1f}%")
+
+            if st.button("結果を保存", key="manual_save_btn"):
+                conn_m = sqlite3.connect(DB_PATH)
+                c_m = conn_m.cursor()
+                now_m = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                for rid, vals in _manual_changes.items():
+                    hit_val = 1 if vals['hit'] else 0
+                    payout_val = vals['payout'] if vals['hit'] else 0
+                    c_m.execute("""UPDATE race_results SET result_updated_at=?, hit_trio=?,
+                                   payout=? WHERE race_id=?""",
+                                (now_m, hit_val, payout_val, rid))
+                conn_m.commit()
+                conn_m.close()
+                st.success(f"保存完了: {_m_hit_count}的中 / ROI {_m_roi:.1f}%")
+                st.rerun()
+        else:
+            st.info("登録対象の日付がありません。")
+
     # --- 管理（削除機能） ---
     with st.expander("🗑️ TRACK RECORD 管理（選択削除・全件削除）"):
         all_records = get_all_race_records()
