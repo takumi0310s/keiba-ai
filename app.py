@@ -3420,8 +3420,43 @@ def render_track_record_race_list(races):
                 bets = []
             if bets:
                 inv = len(bets) * 100
+                # フォーメーション構造表示
+                if len(bets) >= 3 and len(bets[0]) == 3:
+                    all_nums = set()
+                    for b in bets:
+                        all_nums.update(b)
+                    all_nums = sorted(all_nums)
+                    # 軸: 全買い目に含まれる馬番
+                    axis = sorted([n for n in all_nums if all(n in b for b in bets)])
+                    if not axis:
+                        axis = sorted(set(bets[0]) & set(bets[1])) if len(bets) > 1 else [bets[0][0]]
+                    # 軸候補から馬名を取得
+                    horses_pred = get_predictions_for_race(race_id)
+                    name_map = {h['horse_num']: h['horse_name'][:5] for h in horses_pred} if horses_pred else {}
+                    col2 = sorted(set(n for b in bets for n in b if n not in axis and any(n in b2 for b2 in bets if set(b2) != set(b))))
+                    col3 = sorted(all_nums - set(axis))
+                    axis_txt = ', '.join(f'{n}番 {name_map.get(n, "")}' for n in axis)
+                    col3_txt = ', '.join(str(n) for n in col3)
+                    struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
+                    struct_html += f'1列目(軸): <span style="color:#f0c040 !important;font-weight:bold;">{axis_txt}</span>'
+                    struct_html += f' / 相手: <span style="font-family:Oswald;">{col3_txt}</span></div>'
+                    st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
+                    st.markdown(struct_html, unsafe_allow_html=True)
+                elif len(bets[0]) == 2:
+                    # 馬連/ワイド: 軸-相手
+                    axis_num = bets[0][0] if len(bets) > 1 and bets[0][0] == bets[1][0] else min(bets[0])
+                    horses_pred = get_predictions_for_race(race_id)
+                    name_map = {h['horse_num']: h['horse_name'][:5] for h in horses_pred} if horses_pred else {}
+                    others = sorted(set(n for b in bets for n in b if n != axis_num))
+                    others_txt = ', '.join(str(n) for n in others)
+                    struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
+                    struct_html += f'軸: <span style="color:#f0c040 !important;font-weight:bold;">{axis_num}番 {name_map.get(axis_num, "")}</span>'
+                    struct_html += f' / 相手: <span style="font-family:Oswald;">{others_txt}</span></div>'
+                    st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
+                    st.markdown(struct_html, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
                 bet_strs = ['  '.join(str(n) for n in sorted(b)) for b in bets]
-                st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
                 bets_html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px 0;">'
                 for bs in bet_strs:
                     bets_html += f'<span style="background:#1a2a3a;padding:3px 8px;border-radius:4px;font-family:Oswald;font-size:0.85em;color:#b0d0f0 !important;">{bs}</span>'
@@ -3712,6 +3747,9 @@ if st.button("🔍 予想する") and url_input:
     if not horses:
         st.error("馬データを取得できませんでした")
         st.stop()
+    # 障害レース警告
+    if race_info.get('surface') == '障':
+        st.warning("障害レースはAIモデルの対象外です。予測精度は保証されません。")
     # Fetch realtime odds
     with st.spinner("オッズを取得中..."):
         realtime_odds = fetch_realtime_odds(race_id, is_nar=is_nar)
@@ -4263,14 +4301,15 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     if odds_available:
         rt_items.append("オッズ: 取得済")
 
-    # 馬体重急変警告（±10kg以上）
+    # 馬体重急変警告（±5kg以上）
     weight_warnings = []
     if '場体重増減' in df.columns:
         for _, row in df.iterrows():
             w_diff = row.get('場体重増減', 0)
-            if abs(w_diff) >= 10:
+            if abs(w_diff) >= 5:
                 sign = "+" if w_diff > 0 else ""
-                weight_warnings.append(f"{row.get('馬名', '?')}({row.get('馬番', '?')}番): {sign}{w_diff:.0f}kg")
+                severity = 'critical' if abs(w_diff) >= 10 else 'warning'
+                weight_warnings.append((f"{row.get('馬名', '?')}({row.get('馬番', '?')}番): {sign}{w_diff:.0f}kg", severity))
 
     # オッズ急変警告（1番人気が10倍以上 or 上位人気に大穴）
     odds_warnings = []
@@ -4282,12 +4321,15 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
                 odds_warnings.append(f"1番人気でも{min_odds:.1f}倍 - 混戦レース")
 
     if weight_warnings or odds_warnings:
-        warn_html = '<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px;margin:8px 0">'
-        warn_html += '<b>⚠️ 当日アラート</b><br>'
-        for w in weight_warnings:
-            warn_html += f'<span style="color:#dc3545">体重急変: {w}</span><br>'
+        warn_html = '<div style="background:rgba(220,53,69,0.08);border:1px solid rgba(220,53,69,0.3);border-radius:8px;padding:10px;margin:8px 0">'
+        warn_html += '<b style="color:#ff4d4d !important;">当日アラート</b><br>'
+        for w_text, sev in weight_warnings:
+            if sev == 'critical':
+                warn_html += f'<span style="color:#ff3333 !important;font-weight:bold;">体重急変: {w_text}</span><br>'
+            else:
+                warn_html += f'<span style="color:#fd7e14 !important;font-weight:bold;">体重変動: {w_text}</span><br>'
         for w in odds_warnings:
-            warn_html += f'<span style="color:#fd7e14">{w}</span><br>'
+            warn_html += f'<span style="color:#fd7e14 !important;">{w}</span><br>'
         warn_html += '</div>'
         st.markdown(warn_html, unsafe_allow_html=True)
     # 馬場・天候情報パネル（Pattern B）
@@ -4957,6 +4999,10 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                     rn, horses, hids, rinfo = parse_shutuba(rid, is_nar=batch_is_nar)
                     if not horses:
                         continue
+                    # 障害レース自動除外（モデルは平地専用）
+                    if rinfo.get('surface') == '障':
+                        status_text.markdown(f"⏭️ {course_name} {rn_short} — 障害レース（スキップ）")
+                        continue
                     ro = fetch_realtime_odds(rid, is_nar=batch_is_nar)
                     for h in horses:
                         ub = h.get('馬番', 0)
@@ -5093,6 +5139,28 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                     st.markdown(f"**条件{ck}**: {cond_p.get('desc', '')}　/　**推奨**: {bt_label}")
                     # 買い目
                     if bets:
+                        # フォーメーション構造表示
+                        if len(bets) >= 3 and len(bets[0]) == 3:
+                            all_nums = sorted(set(n for b in bets for n in b))
+                            axis = sorted([n for n in all_nums if all(n in b for b in bets)])
+                            if not axis and top3:
+                                axis = [top3[0]['num']]
+                            col3 = sorted(set(all_nums) - set(axis))
+                            axis_names = []
+                            for n in axis:
+                                name = next((h['name'] for h in top3 if h.get('num') == n), '')
+                                axis_names.append(f'{n}番 {name[:5]}' if name else f'{n}番')
+                            struct_html = f'<div style="font-size:0.8em;color:#8890a0 !important;margin:2px 0 4px;">'
+                            struct_html += f'軸: <span style="color:#f0c040 !important;">{", ".join(axis_names)}</span>'
+                            struct_html += f' / 相手: <span style="font-family:Oswald;">{", ".join(str(n) for n in col3)}</span></div>'
+                            st.markdown(struct_html, unsafe_allow_html=True)
+                        elif len(bets[0]) == 2 and top3:
+                            axis_num = top3[0]['num']
+                            others = sorted(set(n for b in bets for n in b if n != axis_num))
+                            struct_html = f'<div style="font-size:0.8em;color:#8890a0 !important;margin:2px 0 4px;">'
+                            struct_html += f'軸: <span style="color:#f0c040 !important;">{axis_num}番 {top3[0]["name"][:5]}</span>'
+                            struct_html += f' / 相手: <span style="font-family:Oswald;">{", ".join(str(n) for n in others)}</span></div>'
+                            st.markdown(struct_html, unsafe_allow_html=True)
                         bets_html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;">'
                         for b in bets:
                             bets_html += f'<span style="background:#1a2a3a;padding:3px 8px;border-radius:4px;font-family:Oswald;font-size:0.85em;color:#b0d0f0 !important;">{"  ".join(str(n) for n in sorted(b))}</span>'

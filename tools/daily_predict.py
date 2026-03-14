@@ -335,7 +335,14 @@ def parse_shutuba(race_id):
     d01t = d01.get_text(strip=True) if d01 else soup.get_text()
     dm = re.search(r'(\d{3,4})m', d01t)
     distance = int(dm.group(1)) if dm else 0
-    surface = '芝' if '芝' in d01t else ('ダ' if 'ダ' in d01t else 'ダ')
+    if '障' in d01t:
+        surface = '障'
+    elif '芝' in d01t:
+        surface = '芝'
+    elif 'ダ' in d01t:
+        surface = 'ダ'
+    else:
+        surface = 'ダ'
     cm = re.search(r'馬場:(\S+)', d01t)
     if not cm:
         cm = re.search(r'(良|稍重|稍|重|不良)', d01t)
@@ -880,8 +887,22 @@ def predict_race(df, model_data, odds_available=False):
 
 # ===== オッズ取得 =====
 
+def is_race_started(race_id):
+    """レースが発走済みかどうかを結果ページの存在で判定"""
+    try:
+        url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        # 結果テーブルがあれば発走済み
+        from bs4 import BeautifulSoup as BS
+        s = BS(resp.text, "html.parser")
+        return s.find("table", class_="RaceTable01") is not None
+    except Exception:
+        return False
+
+
 def fetch_realtime_odds(race_id):
-    """単勝リアルタイムオッズを取得"""
+    """単勝リアルタイムオッズを取得（発走前のみ）"""
     odds_dict = {}
     try:
         url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1"
@@ -976,12 +997,26 @@ def run_daily_predict(date_str):
             if not horses:
                 print(f"  [WARN] 馬データなし、スキップ")
                 continue
+
+            # 障害レース自動除外（モデルは平地専用）
+            if race_info.get('surface') == '障':
+                print(f"  [SKIP] 障害レース（モデル非対応）")
+                continue
+
             num_horses = len(horses)
             print(f"  レース名: {race_name} / {race_info['surface']}{race_info['distance']}m / {race_info['condition']} / {num_horses}頭")
             time.sleep(0.5)
 
-            # オッズ取得
-            odds_dict = fetch_realtime_odds(race_id)
+            # オッズ取得（発走済みレースは確定オッズを使わない）
+            race_started = is_race_started(race_id)
+            if race_started:
+                odds_dict = {}
+                print(f"  オッズ: スキップ（発走済み → 確定オッズ混入防止）")
+            else:
+                odds_dict = fetch_realtime_odds(race_id)
+                print(f"  オッズ取得: {len(odds_dict)}頭分" if odds_dict else "  オッズ: 未取得（レース前オッズ未発表の可能性）")
+            time.sleep(0.3)
+
             odds_available = len(odds_dict) > 0
             if odds_available:
                 for horse in horses:
@@ -990,12 +1025,9 @@ def run_daily_predict(date_str):
                         horse['単勝オッズ'] = odds_dict[umaban]
                     else:
                         horse['単勝オッズ'] = 0.0
-                print(f"  オッズ取得: {len(odds_dict)}頭分")
             else:
                 for horse in horses:
                     horse['単勝オッズ'] = 0.0
-                print(f"  オッズ: 未取得（レース前オッズ未発表の可能性）")
-            time.sleep(0.3)
 
             # JRA馬場・天候（コースごとにキャッシュ）
             course_name = race_info.get('course', '')
