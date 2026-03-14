@@ -470,6 +470,18 @@ def parse_shutuba(race_id):
         tt = row.select_one("td.Trainer a") or row.select_one("a[href*='trainer']")
         trainer = tt.get_text(strip=True) if tt else ""
 
+        # 単勝オッズ: td.Popular (class="Txt_R Popular")
+        odds_val = 0.0
+        odds_td = row.select_one("td.Popular")
+        if odds_td:
+            odds_text = odds_td.get_text(strip=True)
+            try:
+                odds_val = float(odds_text.replace(',', ''))
+                if not (1.0 <= odds_val <= 9999.9):
+                    odds_val = 0.0
+            except (ValueError, TypeError):
+                odds_val = 0.0
+
         horses.append({
             '馬名': horse_name, '馬体重': horse_weight, '場体重増減': weight_diff,
             '斤量': kinryo, '馬齢': age, '距離(m)': distance,
@@ -481,6 +493,7 @@ def parse_shutuba(race_id):
             '騎手名': jockey_name, '枠番': waku, '馬番': umaban,
             '調教師': trainer, '性別': sex,
             'horse_id_val': int(horse_id) if horse_id and horse_id.isdigit() else 0,
+            '単勝オッズ': odds_val,
         })
         horse_ids.append(horse_id)
 
@@ -970,9 +983,10 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
         df['is_nar'] = 0
 
-    # リアルタイムオッズ
-    odds_available = odds_dict and len(odds_dict) > 0
-    if odds_available and '単勝オッズ' in df.columns:
+    # オッズ判定: odds_dictまたはDataFrame内の単勝オッズを使用
+    has_odds = (odds_dict and len(odds_dict) > 0) or \
+               ('単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any())
+    if has_odds and '単勝オッズ' in df.columns:
         df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
     else:
         df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
@@ -985,7 +999,7 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
         df['weather_enc'] = weather_map.get(weather_str, 0)
 
-        if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
+        if has_odds and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
             df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
         else:
             df['pop_rank'] = 8
@@ -1205,11 +1219,13 @@ def run_daily_predict(date_str):
                     umaban = horse.get('馬番', 0)
                     if umaban in odds_dict:
                         horse['単勝オッズ'] = odds_dict[umaban]
-                    else:
-                        horse['単勝オッズ'] = 0.0
-            else:
-                for horse in horses:
-                    horse['単勝オッズ'] = 0.0
+            # odds_dict が空でも parse_shutuba で取得済みのオッズがあればそれを使う
+            # 出馬表オッズもAPIオッズも無い場合のみ0のまま
+            if not odds_available:
+                shutuba_odds = any(h.get('単勝オッズ', 0) > 0 for h in horses)
+                if shutuba_odds:
+                    odds_available = True
+                    print(f"  オッズ: 出馬表ページから取得済み")
 
             # JRA馬場・天候（コースごとにキャッシュ）
             course_name = race_info.get('course', '')

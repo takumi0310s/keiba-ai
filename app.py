@@ -2934,6 +2934,17 @@ def parse_shutuba(race_id, is_nar=False):
                     break
         tt = row.select_one("td.Trainer a") or row.select_one("a[href*='trainer']")
         trainer = tt.get_text(strip=True) if tt else ""
+        # 単勝オッズ: td.Popular (class="Txt_R Popular")
+        odds_val = 0.0
+        odds_td = row.select_one("td.Popular")
+        if odds_td:
+            odds_text = odds_td.get_text(strip=True)
+            try:
+                odds_val = float(odds_text.replace(',', ''))
+                if not (1.0 <= odds_val <= 9999.9):
+                    odds_val = 0.0
+            except (ValueError, TypeError):
+                odds_val = 0.0
         horses.append({
             '馬名': horse_name, '馬体重': horse_weight, '場体重増減': weight_diff,
             '斤量': kinryo, '馬齢': age, '距離(m)': distance,
@@ -2944,6 +2955,7 @@ def parse_shutuba(race_id, is_nar=False):
             '騎手勝率': find_jockey_wr(jockey_name),
             '騎手名': jockey_name, '枠番': waku, '馬番': umaban,
             '調教師': trainer, '性別': sex,
+            '単勝オッズ': odds_val,
         })
         horse_ids.append(horse_id)
     return race_name, horses, horse_ids, race_info
