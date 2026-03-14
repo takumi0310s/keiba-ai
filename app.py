@@ -2843,7 +2843,7 @@ def parse_shutuba(race_id, is_nar=False):
     d01t = d01.get_text(strip=True) if d01 else soup.get_text()
     dm = re.search(r'(\d{3,4})m', d01t)
     distance = int(dm.group(1)) if dm else 0
-    surface = '芝' if '芝' in d01t else ('ダ' if 'ダ' in d01t else 'ダ')
+    surface = '障' if '障' in d01t else ('芝' if '芝' in d01t else ('ダ' if 'ダ' in d01t else 'ダ'))
     cm = re.search(r'馬場:(\S+)', d01t)
     if not cm:
         cm = re.search(r'(良|稍重|稍|重|不良)', d01t)
