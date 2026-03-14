@@ -3443,16 +3443,21 @@ def render_track_record_race_list(races):
                     st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
                     st.markdown(struct_html, unsafe_allow_html=True)
                 elif len(bets[0]) == 2:
-                    # 馬連/ワイド: 軸-相手
+                    # 馬連/ワイド: 軸-相手（金額表示付き）
                     axis_num = bets[0][0] if len(bets) > 1 and bets[0][0] == bets[1][0] else min(bets[0])
                     horses_pred = get_predictions_for_race(race_id)
                     name_map = {h['horse_num']: h['horse_name'][:5] for h in horses_pred} if horses_pred else {}
-                    others = sorted(set(n for b in bets for n in b if n != axis_num))
-                    others_txt = ', '.join(str(n) for n in others)
+                    bet_label = BET_LABELS.get(bet_type, bet_type)
+                    umaren_amts = [400, 300]  # TOP2=400, TOP3=300
+                    bet_details = []
+                    for bi, b in enumerate(bets):
+                        amt = umaren_amts[bi] if bi < len(umaren_amts) else 100
+                        bet_details.append(f'{bet_label} {b[0]}-{b[1]}: {amt}円')
                     struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
                     struct_html += f'軸: <span style="color:#f0c040 !important;font-weight:bold;">{axis_num}番 {name_map.get(axis_num, "")}</span>'
-                    struct_html += f' / 相手: <span style="font-family:Oswald;">{others_txt}</span></div>'
-                    st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
+                    struct_html += f' / ' + ' / '.join(f'<span style="font-family:Oswald;">{d}</span>' for d in bet_details)
+                    struct_html += '</div>'
+                    st.markdown(f"**買い目** (合計 ¥700)")
                     st.markdown(struct_html, unsafe_allow_html=True)
                 else:
                     st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
@@ -3577,19 +3582,15 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
             bets = generate_umaren_bets(sorted_df)
             type_label = '馬連 1軸2流し'
 
-        # オッズ連動投資額振り分け (400/300)
+        # 予測順位連動投資額振り分け: TOP2に400円、TOP3に300円
         n1 = int(t1['馬番']); n2 = int(t2['馬番']); n3 = int(t3['馬番'])
         key1 = tuple(sorted([n1, n2]))
         key2 = tuple(sorted([n1, n3]))
+        amt1, amt2 = 400, 300  # TOP2=400円, TOP3=300円（上位予測の相手ほど高額）
         odds1 = (pair_odds or {}).get(key1, 0)
         odds2 = (pair_odds or {}).get(key2, 0)
 
         if odds1 > 0 and odds2 > 0:
-            # オッズ高い方に400円、低い方に300円
-            if odds1 >= odds2:
-                amt1, amt2 = 400, 300
-            else:
-                amt1, amt2 = 300, 400
             exp1 = int(odds1 * amt1)
             exp2 = int(odds2 * amt2)
             odds1_txt = f'<span style="font-family:Oswald;color:#00d4ff !important;">{odds1:.1f}倍</span>'
@@ -3597,8 +3598,6 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
             exp1_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp1:,}</span>'
             exp2_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp2:,}</span>'
         else:
-            # オッズ未取得時はフォールバック350/350
-            amt1, amt2 = 350, 350
             odds1_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
             odds2_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
             exp1_txt = ''
@@ -5156,10 +5155,16 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             st.markdown(struct_html, unsafe_allow_html=True)
                         elif len(bets[0]) == 2 and top3:
                             axis_num = top3[0]['num']
-                            others = sorted(set(n for b in bets for n in b if n != axis_num))
+                            bt_label = BET_LABELS_B.get(bt, bt)
+                            umaren_amts = [400, 300]
+                            bet_details = []
+                            for bi, b in enumerate(bets):
+                                amt = umaren_amts[bi] if bi < len(umaren_amts) else 100
+                                bet_details.append(f'{bt_label} {b[0]}-{b[1]}: {amt}円')
                             struct_html = f'<div style="font-size:0.8em;color:#8890a0 !important;margin:2px 0 4px;">'
                             struct_html += f'軸: <span style="color:#f0c040 !important;">{axis_num}番 {top3[0]["name"][:5]}</span>'
-                            struct_html += f' / 相手: <span style="font-family:Oswald;">{", ".join(str(n) for n in others)}</span></div>'
+                            struct_html += f' / ' + ' / '.join(f'<span style="font-family:Oswald;">{d}</span>' for d in bet_details)
+                            struct_html += '</div>'
                             st.markdown(struct_html, unsafe_allow_html=True)
                         bets_html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;">'
                         for b in bets:
