@@ -1,0 +1,716 @@
+{
+  "generated_at": "2026-03-14 21:07:27",
+  "model": "v9.3_leakfree (Pattern A)",
+  "n_features": 67,
+  "test_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "total_races": 20655,
+  "matched_races": 20579,
+  "fold_aucs": {
+    "2020": 0.7948,
+    "2021": 0.7997,
+    "2022": 0.7997,
+    "2023": 0.8014,
+    "2024": 0.8068,
+    "2025": 0.8068
+  },
+  "avg_auc": 0.8015,
+  "tests": {
+    "test1": {
+      "monthly": {
+        "1月": {
+          "n": 1710,
+          "hits": 603,
+          "hit_rate": 35.3,
+          "roi": 238.5,
+          "investment": 1197000,
+          "payout": 2855180
+        },
+        "2月": {
+          "n": 1746,
+          "hits": 618,
+          "hit_rate": 35.4,
+          "roi": 183.2,
+          "investment": 1222200,
+          "payout": 2238760
+        },
+        "3月": {
+          "n": 1805,
+          "hits": 698,
+          "hit_rate": 38.7,
+          "roi": 196.2,
+          "investment": 1263500,
+          "payout": 2479260
+        },
+        "4月": {
+          "n": 1673,
+          "hits": 613,
+          "hit_rate": 36.6,
+          "roi": 203.5,
+          "investment": 1171100,
+          "payout": 2383510
+        },
+        "5月": {
+          "n": 1815,
+          "hits": 647,
+          "hit_rate": 35.6,
+          "roi": 167.4,
+          "investment": 1270500,
+          "payout": 2127430
+        },
+        "6月": {
+          "n": 1674,
+          "hits": 607,
+          "hit_rate": 36.3,
+          "roi": 168.1,
+          "investment": 1171800,
+          "payout": 1969320
+        },
+        "7月": {
+          "n": 1760,
+          "hits": 642,
+          "hit_rate": 36.5,
+          "roi": 219.1,
+          "investment": 1232000,
+          "payout": 2699180
+        },
+        "8月": {
+          "n": 1781,
+          "hits": 660,
+          "hit_rate": 37.1,
+          "roi": 247.9,
+          "investment": 1246700,
+          "payout": 3090990
+        },
+        "9月": {
+          "n": 1456,
+          "hits": 497,
+          "hit_rate": 34.1,
+          "roi": 206.6,
+          "investment": 1019200,
+          "payout": 2105550
+        },
+        "10月": {
+          "n": 1827,
+          "hits": 672,
+          "hit_rate": 36.8,
+          "roi": 195.8,
+          "investment": 1278900,
+          "payout": 2503770
+        },
+        "11月": {
+          "n": 1694,
+          "hits": 628,
+          "hit_rate": 37.1,
+          "roi": 203.2,
+          "investment": 1185800,
+          "payout": 2409180
+        },
+        "12月": {
+          "n": 1638,
+          "hits": 533,
+          "hit_rate": 32.5,
+          "roi": 182.8,
+          "investment": 1146600,
+          "payout": 2095870
+        }
+      },
+      "seasonal": {
+        "春(3-5月)": {
+          "n": 5293,
+          "hits": 1958,
+          "hit_rate": 37.0,
+          "roi": 188.7,
+          "investment": 3705100,
+          "payout": 6990200
+        },
+        "夏(6-8月)": {
+          "n": 5215,
+          "hits": 1909,
+          "hit_rate": 36.6,
+          "roi": 212.6,
+          "investment": 3650500,
+          "payout": 7759490
+        },
+        "秋(9-11月)": {
+          "n": 4977,
+          "hits": 1797,
+          "hit_rate": 36.1,
+          "roi": 201.5,
+          "investment": 3483900,
+          "payout": 7018500
+        },
+        "冬(12-2月)": {
+          "n": 5094,
+          "hits": 1754,
+          "hit_rate": 34.4,
+          "roi": 201.6,
+          "investment": 3565800,
+          "payout": 7189810
+        }
+      }
+    },
+    "test2": {
+      "東京": {
+        "n": 3192,
+        "hits": 1211,
+        "hit_rate": 37.9,
+        "roi": 161.4,
+        "investment": 2234400,
+        "payout": 3606630
+      },
+      "中山": {
+        "n": 3015,
+        "hits": 1007,
+        "hit_rate": 33.4,
+        "roi": 184.7,
+        "investment": 2110500,
+        "payout": 3899070
+      },
+      "阪神": {
+        "n": 3035,
+        "hits": 1197,
+        "hit_rate": 39.4,
+        "roi": 203.1,
+        "investment": 2124500,
+        "payout": 4315860
+      },
+      "京都": {
+        "n": 1973,
+        "hits": 771,
+        "hit_rate": 39.1,
+        "roi": 231.7,
+        "investment": 1381100,
+        "payout": 3200570
+      },
+      "小倉": {
+        "n": 1720,
+        "hits": 553,
+        "hit_rate": 32.2,
+        "roi": 198.9,
+        "investment": 1204000,
+        "payout": 2395310
+      },
+      "新潟": {
+        "n": 1979,
+        "hits": 635,
+        "hit_rate": 32.1,
+        "roi": 181.1,
+        "investment": 1385300,
+        "payout": 2508940
+      },
+      "福島": {
+        "n": 1325,
+        "hits": 403,
+        "hit_rate": 30.4,
+        "roi": 183.2,
+        "investment": 927500,
+        "payout": 1699540
+      },
+      "札幌": {
+        "n": 1004,
+        "hits": 393,
+        "hit_rate": 39.1,
+        "roi": 297.8,
+        "investment": 702800,
+        "payout": 2093250
+      },
+      "函館": {
+        "n": 861,
+        "hits": 307,
+        "hit_rate": 35.7,
+        "roi": 220.0,
+        "investment": 602700,
+        "payout": 1325710
+      },
+      "中京": {
+        "n": 2475,
+        "hits": 941,
+        "hit_rate": 38.0,
+        "roi": 225.9,
+        "investment": 1732500,
+        "payout": 3913120
+      }
+    },
+    "test3": {
+      "cls115": {
+        "n": 377,
+        "hits": 120,
+        "hit_rate": 31.8,
+        "roi": 259.1,
+        "investment": 263900,
+        "payout": 683720
+      },
+      "cls131": {
+        "n": 614,
+        "hits": 175,
+        "hit_rate": 28.5,
+        "roi": 200.8,
+        "investment": 429800,
+        "payout": 863120
+      },
+      "cls15": {
+        "n": 1799,
+        "hits": 573,
+        "hit_rate": 31.9,
+        "roi": 234.8,
+        "investment": 1259300,
+        "payout": 2957220
+      },
+      "cls163": {
+        "n": 430,
+        "hits": 90,
+        "hit_rate": 20.9,
+        "roi": 335.9,
+        "investment": 301000,
+        "payout": 1011060
+      },
+      "cls179": {
+        "n": 240,
+        "hits": 68,
+        "hit_rate": 28.3,
+        "roi": 280.0,
+        "investment": 168000,
+        "payout": 470410
+      },
+      "cls195": {
+        "n": 152,
+        "hits": 47,
+        "hit_rate": 30.9,
+        "roi": 289.5,
+        "investment": 106400,
+        "payout": 308050
+      },
+      "cls23": {
+        "n": 5546,
+        "hits": 1915,
+        "hit_rate": 34.5,
+        "roi": 178.4,
+        "investment": 3882200,
+        "payout": 6925570
+      },
+      "cls43": {
+        "n": 2788,
+        "hits": 955,
+        "hit_rate": 34.3,
+        "roi": 191.9,
+        "investment": 1951600,
+        "payout": 3744330
+      },
+      "cls67": {
+        "n": 1259,
+        "hits": 325,
+        "hit_rate": 25.8,
+        "roi": 167.0,
+        "investment": 881300,
+        "payout": 1471780
+      },
+      "cls7": {
+        "n": 7372,
+        "hits": 3150,
+        "hit_rate": 42.7,
+        "roi": 203.9,
+        "investment": 5160400,
+        "payout": 10522740
+      }
+    },
+    "test4": {
+      "surface": {
+        "芝": {
+          "n": 10379,
+          "hits": 3522,
+          "hit_rate": 33.9,
+          "roi": 153.9,
+          "investment": 7265300,
+          "payout": 11184080
+        },
+        "ダート": {
+          "n": 10200,
+          "hits": 3896,
+          "hit_rate": 38.2,
+          "roi": 248.9,
+          "investment": 7140000,
+          "payout": 17773920
+        }
+      },
+      "cross": {
+        "A_芝": {
+          "n": 3984,
+          "hits": 1625,
+          "hit_rate": 40.8,
+          "roi": 138.2,
+          "investment": 2788800,
+          "payout": 3853550
+        },
+        "A_ダ": {
+          "n": 2454,
+          "hits": 1237,
+          "hit_rate": 50.4,
+          "roi": 326.7,
+          "investment": 1717800,
+          "payout": 5612070
+        },
+        "B_芝": {
+          "n": 328,
+          "hits": 130,
+          "hit_rate": 39.6,
+          "roi": 173.9,
+          "investment": 229600,
+          "payout": 399320
+        },
+        "B_ダ": {
+          "n": 519,
+          "hits": 248,
+          "hit_rate": 47.8,
+          "roi": 268.4,
+          "investment": 363300,
+          "payout": 975200
+        },
+        "C_芝": {
+          "n": 2485,
+          "hits": 711,
+          "hit_rate": 28.6,
+          "roi": 217.9,
+          "investment": 1739500,
+          "payout": 3789810
+        },
+        "C_ダ": {
+          "n": 2289,
+          "hits": 875,
+          "hit_rate": 38.2,
+          "roi": 330.0,
+          "investment": 1602300,
+          "payout": 5287440
+        },
+        "D_芝": {
+          "n": 2889,
+          "hits": 684,
+          "hit_rate": 23.7,
+          "roi": 118.4,
+          "investment": 2022300,
+          "payout": 2395180
+        },
+        "D_ダ": {
+          "n": 4365,
+          "hits": 1282,
+          "hit_rate": 29.4,
+          "roi": 149.8,
+          "investment": 3055500,
+          "payout": 4576400
+        },
+        "E_芝": {
+          "n": 382,
+          "hits": 198,
+          "hit_rate": 51.8,
+          "roi": 104.8,
+          "investment": 267400,
+          "payout": 280175
+        },
+        "E_ダ": {
+          "n": 79,
+          "hits": 49,
+          "hit_rate": 62.0,
+          "roi": 214.1,
+          "investment": 55300,
+          "payout": 118370
+        },
+        "X_芝": {
+          "n": 311,
+          "hits": 92,
+          "hit_rate": 29.6,
+          "roi": 226.5,
+          "investment": 217700,
+          "payout": 493190
+        },
+        "X_ダ": {
+          "n": 494,
+          "hits": 193,
+          "hit_rate": 39.1,
+          "roi": 362.7,
+          "investment": 345800,
+          "payout": 1254100
+        }
+      }
+    },
+    "test5": {
+      "1番人気": {
+        "n": 11153,
+        "hits": 4492,
+        "hit_rate": 40.3,
+        "roi": 154.5,
+        "investment": 7807100,
+        "payout": 12058810
+      },
+      "2-3番人気": {
+        "n": 6421,
+        "hits": 2240,
+        "hit_rate": 34.9,
+        "roi": 199.9,
+        "investment": 4494700,
+        "payout": 8984970
+      },
+      "4-6番人気": {
+        "n": 2389,
+        "hits": 603,
+        "hit_rate": 25.2,
+        "roi": 287.3,
+        "investment": 1672300,
+        "payout": 4804250
+      },
+      "7番人気以下": {
+        "n": 616,
+        "hits": 83,
+        "hit_rate": 13.5,
+        "roi": 721.2,
+        "investment": 431200,
+        "payout": 3109970
+      }
+    },
+    "test6": {
+      "overall": {
+        "n_hits": 7418,
+        "n_total": 20579,
+        "hit_rate": 36.0,
+        "median": 1765,
+        "mean": 3903,
+        "min": 110,
+        "max": 495990,
+        "std": 12107,
+        "p25": 920,
+        "p75": 3607,
+        "man_baken_count": 503,
+        "man_baken_rate": 6.8,
+        "top5_dependency": 6.1,
+        "top10_dependency": 8.3,
+        "top50_dependency": 17.2
+      },
+      "by_condition": {
+        "A": {
+          "n_hits": 2862,
+          "n_total": 6438,
+          "median": 1445,
+          "mean": 3307,
+          "man_baken_rate": 5.6,
+          "top10_dependency": 53.9
+        },
+        "B": {
+          "n_hits": 378,
+          "n_total": 847,
+          "median": 1745,
+          "mean": 3636,
+          "man_baken_rate": 5.3,
+          "top10_dependency": 49.4
+        },
+        "C": {
+          "n_hits": 1586,
+          "n_total": 4774,
+          "median": 2380,
+          "mean": 5723,
+          "man_baken_rate": 10.5,
+          "top10_dependency": 54.3
+        },
+        "D": {
+          "n_hits": 1966,
+          "n_total": 7254,
+          "median": 2015,
+          "mean": 3546,
+          "man_baken_rate": 6.3,
+          "top10_dependency": 43.6
+        },
+        "E": {
+          "n_hits": 247,
+          "n_total": 461,
+          "median": 300,
+          "mean": 461,
+          "man_baken_rate": 0.4,
+          "top10_dependency": 35.7
+        },
+        "X": {
+          "n_hits": 285,
+          "n_total": 805,
+          "median": 2470,
+          "mean": 6130,
+          "man_baken_rate": 11.9,
+          "top10_dependency": 54.9
+        }
+      }
+    },
+    "test7": {
+      "distance": {
+        "1000m以下": {
+          "n": 534,
+          "hits": 139,
+          "hit_rate": 26.0,
+          "roi": 85.0,
+          "investment": 373800,
+          "payout": 317810
+        },
+        "1200m": {
+          "n": 3761,
+          "hits": 934,
+          "hit_rate": 24.8,
+          "roi": 111.9,
+          "investment": 2632700,
+          "payout": 2945580
+        },
+        "1400m": {
+          "n": 2614,
+          "hits": 801,
+          "hit_rate": 30.6,
+          "roi": 182.3,
+          "investment": 1829800,
+          "payout": 3336000
+        }
+      },
+      "num_horses": {
+        "8-14頭": {
+          "n": 2241,
+          "hits": 743,
+          "hit_rate": 33.2,
+          "roi": 123.7,
+          "investment": 1568700,
+          "payout": 1941230
+        },
+        "15頭以上": {
+          "n": 5013,
+          "hits": 1223,
+          "hit_rate": 24.4,
+          "roi": 143.4,
+          "investment": 3509100,
+          "payout": 5030350
+        }
+      },
+      "surface": {
+        "芝": {
+          "n": 2889,
+          "hits": 684,
+          "hit_rate": 23.7,
+          "roi": 118.4,
+          "investment": 2022300,
+          "payout": 2395180
+        },
+        "ダート": {
+          "n": 4365,
+          "hits": 1282,
+          "hit_rate": 29.4,
+          "roi": 149.8,
+          "investment": 3055500,
+          "payout": 4576400
+        }
+      },
+      "above_100": [
+        {
+          "sub": "距離:1200m",
+          "roi": 111.9
+        },
+        {
+          "sub": "距離:1400m",
+          "roi": 182.3
+        },
+        {
+          "sub": "頭数:8-14頭",
+          "roi": 123.7
+        },
+        {
+          "sub": "頭数:15頭以上",
+          "roi": 143.4
+        },
+        {
+          "sub": "馬場:芝",
+          "roi": 118.4
+        },
+        {
+          "sub": "馬場:ダート",
+          "roi": 149.8
+        }
+      ],
+      "below_100": [
+        {
+          "sub": "距離:1000m以下",
+          "roi": 85.0
+        }
+      ]
+    },
+    "test8": {
+      "baseline": {
+        "n": 20579,
+        "hits": 7418,
+        "hit_rate": 36.0,
+        "roi": 201.0,
+        "investment": 14405300,
+        "payout": 28958000
+      },
+      "deduction_30pct": {
+        "description": "控除率25%->30%",
+        "factor": 0.9333,
+        "roi": 187.6,
+        "pass": true
+      },
+      "hit_rate_80pct": {
+        "description": "的中率を80%に低下",
+        "removed_hits": 1483,
+        "roi": 156.1,
+        "pass": true
+      },
+      "both": {
+        "description": "控除率30% + 的中率80%",
+        "roi": 145.7,
+        "pass": true
+      },
+      "by_condition": {
+        "A": {
+          "baseline": 210.0,
+          "deduction_30": 196.0,
+          "hit_80": 170.7,
+          "both": 159.3
+        },
+        "B": {
+          "baseline": 231.8,
+          "deduction_30": 216.4,
+          "hit_80": 200.2,
+          "both": 186.8
+        },
+        "C": {
+          "baseline": 271.6,
+          "deduction_30": 253.5,
+          "hit_80": 226.3,
+          "both": 211.2
+        },
+        "D": {
+          "baseline": 137.3,
+          "deduction_30": 128.1,
+          "hit_80": 108.3,
+          "both": 101.0
+        },
+        "E": {
+          "baseline": 123.5,
+          "deduction_30": 115.3,
+          "hit_80": 105.9,
+          "both": 98.8
+        },
+        "X": {
+          "baseline": 310.1,
+          "deduction_30": 289.4,
+          "hit_80": 231.4,
+          "both": 215.9
+        }
+      }
+    },
+    "summary": {
+      "verdict": "WARNINGS(1)",
+      "warnings": [
+        "条件D: 距離:1000m以下 ROI 85.0%"
+      ],
+      "suggestions": [
+        "条件D内でROI 100%未満のサブ条件を除外フィルタに追加検討"
+      ],
+      "n_warnings": 1
+    }
+  }
+}
