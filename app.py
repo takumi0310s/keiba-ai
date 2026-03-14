@@ -3441,7 +3441,7 @@ def render_track_record_race_list(races):
                     horses_pred = get_predictions_for_race(race_id)
                     name_map = {h['horse_num']: h['horse_name'][:5] for h in horses_pred} if horses_pred else {}
                     col2 = sorted(set(n for b in bets for n in b if n not in axis and any(n in b2 for b2 in bets if set(b2) != set(b))))
-                    col3 = sorted(all_nums - set(axis))
+                    col3 = sorted(set(all_nums) - set(axis))
                     axis_txt = ', '.join(f'{n}番 {name_map.get(n, "")}' for n in axis)
                     col3_txt = ', '.join(str(n) for n in col3)
                     struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
