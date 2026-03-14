@@ -389,11 +389,21 @@ def parse_shutuba(race_id):
         if "Cancel" in rc:
             continue
         waku, umaban = 0, 0
+        # 枠番: td.Waku or td[class*=Waku]
         wt = row.select_one("td.Waku span")
-        if wt:
+        if not wt:
+            for td in row.find_all("td"):
+                cls = " ".join(td.get("class", []))
+                if cls.startswith("Waku"):
+                    w = td.get_text(strip=True)
+                    if w.isdigit() and 1 <= int(w) <= 8:
+                        waku = int(w)
+                        break
+        else:
             w = wt.get_text(strip=True)
             if w.isdigit():
                 waku = int(w)
+        # 馬番: td.Umaban or td[class*=Umaban]
         ut = row.select_one("td.Umaban")
         if ut:
             u = ut.get_text(strip=True)
@@ -494,7 +504,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         resp.encoding = "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # 血統情報
+        # 血統情報 (result pageにはprof tableがない場合がある)
         prof = soup.find("table", class_="db_prof_table")
         if prof:
             for td in prof.find_all("td"):
@@ -520,6 +530,66 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                 result['mother_father'] = all_links[4].get_text(strip=True)
             elif len(all_links) >= 3:
                 result['mother_father'] = all_links[2].get_text(strip=True)
+
+        # Fallback: pedigree page for blood data
+        if not result['father'] or not result['mother_father']:
+            try:
+                url_ped = f"https://db.netkeiba.com/horse/ped/{horse_id}/"
+                resp_ped = requests.get(url_ped, headers=HEADERS, timeout=10)
+                resp_ped.encoding = "EUC-JP"
+                soup_ped = BeautifulSoup(resp_ped.text, "html.parser")
+                ped_table = soup_ped.find("table", class_="blood_table")
+                if ped_table:
+                    tds = ped_table.find_all("td")
+                    # td[0] = father (rowspan=16), td[16] = mother (rowspan=8)
+                    # td[17] = mother's father (rowspan=4)
+                    if tds and not result['father']:
+                        a = tds[0].find("a")
+                        if a:
+                            result['father'] = a.get_text(strip=True)
+                    # Mother's father (BMS): find Dam cell (2nd rs>=8), then next rs=4
+                    if not result['mother_father']:
+                        # Father is td[0] rs=16. Dam section starts after father's 15 cells.
+                        # Dam is the next large-rowspan cell after all father's descendants.
+                        # Reliable: find 2nd cell with rowspan >= 8 (= Dam), then next rs=4 = BMS
+                        large_rs_count = 0
+                        dam_idx = None
+                        for idx, td in enumerate(tds):
+                            rs = td.get("rowspan", "1")
+                            if rs.isdigit() and int(rs) >= 8:
+                                large_rs_count += 1
+                                if large_rs_count == 3:  # 1=sire, 2=sire's sire, 3=dam
+                                    dam_idx = idx
+                                    break
+                        if dam_idx is not None and dam_idx + 1 < len(tds):
+                            # Next cell after dam is BMS (rs=4)
+                            a = tds[dam_idx + 1].find("a")
+                            if a:
+                                result['mother_father'] = a.get_text(strip=True)
+            except Exception:
+                pass
+
+        # Fallback: trainer location from main profile page
+        if not result['trainer_loc']:
+            try:
+                url_prof = f"https://db.netkeiba.com/horse/{horse_id}/"
+                resp_prof = requests.get(url_prof, headers=HEADERS, timeout=10)
+                resp_prof.encoding = "EUC-JP"
+                soup_prof = BeautifulSoup(resp_prof.text, "html.parser")
+                prof3 = soup_prof.find("table", class_="db_prof_table")
+                if prof3:
+                    for tr in prof3.find_all("tr"):
+                        th = tr.find("th")
+                        td = tr.find("td")
+                        if th and td and '調教師' in th.get_text():
+                            td_text = td.get_text(strip=True)
+                            if '美浦' in td_text or '(美)' in td_text:
+                                result['trainer_loc'] = '美浦'
+                            elif '栗東' in td_text or '(栗)' in td_text:
+                                result['trainer_loc'] = '栗東'
+                            break
+            except Exception:
+                pass
 
         table = soup.find("table", class_="db_h_race_results")
         if not table:
@@ -716,7 +786,7 @@ def build_features(horses, race_info, model_data, odds_dict=None,
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # v5+ 英語名特徴量
-    if version in ('v5', 'v6', 'v8', 'v9'):
+    if version.startswith(('v5', 'v6', 'v8', 'v9')):
         df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
         df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
