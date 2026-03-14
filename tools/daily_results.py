@@ -70,22 +70,30 @@ def fetch_race_result(race_id):
         if not finish_text.isdigit():
             continue
         finish = int(finish_text)
-        # 馬番（3列目程度）
+        # 馬番: class="Num Txt_C" のtdから取得
         umaban = 0
-        for td in tds[1:4]:
-            t = td.get_text(strip=True)
-            if t.isdigit() and 1 <= int(t) <= 18:
-                umaban = int(t)
-                break
+        # 方法1: class名に"Txt_C"を含むtd（結果ページの馬番列）
+        for td in tds:
+            cls = " ".join(td.get("class", []))
+            if "Txt_C" in cls:
+                t = td.get_text(strip=True)
+                if t.isdigit() and 1 <= int(t) <= 18:
+                    umaban = int(t)
+                    break
+        # 方法2: class名に"Umaban"を含むtd（出馬表ページ）
         if umaban == 0:
-            # クラスからUmabanを探す
             for td in tds:
                 cls = " ".join(td.get("class", []))
-                if "Umaban" in cls or "Num" in cls:
+                if "Umaban" in cls:
                     t = td.get_text(strip=True)
                     if t.isdigit() and 1 <= int(t) <= 18:
                         umaban = int(t)
                         break
+        # 方法3: tds[2]フォールバック
+        if umaban == 0 and len(tds) >= 3:
+            t = tds[2].get_text(strip=True)
+            if t.isdigit() and 1 <= int(t) <= 18:
+                umaban = int(t)
         if umaban > 0:
             result['finish_order'][umaban] = finish
             if finish <= 3:
