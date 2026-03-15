@@ -2,9 +2,14 @@
 毎夕の結果照合スクリプト
 当日の予測結果と実際のレース結果を照合し、的中判定・ROI計算を行う。
 
+予測ソースの優先順位:
+  1. Streamlit DB (keiba_predictions.db) — アプリで予測した買い目を使用
+  2. daily_predict CSV (data/daily_predictions/) — バッチ予測の買い目を使用
+
 Usage:
     python tools/daily_results.py                  # 今日の結果
     python tools/daily_results.py --date 20260315  # 日付指定
+    python tools/daily_results.py --source csv     # CSV強制（daily_predict結果を使用）
 """
 import pandas as pd
 import numpy as np
@@ -14,6 +19,7 @@ import re
 import os
 import sys
 import json
+import sqlite3
 import argparse
 import time
 from datetime import datetime
@@ -25,6 +31,10 @@ sys.path.insert(0, BASE_DIR)
 # === 定数 ===
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 INVESTMENT_PER_RACE = 700
+STREAMLIT_DB_PATHS = [
+    os.path.join(BASE_DIR, "keiba_predictions.db"),    # app.pyのメインDB
+    os.path.join(BASE_DIR, "keiba_race_results.db"),   # 予備DB
+]
 
 
 def fetch_race_result(race_id):
@@ -106,10 +116,6 @@ def fetch_race_result(race_id):
     # 払戻金テーブルの解析
     # NOTE: netkeibaのEUC-JPページをデコードすると「三」が「3」に文字化けする
     # ことがあるため、th要素のUTF-8バイト列のhex表現で券種を判定する。
-    # 各券種のUTF-8 hex:
-    #   単勝: e58d98e58b9d / 複勝: e8a487e58b9d / 枠連: e69ea0e980a3
-    #   馬連: e9a6ace980a3 / 馬単: e9a6ace58d98 / ワイド: e383afe382a4e38389
-    #   三連複(文字化け時): 33e980a3e8a487 / 三連単(文字化け時): 33e980a3e58d98
     BET_TYPE_HEX = {
         'tansho':  'e58d98e58b9d',      # 単勝
         'umaren':  'e9a6ace980a3',       # 馬連
@@ -180,34 +186,215 @@ def check_trio_hit(trio_bets_str, actual_trio_nums):
     return False, None
 
 
-def run_daily_results(date_str):
+def check_trio_hit_json(trio_bets_json, actual_trio_nums):
+    """三連複的中判定（JSON形式の買い目用）
+
+    Args:
+        trio_bets_json: [[1,2,3],[1,2,4],...] 形式
+        actual_trio_nums: [n1, n2, n3] ソート済み
+
+    Returns:
+        (hit: bool, hit_combo: str or None)
+    """
+    if not trio_bets_json or not actual_trio_nums:
+        return False, None
+
+    actual_set = set(actual_trio_nums)
+    for bet in trio_bets_json:
+        if set(bet) == actual_set:
+            return True, '-'.join(str(n) for n in sorted(bet))
+    return False, None
+
+
+def load_predictions_from_db(date_str):
+    """Streamlit DB から予測データを読み込む
+
+    複数のDBパスを順に検索し、該当日のデータがある最初のDBを使用する。
+
+    Args:
+        date_str: "20260315" 形式
+
+    Returns:
+        list of dict or None (データなし時)
+    """
+    # date_str (20260315) → race_date形式 (2026-03-15)
+    race_date = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+
+    for db_path in STREAMLIT_DB_PATHS:
+        if not os.path.exists(db_path):
+            continue
+        result = _try_load_from_db(db_path, race_date)
+        if result:
+            db_name = os.path.basename(db_path)
+            print(f"  [DB] {db_name} から {len(result)}レース分の予測を読み込み")
+            return result
+
+    return None
+
+
+def _try_load_from_db(db_path, race_date):
+    """指定DBから予測データを読み込む (内部関数)"""
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        # race_results テーブルから買い目を取得
+        c.execute("""
+            SELECT rr.race_id, rr.race_name, rr.bet_condition, rr.bet_type,
+                   rr.trio_bets, rr.umaren_bets, rr.num_horses, rr.buy_recommended
+            FROM race_results rr
+            WHERE rr.predicted_at LIKE ?
+            ORDER BY rr.race_id
+        """, (f"{race_date}%",))
+        rr_rows = c.fetchall()
+
+        if not rr_rows:
+            conn.close()
+            return None
+
+        # predictions テーブルからTOP3の馬番を取得
+        c.execute("""
+            SELECT race_id, horse_num, ai_rank
+            FROM predictions
+            WHERE race_date = ? AND ai_rank <= 6
+            ORDER BY race_id, ai_rank
+        """, (race_date,))
+        pred_rows = c.fetchall()
+        conn.close()
+
+        # TOP馬番をrace_id別にまとめる
+        top_nums = {}  # {race_id: {1: 馬番, 2: 馬番, ...}}
+        for pr in pred_rows:
+            rid = str(pr['race_id'])
+            if rid not in top_nums:
+                top_nums[rid] = {}
+            top_nums[rid][pr['ai_rank']] = pr['horse_num']
+
+        # 予測データリストを構築
+        predictions = []
+        for rr in rr_rows:
+            rid = str(rr['race_id'])
+            trio_bets_raw = rr['trio_bets']
+            umaren_bets_raw = rr['umaren_bets']
+            bet_type = rr['bet_type'] or 'trio'
+            condition = rr['bet_condition'] or ''
+
+            # JSON買い目を文字列形式に変換
+            if bet_type == 'trio' and trio_bets_raw:
+                bets_list = json.loads(trio_bets_raw)
+                trio_bets_str = '; '.join(
+                    '-'.join(str(n) for n in sorted(b)) for b in bets_list
+                )
+            elif bet_type == 'umaren' and umaren_bets_raw:
+                bets_list = json.loads(umaren_bets_raw)
+                trio_bets_str = '; '.join(
+                    '-'.join(str(n) for n in sorted(b)) for b in bets_list
+                )
+            else:
+                trio_bets_str = ''
+
+            # コース名を抽出（レース名 "中京1R" → "中京"）
+            race_name = rr['race_name'] or ''
+            course = re.sub(r'\d+R$', '', race_name)
+            race_num_m = re.search(r'(\d+)R$', race_name)
+            race_num = int(race_num_m.group(1)) if race_num_m else 0
+
+            tops = top_nums.get(rid, {})
+
+            predictions.append({
+                'race_id': rid,
+                'course': course,
+                'race_num': race_num,
+                'race_name': race_name,
+                'condition': condition,
+                'trio_bets': trio_bets_str,
+                'bet_type': bet_type,
+                'investment': INVESTMENT_PER_RACE,
+                'top1_num': tops.get(1, 0),
+                'top2_num': tops.get(2, 0),
+                'top3_num': tops.get(3, 0),
+            })
+
+        return predictions
+
+    except Exception as e:
+        print(f"  [WARN] Streamlit DB読み込みエラー: {e}")
+        return None
+
+
+def load_predictions_from_csv(date_str):
+    """daily_predict CSVから予測データを読み込む
+
+    Returns:
+        list of dict or None
+    """
+    pred_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
+    if not os.path.exists(pred_path):
+        return None
+
+    df_pred = pd.read_csv(pred_path, encoding='utf-8-sig')
+    predictions = []
+    for _, row in df_pred.iterrows():
+        predictions.append({
+            'race_id': str(row['race_id']),
+            'course': row.get('course', ''),
+            'race_num': row.get('race_num', 0),
+            'race_name': row.get('race_name', ''),
+            'condition': row.get('condition', ''),
+            'trio_bets': row.get('trio_bets', ''),
+            'bet_type': row.get('bet_type', 'trio'),
+            'investment': row.get('investment', INVESTMENT_PER_RACE),
+            'top1_num': row.get('top1_num', 0),
+            'top2_num': row.get('top2_num', 0),
+            'top3_num': row.get('top3_num', 0),
+        })
+    return predictions
+
+
+def run_daily_results(date_str, source='auto'):
     """指定日の結果照合"""
     print(f"{'=' * 60}")
     print(f"KEIBA AI 結果照合 - {date_str}")
     print(f"{'=' * 60}")
 
-    # 予測CSVロード
-    pred_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
-    if not os.path.exists(pred_path):
-        print(f"[ERROR] 予測ファイルが見つかりません: {pred_path}")
-        print(f"  先にdaily_predict.pyを実行してください")
+    # 予測データ読み込み（Streamlit DB優先）
+    predictions = None
+    pred_source = ''
+
+    if source in ('auto', 'db'):
+        predictions = load_predictions_from_db(date_str)
+        if predictions:
+            pred_source = 'Streamlit DB'
+
+    if predictions is None and source in ('auto', 'csv'):
+        predictions = load_predictions_from_csv(date_str)
+        if predictions:
+            pred_source = 'daily_predict CSV'
+
+    if predictions is None:
+        print(f"[ERROR] 予測データが見つかりません")
+        for p in STREAMLIT_DB_PATHS:
+            print(f"  DB: {p}")
+        print(f"  CSV: data/daily_predictions/{date_str}.csv")
+        print(f"  Streamlitで予測するか、daily_predict.pyを実行してください")
         return
 
-    df_pred = pd.read_csv(pred_path, encoding='utf-8-sig')
-    print(f"\n予測レース数: {len(df_pred)}")
+    print(f"\n予測ソース: {pred_source}")
+    print(f"予測レース数: {len(predictions)}")
 
     results = []
-    for idx, row in df_pred.iterrows():
-        race_id = str(row['race_id'])
-        course = row.get('course', '')
-        race_num = row.get('race_num', 0)
-        race_name = row.get('race_name', '')
-        condition = row.get('condition', '')
-        trio_bets_str = row.get('trio_bets', '')
-        bet_type = row.get('bet_type', 'trio')
-        investment = row.get('investment', INVESTMENT_PER_RACE)
+    for idx, row in enumerate(predictions):
+        race_id = row['race_id']
+        course = row['course']
+        race_num = row['race_num']
+        race_name = row['race_name']
+        condition = row['condition']
+        trio_bets_str = row['trio_bets']
+        bet_type = row['bet_type']
+        investment = row['investment']
 
-        print(f"\n[{idx+1}/{len(df_pred)}] {course} {race_num}R {race_name} (ID={race_id})")
+        print(f"\n[{idx+1}/{len(predictions)}] {course} {race_num}R {race_name} (ID={race_id})")
 
         # 結果取得
         race_result = fetch_race_result(race_id)
@@ -241,7 +428,6 @@ def run_daily_results(date_str):
             if trio_hit:
                 trio_payout = payouts.get('trio', 0)
         elif bet_type == 'umaren':
-            # 馬連判定（TOP1-TOP2, TOP1-TOP3）
             top1_num = row.get('top1_num', 0)
             top2_num = row.get('top2_num', 0)
             top3_num = row.get('top3_num', 0)
@@ -325,6 +511,7 @@ def run_daily_results(date_str):
             print(f"\n{'=' * 60}")
             print(f"  日次サマリー: {date_str}")
             print(f"{'=' * 60}")
+            print(f"  予測ソース: {pred_source}")
             print(f"  対象レース: {len(settled)}R (未確定: {len(pending)}R)")
             print(f"  的中: {hit_count}/{len(settled)} ({hit_count/len(settled)*100:.1f}%)")
             print(f"  投資: {total_inv:,}円")
@@ -358,6 +545,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="KEIBA AI 結果照合")
     parser.add_argument("--date", type=str, default=None,
                         help="照合日 YYYYMMDD (デフォルト: 今日)")
+    parser.add_argument("--source", type=str, default="auto",
+                        choices=["auto", "db", "csv"],
+                        help="予測ソース: auto=DB優先, db=Streamlit DBのみ, csv=CSVのみ")
     args = parser.parse_args()
 
     if args.date:
@@ -372,5 +562,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 開始")
-    run_daily_results(date_str)
+    run_daily_results(date_str, source=args.source)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
