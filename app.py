@@ -3135,8 +3135,26 @@ _ZERO_IMPORTANCE_FEATURES = {
     'temperature', 'humidity', 'wind_speed', 'precipitation',
 }
 
+# 正当にゼロになりうる特徴量（ゼロでも「未取得」扱いしない）
+_LEGIT_ZERO_FEATURES = {
+    'is_nar', 'surface_enc', 'condition_enc', 'season', 'sex_enc',
+    'bracket_pos', 'dist_change', 'dist_change_abs', 'finish_trend',
+    'weight_change', 'weight_change_abs', 'weight_diff_abs', 'carry_diff',
+    'cond_surface', 'weather_enc', 'cushion_value', 'moisture_rate',
+    'temperature', 'humidity', 'wind_speed', 'precipitation',
+    'has_wood_training', 'has_sakaro_training', 'has_training',
+    'prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff',
+    'prev_agari_relative', 'wood_count_2w', 'total_training_count',
+    'location_enc', 'rest_category', 'dist_cat',
+}
+
 def get_feature_summary(df, use_features):
     """特徴量の取得状況サマリーを生成
+
+    df[f]=0 フォールバック適用前に呼ぶこと。
+    カラムが存在しない → 未取得。
+    カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外は未取得。
+    カラムが存在し非ゼロ値あり → 取得済み。
 
     Returns:
         dict: {
@@ -3150,11 +3168,17 @@ def get_feature_summary(df, use_features):
     acquired = 0
     for f in use_features:
         if f not in df.columns:
+            # カラムが存在しない = 実際に未取得
             impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
             missing.append((f, impact))
         else:
             vals = pd.to_numeric(df[f], errors='coerce')
-            if vals.isna().all() or (vals == 0).all():
+            if vals.isna().all():
+                # 全NaN = 未取得
+                impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
+                missing.append((f, impact))
+            elif (vals == 0).all() and f not in _LEGIT_ZERO_FEATURES:
+                # 全ゼロだが正当にゼロにならない特徴量 = 未取得の可能性
                 impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
                 missing.append((f, impact))
             else:
@@ -4196,6 +4220,8 @@ if st.button("🔍 予想する") and url_input:
 
     # 使用する特徴量リスト（v9モデル時はそのモデルの特徴量を使用）
     use_features = active_features if active_features else FEATURES
+    # 特徴量サマリー（フォールバック前に計算）
+    _feat_summary = get_feature_summary(df, use_features)
     for f in use_features:
         if f not in df.columns:
             df[f] = 0
@@ -4478,8 +4504,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
-    # 特徴量サマリー表示
-    _feat_summary = get_feature_summary(df, use_features)
+    # 特徴量サマリー表示（フォールバック前に計算済み）
     st.markdown(render_feature_summary(_feat_summary), unsafe_allow_html=True)
     # 条件別買い目自動切替（統合表示）
     is_nar_pred = st.session_state.get('pred_is_nar', False)
@@ -5158,6 +5183,7 @@ def _batch_score_race(horses, race_info, is_nar):
 
         # === モデル予測 ===
         use_features = b_feats if b_feats else FEATURES
+        feat_summary = get_feature_summary(df, use_features)
         for f in use_features:
             if f not in df.columns:
                 df[f] = 0
@@ -5195,7 +5221,6 @@ def _batch_score_race(horses, race_info, is_nar):
         df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
         df = df.sort_values('AI順位')
         cond_key, cond_profile = classify_race_condition(race_info, num_h, is_nar=is_nar)
-        feat_summary = get_feature_summary(df, use_features)
         return df, cond_key, cond_profile, odds_avail, feat_summary
     except Exception:
         return None
