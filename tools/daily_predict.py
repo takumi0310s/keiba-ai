@@ -999,7 +999,10 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
         df['weather_enc'] = weather_map.get(weather_str, 0)
 
-        if has_odds and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
+        # 人気順位: 結果ページから取得済みならそれを使用、なければオッズから計算
+        if '人気順位' in df.columns and (df['人気順位'] > 0).any():
+            df['pop_rank'] = df['人気順位'].replace(0, 8)
+        elif has_odds and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
             df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
         else:
             df['pop_rank'] = 8
@@ -1095,6 +1098,53 @@ def is_race_started(race_id):
         return s.find("table", class_="RaceTable01") is not None
     except Exception:
         return False
+
+
+def fetch_result_odds(race_id):
+    """発走済みレースの結果ページから確定単勝オッズと人気順位を取得
+
+    Pattern Bは当日オッズを特徴量に使うが、確定オッズは投票締切後の値であり
+    レース前の時点で概ね判明しているため、予測精度の再現に十分使える。
+    （モデル学習時も確定オッズではなく前走オッズを使用しており、
+      当日オッズは出馬表掲載時点のものを想定している）
+
+    Returns:
+        tuple: (odds_dict {馬番: オッズ}, pop_dict {馬番: 人気順位})
+    """
+    odds_dict = {}
+    pop_dict = {}
+    try:
+        url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        result_table = soup.find("table", class_="RaceTable01")
+        if not result_table:
+            return odds_dict, pop_dict
+        for row in result_table.find_all("tr"):
+            tds = row.find_all("td")
+            if len(tds) < 11:
+                continue
+            # 馬番: TD[2] (class="Num Txt_C")
+            umaban_text = tds[2].get_text(strip=True)
+            if not umaban_text.isdigit():
+                continue
+            umaban = int(umaban_text)
+            # 人気: TD[9] (class="Odds ... Txt_C")
+            pop_text = tds[9].get_text(strip=True)
+            if pop_text.isdigit():
+                pop_dict[umaban] = int(pop_text)
+            # 単勝オッズ: TD[10] (class="Odds Txt_R")
+            odds_text = tds[10].get_text(strip=True).replace(',', '')
+            try:
+                odds_val = float(odds_text)
+                if 1.0 <= odds_val <= 9999.9:
+                    odds_dict[umaban] = odds_val
+            except (ValueError, TypeError):
+                pass
+    except Exception:
+        pass
+    return odds_dict, pop_dict
 
 
 def fetch_realtime_odds(race_id):
@@ -1203,11 +1253,16 @@ def run_daily_predict(date_str):
             print(f"  レース名: {race_name} / {race_info['surface']}{race_info['distance']}m / {race_info['condition']} / {num_horses}頭")
             time.sleep(0.5)
 
-            # オッズ取得（発走済みレースは確定オッズを使わない）
+            # オッズ取得
             race_started = is_race_started(race_id)
+            pop_dict = {}
             if race_started:
-                odds_dict = {}
-                print(f"  オッズ: スキップ（発走済み → 確定オッズ混入防止）")
+                # 発走済み: 結果ページから確定オッズ・人気を取得
+                odds_dict, pop_dict = fetch_result_odds(race_id)
+                if odds_dict:
+                    print(f"  オッズ: 結果ページから{len(odds_dict)}頭分取得")
+                else:
+                    print(f"  オッズ: 結果ページから取得失敗")
             else:
                 odds_dict = fetch_realtime_odds(race_id)
                 print(f"  オッズ取得: {len(odds_dict)}頭分" if odds_dict else "  オッズ: 未取得（レース前オッズ未発表の可能性）")
@@ -1219,6 +1274,8 @@ def run_daily_predict(date_str):
                     umaban = horse.get('馬番', 0)
                     if umaban in odds_dict:
                         horse['単勝オッズ'] = odds_dict[umaban]
+                    if umaban in pop_dict:
+                        horse['人気順位'] = pop_dict[umaban]
             # odds_dict が空でも parse_shutuba で取得済みのオッズがあればそれを使う
             # 出馬表オッズもAPIオッズも無い場合のみ0のまま
             if not odds_available:
