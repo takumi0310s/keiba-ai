@@ -3129,6 +3129,81 @@ def render_horse_card(rank, h, max_score, rank_map):
     html += f'<div class="sbar-w"><div class="sbar {bar_cls}" style="width:{pct}%"></div></div></div>'
     return html
 
+# importance=0の特徴量（モデル学習時に使われていない天候・馬場系）
+_ZERO_IMPORTANCE_FEATURES = {
+    'weather_enc', 'cushion_value', 'moisture_rate',
+    'temperature', 'humidity', 'wind_speed', 'precipitation',
+}
+
+def get_feature_summary(df, use_features):
+    """特徴量の取得状況サマリーを生成
+
+    Returns:
+        dict: {
+            'total': int, 'acquired': int,
+            'missing': list of (name, impact),  # impact: 'none' or 'check'
+            'ok': bool,  # acquired >= 67
+        }
+    """
+    total = len(use_features)
+    missing = []
+    acquired = 0
+    for f in use_features:
+        if f not in df.columns:
+            impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
+            missing.append((f, impact))
+        else:
+            vals = pd.to_numeric(df[f], errors='coerce')
+            if vals.isna().all() or (vals == 0).all():
+                impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
+                missing.append((f, impact))
+            else:
+                acquired += 1
+    return {
+        'total': total,
+        'acquired': acquired,
+        'missing': missing,
+        'ok': acquired >= 67,
+    }
+
+def render_feature_summary(summary):
+    """特徴量サマリーのHTML文字列を生成"""
+    acq = summary['acquired']
+    total = summary['total']
+    missing = summary['missing']
+
+    if summary['ok']:
+        color = '#4ade80'
+        icon = '&#10004;'
+        status = f'特徴量: {acq}/{total}取得済み {icon}'
+    else:
+        color = '#ff4060'
+        icon = '&#9888;&#65039;'
+        status = f'{icon} 特徴量: {acq}/{total} 予測精度低下の可能性'
+
+    parts = [f'<span style="color:{color} !important">{status}</span>']
+
+    if missing:
+        none_feats = [f for f, imp in missing if imp == 'none']
+        check_feats = [f for f, imp in missing if imp == 'check']
+        detail_parts = []
+        if none_feats:
+            names = ', '.join(none_feats[:3])
+            rest = f'他{len(none_feats)-3}個' if len(none_feats) > 3 else ''
+            detail_parts.append(f'<span style="color:#6a6a80 !important">{names}{rest}（影響なし）</span>')
+        if check_feats:
+            names = ', '.join(check_feats[:3])
+            rest = f'他{len(check_feats)-3}個' if len(check_feats) > 3 else ''
+            detail_parts.append(f'<span style="color:#f0c040 !important">{names}{rest}（要確認）</span>')
+        if detail_parts:
+            parts.append('<span style="color:#6a6a80 !important">未取得: </span>' + ' / '.join(detail_parts))
+
+    html = '<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
+    html += ' | '.join(parts)
+    html += '</div>'
+    return html
+
+
 def calc_expected_values(df_sorted, realtime_odds):
     """各買い目の期待値を計算。AI順位上位の的中確率 × オッズで期待値を出す。"""
     ev_list = []
@@ -4403,6 +4478,9 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
+    # 特徴量サマリー表示
+    _feat_summary = get_feature_summary(df, use_features)
+    st.markdown(render_feature_summary(_feat_summary), unsafe_allow_html=True)
     # 条件別買い目自動切替（統合表示）
     is_nar_pred = st.session_state.get('pred_is_nar', False)
     cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
@@ -5117,7 +5195,8 @@ def _batch_score_race(horses, race_info, is_nar):
         df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
         df = df.sort_values('AI順位')
         cond_key, cond_profile = classify_race_condition(race_info, num_h, is_nar=is_nar)
-        return df, cond_key, cond_profile, odds_avail
+        feat_summary = get_feature_summary(df, use_features)
+        return df, cond_key, cond_profile, odds_avail, feat_summary
     except Exception:
         return None
 
@@ -5226,7 +5305,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                     # モデル予測実行
                     result = _batch_score_race(horses, rinfo, batch_is_nar)
                     if result is not None:
-                        scored_df, cond_key, cond_profile, has_odds = result
+                        scored_df, cond_key, cond_profile, has_odds, b_feat_summary = result
                         save_prediction(rid, rn, rinfo, scored_df, is_nar=batch_is_nar)
                         top3 = scored_df.head(3)
                         top3_info = []
@@ -5251,6 +5330,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             'bet_type': cond_profile['bet_type'],
                             'bets': bets,
                             'top3': top3_info,
+                            'feat_summary': b_feat_summary,
                         })
                 except Exception:
                     pass
@@ -5355,6 +5435,10 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             bets_html += f'<span style="background:#1a2a3a;padding:3px 8px;border-radius:4px;font-family:Oswald;font-size:0.85em;color:#b0d0f0 !important;">{"  ".join(str(n) for n in sorted(b))}</span>'
                         bets_html += '</div>'
                         st.markdown(bets_html, unsafe_allow_html=True)
+                    # 特徴量サマリー
+                    b_fs = r.get('feat_summary')
+                    if b_fs:
+                        st.markdown(render_feature_summary(b_fs), unsafe_allow_html=True)
 
 # Results update section
 with st.expander("📝 レース結果を登録（的中率集計用）"):
