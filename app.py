@@ -3154,6 +3154,7 @@ _LEGIT_ZERO_FEATURES = {
     'weight_cat_dist',   # weight_cat=0かつdist_cat=0の場合
     'surface_dist_enc',  # 芝(0)×スプリント(0)の場合
     'course_surface',    # 札幌(0)×芝(0)の場合
+    'bracket',           # 終了済みレースでは枠番が取得できない場合0
 }
 
 # オンライン予測では取得不可の特徴量（学習データからのみ計算可能）
@@ -4193,7 +4194,7 @@ if st.button("🔍 予想する") and url_input:
 
     # === リアルタイムオッズ特徴量 ===
     if odds_available and '単勝オッズ' in df.columns:
-        df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
+        df['odds_log'] = np.log1p(df['単勝オッズ'].replace(0, 15.0).clip(1, 999))
         # リアルタイムオッズがある場合、前走オッズの代わりに使う
         has_odds = df['単勝オッズ'] > 0
         if has_odds.any():
@@ -5184,7 +5185,7 @@ def _batch_score_race(horses, race_info, is_nar):
 
         # === オッズ特徴量 ===
         if odds_avail and '単勝オッズ' in df.columns:
-            df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
+            df['odds_log'] = np.log1p(df['単勝オッズ'].replace(0, 15.0).clip(1, 999))
             has_odds = df['単勝オッズ'] > 0
             if has_odds.any():
                 if 'prev_odds_log' in df.columns:
