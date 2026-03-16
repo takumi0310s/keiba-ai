@@ -3129,94 +3129,46 @@ def render_horse_card(rank, h, max_score, rank_map):
     html += f'<div class="sbar-w"><div class="sbar {bar_cls}" style="width:{pct}%"></div></div></div>'
     return html
 
-# importance=0の特徴量（モデル学習時に使われていない天候・馬場系）
-_ZERO_IMPORTANCE_FEATURES = {
-    'weather_enc', 'cushion_value', 'moisture_rate',
-    'temperature', 'humidity', 'wind_speed', 'precipitation',
-}
-
 # 正当にゼロになりうる特徴量（ゼロでも「未取得」扱いしない）
 _LEGIT_ZERO_FEATURES = {
     'is_nar', 'surface_enc', 'condition_enc', 'season', 'sex_enc',
-    'bracket_pos', 'dist_change', 'dist_change_abs', 'finish_trend',
+    'bracket_pos', 'bracket', 'dist_change', 'dist_change_abs', 'finish_trend',
     'weight_change', 'weight_change_abs', 'weight_diff_abs', 'carry_diff',
     'cond_surface', 'weather_enc', 'cushion_value', 'moisture_rate',
     'temperature', 'humidity', 'wind_speed', 'precipitation',
-    'has_wood_training', 'has_sakaro_training', 'has_training',
-    'prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff',
-    'prev_agari_relative', 'wood_count_2w', 'total_training_count',
     'location_enc', 'rest_category', 'dist_cat',
-    # 正当にゼロになりうる追加特徴量
-    'prev_prize',        # netkeibaスクレイピングでは常に0
-    'top3_count_3r',     # 直近3走で3着以内がない場合0
-    'course_enc',        # 札幌=0
-    'weight_cat',        # 軽量馬(<=440kg)=0
-    'weight_cat_dist',   # weight_cat=0かつdist_cat=0の場合
-    'surface_dist_enc',  # 芝(0)×スプリント(0)の場合
-    'course_surface',    # 札幌(0)×芝(0)の場合
-    'bracket',           # 終了済みレースでは枠番が取得できない場合0
-}
-
-# オンライン予測では取得不可の特徴量（学習データからのみ計算可能）
-# サマリーのtotalから除外し、フォールバック値(0)を使用
-_FALLBACK_ONLY_FEATURES = {
-    'training_time_filled', 'has_training', 'training_per_dist',
-    'jockey_surface_wr',
-    'horse_career_races', 'horse_career_wr', 'horse_career_top3r',
-    'sire_surface_wr', 'sire_dist_wr', 'bms_surface_wr',
-    'wood_best_4f_filled', 'has_wood_training',
-    'prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff',
-    'prev_agari_relative', 'wood_count_2w',
-    'sakaro_best_4f_filled', 'sakaro_best_3f_filled', 'has_sakaro_training',
-    'total_training_count',
-    'horse_dist_top3r', 'horse_surface_top3r', 'frame_course_dist_wr',
+    'prev_prize', 'top3_count_3r', 'course_enc', 'weight_cat',
+    'weight_cat_dist', 'surface_dist_enc', 'course_surface',
 }
 
 def get_feature_summary(df, use_features):
     """特徴量の取得状況サマリーを生成
 
-    df[f]=0 フォールバック適用前に呼ぶこと。
-    _FALLBACK_ONLY_FEATURES はtotalから除外（オンラインでは取得不可）。
-    カラムが存在しない → 未取得。
-    カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外は未取得。
+    カラムが存在しない特徴量 → デフォルト値使用（学習専用）として除外。
     カラムが存在し非ゼロ値あり → 取得済み。
-
-    Returns:
-        dict: {
-            'total': int, 'acquired': int, 'fallback_count': int,
-            'missing': list of (name, impact),  # impact: 'none' or 'check'
-            'ok': bool,  # acquired >= total の 80%
-        }
+    カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外は未取得。
     """
-    # フォールバック特徴量を除外してカウント
-    check_features = [f for f in use_features if f not in _FALLBACK_ONLY_FEATURES]
-    fallback_count = len(use_features) - len(check_features)
-    total = len(check_features)
-    missing = []
+    default_count = 0  # カラムが存在しない = デフォルト値使用
     acquired = 0
-    acquired_list = []
-    for f in check_features:
+    missing = []  # (name, reason) — reason: 'all_zero' or 'all_nan'
+    for f in use_features:
         if f not in df.columns:
-            impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-            missing.append((f, impact, 'no_col'))
+            default_count += 1
         else:
             vals = pd.to_numeric(df[f], errors='coerce')
             if vals.isna().all():
-                impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-                missing.append((f, impact, 'all_nan'))
+                missing.append((f, 'all_nan'))
             elif (vals == 0).all() and f not in _LEGIT_ZERO_FEATURES:
-                impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-                missing.append((f, impact, 'all_zero'))
+                missing.append((f, 'all_zero'))
             else:
                 acquired += 1
-                acquired_list.append(f)
+    check_total = acquired + len(missing)  # カラムが存在する特徴量のみ
     return {
-        'total': total,
+        'total': check_total,
         'acquired': acquired,
-        'fallback_count': fallback_count,
+        'default_count': default_count,
         'missing': missing,
-        'acquired_list': acquired_list,
-        'ok': acquired >= total * 0.8,
+        'ok': check_total == 0 or acquired >= check_total * 0.8,
     }
 
 def render_feature_summary(summary):
@@ -3224,7 +3176,7 @@ def render_feature_summary(summary):
     acq = summary['acquired']
     total = summary['total']
     missing = summary['missing']
-    fallback = summary.get('fallback_count', 0)
+    default_count = summary.get('default_count', 0)
 
     if summary['ok']:
         color = '#4ade80'
@@ -3235,30 +3187,15 @@ def render_feature_summary(summary):
         icon = '&#9888;&#65039;'
         status = f'{icon} 特徴量: {acq}/{total} 予測精度低下の可能性'
 
-    if fallback > 0:
-        status += f' <span style="color:#6a6a80 !important">(+{fallback}個はデフォルト値使用)</span>'
+    if default_count > 0:
+        status += f' <span style="color:#6a6a80 !important">(+{default_count}個は学習専用・デフォルト値)</span>'
 
     parts = [f'<span style="color:{color} !important">{status}</span>']
 
     if missing:
-        none_feats = [f for f, imp, *_ in missing if imp == 'none']
-        check_feats = [f for f, imp, *_ in missing if imp == 'check']
-        detail_parts = []
-        if none_feats:
-            names = ', '.join(none_feats[:3])
-            rest = f'他{len(none_feats)-3}個' if len(none_feats) > 3 else ''
-            detail_parts.append(f'<span style="color:#6a6a80 !important">{names}{rest}（影響なし）</span>')
-        if check_feats:
-            names = ', '.join(check_feats[:3])
-            rest = f'他{len(check_feats)-3}個' if len(check_feats) > 3 else ''
-            detail_parts.append(f'<span style="color:#f0c040 !important">{names}{rest}（要確認）</span>')
-        if detail_parts:
-            parts.append('<span style="color:#6a6a80 !important">未取得: </span>' + ' / '.join(detail_parts))
-
-    # 未取得が多い場合は全リストを表示（デバッグ用）
-    if len(missing) > 5:
-        all_names = ', '.join(f'{f}({r})' for f, _, r, *_ in missing)
-        parts.append(f'<br><span style="color:#6a6a80 !important;font-size:0.85em">全未取得: {all_names}</span>')
+        names = ', '.join(f for f, _ in missing[:5])
+        rest = f' 他{len(missing)-5}個' if len(missing) > 5 else ''
+        parts.append(f'<span style="color:#f0c040 !important">未取得: {names}{rest}</span>')
 
     html = '<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
     html += ' | '.join(parts)
