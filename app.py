@@ -3146,39 +3146,63 @@ _LEGIT_ZERO_FEATURES = {
     'prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff',
     'prev_agari_relative', 'wood_count_2w', 'total_training_count',
     'location_enc', 'rest_category', 'dist_cat',
+    # 正当にゼロになりうる追加特徴量
+    'prev_prize',        # netkeibaスクレイピングでは常に0
+    'top3_count_3r',     # 直近3走で3着以内がない場合0
+    'course_enc',        # 札幌=0
+    'weight_cat',        # 軽量馬(<=440kg)=0
+    'weight_cat_dist',   # weight_cat=0かつdist_cat=0の場合
+    'surface_dist_enc',  # 芝(0)×スプリント(0)の場合
+    'course_surface',    # 札幌(0)×芝(0)の場合
+}
+
+# オンライン予測では取得不可の特徴量（学習データからのみ計算可能）
+# サマリーのtotalから除外し、フォールバック値(0)を使用
+_FALLBACK_ONLY_FEATURES = {
+    'training_time_filled', 'has_training', 'training_per_dist',
+    'jockey_surface_wr',
+    'horse_career_races', 'horse_career_wr', 'horse_career_top3r',
+    'sire_surface_wr', 'sire_dist_wr', 'bms_surface_wr',
+    'wood_best_4f_filled', 'has_wood_training',
+    'prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff',
+    'prev_agari_relative', 'wood_count_2w',
+    'sakaro_best_4f_filled', 'sakaro_best_3f_filled', 'has_sakaro_training',
+    'total_training_count',
+    'horse_dist_top3r', 'horse_surface_top3r', 'frame_course_dist_wr',
 }
 
 def get_feature_summary(df, use_features):
     """特徴量の取得状況サマリーを生成
 
     df[f]=0 フォールバック適用前に呼ぶこと。
+    _FALLBACK_ONLY_FEATURES はtotalから除外（オンラインでは取得不可）。
     カラムが存在しない → 未取得。
     カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外は未取得。
     カラムが存在し非ゼロ値あり → 取得済み。
 
     Returns:
         dict: {
-            'total': int, 'acquired': int,
+            'total': int, 'acquired': int, 'fallback_count': int,
             'missing': list of (name, impact),  # impact: 'none' or 'check'
-            'ok': bool,  # acquired >= 67
+            'ok': bool,  # acquired >= total の 80%
         }
     """
-    total = len(use_features)
+    # フォールバック特徴量を除外してカウント
+    check_features = [f for f in use_features if f not in _FALLBACK_ONLY_FEATURES]
+    fallback_count = len(use_features) - len(check_features)
+    total = len(check_features)
     missing = []
     acquired = 0
-    for f in use_features:
+    for f in check_features:
         if f not in df.columns:
-            # カラムが存在しない = 実際に未取得
             impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
             missing.append((f, impact))
         else:
             vals = pd.to_numeric(df[f], errors='coerce')
             if vals.isna().all():
-                # 全NaN = 未取得
                 impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
                 missing.append((f, impact))
             elif (vals == 0).all() and f not in _LEGIT_ZERO_FEATURES:
-                # 全ゼロだが正当にゼロにならない特徴量 = 未取得の可能性
                 impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
                 missing.append((f, impact))
             else:
@@ -3186,8 +3210,9 @@ def get_feature_summary(df, use_features):
     return {
         'total': total,
         'acquired': acquired,
+        'fallback_count': fallback_count,
         'missing': missing,
-        'ok': acquired >= 67,
+        'ok': acquired >= total * 0.8,
     }
 
 def render_feature_summary(summary):
@@ -3195,6 +3220,7 @@ def render_feature_summary(summary):
     acq = summary['acquired']
     total = summary['total']
     missing = summary['missing']
+    fallback = summary.get('fallback_count', 0)
 
     if summary['ok']:
         color = '#4ade80'
@@ -3204,6 +3230,9 @@ def render_feature_summary(summary):
         color = '#ff4060'
         icon = '&#9888;&#65039;'
         status = f'{icon} 特徴量: {acq}/{total} 予測精度低下の可能性'
+
+    if fallback > 0:
+        status += f' <span style="color:#6a6a80 !important">(+{fallback}個はデフォルト値使用)</span>'
 
     parts = [f'<span style="color:{color} !important">{status}</span>']
 
