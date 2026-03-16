@@ -3194,25 +3194,28 @@ def get_feature_summary(df, use_features):
     total = len(check_features)
     missing = []
     acquired = 0
+    acquired_list = []
     for f in check_features:
         if f not in df.columns:
             impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-            missing.append((f, impact))
+            missing.append((f, impact, 'no_col'))
         else:
             vals = pd.to_numeric(df[f], errors='coerce')
             if vals.isna().all():
                 impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-                missing.append((f, impact))
+                missing.append((f, impact, 'all_nan'))
             elif (vals == 0).all() and f not in _LEGIT_ZERO_FEATURES:
                 impact = 'none' if f in _ZERO_IMPORTANCE_FEATURES else 'check'
-                missing.append((f, impact))
+                missing.append((f, impact, 'all_zero'))
             else:
                 acquired += 1
+                acquired_list.append(f)
     return {
         'total': total,
         'acquired': acquired,
         'fallback_count': fallback_count,
         'missing': missing,
+        'acquired_list': acquired_list,
         'ok': acquired >= total * 0.8,
     }
 
@@ -3238,8 +3241,8 @@ def render_feature_summary(summary):
     parts = [f'<span style="color:{color} !important">{status}</span>']
 
     if missing:
-        none_feats = [f for f, imp in missing if imp == 'none']
-        check_feats = [f for f, imp in missing if imp == 'check']
+        none_feats = [f for f, imp, *_ in missing if imp == 'none']
+        check_feats = [f for f, imp, *_ in missing if imp == 'check']
         detail_parts = []
         if none_feats:
             names = ', '.join(none_feats[:3])
@@ -3251,6 +3254,11 @@ def render_feature_summary(summary):
             detail_parts.append(f'<span style="color:#f0c040 !important">{names}{rest}（要確認）</span>')
         if detail_parts:
             parts.append('<span style="color:#6a6a80 !important">未取得: </span>' + ' / '.join(detail_parts))
+
+    # 未取得が多い場合は全リストを表示（デバッグ用）
+    if len(missing) > 5:
+        all_names = ', '.join(f'{f}({r})' for f, _, r, *_ in missing)
+        parts.append(f'<br><span style="color:#6a6a80 !important;font-size:0.85em">全未取得: {all_names}</span>')
 
     html = '<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
     html += ' | '.join(parts)
