@@ -31,11 +31,14 @@ CONDITION_PROFILES = {
         'bet_label': '三連複7点',
         'bet_detail': 'TOP1軸-TOP2,3-TOP2~6',
         'investment': 700,
-        'roi': 205.3,      # 実配当ROI (JRA公式)
+        'roi': 205.3,      # 実配当ROI (JRA公式) WF 2020-2025
         'roi_estimated': 439.6,  # 推定ROI (参考値)
         'hit_rate': 44.5,
         'recommended': True,
         'wf_n': 6438,
+        # OOS 2023-2025 格付け (Train 2010-2022)
+        'oos_trio_roi': 210.9, 'oos_umaren_roi': 154.3, 'oos_wide_roi': 135.9,
+        'oos_n': 3204, 'oos_stars': 3, 'oos_rating': '強く推奨',
     },
     'B': {
         'label': '条件B',
@@ -49,6 +52,8 @@ CONDITION_PROFILES = {
         'hit_rate': 45.2,
         'recommended': True,
         'wf_n': 847,
+        'oos_trio_roi': 209.9, 'oos_umaren_roi': 181.7, 'oos_wide_roi': 157.9,
+        'oos_n': 395, 'oos_stars': 3, 'oos_rating': '強く推奨',
     },
     'C': {
         'label': '条件C',
@@ -62,6 +67,8 @@ CONDITION_PROFILES = {
         'hit_rate': 33.7,
         'recommended': True,
         'wf_n': 4774,
+        'oos_trio_roi': 279.4, 'oos_umaren_roi': 199.6, 'oos_wide_roi': 166.0,
+        'oos_n': 2473, 'oos_stars': 3, 'oos_rating': '強く推奨',
     },
     'D': {
         'label': '条件D',
@@ -75,6 +82,8 @@ CONDITION_PROFILES = {
         'hit_rate': 27.0,
         'recommended': True,
         'wf_n': 7254,
+        'oos_trio_roi': 145.9, 'oos_umaren_roi': 129.2, 'oos_wide_roi': 120.2,
+        'oos_n': 3572, 'oos_stars': 3, 'oos_rating': '強く推奨',
     },
     'E': {
         'label': '条件E',
@@ -88,6 +97,8 @@ CONDITION_PROFILES = {
         'hit_rate': 53.4,
         'recommended': True,
         'wf_n': 461,
+        'oos_trio_roi': 97.2, 'oos_umaren_roi': 118.8, 'oos_wide_roi': 108.6,
+        'oos_n': 267, 'oos_stars': 2, 'oos_rating': '推奨',
     },
     'X': {
         'label': '条件外',
@@ -101,10 +112,126 @@ CONDITION_PROFILES = {
         'hit_rate': 35.5,
         'recommended': True,
         'wf_n': 805,
+        'oos_trio_roi': 260.7, 'oos_umaren_roi': 186.2, 'oos_wide_roi': 173.6,
+        'oos_n': 379, 'oos_stars': 3, 'oos_rating': '強く推奨',
     },
 }
 
 
+def render_condition_rating_badge(cond_profile):
+    """条件格付けバッジをHTML生成。OOS(2023-2025)バックテスト結果に基づく。"""
+    stars = cond_profile.get('oos_stars', 0)
+    rating = cond_profile.get('oos_rating', '')
+    oos_n = cond_profile.get('oos_n', 0)
+    trio_roi = cond_profile.get('oos_trio_roi', 0)
+    uma_roi = cond_profile.get('oos_umaren_roi', 0)
+    wide_roi = cond_profile.get('oos_wide_roi', 0)
+
+    if stars >= 3:
+        bg = 'linear-gradient(90deg,#1a3a2a,#0a2a1a)'
+        border_c = '#2ecc40'
+        star_c = '#2ecc40'
+        star_txt = '<span style="letter-spacing:2px;">&#9733;&#9733;&#9733;</span>'
+    elif stars == 2:
+        bg = 'linear-gradient(90deg,#2a2a0a,#1a2a0a)'
+        border_c = '#f0c040'
+        star_c = '#f0c040'
+        star_txt = '<span style="letter-spacing:2px;">&#9733;&#9733;</span>'
+    elif stars == 1:
+        bg = 'linear-gradient(90deg,#2a1a0a,#1a1a0a)'
+        border_c = '#e67e22'
+        star_c = '#e67e22'
+        star_txt = '<span style="letter-spacing:2px;">&#9733;</span>'
+    else:
+        bg = 'linear-gradient(90deg,#2a0a0a,#1a0a0a)'
+        border_c = '#ff4060'
+        star_c = '#ff4060'
+        star_txt = '<span style="color:#ff4060 !important;">&#9888; 非推奨</span>'
+
+    def roi_color(v):
+        if v >= 120: return '#2ecc40'
+        if v >= 100: return '#f0c040'
+        if v >= 80: return '#e67e22'
+        return '#ff4060'
+
+    html = f'<div style="margin:6px 0;padding:10px 14px;background:{bg};border:1px solid {border_c};border-radius:10px;">'
+    html += f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">'
+    html += f'<span style="font-size:1.1em;color:{star_c} !important;">{star_txt}</span>'
+    html += f'<span style="font-family:Oswald;font-size:0.85em;color:{star_c} !important;">{rating}</span>'
+    html += f'<span style="font-size:0.72em;color:#6a6a80 !important;">OOS 2023-2025 N={oos_n:,}</span>'
+    html += '</div>'
+    html += f'<div style="display:flex;gap:16px;font-size:0.78em;font-family:Oswald;">'
+    html += f'<span style="color:#6a6a80 !important;">trio <span style="color:{roi_color(trio_roi)} !important;">{trio_roi:.1f}%</span></span>'
+    html += f'<span style="color:#6a6a80 !important;">umaren <span style="color:{roi_color(uma_roi)} !important;">{uma_roi:.1f}%</span></span>'
+    html += f'<span style="color:#6a6a80 !important;">wide <span style="color:{roi_color(wide_roi)} !important;">{wide_roi:.1f}%</span></span>'
+    html += '</div></div>'
+    return html
+
+
+# クラス別ROI格付け (OOS 2023-2025, Train 2010-2022)
+CLASS_ROI_RATINGS = {
+    '新馬': {'trio_roi': 259.6, 'umaren_roi': 256.2, 'wide_roi': 176.7, 'stars': 3, 'rating': '強く推奨', 'n': 901, 'best_bet': 'trio'},
+    '未勝利': {'trio_roi': 188.1, 'umaren_roi': 139.3, 'wide_roi': 132.8, 'stars': 3, 'rating': '強く推奨', 'n': 3687, 'best_bet': 'trio'},
+    '1勝': {'trio_roi': 162.5, 'umaren_roi': 148.4, 'wide_roi': 132.6, 'stars': 3, 'rating': '強く推奨', 'n': 2758, 'best_bet': 'trio'},
+    '2勝': {'trio_roi': 210.6, 'umaren_roi': 145.8, 'wide_roi': 136.7, 'stars': 3, 'rating': '強く推奨', 'n': 1384, 'best_bet': 'trio'},
+    '3勝': {'trio_roi': 193.6, 'umaren_roi': 130.0, 'wide_roi': 131.6, 'stars': 3, 'rating': '強く推奨', 'n': 637, 'best_bet': 'trio'},
+    'OP': {'trio_roi': 230.1, 'umaren_roi': 179.4, 'wide_roi': 142.4, 'stars': 3, 'rating': '強く推奨', 'n': 511, 'best_bet': 'trio'},
+    '重賞': {'trio_roi': 455.6, 'umaren_roi': 225.8, 'wide_roi': 173.9, 'stars': 3, 'rating': '強く推奨', 'n': 412, 'best_bet': 'trio'},
+}
+
+
+def classify_race_class(race_name):
+    """レース名からクラスを推定"""
+    name = str(race_name)
+    if 'G1' in name or 'G１' in name: return '重賞'
+    if 'G2' in name or 'G２' in name: return '重賞'
+    if 'G3' in name or 'G３' in name: return '重賞'
+    if '(L)' in name or '（L）' in name or 'リステッド' in name: return 'OP'
+    if '新馬' in name: return '新馬'
+    if '未勝利' in name: return '未勝利'
+    if '1勝' in name or '500万' in name: return '1勝'
+    if '2勝' in name or '1000万' in name: return '2勝'
+    if '3勝' in name or '1600万' in name: return '3勝'
+    if 'オープン' in name or 'OP' in name: return 'OP'
+    return None
+
+
+def render_class_rating_badge(race_class):
+    """クラス別格付けバッジをHTML生成"""
+    if race_class is None or race_class not in CLASS_ROI_RATINGS:
+        return ''
+    cr = CLASS_ROI_RATINGS[race_class]
+    stars = cr['stars']
+    trio_roi = cr['trio_roi']
+    n = cr['n']
+
+    def roi_color(v):
+        if v >= 120: return '#2ecc40'
+        if v >= 100: return '#f0c040'
+        if v >= 80: return '#e67e22'
+        return '#ff4060'
+
+    if stars >= 3:
+        border_c = '#2ecc40'; star_c = '#2ecc40'
+        star_txt = '&#9733;&#9733;&#9733;'
+    elif stars == 2:
+        border_c = '#f0c040'; star_c = '#f0c040'
+        star_txt = '&#9733;&#9733;'
+    elif stars == 1:
+        border_c = '#e67e22'; star_c = '#e67e22'
+        star_txt = '&#9733;'
+    else:
+        border_c = '#ff4060'; star_c = '#ff4060'
+        star_txt = '&#9888; 非推奨'
+
+    html = f'<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;'
+    html += f'border:1px solid {border_c};border-radius:6px;font-size:0.75em;margin-left:4px;">'
+    html += f'<span style="color:{star_c} !important;">{star_txt}</span>'
+    html += f'<span style="color:#b0b8c8 !important;">{race_class}</span>'
+    html += f'<span style="font-family:Oswald;color:{roi_color(trio_roi)} !important;">ROI {trio_roi:.0f}%</span>'
+    html += f'<span style="color:#6a6a80 !important;">N={n}</span>'
+    html += '</span>'
+    return html
 
 
 
@@ -3505,6 +3632,14 @@ def render_track_record_race_list(races):
             st.markdown(f"**レース情報**: {' / '.join(info_parts)}")
             st.markdown(f"**条件 {bet_cond}**: {cond_desc}")
             st.markdown(f"**推奨買い目**: {BET_LABELS.get(bet_type, bet_type)}")
+            if cond_profile:
+                st.markdown(render_condition_rating_badge(cond_profile), unsafe_allow_html=True)
+            # クラス別バッジ
+            tr_race_class = classify_race_class(race_name)
+            if tr_race_class:
+                tr_class_badge = render_class_rating_badge(tr_race_class)
+                if tr_class_badge:
+                    st.markdown(tr_class_badge, unsafe_allow_html=True)
             # 買い目
             bets_raw = r.get(BET_KEYS.get(bet_type, 'trio_bets'), '[]')
             try:
@@ -4486,6 +4621,15 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
     is_recommended = cond_profile['recommended'] and cond_profile['roi'] >= 80
 
+    # 条件格付けバッジ表示
+    st.markdown(render_condition_rating_badge(cond_profile), unsafe_allow_html=True)
+    # クラス別格付けバッジ
+    race_class = classify_race_class(race_info.get('race_name', ''))
+    if race_class:
+        class_badge = render_class_rating_badge(race_class)
+        if class_badge:
+            st.markdown(class_badge, unsafe_allow_html=True)
+
     # ワイド/馬連オッズ取得（オッズ連動投資額振り分け用）
     pair_odds = {}
     bet_type = cond_profile['bet_type']
@@ -5392,7 +5536,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             top3_html += '</div>'
                         top3_html += '</div>'
                         st.markdown(top3_html, unsafe_allow_html=True)
-                    # 条件情報
+                    # 条件情報 + 格付けバッジ
                     cond_p = CONDITION_PROFILES.get(ck, {})
                     is_1000m = ck == 'D' and dist <= 1000
                     if is_1000m:
@@ -5400,6 +5544,14 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                         st.warning("1000m以下：非推奨（WFバックテスト ROI 85.0%, N=534）")
                     else:
                         st.markdown(f"**条件{ck}**: {cond_p.get('desc', '')}　/　**推奨**: {bt_label}")
+                    if cond_p:
+                        st.markdown(render_condition_rating_badge(cond_p), unsafe_allow_html=True)
+                    # クラス別バッジ
+                    batch_race_class = classify_race_class(rname)
+                    if batch_race_class:
+                        batch_class_badge = render_class_rating_badge(batch_race_class)
+                        if batch_class_badge:
+                            st.markdown(batch_class_badge, unsafe_allow_html=True)
                     # 買い目
                     if bets:
                         # フォーメーション構造表示

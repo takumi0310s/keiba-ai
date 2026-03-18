@@ -1,0 +1,1173 @@
+{
+  "generated_at": "2026-03-19 00:36:40",
+  "model": "v9.3_leakfree (Pattern A)",
+  "train_period": "2010-2022",
+  "test_period": "2023-2025",
+  "total_races": 10290,
+  "classes": {
+    "新馬": {
+      "n": 901,
+      "best_bet": "trio",
+      "best_roi": 259.6,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 299,
+        "hit_rate": 33.2,
+        "investment": 630700,
+        "payout": 1637560,
+        "roi": 259.6
+      },
+      "umaren": {
+        "hits": 249,
+        "hit_rate": 27.6,
+        "investment": 630700,
+        "payout": 1616160,
+        "roi": 256.2
+      },
+      "wide": {
+        "hits": 429,
+        "hit_rate": 47.6,
+        "investment": 630700,
+        "payout": 1114645,
+        "roi": 176.7
+      }
+    },
+    "未勝利": {
+      "n": 3687,
+      "best_bet": "trio",
+      "best_roi": 188.1,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 1591,
+        "hit_rate": 43.2,
+        "investment": 2580900,
+        "payout": 4853500,
+        "roi": 188.1
+      },
+      "umaren": {
+        "hits": 1205,
+        "hit_rate": 32.7,
+        "investment": 2580900,
+        "payout": 3596145,
+        "roi": 139.3
+      },
+      "wide": {
+        "hits": 2099,
+        "hit_rate": 56.9,
+        "investment": 2580900,
+        "payout": 3428600,
+        "roi": 132.8
+      }
+    },
+    "1勝": {
+      "n": 2758,
+      "best_bet": "trio",
+      "best_roi": 162.5,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 944,
+        "hit_rate": 34.2,
+        "investment": 1930600,
+        "payout": 3136750,
+        "roi": 162.5
+      },
+      "umaren": {
+        "hits": 693,
+        "hit_rate": 25.1,
+        "investment": 1930600,
+        "payout": 2865170,
+        "roi": 148.4
+      },
+      "wide": {
+        "hits": 1322,
+        "hit_rate": 47.9,
+        "investment": 1930600,
+        "payout": 2560880,
+        "roi": 132.6
+      }
+    },
+    "2勝": {
+      "n": 1384,
+      "best_bet": "trio",
+      "best_roi": 210.6,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 490,
+        "hit_rate": 35.4,
+        "investment": 968800,
+        "payout": 2040440,
+        "roi": 210.6
+      },
+      "umaren": {
+        "hits": 383,
+        "hit_rate": 27.7,
+        "investment": 968800,
+        "payout": 1412880,
+        "roi": 145.8
+      },
+      "wide": {
+        "hits": 686,
+        "hit_rate": 49.6,
+        "investment": 968800,
+        "payout": 1324610,
+        "roi": 136.7
+      }
+    },
+    "3勝": {
+      "n": 637,
+      "best_bet": "trio",
+      "best_roi": 193.6,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 173,
+        "hit_rate": 27.2,
+        "investment": 445900,
+        "payout": 863090,
+        "roi": 193.6
+      },
+      "umaren": {
+        "hits": 134,
+        "hit_rate": 21.0,
+        "investment": 445900,
+        "payout": 579705,
+        "roi": 130.0
+      },
+      "wide": {
+        "hits": 266,
+        "hit_rate": 41.8,
+        "investment": 445900,
+        "payout": 586705,
+        "roi": 131.6
+      }
+    },
+    "OP/リステッド": {
+      "n": 511,
+      "best_bet": "trio",
+      "best_roi": 230.1,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 171,
+        "hit_rate": 33.5,
+        "investment": 357700,
+        "payout": 823080,
+        "roi": 230.1
+      },
+      "umaren": {
+        "hits": 121,
+        "hit_rate": 23.7,
+        "investment": 357700,
+        "payout": 641865,
+        "roi": 179.4
+      },
+      "wide": {
+        "hits": 223,
+        "hit_rate": 43.6,
+        "investment": 357700,
+        "payout": 509320,
+        "roi": 142.4
+      }
+    },
+    "重賞": {
+      "n": 412,
+      "best_bet": "trio",
+      "best_roi": 455.6,
+      "stars": 3,
+      "rating": "★★★",
+      "rating_label": "強く推奨",
+      "recommended": true,
+      "trio": {
+        "hits": 114,
+        "hit_rate": 27.7,
+        "investment": 288400,
+        "payout": 1314020,
+        "roi": 455.6
+      },
+      "umaren": {
+        "hits": 94,
+        "hit_rate": 22.8,
+        "investment": 288400,
+        "payout": 651245,
+        "roi": 225.8
+      },
+      "wide": {
+        "hits": 181,
+        "hit_rate": 43.9,
+        "investment": 288400,
+        "payout": 501585,
+        "roi": 173.9
+      }
+    }
+  },
+  "class_condition_cross": {
+    "2勝_A": {
+      "class_group": "2勝",
+      "condition": "A",
+      "n": 506,
+      "best_bet": "trio",
+      "best_roi": 171.9,
+      "trio": {
+        "hits": 214,
+        "hit_rate": 42.3,
+        "investment": 354200,
+        "payout": 608990,
+        "roi": 171.9
+      },
+      "umaren": {
+        "hits": 162,
+        "hit_rate": 32.0,
+        "investment": 354200,
+        "payout": 457835,
+        "roi": 129.3
+      },
+      "wide": {
+        "hits": 282,
+        "hit_rate": 55.7,
+        "investment": 354200,
+        "payout": 413980,
+        "roi": 116.9
+      }
+    },
+    "2勝_D": {
+      "class_group": "2勝",
+      "condition": "D",
+      "n": 515,
+      "best_bet": "trio",
+      "best_roi": 133.2,
+      "trio": {
+        "hits": 132,
+        "hit_rate": 25.6,
+        "investment": 360500,
+        "payout": 480330,
+        "roi": 133.2
+      },
+      "umaren": {
+        "hits": 111,
+        "hit_rate": 21.6,
+        "investment": 360500,
+        "payout": 426965,
+        "roi": 118.4
+      },
+      "wide": {
+        "hits": 208,
+        "hit_rate": 40.4,
+        "investment": 360500,
+        "payout": 404145,
+        "roi": 112.1
+      }
+    },
+    "3勝_D": {
+      "class_group": "3勝",
+      "condition": "D",
+      "n": 249,
+      "best_bet": "trio",
+      "best_roi": 152.9,
+      "trio": {
+        "hits": 50,
+        "hit_rate": 20.1,
+        "investment": 174300,
+        "payout": 266520,
+        "roi": 152.9
+      },
+      "umaren": {
+        "hits": 49,
+        "hit_rate": 19.7,
+        "investment": 174300,
+        "payout": 191310,
+        "roi": 109.8
+      },
+      "wide": {
+        "hits": 93,
+        "hit_rate": 37.3,
+        "investment": 174300,
+        "payout": 204505,
+        "roi": 117.3
+      }
+    },
+    "重賞_A": {
+      "class_group": "重賞",
+      "condition": "A",
+      "n": 134,
+      "best_bet": "trio",
+      "best_roi": 288.2,
+      "trio": {
+        "hits": 45,
+        "hit_rate": 33.6,
+        "investment": 93800,
+        "payout": 270340,
+        "roi": 288.2
+      },
+      "umaren": {
+        "hits": 35,
+        "hit_rate": 26.1,
+        "investment": 93800,
+        "payout": 125895,
+        "roi": 134.2
+      },
+      "wide": {
+        "hits": 66,
+        "hit_rate": 49.3,
+        "investment": 93800,
+        "payout": 120295,
+        "roi": 128.2
+      }
+    },
+    "OP/リステッド_A": {
+      "class_group": "OP/リステッド",
+      "condition": "A",
+      "n": 194,
+      "best_bet": "trio",
+      "best_roi": 204.9,
+      "trio": {
+        "hits": 67,
+        "hit_rate": 34.5,
+        "investment": 135800,
+        "payout": 278190,
+        "roi": 204.9
+      },
+      "umaren": {
+        "hits": 46,
+        "hit_rate": 23.7,
+        "investment": 135800,
+        "payout": 238385,
+        "roi": 175.5
+      },
+      "wide": {
+        "hits": 89,
+        "hit_rate": 45.9,
+        "investment": 135800,
+        "payout": 187320,
+        "roi": 137.9
+      }
+    },
+    "OP/リステッド_E": {
+      "class_group": "OP/リステッド",
+      "condition": "E",
+      "n": 24,
+      "best_bet": "umaren",
+      "best_roi": 109.2,
+      "trio": {
+        "hits": 20,
+        "hit_rate": 83.3,
+        "investment": 16800,
+        "payout": 12700,
+        "roi": 75.6
+      },
+      "umaren": {
+        "hits": 14,
+        "hit_rate": 58.3,
+        "investment": 16800,
+        "payout": 18340,
+        "roi": 109.2
+      },
+      "wide": {
+        "hits": 20,
+        "hit_rate": 83.3,
+        "investment": 16800,
+        "payout": 16485,
+        "roi": 98.1
+      }
+    },
+    "未勝利_B": {
+      "class_group": "未勝利",
+      "condition": "B",
+      "n": 145,
+      "best_bet": "trio",
+      "best_roi": 174.0,
+      "trio": {
+        "hits": 76,
+        "hit_rate": 52.4,
+        "investment": 101500,
+        "payout": 176560,
+        "roi": 174.0
+      },
+      "umaren": {
+        "hits": 46,
+        "hit_rate": 31.7,
+        "investment": 101500,
+        "payout": 132300,
+        "roi": 130.3
+      },
+      "wide": {
+        "hits": 84,
+        "hit_rate": 57.9,
+        "investment": 101500,
+        "payout": 128380,
+        "roi": 126.5
+      }
+    },
+    "未勝利_A": {
+      "class_group": "未勝利",
+      "condition": "A",
+      "n": 985,
+      "best_bet": "trio",
+      "best_roi": 275.3,
+      "trio": {
+        "hits": 518,
+        "hit_rate": 52.6,
+        "investment": 689500,
+        "payout": 1898530,
+        "roi": 275.3
+      },
+      "umaren": {
+        "hits": 369,
+        "hit_rate": 37.5,
+        "investment": 689500,
+        "payout": 1041740,
+        "roi": 151.1
+      },
+      "wide": {
+        "hits": 627,
+        "hit_rate": 63.7,
+        "investment": 689500,
+        "payout": 988610,
+        "roi": 143.4
+      }
+    },
+    "未勝利_E": {
+      "class_group": "未勝利",
+      "condition": "E",
+      "n": 75,
+      "best_bet": "wide",
+      "best_roi": 99.2,
+      "trio": {
+        "hits": 62,
+        "hit_rate": 82.7,
+        "investment": 52500,
+        "payout": 41980,
+        "roi": 80.0
+      },
+      "umaren": {
+        "hits": 48,
+        "hit_rate": 64.0,
+        "investment": 52500,
+        "payout": 51695,
+        "roi": 98.5
+      },
+      "wide": {
+        "hits": 65,
+        "hit_rate": 86.7,
+        "investment": 52500,
+        "payout": 52080,
+        "roi": 99.2
+      }
+    },
+    "OP/リステッド_C": {
+      "class_group": "OP/リステッド",
+      "condition": "C",
+      "n": 83,
+      "best_bet": "trio",
+      "best_roi": 360.0,
+      "trio": {
+        "hits": 27,
+        "hit_rate": 32.5,
+        "investment": 58100,
+        "payout": 209160,
+        "roi": 360.0
+      },
+      "umaren": {
+        "hits": 18,
+        "hit_rate": 21.7,
+        "investment": 58100,
+        "payout": 109515,
+        "roi": 188.5
+      },
+      "wide": {
+        "hits": 36,
+        "hit_rate": 43.4,
+        "investment": 58100,
+        "payout": 100695,
+        "roi": 173.3
+      }
+    },
+    "3勝_A": {
+      "class_group": "3勝",
+      "condition": "A",
+      "n": 176,
+      "best_bet": "trio",
+      "best_roi": 176.6,
+      "trio": {
+        "hits": 62,
+        "hit_rate": 35.2,
+        "investment": 123200,
+        "payout": 217560,
+        "roi": 176.6
+      },
+      "umaren": {
+        "hits": 44,
+        "hit_rate": 25.0,
+        "investment": 123200,
+        "payout": 171325,
+        "roi": 139.1
+      },
+      "wide": {
+        "hits": 91,
+        "hit_rate": 51.7,
+        "investment": 123200,
+        "payout": 167545,
+        "roi": 136.0
+      }
+    },
+    "3勝_X": {
+      "class_group": "3勝",
+      "condition": "X",
+      "n": 24,
+      "best_bet": "trio",
+      "best_roi": 202.4,
+      "trio": {
+        "hits": 6,
+        "hit_rate": 25.0,
+        "investment": 16800,
+        "payout": 34010,
+        "roi": 202.4
+      },
+      "umaren": {
+        "hits": 3,
+        "hit_rate": 12.5,
+        "investment": 16800,
+        "payout": 10430,
+        "roi": 62.1
+      },
+      "wide": {
+        "hits": 8,
+        "hit_rate": 33.3,
+        "investment": 16800,
+        "payout": 25760,
+        "roi": 153.3
+      }
+    },
+    "2勝_X": {
+      "class_group": "2勝",
+      "condition": "X",
+      "n": 53,
+      "best_bet": "trio",
+      "best_roi": 190.0,
+      "trio": {
+        "hits": 16,
+        "hit_rate": 30.2,
+        "investment": 37100,
+        "payout": 70480,
+        "roi": 190.0
+      },
+      "umaren": {
+        "hits": 9,
+        "hit_rate": 17.0,
+        "investment": 37100,
+        "payout": 23345,
+        "roi": 62.9
+      },
+      "wide": {
+        "hits": 23,
+        "hit_rate": 43.4,
+        "investment": 37100,
+        "payout": 61040,
+        "roi": 164.5
+      }
+    },
+    "2勝_C": {
+      "class_group": "2勝",
+      "condition": "C",
+      "n": 229,
+      "best_bet": "trio",
+      "best_roi": 465.7,
+      "trio": {
+        "hits": 79,
+        "hit_rate": 34.5,
+        "investment": 160300,
+        "payout": 746440,
+        "roi": 465.7
+      },
+      "umaren": {
+        "hits": 66,
+        "hit_rate": 28.8,
+        "investment": 160300,
+        "payout": 427595,
+        "roi": 266.7
+      },
+      "wide": {
+        "hits": 115,
+        "hit_rate": 50.2,
+        "investment": 160300,
+        "payout": 331275,
+        "roi": 206.7
+      }
+    },
+    "OP/リステッド_D": {
+      "class_group": "OP/リステッド",
+      "condition": "D",
+      "n": 179,
+      "best_bet": "umaren",
+      "best_roi": 163.4,
+      "trio": {
+        "hits": 43,
+        "hit_rate": 24.0,
+        "investment": 125300,
+        "payout": 200210,
+        "roi": 159.8
+      },
+      "umaren": {
+        "hits": 34,
+        "hit_rate": 19.0,
+        "investment": 125300,
+        "payout": 204715,
+        "roi": 163.4
+      },
+      "wide": {
+        "hits": 63,
+        "hit_rate": 35.2,
+        "investment": 125300,
+        "payout": 164815,
+        "roi": 131.5
+      }
+    },
+    "重賞_C": {
+      "class_group": "重賞",
+      "condition": "C",
+      "n": 172,
+      "best_bet": "trio",
+      "best_roi": 620.9,
+      "trio": {
+        "hits": 44,
+        "hit_rate": 25.6,
+        "investment": 120400,
+        "payout": 747540,
+        "roi": 620.9
+      },
+      "umaren": {
+        "hits": 38,
+        "hit_rate": 22.1,
+        "investment": 120400,
+        "payout": 268975,
+        "roi": 223.4
+      },
+      "wide": {
+        "hits": 74,
+        "hit_rate": 43.0,
+        "investment": 120400,
+        "payout": 213080,
+        "roi": 177.0
+      }
+    },
+    "3勝_C": {
+      "class_group": "3勝",
+      "condition": "C",
+      "n": 165,
+      "best_bet": "trio",
+      "best_roi": 290.4,
+      "trio": {
+        "hits": 50,
+        "hit_rate": 30.3,
+        "investment": 115500,
+        "payout": 335360,
+        "roi": 290.4
+      },
+      "umaren": {
+        "hits": 34,
+        "hit_rate": 20.6,
+        "investment": 115500,
+        "payout": 194075,
+        "roi": 168.0
+      },
+      "wide": {
+        "hits": 67,
+        "hit_rate": 40.6,
+        "investment": 115500,
+        "payout": 177345,
+        "roi": 153.5
+      }
+    },
+    "1勝_D": {
+      "class_group": "1勝",
+      "condition": "D",
+      "n": 1027,
+      "best_bet": "trio",
+      "best_roi": 149.9,
+      "trio": {
+        "hits": 263,
+        "hit_rate": 25.6,
+        "investment": 718900,
+        "payout": 1077890,
+        "roi": 149.9
+      },
+      "umaren": {
+        "hits": 203,
+        "hit_rate": 19.8,
+        "investment": 718900,
+        "payout": 1028895,
+        "roi": 143.1
+      },
+      "wide": {
+        "hits": 415,
+        "hit_rate": 40.4,
+        "investment": 718900,
+        "payout": 899780,
+        "roi": 125.2
+      }
+    },
+    "2勝_B": {
+      "class_group": "2勝",
+      "condition": "B",
+      "n": 50,
+      "best_bet": "trio",
+      "best_roi": 323.3,
+      "trio": {
+        "hits": 27,
+        "hit_rate": 54.0,
+        "investment": 35000,
+        "payout": 113140,
+        "roi": 323.3
+      },
+      "umaren": {
+        "hits": 17,
+        "hit_rate": 34.0,
+        "investment": 35000,
+        "payout": 52185,
+        "roi": 149.1
+      },
+      "wide": {
+        "hits": 36,
+        "hit_rate": 72.0,
+        "investment": 35000,
+        "payout": 83230,
+        "roi": 237.8
+      }
+    },
+    "重賞_D": {
+      "class_group": "重賞",
+      "condition": "D",
+      "n": 77,
+      "best_bet": "trio",
+      "best_roi": 420.0,
+      "trio": {
+        "hits": 16,
+        "hit_rate": 20.8,
+        "investment": 53900,
+        "payout": 226400,
+        "roi": 420.0
+      },
+      "umaren": {
+        "hits": 14,
+        "hit_rate": 18.2,
+        "investment": 53900,
+        "payout": 209160,
+        "roi": 388.1
+      },
+      "wide": {
+        "hits": 28,
+        "hit_rate": 36.4,
+        "investment": 53900,
+        "payout": 121310,
+        "roi": 225.1
+      }
+    },
+    "1勝_A": {
+      "class_group": "1勝",
+      "condition": "A",
+      "n": 937,
+      "best_bet": "trio",
+      "best_roi": 166.6,
+      "trio": {
+        "hits": 410,
+        "hit_rate": 43.8,
+        "investment": 655900,
+        "payout": 1092680,
+        "roi": 166.6
+      },
+      "umaren": {
+        "hits": 288,
+        "hit_rate": 30.7,
+        "investment": 655900,
+        "payout": 886165,
+        "roi": 135.1
+      },
+      "wide": {
+        "hits": 524,
+        "hit_rate": 55.9,
+        "investment": 655900,
+        "payout": 854000,
+        "roi": 130.2
+      }
+    },
+    "1勝_C": {
+      "class_group": "1勝",
+      "condition": "C",
+      "n": 508,
+      "best_bet": "trio",
+      "best_roi": 174.7,
+      "trio": {
+        "hits": 136,
+        "hit_rate": 26.8,
+        "investment": 355600,
+        "payout": 621230,
+        "roi": 174.7
+      },
+      "umaren": {
+        "hits": 102,
+        "hit_rate": 20.1,
+        "investment": 355600,
+        "payout": 503475,
+        "roi": 141.6
+      },
+      "wide": {
+        "hits": 215,
+        "hit_rate": 42.3,
+        "investment": 355600,
+        "payout": 515165,
+        "roi": 144.9
+      }
+    },
+    "1勝_X": {
+      "class_group": "1勝",
+      "condition": "X",
+      "n": 74,
+      "best_bet": "umaren",
+      "best_roi": 203.9,
+      "trio": {
+        "hits": 16,
+        "hit_rate": 21.6,
+        "investment": 51800,
+        "payout": 75710,
+        "roi": 146.2
+      },
+      "umaren": {
+        "hits": 16,
+        "hit_rate": 21.6,
+        "investment": 51800,
+        "payout": 105595,
+        "roi": 203.9
+      },
+      "wide": {
+        "hits": 28,
+        "hit_rate": 37.8,
+        "investment": 51800,
+        "payout": 65590,
+        "roi": 126.6
+      }
+    },
+    "1勝_B": {
+      "class_group": "1勝",
+      "condition": "B",
+      "n": 137,
+      "best_bet": "umaren",
+      "best_roi": 263.6,
+      "trio": {
+        "hits": 60,
+        "hit_rate": 43.8,
+        "investment": 95900,
+        "payout": 205660,
+        "roi": 214.5
+      },
+      "umaren": {
+        "hits": 49,
+        "hit_rate": 35.8,
+        "investment": 95900,
+        "payout": 252805,
+        "roi": 263.6
+      },
+      "wide": {
+        "hits": 80,
+        "hit_rate": 58.4,
+        "investment": 95900,
+        "payout": 164675,
+        "roi": 171.7
+      }
+    },
+    "1勝_E": {
+      "class_group": "1勝",
+      "condition": "E",
+      "n": 75,
+      "best_bet": "umaren",
+      "best_roi": 168.1,
+      "trio": {
+        "hits": 59,
+        "hit_rate": 78.7,
+        "investment": 52500,
+        "payout": 63580,
+        "roi": 121.1
+      },
+      "umaren": {
+        "hits": 35,
+        "hit_rate": 46.7,
+        "investment": 52500,
+        "payout": 88235,
+        "roi": 168.1
+      },
+      "wide": {
+        "hits": 60,
+        "hit_rate": 80.0,
+        "investment": 52500,
+        "payout": 61670,
+        "roi": 117.5
+      }
+    },
+    "2勝_E": {
+      "class_group": "2勝",
+      "condition": "E",
+      "n": 31,
+      "best_bet": "wide",
+      "best_roi": 142.6,
+      "trio": {
+        "hits": 22,
+        "hit_rate": 71.0,
+        "investment": 21700,
+        "payout": 21060,
+        "roi": 97.1
+      },
+      "umaren": {
+        "hits": 18,
+        "hit_rate": 58.1,
+        "investment": 21700,
+        "payout": 24955,
+        "roi": 115.0
+      },
+      "wide": {
+        "hits": 22,
+        "hit_rate": 71.0,
+        "investment": 21700,
+        "payout": 30940,
+        "roi": 142.6
+      }
+    },
+    "未勝利_X": {
+      "class_group": "未勝利",
+      "condition": "X",
+      "n": 171,
+      "best_bet": "trio",
+      "best_roi": 199.5,
+      "trio": {
+        "hits": 72,
+        "hit_rate": 42.1,
+        "investment": 119700,
+        "payout": 238800,
+        "roi": 199.5
+      },
+      "umaren": {
+        "hits": 54,
+        "hit_rate": 31.6,
+        "investment": 119700,
+        "payout": 202825,
+        "roi": 169.4
+      },
+      "wide": {
+        "hits": 95,
+        "hit_rate": 55.6,
+        "investment": 119700,
+        "payout": 160650,
+        "roi": 134.2
+      }
+    },
+    "新馬_D": {
+      "class_group": "新馬",
+      "condition": "D",
+      "n": 306,
+      "best_bet": "trio",
+      "best_roi": 152.3,
+      "trio": {
+        "hits": 72,
+        "hit_rate": 23.5,
+        "investment": 214200,
+        "payout": 326150,
+        "roi": 152.3
+      },
+      "umaren": {
+        "hits": 50,
+        "hit_rate": 16.3,
+        "investment": 214200,
+        "payout": 170695,
+        "roi": 79.7
+      },
+      "wide": {
+        "hits": 116,
+        "hit_rate": 37.9,
+        "investment": 214200,
+        "payout": 236565,
+        "roi": 110.4
+      }
+    },
+    "未勝利_D": {
+      "class_group": "未勝利",
+      "condition": "D",
+      "n": 1219,
+      "best_bet": "trio",
+      "best_roi": 125.6,
+      "trio": {
+        "hits": 436,
+        "hit_rate": 35.8,
+        "investment": 853300,
+        "payout": 1071380,
+        "roi": 125.6
+      },
+      "umaren": {
+        "hits": 356,
+        "hit_rate": 29.2,
+        "investment": 853300,
+        "payout": 997745,
+        "roi": 116.9
+      },
+      "wide": {
+        "hits": 634,
+        "hit_rate": 52.0,
+        "investment": 853300,
+        "payout": 974960,
+        "roi": 114.3
+      }
+    },
+    "未勝利_C": {
+      "class_group": "未勝利",
+      "condition": "C",
+      "n": 1092,
+      "best_bet": "trio",
+      "best_roi": 186.6,
+      "trio": {
+        "hits": 427,
+        "hit_rate": 39.1,
+        "investment": 764400,
+        "payout": 1426250,
+        "roi": 186.6
+      },
+      "umaren": {
+        "hits": 332,
+        "hit_rate": 30.4,
+        "investment": 764400,
+        "payout": 1169840,
+        "roi": 153.0
+      },
+      "wide": {
+        "hits": 594,
+        "hit_rate": 54.4,
+        "investment": 764400,
+        "payout": 1123920,
+        "roi": 147.0
+      }
+    },
+    "新馬_C": {
+      "class_group": "新馬",
+      "condition": "C",
+      "n": 224,
+      "best_bet": "umaren",
+      "best_roi": 498.1,
+      "trio": {
+        "hits": 67,
+        "hit_rate": 29.9,
+        "investment": 156800,
+        "payout": 750310,
+        "roi": 478.5
+      },
+      "umaren": {
+        "hits": 62,
+        "hit_rate": 27.7,
+        "investment": 156800,
+        "payout": 780990,
+        "roi": 498.1
+      },
+      "wide": {
+        "hits": 102,
+        "hit_rate": 45.5,
+        "investment": 156800,
+        "payout": 411565,
+        "roi": 262.5
+      }
+    },
+    "新馬_A": {
+      "class_group": "新馬",
+      "condition": "A",
+      "n": 272,
+      "best_bet": "umaren",
+      "best_roi": 283.3,
+      "trio": {
+        "hits": 109,
+        "hit_rate": 40.1,
+        "investment": 190400,
+        "payout": 363330,
+        "roi": 190.8
+      },
+      "umaren": {
+        "hits": 99,
+        "hit_rate": 36.4,
+        "investment": 190400,
+        "payout": 539385,
+        "roi": 283.3
+      },
+      "wide": {
+        "hits": 151,
+        "hit_rate": 55.5,
+        "investment": 190400,
+        "payout": 315350,
+        "roi": 165.6
+      }
+    },
+    "新馬_X": {
+      "class_group": "新馬",
+      "condition": "X",
+      "n": 27,
+      "best_bet": "trio",
+      "best_roi": 579.7,
+      "trio": {
+        "hits": 9,
+        "hit_rate": 33.3,
+        "investment": 18900,
+        "payout": 109560,
+        "roi": 579.7
+      },
+      "umaren": {
+        "hits": 9,
+        "hit_rate": 33.3,
+        "investment": 18900,
+        "payout": 79345,
+        "roi": 419.8
+      },
+      "wide": {
+        "hits": 15,
+        "hit_rate": 55.6,
+        "investment": 18900,
+        "payout": 91140,
+        "roi": 482.2
+      }
+    },
+    "新馬_E": {
+      "class_group": "新馬",
+      "condition": "E",
+      "n": 54,
+      "best_bet": "trio",
+      "best_roi": 102.9,
+      "trio": {
+        "hits": 34,
+        "hit_rate": 63.0,
+        "investment": 37800,
+        "payout": 38880,
+        "roi": 102.9
+      },
+      "umaren": {
+        "hits": 24,
+        "hit_rate": 44.4,
+        "investment": 37800,
+        "payout": 36715,
+        "roi": 97.1
+      },
+      "wide": {
+        "hits": 35,
+        "hit_rate": 64.8,
+        "investment": 37800,
+        "payout": 35735,
+        "roi": 94.5
+      }
+    }
+  }
+}
