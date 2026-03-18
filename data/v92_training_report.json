@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-03-19 01:07:05",
+  "total_time_sec": 353.1,
+  "data_sources": {
+    "jra_races_full": {
+      "rows": 774630
+    },
+    "training_times": "used (14d + 7d windows)",
+    "blood_full": "used (sire/BMS aptitude)",
+    "horse_history_full": "expanding window from race data (leak-free)",
+    "jockey_history_full": "expanding window from race data (leak-free)",
+    "trainer_history_full": "expanding window from race data (leak-free)",
+    "odds_history": "NOT used (single snapshot, cannot compute change rate)"
+  },
+  "new_features": [
+    "jockey_dist_wr",
+    "trainer_surface_wr",
+    "trainer_dist_wr",
+    "horse_course_top3r",
+    "sire_dist_apt",
+    "sire_surface_apt",
+    "bms_top3r_static",
+    "wood_best_4f_1w",
+    "sakaro_best_4f_1w"
+  ],
+  "removed_features": [],
+  "baseline": {
+    "pattern_a": {
+      "lgb": 0.80833,
+      "xgb": 0.80929,
+      "ensemble": 0.80969,
+      "n_features": 67
+    },
+    "threshold_a": 0.8095,
+    "threshold_b": 0.846
+  },
+  "enhanced": {
+    "pattern_a": {
+      "lgb": 0.81248,
+      "xgb": 0.81275,
+      "ensemble": 0.81355,
+      "n_features": 76
+    },
+    "pattern_b": {
+      "lgb": 0.84718,
+      "xgb": 0.84736,
+      "ensemble": 0.84764,
+      "n_features": 92
+    }
+  },
+  "improvement_a": 0.00386,
+  "a_improved": true,
+  "b_improved": true,
+  "model_updated": true,
+  "ablation": {
+    "jockey_dist_wr": {
+      "auc_without": 0.81205,
+      "delta": 0.00043,
+      "helps": true
+    },
+    "trainer_surface_wr": {
+      "auc_without": 0.81146,
+      "delta": 0.00102,
+      "helps": true
+    },
+    "trainer_dist_wr": {
+      "auc_without": 0.81183,
+      "delta": 0.00065,
+      "helps": true
+    },
+    "horse_course_top3r": {
+      "auc_without": 0.8112,
+      "delta": 0.00128,
+      "helps": true
+    },
+    "sire_dist_apt": {
+      "auc_without": 0.8109,
+      "delta": 0.00158,
+      "helps": true
+    },
+    "sire_surface_apt": {
+      "auc_without": 0.81113,
+      "delta": 0.00135,
+      "helps": true
+    },
+    "bms_top3r_static": {
+      "auc_without": 0.80991,
+      "delta": 0.00257,
+      "helps": true
+    },
+    "wood_best_4f_1w": {
+      "auc_without": 0.81146,
+      "delta": 0.00102,
+      "helps": true
+    },
+    "sakaro_best_4f_1w": {
+      "auc_without": 0.81173,
+      "delta": 0.00075,
+      "helps": true
+    }
+  },
+  "feature_importance_top20": {
+    "prev_odds_log": 283184.2,
+    "training_time_filled": 153839.9,
+    "prev_prize": 144975.6,
+    "prev_finish": 125749.5,
+    "training_per_dist": 86349.7,
+    "avg_finish_3r": 45893.5,
+    "jockey_course_wr_calc": 43536.8,
+    "num_horses_val": 40737.7,
+    "best_finish_3r": 36986.5,
+    "horse_surface_top3r": 29222.1,
+    "surface_dist_enc": 26518.9,
+    "jockey_surface_wr": 23697.1,
+    "bms_top3r_static": 22669.6,
+    "sire_dist_apt": 22540.8,
+    "prev_pass4": 21519.9,
+    "course_enc": 21342.2,
+    "sire_surface_apt": 20644.3,
+    "horse_career_races": 20635.6,
+    "horse_career_wr": 20331.7,
+    "surface_enc": 19302.3
+  },
+  "odds_dependency": {
+    "total_pct": 73.83,
+    "level": "HIGH"
+  },
+  "condition_backtest_a": {
+    "A": {
+      "n": 2185,
+      "trio_hits": 1056,
+      "hit_rate": 48.3
+    },
+    "B": {
+      "n": 207,
+      "trio_hits": 106,
+      "hit_rate": 51.2
+    },
+    "C": {
+      "n": 1703,
+      "trio_hits": 580,
+      "hit_rate": 34.1
+    },
+    "D": {
+      "n": 2390,
+      "trio_hits": 724,
+      "hit_rate": 30.3
+    },
+    "E": {
+      "n": 196,
+      "trio_hits": 152,
+      "hit_rate": 77.6
+    },
+    "X": {
+      "n": 228,
+      "trio_hits": 84,
+      "hit_rate": 36.8
+    }
+  },
+  "condition_backtest_b": {
+    "A": {
+      "n": 2185,
+      "trio_hits": 1157,
+      "hit_rate": 53.0
+    },
+    "B": {
+      "n": 207,
+      "trio_hits": 97,
+      "hit_rate": 46.9
+    },
+    "C": {
+      "n": 1703,
+      "trio_hits": 644,
+      "hit_rate": 37.8
+    },
+    "D": {
+      "n": 2390,
+      "trio_hits": 862,
+      "hit_rate": 36.1
+    },
+    "E": {
+      "n": 196,
+      "trio_hits": 162,
+      "hit_rate": 82.7
+    },
+    "X": {
+      "n": 228,
+      "trio_hits": 90,
+      "hit_rate": 39.5
+    }
+  }
+}
