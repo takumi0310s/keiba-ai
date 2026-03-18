@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-03-19 01:20:48",
+  "task1_pace_features": {
+    "new_features": [
+      "running_style",
+      "predicted_pace",
+      "pace_advantage",
+      "style_vs_pace"
+    ],
+    "feature_descriptions": {
+      "running_style": "脚質分類 (1=逃げ, 2=先行, 3=差し, 4=追込) - expanding window of pass1",
+      "predicted_pace": "レース予測ペース (0=スロー, 1=ミドル, 2=ハイ) - based on front-runner ratio",
+      "pace_advantage": "ペース有利度 (-2 to +2) - running_style × predicted_pace interaction",
+      "style_vs_pace": "脚質×ペース cross feature (categorical)"
+    },
+    "baseline_auc": {
+      "lgb": 0.8083,
+      "xgb": 0.8093,
+      "ensemble": 0.8097,
+      "n_features": 67
+    },
+    "with_pace_auc": {
+      "lgb": 0.8086,
+      "xgb": 0.8103,
+      "ensemble": 0.8104,
+      "n_features": 71
+    },
+    "improvement": 0.0007,
+    "improved": true,
+    "pace_feature_importance": {
+      "running_style": 3346.2,
+      "predicted_pace": 334.2,
+      "pace_advantage": 621.1,
+      "style_vs_pace": 3602.4
+    },
+    "judgement": "ADOPT"
+  },
+  "task2_specialized_models": {
+    "categories": {
+      "turf_short": "芝短距離(~1400m)",
+      "turf_mid": "芝中距離(1600-2000m)",
+      "turf_long": "芝長距離(2200m~)",
+      "dirt_short": "ダ短距離(~1400m)",
+      "dirt_mid": "ダ中距離(1600-2000m)",
+      "dirt_long": "ダ長距離(2100m~)"
+    },
+    "min_rows_threshold": 5000,
+    "unified_auc_per_category": {
+      "turf_short": 0.7781,
+      "turf_mid": 0.8052,
+      "turf_long": 0.8025,
+      "dirt_short": 0.8112,
+      "dirt_mid": 0.8337,
+      "dirt_long": 0.799
+    },
+    "specialized_results": {
+      "turf_short": {
+        "label": "芝短距離(~1400m)",
+        "n_train": 110454,
+        "n_valid": 14126,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.7742,
+          "xgb": 0.7766,
+          "ensemble": 0.7771
+        },
+        "unified_auc": 0.7781,
+        "diff_vs_unified": -0.001,
+        "beats_unified": false
+      },
+      "turf_mid": {
+        "label": "芝中距離(1600-2000m)",
+        "n_train": 180440,
+        "n_valid": 25591,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.8018,
+          "xgb": 0.8033,
+          "ensemble": 0.8034
+        },
+        "unified_auc": 0.8052,
+        "diff_vs_unified": -0.0018,
+        "beats_unified": false
+      },
+      "turf_long": {
+        "label": "芝長距離(2200m~)",
+        "n_train": 45851,
+        "n_valid": 6769,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.7964,
+          "xgb": 0.7973,
+          "ensemble": 0.7981
+        },
+        "unified_auc": 0.8025,
+        "diff_vs_unified": -0.0044,
+        "beats_unified": false
+      },
+      "dirt_short": {
+        "label": "ダ短距離(~1400m)",
+        "n_train": 157967,
+        "n_valid": 21260,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.8083,
+          "xgb": 0.8104,
+          "ensemble": 0.8105
+        },
+        "unified_auc": 0.8112,
+        "diff_vs_unified": -0.0007,
+        "beats_unified": false
+      },
+      "dirt_mid": {
+        "label": "ダ中距離(1600-2000m)",
+        "n_train": 166335,
+        "n_valid": 24113,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.8294,
+          "xgb": 0.8309,
+          "ensemble": 0.831
+        },
+        "unified_auc": 0.8337,
+        "diff_vs_unified": -0.0027,
+        "beats_unified": false
+      },
+      "dirt_long": {
+        "label": "ダ長距離(2100m~)",
+        "n_train": 19334,
+        "n_valid": 2390,
+        "status": "trained",
+        "specialized_auc": {
+          "lgb": 0.799,
+          "xgb": 0.8011,
+          "ensemble": 0.8018
+        },
+        "unified_auc": 0.799,
+        "diff_vs_unified": 0.0028,
+        "beats_unified": true
+      }
+    },
+    "any_specialized_wins": true,
+    "judgement": "REJECT - unified model preferred (consistent with prior finding)"
+  }
+}
