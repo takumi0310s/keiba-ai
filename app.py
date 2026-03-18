@@ -668,6 +668,284 @@ def get_weekly_analysis():
         d['payout'] += r.get('payout', 0) or 0
     return analysis
 
+def load_dashboard_data():
+    """ダッシュボード用データをCSVとDBから統合ロード"""
+    from datetime import timedelta
+    rows = []
+    # 1) cumulative_results.csv（primary）
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'cumulative_results.csv')
+    if os.path.exists(csv_path):
+        try:
+            df = pd.read_csv(csv_path, encoding='utf-8-sig')
+            for _, r in df.iterrows():
+                if str(r.get('status', '')).strip() != 'settled':
+                    continue
+                date_raw = str(r.get('date', '')).strip()
+                if len(date_raw) == 8:
+                    date_str = f"{date_raw[:4]}-{date_raw[4:6]}-{date_raw[6:8]}"
+                else:
+                    date_str = date_raw[:10]
+                rows.append({
+                    'race_id': str(r.get('race_id', '')),
+                    'date': date_str,
+                    'course': str(r.get('course', '')).strip(),
+                    'race_name': str(r.get('race_name', '')).strip(),
+                    'condition': str(r.get('condition', '')).strip(),
+                    'distance': int(r['distance']) if pd.notna(r.get('distance')) else 0,
+                    'surface': str(r.get('surface', '')).strip(),
+                    'bet_type': str(r.get('bet_type', 'trio')).strip() or 'trio',
+                    'hit': int(r.get('trio_hit', 0) or 0),
+                    'payout': int(r.get('actual_payout') or r.get('trio_payout', 0) or 0),
+                    'investment': INVESTMENT_PER_RACE,
+                })
+        except Exception:
+            pass
+    # 2) SQLite DB（secondary）
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("""
+            SELECT r.race_id, r.race_name, r.predicted_at, r.hit_trio, r.payout,
+                   r.bet_condition, r.bet_type, r.is_nar,
+                   (SELECT course FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as course,
+                   (SELECT race_date FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as race_date,
+                   (SELECT distance FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as distance,
+                   (SELECT surface FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as surface,
+                   (SELECT condition FROM predictions p WHERE p.race_id = r.race_id LIMIT 1) as track_condition
+            FROM race_results r
+            WHERE r.hit_trio IS NOT NULL AND r.is_nar = 0
+            ORDER BY r.predicted_at DESC
+        """)
+        for r in c.fetchall():
+            r = dict(r)
+            rows.append({
+                'race_id': str(r.get('race_id', '')),
+                'date': (r.get('race_date') or r.get('predicted_at', ''))[:10],
+                'course': str(r.get('course', '')).strip(),
+                'race_name': str(r.get('race_name', '')).strip(),
+                'condition': str(r.get('bet_condition', '')).strip(),
+                'distance': int(r.get('distance', 0) or 0),
+                'surface': str(r.get('surface', '')).strip(),
+                'bet_type': str(r.get('bet_type', 'trio')).strip() or 'trio',
+                'hit': int(r.get('hit_trio', 0) or 0),
+                'payout': int(r.get('payout', 0) or 0),
+                'investment': INVESTMENT_PER_RACE,
+            })
+        conn.close()
+    except Exception:
+        pass
+    if not rows:
+        return pd.DataFrame()
+    df = pd.DataFrame(rows)
+    # Deduplicate by race_id (keep last = most complete)
+    df = df.drop_duplicates(subset='race_id', keep='last').reset_index(drop=True)
+    df['profit'] = df['payout'] - df['investment']
+    return df
+
+
+def render_live_dashboard():
+    """リアルタイム成績ダッシュボードを描画"""
+    from datetime import timedelta
+    st.markdown('<div class="sec-title">📊 LIVE DASHBOARD<span class="sec-line"></span></div>', unsafe_allow_html=True)
+
+    df = load_dashboard_data()
+    if df.empty:
+        st.info("データ蓄積中... レース予測・結果登録を行うとダッシュボードが更新されます。")
+        st.caption("予測: `python tools/daily_predict.py` / 結果: `python tools/daily_results.py`")
+        return
+
+    today = datetime.now().date()
+    df['date_parsed'] = pd.to_datetime(df['date'], errors='coerce')
+
+    # === 期間フィルタ ===
+    period = st.radio("期間", ["直近7日", "直近30日", "全期間"], horizontal=True, key="dash_period")
+    if period == "直近7日":
+        cutoff = today - timedelta(days=7)
+        fdf = df[df['date_parsed'] >= pd.Timestamp(cutoff)].copy()
+    elif period == "直近30日":
+        cutoff = today - timedelta(days=30)
+        fdf = df[df['date_parsed'] >= pd.Timestamp(cutoff)].copy()
+    else:
+        fdf = df.copy()
+
+    if fdf.empty:
+        st.warning(f"{period}の結果データがありません。")
+        fdf = df.copy()
+        st.caption("全期間データを表示します。")
+
+    # === KPI カード ===
+    n = len(fdf)
+    hits = int(fdf['hit'].sum())
+    total_inv = int(fdf['investment'].sum())
+    total_pay = int(fdf['payout'].sum())
+    total_profit = total_pay - total_inv
+    roi = total_pay / total_inv * 100 if total_inv > 0 else 0
+    hit_rate = hits / n * 100 if n > 0 else 0
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("レース数", f"{n}")
+    c2.metric("的中数", f"{hits}", f"{hit_rate:.1f}%")
+    c3.metric("投資額", f"¥{total_inv:,}")
+    c4.metric("回収額", f"¥{total_pay:,}")
+    profit_delta = f"+¥{total_profit:,}" if total_profit >= 0 else f"¥{total_profit:,}"
+    c5.metric("ROI", f"{roi:.1f}%", profit_delta)
+
+    st.markdown("---")
+
+    # === 条件別・競馬場別 (2カラム) ===
+    col_left, col_right = st.columns(2)
+
+    with col_left:
+        st.subheader("条件別 的中率・ROI")
+        cond_list = []
+        for ck in ['A', 'B', 'C', 'D', 'E', 'X']:
+            sub = fdf[fdf['condition'] == ck]
+            cn = len(sub)
+            if cn == 0:
+                continue
+            ch = int(sub['hit'].sum())
+            ci = int(sub['investment'].sum())
+            cp = int(sub['payout'].sum())
+            cr = cp / ci * 100 if ci > 0 else 0
+            chr_ = ch / cn * 100 if cn > 0 else 0
+            cond_list.append({'条件': ck, 'N': cn, '的中': ch,
+                              '的中率': round(chr_, 1), 'ROI': round(cr, 1)})
+        if cond_list:
+            cond_df = pd.DataFrame(cond_list)
+            # 棒グラフ: ROI
+            chart_df = cond_df.set_index('条件')[['ROI']].copy()
+            st.bar_chart(chart_df, color='#f0c040')
+            # テーブル
+            display_cond = cond_df.copy()
+            display_cond['的中率'] = display_cond['的中率'].apply(lambda x: f"{x:.1f}%")
+            display_cond['ROI'] = display_cond['ROI'].apply(lambda x: f"{x:.1f}%")
+            st.dataframe(display_cond, use_container_width=True, hide_index=True)
+        else:
+            st.info("データ蓄積中...")
+
+    with col_right:
+        st.subheader("競馬場別 的中率・ROI")
+        venue_list = []
+        for v in sorted(fdf['course'].unique()):
+            if not v or v == 'nan':
+                continue
+            sub = fdf[fdf['course'] == v]
+            vn = len(sub)
+            if vn == 0:
+                continue
+            vh = int(sub['hit'].sum())
+            vi = int(sub['investment'].sum())
+            vp = int(sub['payout'].sum())
+            vr = vp / vi * 100 if vi > 0 else 0
+            vhr = vh / vn * 100 if vn > 0 else 0
+            venue_list.append({'競馬場': v, 'N': vn, '的中': vh,
+                               '的中率': round(vhr, 1), 'ROI': round(vr, 1)})
+        if venue_list:
+            venue_df = pd.DataFrame(venue_list)
+            chart_vdf = venue_df.set_index('競馬場')[['ROI']].copy()
+            st.bar_chart(chart_vdf, color='#2898d8')
+            display_venue = venue_df.copy()
+            display_venue['的中率'] = display_venue['的中率'].apply(lambda x: f"{x:.1f}%")
+            display_venue['ROI'] = display_venue['ROI'].apply(lambda x: f"{x:.1f}%")
+            st.dataframe(display_venue, use_container_width=True, hide_index=True)
+        else:
+            st.info("データ蓄積中...")
+
+    st.markdown("---")
+
+    # === 距離カテゴリ別(クラス代替) ===
+    st.subheader("距離カテゴリ別 的中率・ROI")
+    def dist_cat(d):
+        if d <= 1200: return '短距離(~1200m)'
+        elif d <= 1600: return 'マイル(~1600m)'
+        elif d <= 2000: return '中距離(~2000m)'
+        elif d <= 2400: return '中長距離(~2400m)'
+        else: return '長距離(2400m~)'
+    fdf_dist = fdf.copy()
+    fdf_dist['距離区分'] = fdf_dist['distance'].apply(dist_cat)
+    dist_order = ['短距離(~1200m)', 'マイル(~1600m)', '中距離(~2000m)', '中長距離(~2400m)', '長距離(2400m~)']
+    dist_list = []
+    for dk in dist_order:
+        sub = fdf_dist[fdf_dist['距離区分'] == dk]
+        dn = len(sub)
+        if dn == 0:
+            continue
+        dh = int(sub['hit'].sum())
+        di = int(sub['investment'].sum())
+        dp = int(sub['payout'].sum())
+        dr = dp / di * 100 if di > 0 else 0
+        dhr = dh / dn * 100 if dn > 0 else 0
+        dist_list.append({'距離区分': dk, 'N': dn, '的中': dh,
+                          '的中率': round(dhr, 1), 'ROI': round(dr, 1)})
+    if dist_list:
+        col_dl, col_dr = st.columns([2, 1])
+        dist_df = pd.DataFrame(dist_list)
+        with col_dl:
+            chart_ddf = dist_df.set_index('距離区分')[['ROI']].copy()
+            st.bar_chart(chart_ddf, color='#2ecc40')
+        with col_dr:
+            display_dist = dist_df.copy()
+            display_dist['的中率'] = display_dist['的中率'].apply(lambda x: f"{x:.1f}%")
+            display_dist['ROI'] = display_dist['ROI'].apply(lambda x: f"{x:.1f}%")
+            st.dataframe(display_dist, use_container_width=True, hide_index=True)
+    else:
+        st.info("データ蓄積中...")
+
+    st.markdown("---")
+
+    # === 累積収支推移 ===
+    st.subheader("累積収支推移")
+    daily_df = df.copy()  # Use full data for cumulative chart
+    daily_df = daily_df.sort_values('date').reset_index(drop=True)
+    daily_df['cumulative_profit'] = daily_df['profit'].cumsum()
+    daily_df['cumulative_roi'] = (daily_df['payout'].cumsum() / daily_df['investment'].cumsum() * 100)
+    # Group by date for cleaner chart
+    daily_agg = daily_df.groupby('date').agg(
+        profit=('profit', 'sum'),
+        payout=('payout', 'sum'),
+        investment=('investment', 'sum'),
+        hits=('hit', 'sum'),
+        races=('hit', 'count'),
+    ).reset_index()
+    daily_agg['累積収支'] = daily_agg['profit'].cumsum()
+    daily_agg['累積ROI'] = (daily_agg['payout'].cumsum() / daily_agg['investment'].cumsum() * 100).round(1)
+    daily_agg = daily_agg.set_index('date')
+
+    tab_profit, tab_roi = st.tabs(["収支推移", "ROI推移"])
+    with tab_profit:
+        st.line_chart(daily_agg[['累積収支']], color='#f0c040')
+        last_profit = int(daily_agg['累積収支'].iloc[-1]) if len(daily_agg) > 0 else 0
+        if last_profit >= 0:
+            st.success(f"累積収支: +¥{last_profit:,}")
+        else:
+            st.error(f"累積収支: ¥{last_profit:,}")
+    with tab_roi:
+        st.line_chart(daily_agg[['累積ROI']], color='#2898d8')
+        last_roi = daily_agg['累積ROI'].iloc[-1] if len(daily_agg) > 0 else 0
+        if last_roi >= 100:
+            st.success(f"累積ROI: {last_roi:.1f}%")
+        else:
+            st.warning(f"累積ROI: {last_roi:.1f}%")
+
+    st.markdown("---")
+
+    # === 直近20レース結果一覧 ===
+    st.subheader("直近20レース結果")
+    recent = df.sort_values('date', ascending=False).head(20).copy()
+    recent['結果'] = recent.apply(
+        lambda r: f"{'✅' if r['hit'] else '❌'} {'¥' + str(r['payout']) + ' (+¥' + str(r['payout'] - INVESTMENT_PER_RACE) + ')' if r['hit'] else '-¥' + str(INVESTMENT_PER_RACE)}",
+        axis=1)
+    display_recent = recent[['date', 'course', 'race_name', 'condition', 'bet_type', '結果']].copy()
+    display_recent.columns = ['日付', '場所', 'レース', '条件', '券種', '結果']
+    st.dataframe(display_recent, use_container_width=True, hide_index=True)
+
+    # === データ鮮度 ===
+    latest_date = df['date'].max()
+    total_races = len(df)
+    st.caption(f"データ: {total_races}レース / 最新: {latest_date}")
+
+
 def render_weekly_report(analysis):
     """週次分析レポートをHTML描画"""
     if not analysis:
@@ -3933,6 +4211,16 @@ else:
             warn_html += f'<div style="color:#ff4060 !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
     warn_html += '</div>'
     st.markdown(warn_html, unsafe_allow_html=True)
+
+# ===== サイドバーナビゲーション =====
+with st.sidebar:
+    st.markdown("### KEIBA AI")
+    _nav_page = st.radio("ページ選択", ["🔍 予測", "📊 ダッシュボード"],
+                          key="nav_page", label_visibility="collapsed")
+
+if _nav_page == "📊 ダッシュボード":
+    render_live_dashboard()
+    st.stop()
 
 url_input = st.text_input("netkeibaの出馬表URLを入力（中央競馬専用）")
 
