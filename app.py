@@ -1689,19 +1689,31 @@ else:
 # v9中央/地方モデル
 _v9_models = load_v9_models()
 
-# 特徴量ルックアップテーブル
-@st.cache_resource
-def load_feature_lookups():
+# 特徴量ルックアップテーブル（遅延読み込み）
+_feat_lookups = None
+def get_feature_lookups():
+    global _feat_lookups
+    if _feat_lookups is not None:
+        return _feat_lookups
     try:
+        import gzip as _gzip
         _base = os.path.dirname(os.path.abspath(__file__))
-        lookup_path = os.path.join(_base, 'data', 'feature_lookups.pkl')
-        if os.path.exists(lookup_path):
-            with open(lookup_path, 'rb') as f:
-                return pickle.load(f)
+        # gzip版を優先
+        gz_path = os.path.join(_base, 'data', 'feature_lookups.pkl.gz')
+        if os.path.exists(gz_path):
+            with _gzip.open(gz_path, 'rb') as f:
+                _feat_lookups = pickle.load(f)
+            return _feat_lookups
+        # 非圧縮版フォールバック
+        pkl_path = os.path.join(_base, 'data', 'feature_lookups.pkl')
+        if os.path.exists(pkl_path):
+            with open(pkl_path, 'rb') as f:
+                _feat_lookups = pickle.load(f)
+            return _feat_lookups
     except Exception:
         pass
-    return {}
-_feat_lookups = load_feature_lookups()
+    _feat_lookups = {}
+    return _feat_lookups
 
 def get_model_for_race(is_nar=False, use_live=True):
     """中央競馬モデルを返す。
@@ -5622,7 +5634,7 @@ def _batch_score_race(horses, race_info, is_nar):
             df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
 
         # === V9.2/V9.3特徴量をルックアップから補完 ===
-        lookups = _feat_lookups
+        lookups = get_feature_lookups()
         training_mean = lookups.get('training_mean', 49.0)
         horse_stats_lk = lookups.get('horse_stats', {})
         sire_surf_lk = lookups.get('sire_surface_wr', {})
