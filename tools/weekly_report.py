@@ -261,6 +261,52 @@ def run_weekly_report(end_date_str):
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"\nレポート保存: {out_path}")
+
+    # Markdown保存
+    md_dir = os.path.join(BASE_DIR, "results", "weekly")
+    os.makedirs(md_dir, exist_ok=True)
+    period_str = f"{start_date.strftime('%Y/%m/%d')}-{end_date.strftime('%Y/%m/%d')}"
+    md = f"# KEIBA AI Weekly Report: {period_str}\n\n"
+    md += f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n"
+    md += f"## Summary\n\n"
+    md += f"| Metric | Value |\n|---|---|\n"
+    md += f"| Races | {total_races} |\n"
+    md += f"| Hits | {hit_count}/{total_races} ({hit_rate:.1f}%) |\n"
+    md += f"| Investment | {total_inv:,} JPY |\n"
+    md += f"| Payout | {total_payout:,} JPY |\n"
+    md += f"| P&L | {profit_sign}{total_profit:,} JPY |\n"
+    md += f"| ROI | {roi:.1f}% |\n\n"
+
+    if cond_stats:
+        md += f"## Condition Breakdown\n\n"
+        md += f"| Cond | N | Hit% | ROI | Expected ROI | Status |\n|---|---|---|---|---|---|\n"
+        for c in sorted(cond_stats.keys()):
+            s = cond_stats[c]
+            verdict = 'OK' if s['count'] < 5 or s['hit_rate'] >= s['expected_hit'] * 0.5 else 'WARN'
+            md += f"| {c} | {s['count']} | {s['hit_rate']}% | {s['roi']}% | {s['expected_roi']}% | {verdict} |\n"
+        md += "\n"
+
+    if daily_stats:
+        md += f"## Daily Results\n\n"
+        md += f"| Date | N | Hits | ROI | P&L |\n|---|---|---|---|---|\n"
+        for dt in sorted(daily_stats.keys()):
+            s = daily_stats[dt]
+            profit = s['payout'] - s['investment']
+            ps2 = '+' if profit >= 0 else ''
+            md += f"| {dt} | {s['count']} | {s['hit']} | {s['roi']}% | {ps2}{profit:,} |\n"
+        md += "\n"
+
+    md += f"## Model Health\n\n"
+    md += f"- Version: {model_info['version']}\n"
+    if model_info['pattern_a'] is not None:
+        md += f"- Pattern A AUC: {model_info['pattern_a']:.4f} {'OK' if auc_ok else 'WARNING'}\n"
+    if model_info['pattern_b'] is not None:
+        md += f"- Pattern B AUC: {model_info['pattern_b']:.4f}\n"
+
+    md_path = os.path.join(md_dir, f"{end_date_str}_report.md")
+    with open(md_path, 'w', encoding='utf-8') as f:
+        f.write(md)
+    print(f"Markdown保存: {md_path}")
     print(f"{'=' * 60}")
 
 

@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-03-20 01:11:03",
+  "target_auc": 0.845,
+  "target_dependency": 65.0,
+  "results": {
+    "baseline": {
+      "auc": 0.8460204820866594,
+      "lgb_auc": 0.8455374144876111,
+      "xgb_auc": 0.8459114500287017,
+      "odds_dependency": 74.4,
+      "odds_log_imp": 1079670.7,
+      "pop_rank_imp": 186607.4,
+      "prev_odds_log_imp": 12392.2
+    },
+    "noise_injection": {
+      "auc": 0.8459799783571875,
+      "lgb_auc": 0.845638677090095,
+      "xgb_auc": 0.8456587145210074,
+      "odds_dependency": 73.3,
+      "auc_diff": -0.0
+    },
+    "feature_fraction_down": {
+      "lgb_auc": 0.8455500162453621,
+      "odds_dependency": 66.6,
+      "auc_diff": 0.0
+    },
+    "drop_pop_rank": {
+      "auc": 0.8456374881955329,
+      "lgb_auc": 0.8451001144110025,
+      "xgb_auc": 0.8455470561405338,
+      "odds_dependency": 70.5,
+      "auc_diff": -0.0004,
+      "n_features": 86
+    },
+    "two_stage": {
+      "lgb_auc": 0.8430465203740192,
+      "stage1_auc": 0.809703035948957,
+      "odds_dependency": 27.3,
+      "auc_diff": -0.0025,
+      "stage1_importance": 1784472.1
+    },
+    "combined_noise_reg": {
+      "auc": 0.8457227981019242,
+      "lgb_auc": 0.8451173222335112,
+      "xgb_auc": 0.8456587145210074,
+      "odds_dependency": 68.8,
+      "auc_diff": -0.0003
+    }
+  },
+  "best_method": null,
+  "best_auc": null,
+  "conclusion": "No method met criteria"
+}

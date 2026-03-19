@@ -5419,6 +5419,43 @@ with st.expander("📊 週次分析レポート"):
     else:
         st.info("分析データがありません。レース結果を登録すると、コース/距離/馬場/頭数別の的中率・回収率を自動分析します。")
 
+# ===== 週次・月次レポート生成 =====
+with st.expander("📋 週次・月次レポート生成"):
+    rpt_col1, rpt_col2 = st.columns(2)
+    with rpt_col1:
+        if st.button("📊 週次レポート生成", key="gen_weekly_rpt"):
+            with st.spinner("週次レポート生成中..."):
+                try:
+                    import subprocess
+                    date_str = datetime.now().strftime("%Y%m%d")
+                    result = subprocess.run(
+                        [sys.executable, os.path.join(BASE_DIR, 'tools', 'weekly_report.py'), '--date', date_str],
+                        capture_output=True, text=True, timeout=30
+                    )
+                    if result.returncode == 0:
+                        st.success("週次レポート生成完了")
+                        st.code(result.stdout[-2000:] if len(result.stdout) > 2000 else result.stdout)
+                    else:
+                        st.error(f"エラー: {result.stderr[:500]}")
+                except Exception as e:
+                    st.error(f"実行エラー: {e}")
+    with rpt_col2:
+        if st.button("📈 月次レポート生成", key="gen_monthly_rpt"):
+            with st.spinner("月次レポート生成中..."):
+                try:
+                    import subprocess
+                    result = subprocess.run(
+                        [sys.executable, os.path.join(BASE_DIR, 'tools', 'monthly_report.py')],
+                        capture_output=True, text=True, timeout=60
+                    )
+                    if result.returncode == 0:
+                        st.success("月次レポート生成完了")
+                        st.code(result.stdout[-2000:] if len(result.stdout) > 2000 else result.stdout)
+                    else:
+                        st.error(f"エラー: {result.stderr[:500]}")
+                except Exception as e:
+                    st.error(f"実行エラー: {e}")
+
 # ===== V8 vs V9 バックテスト比較 =====
 with st.expander("🧪 V8 vs V9 Backtest Report"):
     bt_data = load_backtest_report()
@@ -5776,6 +5813,21 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
     if st.session_state.get('batch_results'):
         results = st.session_state['batch_results']
         BET_LABELS_B = {'trio': '三連複', 'umaren': '馬連', 'wide': 'ワイド'}
+        # フィルタ・ソートUI
+        batch_filter_col1, batch_filter_col2 = st.columns(2)
+        with batch_filter_col1:
+            batch_show_mode = st.selectbox("表示モード", ["全レース", "推奨のみ (条件A/B/C/X)"], key="batch_show_mode")
+        with batch_filter_col2:
+            batch_sort = st.selectbox("ソート", ["推奨度順", "レース番号順", "条件別"], key="batch_sort")
+        # フィルタリング
+        if batch_show_mode == "推奨のみ (条件A/B/C/X)":
+            results = [r for r in results if r.get('cond_key') in ('A', 'B', 'C', 'X')]
+        # ソート
+        if batch_sort == "推奨度順":
+            cond_order = {'C': 0, 'X': 1, 'B': 2, 'A': 3, 'D': 4, 'E': 5}
+            results = sorted(results, key=lambda r: cond_order.get(r.get('cond_key', 'E'), 9))
+        elif batch_sort == "条件別":
+            results = sorted(results, key=lambda r: r.get('cond_key', 'Z'))
         # サマリー
         n_total = len(results)
         cond_counts = {}
