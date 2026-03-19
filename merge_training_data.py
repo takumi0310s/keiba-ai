@@ -293,8 +293,7 @@ def main():
                         help='出力CSV (default: data/target_odds_with_training.csv)')
     args = parser.parse_args()
 
-    global OUTPUT_CSV
-    OUTPUT_CSV = args.output
+    output_csv = args.output
 
     print("=" * 60)
     print("  TARGET調教データ結合スクリプト")

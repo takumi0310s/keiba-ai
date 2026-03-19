@@ -1689,6 +1689,19 @@ else:
 # v9中央/地方モデル
 _v9_models = load_v9_models()
 
+# 特徴量ルックアップテーブル
+@st.cache_resource
+def load_feature_lookups():
+    lookup_path = os.path.join(BASE_DIR, 'data', 'feature_lookups.pkl')
+    if os.path.exists(lookup_path):
+        try:
+            with open(lookup_path, 'rb') as f:
+                return pickle.load(f)
+        except Exception:
+            pass
+    return {}
+_feat_lookups = load_feature_lookups()
+
 def get_model_for_race(is_nar=False, use_live=True):
     """中央競馬モデルを返す。
     use_live=True: Pattern B（当日情報込み/実運用）を優先
@@ -5607,6 +5620,81 @@ def _batch_score_race(horses, race_info, is_nar):
         else:
             df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
 
+        # === V9.2/V9.3特徴量をルックアップから補完 ===
+        lookups = _feat_lookups
+        training_mean = lookups.get('training_mean', 49.0)
+        horse_stats_lk = lookups.get('horse_stats', {})
+        sire_surf_lk = lookups.get('sire_surface_wr', {})
+        sire_dist_lk = lookups.get('sire_dist_wr', {})
+        bms_surf_lk = lookups.get('bms_surface_wr', {})
+        jockey_surf_lk = lookups.get('jockey_surface_wr', {})
+        frame_lk = lookups.get('frame_course_dist_wr', {})
+
+        # 調教特徴量
+        if 'training_time_filled' not in df.columns or (df['training_time_filled'] == 0).all():
+            df['training_time_filled'] = training_mean
+            df['has_training'] = 0
+            df['training_per_dist'] = training_mean / max(dist / 200, 1)
+        # 馬キャリア特徴量
+        for idx_h in range(len(df)):
+            hid_str = str(horses[idx_h].get('horse_id', '')) if idx_h < len(horses) else ''
+            hid_int = int(hid_str) if hid_str.isdigit() else 0
+            hs = horse_stats_lk.get(hid_int, {})
+            if hs:
+                if 'horse_career_races' not in df.columns or df.iloc[idx_h].get('horse_career_races', 0) == 0:
+                    df.loc[df.index[idx_h], 'horse_career_races'] = hs.get('career_races', 0)
+                    df.loc[df.index[idx_h], 'horse_career_wr'] = hs.get('career_wr', 0.1)
+                    df.loc[df.index[idx_h], 'horse_career_top3r'] = hs.get('career_top3r', 0.25)
+                dist_cat_val = int(df.iloc[idx_h].get('dist_cat', 2))
+                surf_val = int(df.iloc[idx_h].get('surface_enc', surf_enc))
+                df.loc[df.index[idx_h], 'horse_dist_top3r'] = hs.get('dist_top3', {}).get(dist_cat_val, 0.25)
+                df.loc[df.index[idx_h], 'horse_surface_top3r'] = hs.get('surf_top3', {}).get(surf_val, 0.25)
+        # sire/bms performance
+        for idx_h in range(len(df)):
+            father = str(df.iloc[idx_h].get('父', '') if '父' in df.columns else '')
+            mother_f = str(df.iloc[idx_h].get('母の父', '') if '母の父' in df.columns else '')
+            sv = int(df.iloc[idx_h].get('surface_enc', surf_enc))
+            dc = int(df.iloc[idx_h].get('dist_cat', 2))
+            df.loc[df.index[idx_h], 'sire_surface_wr'] = sire_surf_lk.get((father, sv), 0.1)
+            df.loc[df.index[idx_h], 'sire_dist_wr'] = sire_dist_lk.get((father, dc), 0.1)
+            df.loc[df.index[idx_h], 'bms_surface_wr'] = bms_surf_lk.get((mother_f, sv), 0.1)
+            jn = str(df.iloc[idx_h].get('騎手名', ''))
+            df.loc[df.index[idx_h], 'jockey_surface_wr'] = jockey_surf_lk.get((jn, sv), df.iloc[idx_h].get('騎手勝率', 0.08))
+        # 木/坂路調教
+        if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
+            df['wood_best_4f_filled'] = 52.0
+            df['has_wood_training'] = 0
+            df['wood_count_2w'] = 0
+            df['sakaro_best_4f_filled'] = 53.0
+            df['sakaro_best_3f_filled'] = 39.0
+            df['has_sakaro_training'] = 0
+            df['total_training_count'] = 0
+        # ペース/ラップ特徴量
+        if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
+            df['prev_race_first3f'] = 35.0
+            df['prev_race_last3f'] = 35.5
+            df['prev_race_pace_diff'] = 0.5
+            df['prev_agari_relative'] = 0.0
+        # 枠有利度
+        ce = int(df.iloc[0].get('course_enc', df.iloc[0].get('競馬場コード_enc', 0)))
+        for idx_h in range(len(df)):
+            br = float(df.iloc[idx_h].get('bracket', df.iloc[idx_h].get('枠番', 4)))
+            dc = float(df.iloc[idx_h].get('dist_cat', 2))
+            df.loc[df.index[idx_h], 'frame_course_dist_wr'] = frame_lk.get((float(ce), dc, br), 0.08)
+        # ペース特徴量
+        if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
+            for idx_h in range(len(df)):
+                pass_avg = float(df.iloc[idx_h].get('通過順平均', 5.0) if '通過順平均' in df.columns else 5.0)
+                rs = 1 if pass_avg <= 2 else (2 if pass_avg <= 5 else (3 if pass_avg <= 10 else 4))
+                df.loc[df.index[idx_h], 'running_style'] = float(rs)
+            n_front = (df['running_style'] <= 2).sum()
+            front_ratio = n_front / max(num_h, 1)
+            pace = 0 if front_ratio < 0.2 else (2 if front_ratio > 0.4 else 1)
+            df['predicted_pace'] = float(pace)
+            adv_map = {(0,1):2,(0,2):1,(0,3):-1,(0,4):-2,(1,1):0,(1,2):0.5,(1,3):0.5,(1,4):0,(2,1):-2,(2,2):-1,(2,3):1,(2,4):2}
+            df['pace_advantage'] = df['running_style'].apply(lambda s: adv_map.get((pace, int(s)), 0.0))
+            df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
+
         # === Pattern B 当日特徴量 ===
         if b_live:
             df['weight_change'] = df['場体重増減'].fillna(0)
@@ -5625,7 +5713,7 @@ def _batch_score_race(horses, race_info, is_nar):
             df['wind_speed'] = 0
             df['precipitation'] = 0
 
-        # === モデル予測 ===
+        # === モデル予測（フルアンサンブル: LGB+XGB+CatBoost） ===
         use_features = b_feats if b_feats else FEATURES
         feat_summary = get_feature_summary(df, use_features)
         for f in use_features:
@@ -5636,11 +5724,40 @@ def _batch_score_race(horses, race_info, is_nar):
         use_model = b_model if (b_model is not None and b_mt != 'default') else model
         if use_model is None:
             return None
+        # LGB prediction
         if hasattr(use_model, 'predict_proba'):
             proba = use_model.predict_proba(X)
             ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
         else:
             ai_scores = use_model.predict(X)
+        # XGB + CatBoost ensemble (if available)
+        ens_w = b_md.get('ensemble_weights', {}) if isinstance(b_md, dict) else {}
+        xgb_m = b_md.get('xgb_model') if isinstance(b_md, dict) else None
+        cb_m = b_md.get('cb_model') if isinstance(b_md, dict) else None
+        if xgb_m is not None or cb_m is not None:
+            w_lgb = ens_w.get('lgb', 0.5)
+            w_xgb = ens_w.get('xgb', 0.3)
+            w_cb = ens_w.get('cb', 0.2)
+            total_w = w_lgb + w_xgb + w_cb
+            combined = ai_scores * (w_lgb / total_w)
+            if xgb_m is not None:
+                try:
+                    import xgboost as xgb_lib
+                    xgb_pred = xgb_m.predict(xgb_lib.DMatrix(X))
+                    combined += xgb_pred * (w_xgb / total_w)
+                except Exception:
+                    combined += ai_scores * (w_xgb / total_w)
+            else:
+                combined += ai_scores * (w_xgb / total_w)
+            if cb_m is not None:
+                try:
+                    cb_pred = cb_m.predict_proba(X)[:, 1]
+                    combined += cb_pred * (w_cb / total_w)
+                except Exception:
+                    combined += ai_scores * (w_cb / total_w)
+            else:
+                combined += ai_scores * (w_cb / total_w)
+            ai_scores = combined
 
         # === スコア計算 ===
         pop_scores = df['人気傾向'].values if '人気傾向' in df.columns else np.full(num_h, 0.5)
