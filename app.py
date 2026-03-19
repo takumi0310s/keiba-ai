@@ -3575,61 +3575,62 @@ _LEGIT_ZERO_FEATURES = {
 def get_feature_summary(df, use_features):
     """特徴量の取得状況サマリーを生成
 
-    カラムが存在しない特徴量 → デフォルト値使用（学習専用）として除外。
     カラムが存在し非ゼロ値あり → 取得済み。
-    カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外は未取得。
+    カラムが存在するが全値ゼロ → _LEGIT_ZERO_FEATURES なら取得済み、それ以外はゼロ埋め。
+    カラムが存在しない → デフォルト値で補完予定。
     """
-    default_count = 0  # カラムが存在しない = デフォルト値使用
     acquired = 0
-    missing = []  # (name, reason) — reason: 'all_zero' or 'all_nan'
+    zero_filled = []   # (name, reason) — ゼロ埋めされた特徴量
+    default_filled = []  # カラム未存在 → デフォルト値で補完
     for f in use_features:
         if f not in df.columns:
-            default_count += 1
+            default_filled.append(f)
         else:
             vals = pd.to_numeric(df[f], errors='coerce')
             if vals.isna().all():
-                missing.append((f, 'all_nan'))
+                zero_filled.append((f, 'all_nan'))
             elif (vals == 0).all() and f not in _LEGIT_ZERO_FEATURES:
-                missing.append((f, 'all_zero'))
+                zero_filled.append((f, 'all_zero'))
             else:
                 acquired += 1
-    check_total = acquired + len(missing)  # カラムが存在する特徴量のみ
+    total = len(use_features)
     return {
-        'total': check_total,
+        'total': total,
         'acquired': acquired,
-        'default_count': default_count,
-        'missing': missing,
-        'ok': check_total == 0 or acquired >= check_total * 0.8,
+        'default_count': len(default_filled),
+        'default_filled': default_filled,
+        'missing': zero_filled,
+        'ok': acquired >= total * 0.5,
     }
 
 def render_feature_summary(summary):
     """特徴量サマリーのHTML文字列を生成"""
-    acq = summary['acquired']
-    total = summary['total']
-    missing = summary['missing']
+    acq = summary.get('acquired', 0)
+    total = summary.get('total', 0)
+    missing = summary.get('missing', [])
     default_count = summary.get('default_count', 0)
+    default_filled = summary.get('default_filled', [])
 
-    if summary['ok']:
+    if total == 0:
+        return ''
+
+    n_zero = len(missing)
+
+    if summary.get('ok', True) and n_zero == 0:
         color = '#4ade80'
-        icon = '&#10004;'
-        status = f'特徴量: {acq}/{total}取得済み {icon}'
+        status = f'特徴量: {acq}/{total}取得済み &#10004;'
+    elif summary.get('ok', True):
+        color = '#f0c040'
+        status = f'特徴量: {acq}/{total}取得済み &#9888;&#65039;（{n_zero}個がゼロ）'
     else:
         color = '#ff4060'
-        icon = '&#9888;&#65039;'
-        status = f'{icon} 特徴量: {acq}/{total} 予測精度低下の可能性'
+        status = f'&#9888;&#65039; 特徴量: {acq}/{total} 予測精度低下の可能性（{n_zero}個がゼロ）'
 
     if default_count > 0:
-        status += f' <span style="color:#6a6a80 !important">(+{default_count}個は学習専用・デフォルト値)</span>'
+        status += f' <span style="color:#6a6a80 !important">(+{default_count}個はデフォルト値で補完)</span>'
 
-    parts = [f'<span style="color:{color} !important">{status}</span>']
-
-    if missing:
-        names = ', '.join(f for f, _ in missing[:5])
-        rest = f' 他{len(missing)-5}個' if len(missing) > 5 else ''
-        parts.append(f'<span style="color:#f0c040 !important">未取得: {names}{rest}</span>')
-
-    html = '<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
-    html += ' | '.join(parts)
+    html = f'<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
+    html += f'<span style="color:{color} !important">{status}</span>'
     html += '</div>'
     return html
 
@@ -4930,8 +4931,22 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
     # 特徴量サマリー表示（session_stateから復元）
-    _feat_summary = st.session_state.get('pred_feat_summary', {'total': 0, 'acquired': 0, 'default_count': 0, 'missing': [], 'ok': True})
-    st.markdown(render_feature_summary(_feat_summary), unsafe_allow_html=True)
+    _feat_summary = st.session_state.get('pred_feat_summary', {'total': 0, 'acquired': 0, 'default_count': 0, 'default_filled': [], 'missing': [], 'ok': True})
+    _fs_html = render_feature_summary(_feat_summary)
+    if _fs_html:
+        st.markdown(_fs_html, unsafe_allow_html=True)
+    _fs_zero = _feat_summary.get('missing', [])
+    _fs_default = _feat_summary.get('default_filled', [])
+    if _fs_zero or _fs_default:
+        with st.expander(f"特徴量詳細（ゼロ: {len(_fs_zero)}個 / デフォルト: {len(_fs_default)}個）", expanded=False):
+            if _fs_zero:
+                st.markdown("**ゼロ埋めされた特徴量:**")
+                for name, reason in _fs_zero:
+                    st.markdown(f"- `{name}` ({reason})")
+            if _fs_default:
+                st.markdown("**デフォルト値で補完された特徴量:**")
+                for name in _fs_default:
+                    st.markdown(f"- `{name}`")
     # 条件別買い目自動切替（統合表示）
     is_nar_pred = st.session_state.get('pred_is_nar', False)
     cond_key, cond_profile = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
