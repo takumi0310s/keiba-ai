@@ -4809,6 +4809,7 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_pattern_a_auc'] = pattern_a_auc
     st.session_state['pred_jra_track'] = jra_track_info
     st.session_state['pred_weather'] = weather_info
+    st.session_state['pred_feat_summary'] = _feat_summary
 
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
@@ -4928,7 +4929,8 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     max_score = df['スコア'].max()
     for _, row in df.head(3).iterrows():
         st.markdown(render_horse_card(int(row['AI順位']), row, max_score, rank_map), unsafe_allow_html=True)
-    # 特徴量サマリー表示（フォールバック前に計算済み）
+    # 特徴量サマリー表示（session_stateから復元）
+    _feat_summary = st.session_state.get('pred_feat_summary', {'total': 0, 'acquired': 0, 'default_count': 0, 'missing': [], 'ok': True})
     st.markdown(render_feature_summary(_feat_summary), unsafe_allow_html=True)
     # 条件別買い目自動切替（統合表示）
     is_nar_pred = st.session_state.get('pred_is_nar', False)
