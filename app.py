@@ -1692,13 +1692,14 @@ _v9_models = load_v9_models()
 # 特徴量ルックアップテーブル
 @st.cache_resource
 def load_feature_lookups():
-    lookup_path = os.path.join(BASE_DIR, 'data', 'feature_lookups.pkl')
-    if os.path.exists(lookup_path):
-        try:
+    try:
+        _base = os.path.dirname(os.path.abspath(__file__))
+        lookup_path = os.path.join(_base, 'data', 'feature_lookups.pkl')
+        if os.path.exists(lookup_path):
             with open(lookup_path, 'rb') as f:
                 return pickle.load(f)
-        except Exception:
-            pass
+    except Exception:
+        pass
     return {}
 _feat_lookups = load_feature_lookups()
 
@@ -5442,7 +5443,7 @@ with st.expander("📋 週次・月次レポート生成"):
                     import subprocess
                     date_str = datetime.now().strftime("%Y%m%d")
                     result = subprocess.run(
-                        [sys.executable, os.path.join(BASE_DIR, 'tools', 'weekly_report.py'), '--date', date_str],
+                        [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools', 'weekly_report.py'), '--date', date_str],
                         capture_output=True, text=True, timeout=30
                     )
                     if result.returncode == 0:
@@ -5458,7 +5459,7 @@ with st.expander("📋 週次・月次レポート生成"):
                 try:
                     import subprocess
                     result = subprocess.run(
-                        [sys.executable, os.path.join(BASE_DIR, 'tools', 'monthly_report.py')],
+                        [sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools', 'monthly_report.py')],
                         capture_output=True, text=True, timeout=60
                     )
                     if result.returncode == 0:
