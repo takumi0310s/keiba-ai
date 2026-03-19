@@ -1638,26 +1638,22 @@ def load_model():
 
 @st.cache_resource(ttl=3600)
 def load_v9_models():
-    """v9中央モデル（Pattern A + Pattern B）を読み込み"""
-    import os
+    """v9中央モデル（Pattern A + Pattern B）を読み込み。gz優先。"""
+    import os, gzip as _gzip
     base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'central_live': None}
-    # Pattern A（リークフリー/バックテスト評価用）
-    fpath = os.path.join(base, 'keiba_model_v9_central.pkl')
-    if os.path.exists(fpath):
-        try:
-            with open(fpath, 'rb') as f:
-                models['central'] = pickle.load(f)
-        except Exception as e:
-            st.warning(f"Pattern Aモデル読み込みエラー: {e}")
-    # Pattern B（当日情報込み/実運用予測用）
-    fpath_live = os.path.join(base, 'keiba_model_v9_central_live.pkl')
-    if os.path.exists(fpath_live):
-        try:
-            with open(fpath_live, 'rb') as f:
-                models['central_live'] = pickle.load(f)
-        except Exception as e:
-            st.warning(f"Pattern Bモデル読み込みエラー: {e}")
+    for key, fname in [('central', 'keiba_model_v9_central'),
+                       ('central_live', 'keiba_model_v9_central_live')]:
+        for ext, opener in [('.pkl.gz', lambda p: _gzip.open(p, 'rb')),
+                            ('.pkl', lambda p: open(p, 'rb'))]:
+            fpath = os.path.join(base, fname + ext)
+            if os.path.exists(fpath):
+                try:
+                    with opener(fpath) as f:
+                        models[key] = pickle.load(f)
+                    break
+                except Exception as e:
+                    st.warning(f"{fname}{ext} 読み込みエラー: {e}")
     return models
 
 @st.cache_resource

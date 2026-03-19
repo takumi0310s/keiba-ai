@@ -21,8 +21,10 @@ data/feature_lookups.pkl
 data/jra_payouts.csv
 data/jra_payout_progress.json
 
-# Large files not needed on Streamlit Cloud
+# Large files not needed on Streamlit Cloud (use .pkl.gz versions)
 keiba_model_v8.pkl
+keiba_model_v9_central.pkl
+keiba_model_v9_central_live.pkl
 keiba_model_v92b_central.pkl
 backtest_leakfree_results.json
 backtest_results_5year.json
