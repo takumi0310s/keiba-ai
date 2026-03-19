@@ -1695,18 +1695,16 @@ def get_feature_lookups():
     try:
         import gzip as _gzip
         _base = os.path.dirname(os.path.abspath(__file__))
-        # gzip版を優先
-        gz_path = os.path.join(_base, 'data', 'feature_lookups.pkl.gz')
-        if os.path.exists(gz_path):
-            with _gzip.open(gz_path, 'rb') as f:
-                _feat_lookups = pickle.load(f)
-            return _feat_lookups
-        # 非圧縮版フォールバック
-        pkl_path = os.path.join(_base, 'data', 'feature_lookups.pkl')
-        if os.path.exists(pkl_path):
-            with open(pkl_path, 'rb') as f:
-                _feat_lookups = pickle.load(f)
-            return _feat_lookups
+        # lite版 → フル版gz → フル版pkl の優先順
+        for candidate in ['data/feature_lookups_lite.pkl.gz',
+                          'data/feature_lookups.pkl.gz',
+                          'data/feature_lookups.pkl']:
+            fpath = os.path.join(_base, candidate)
+            if os.path.exists(fpath):
+                opener = _gzip.open if fpath.endswith('.gz') else open
+                with opener(fpath, 'rb') as f:
+                    _feat_lookups = pickle.load(f)
+                return _feat_lookups
     except Exception:
         pass
     _feat_lookups = {}
