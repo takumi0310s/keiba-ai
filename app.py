@@ -4478,7 +4478,7 @@ if st.button("🔍 予想する") and url_input:
         df['前走通過順4'] = df['通過順4'].fillna(8)
 
     # === v5専用特徴量 ===
-    if use_version in ('v5', 'v6', 'v8', 'v9'):
+    if use_version in ('v5', 'v6', 'v8', 'v9') or use_version.startswith('v9.') or use_version.startswith('v10'):
         n_top = active_model_data.get('n_top_encode', _loaded.get('n_top_encode', 80) if isinstance(_loaded, dict) else 80)
         # Sire/BMS encoding (v9モデル時はそのモデルのマップを使用)
         use_sire_map = active_sire_map if active_sire_map else sire_map
@@ -5556,7 +5556,7 @@ def _batch_score_race(horses, race_info, is_nar):
         df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
         # === v5/v8/v9 特徴量 ===
-        if b_ver in ('v5', 'v6', 'v8', 'v9'):
+        if b_ver in ('v5', 'v6', 'v8', 'v9') or b_ver.startswith('v9.') or b_ver.startswith('v10'):
             use_smap = b_smap if b_smap else sire_map
             use_bmap = b_bmap if b_bmap else bms_map
             df['sire_enc'] = df['父'].apply(lambda x: use_smap.get(x, n_top) if use_smap else n_top)
@@ -5596,10 +5596,12 @@ def _batch_score_race(horses, race_info, is_nar):
             df['prev_pop'] = df.get('前走人気', pd.Series([8]*len(df))).fillna(8)
             df['prev_odds_log'] = np.log1p(df.get('前走オッズ', pd.Series([15.0]*len(df))).clip(1, 999).fillna(15.0))
             df['prev_last3f'] = df.get('上がり3F', pd.Series([35.5]*len(df))).fillna(35.5)
+            df['avg_last3f_3r'] = df['prev_last3f']
             df['prev_pass1'] = df.get('通過順平均', pd.Series([8.0]*len(df))).fillna(8.0)
             df['prev_pass4'] = df.get('通過順4', pd.Series([8]*len(df))).fillna(8)
             df['prev_margin'] = 0
             df['prev_prize'] = 0
+            df['has_training'] = 0
             for col in ['prev2_finish','prev3_finish','prev4_finish','prev5_finish']:
                 df[col] = df.get(col, pd.Series([5]*len(df))).fillna(5)
             df['prev2_last3f'] = df.get('prev2_last3f', pd.Series([35.5]*len(df))).fillna(35.5)
