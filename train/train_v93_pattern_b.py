@@ -37,8 +37,9 @@ from train_v92_central import (
     compute_horse_career, compute_sire_performance, load_lap_data,
     compute_lag_features, build_features,
     compute_distance_aptitude, compute_frame_advantage,
+    compute_running_style_features,
     COURSE_MAP, N_TOP_SIRE,
-    FEATURES_V93,
+    FEATURES_V93, FEATURES_V93_PACE,
     train_lgb, train_xgb, show_feature_importance,
 )
 from train_v92_leakfree import (
@@ -49,7 +50,7 @@ from train_v92_leakfree import (
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..')
 OUTPUT_DIR = BASE_DIR
 
-# Pattern B: 全V9.3特徴量 + 当日追加特徴量
+# Pattern B: 全V9.3特徴量（ペース含む） + 当日追加特徴量
 # LEAK_FEATURES_A を除外せず全て使う
 LIVE_EXTRA_FEATURES = [
     'weather_enc',     # 天候: 晴=0, 曇=1, 雨=2, 小雨=2, 雪=3
@@ -62,11 +63,11 @@ LIVE_EXTRA_FEATURES = [
     'precipitation',   # 降水量（気象庁）
 ]
 
-FEATURES_PATTERN_B = FEATURES_V93 + LIVE_EXTRA_FEATURES
+FEATURES_PATTERN_B = FEATURES_V93_PACE + LIVE_EXTRA_FEATURES
 FEATURES_PATTERN_B_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_PATTERN_B]
 
 # Pattern A features (for reference AUC)
-FEATURES_PATTERN_A = [f for f in FEATURES_V93 if f not in LEAK_FEATURES_A]
+FEATURES_PATTERN_A = [f for f in FEATURES_V93_PACE if f not in LEAK_FEATURES_A]
 
 # Weather encoding
 WEATHER_MAP = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
@@ -128,6 +129,9 @@ def main():
     df = build_features(df)
     df = compute_distance_aptitude(df)
     df = compute_frame_advantage(df)
+
+    # Pace/running style features
+    df = compute_running_style_features(df)
 
     # 当日追加特徴量
     df = add_weather_feature(df)

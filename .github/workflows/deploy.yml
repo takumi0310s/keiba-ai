@@ -1,0 +1,114 @@
+name: Deploy to Streamlit Cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -q streamlit pandas numpy lightgbm xgboost scikit-learn catboost requests beautifulsoup4
+
+      - name: Syntax check - app.py
+        run: python -c "import py_compile; py_compile.compile('app.py', doraise=True)"
+
+      - name: Syntax check - all training scripts
+        run: |
+          for f in train/*.py; do
+            echo "Checking $f..."
+            python -c "import py_compile; py_compile.compile('$f', doraise=True)"
+          done
+
+      - name: Syntax check - all tools
+        run: |
+          for f in tools/*.py; do
+            echo "Checking $f..."
+            python -c "import py_compile; py_compile.compile('$f', doraise=True)"
+          done
+
+      - name: Validate model files exist
+        run: |
+          echo "Checking model files..."
+          for model in keiba_model_v9_central.pkl keiba_model_v9_central_live.pkl keiba_model_v8.pkl; do
+            if [ -f "$model" ]; then
+              echo "  OK: $model ($(stat -c%s "$model") bytes)"
+              # Validate pickle integrity
+              python -c "
+          import pickle
+          with open('$model', 'rb') as f:
+              data = pickle.load(f)
+          assert isinstance(data, dict), 'Model must be dict'
+          assert 'model' in data, 'Missing model key'
+          assert 'features' in data, 'Missing features key'
+          print(f'  Version: {data.get(\"version\", \"unknown\")}')
+          print(f'  Features: {len(data[\"features\"])}')
+          print(f'  AUC: {data.get(\"auc\", 0):.4f}')
+          "
+            else
+              echo "  MISSING: $model"
+            fi
+          done
+
+      - name: Model hash verification
+        run: |
+          echo "Model file checksums:"
+          for model in keiba_model_v9_central.pkl keiba_model_v9_central_live.pkl keiba_model_v8.pkl; do
+            if [ -f "$model" ]; then
+              sha256sum "$model"
+            fi
+          done
+
+      - name: Run basic tests
+        run: |
+          python -c "
+          import sys
+          # Test 1: Import core modules
+          import pandas as pd
+          import numpy as np
+          import lightgbm as lgb
+          import xgboost as xgb
+          print('Test 1 PASS: Core imports OK')
+
+          # Test 2: Model loading
+          import pickle
+          with open('keiba_model_v9_central.pkl', 'rb') as f:
+              model_data = pickle.load(f)
+          assert 'model' in model_data
+          assert 'features' in model_data
+          assert len(model_data['features']) >= 60
+          print(f'Test 2 PASS: Model loaded ({len(model_data[\"features\"])} features)')
+
+          # Test 3: Feature list consistency
+          features = model_data['features']
+          assert 'num_horses' in features or 'num_horses_val' in features
+          print('Test 3 PASS: Feature list valid')
+
+          # Test 4: Ensemble weights
+          w = model_data.get('ensemble_weights', {})
+          assert abs(sum(v for v in w.values() if v) - 1.0) < 0.01
+          print(f'Test 4 PASS: Ensemble weights sum to 1.0')
+
+          print('All basic tests passed!')
+          "
+
+  deploy:
+    needs: test-and-validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Streamlit Cloud auto-deploy
+        run: |
+          echo "Streamlit Cloud automatically deploys from main branch."
+          echo "URL: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app"
+          echo "Deployment triggered by push to main."

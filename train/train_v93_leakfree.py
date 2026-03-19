@@ -28,8 +28,10 @@ from train_v92_central import (
     compute_horse_career, compute_sire_performance, load_lap_data,
     compute_lag_features, build_features,
     compute_distance_aptitude, compute_frame_advantage,
+    compute_running_style_features,
     COURSE_MAP, N_TOP_SIRE,
     FEATURES_V92, FEATURES_V93, FEATURES_V93_PKL,
+    PACE_FEATURES, FEATURES_V93_PACE, FEATURES_V93_PACE_PKL,
     train_lgb, train_xgb, show_feature_importance,
 )
 from train_v92_leakfree import (
@@ -40,9 +42,9 @@ from train_v92_leakfree import (
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..')
 OUTPUT_DIR = BASE_DIR
 
-# Pattern A leak-free features for V9.3
+# Pattern A leak-free features for V9.3 (with pace features)
 # All new V9.3 features are pre-day safe (no race-day info)
-FEATURES_V93_PATTERN_A = [f for f in FEATURES_V93 if f not in LEAK_FEATURES_A]
+FEATURES_V93_PATTERN_A = [f for f in FEATURES_V93_PACE if f not in LEAK_FEATURES_A]
 FEATURES_V93_PATTERN_A_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V93_PATTERN_A]
 
 # Identify which features are new vs baseline
@@ -81,6 +83,9 @@ def main():
     # These need bracket/build_features output
     df = compute_distance_aptitude(df)
     df = compute_frame_advantage(df)
+
+    # Pace/running style features (ADOPT from experiments)
+    df = compute_running_style_features(df)
 
     # Target
     df['target'] = (df['finish'] <= 3).astype(int)

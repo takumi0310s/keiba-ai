@@ -508,6 +508,82 @@ def compute_frame_advantage(df):
     return df
 
 
+def compute_running_style_features(df):
+    """脚質・ペース予測特徴量を計算（リークフリー: expanding window）"""
+    print("Computing running style / pace features...")
+
+    # 1. Parse pass1 (1角通過順位)
+    df['pass1_val'] = pd.to_numeric(df['pass1'], errors='coerce')
+    df.loc[(df['pass1_val'] <= 0) | (df['pass1_val'].isna()), 'pass1_val'] = np.nan
+    valid_pass1 = df['pass1_val'].notna().sum()
+    print(f"  pass1 valid: {valid_pass1}/{len(df)} ({valid_pass1/len(df)*100:.1f}%)")
+
+    # 2. Running style from historical pass positions (expanding window)
+    df = df.sort_values(['horse_id', 'date_num', 'race_num']).reset_index(drop=True)
+    grp = df.groupby('horse_id')
+
+    df['_p1_filled'] = df['pass1_val'].fillna(0)
+    df['_p1_valid'] = df['pass1_val'].notna().astype(float)
+    cum_sum = grp['_p1_filled'].cumsum() - df['_p1_filled']
+    cum_count = grp['_p1_valid'].cumsum() - df['_p1_valid']
+
+    avg_pass_hist = np.where(cum_count > 0, cum_sum / cum_count, 5.0)
+    df['avg_pass_hist'] = avg_pass_hist
+
+    # Categorize: 逃げ=1, 先行=2, 差し=3, 追込=4
+    df['running_style'] = np.where(
+        df['avg_pass_hist'] <= 2, 1,
+        np.where(df['avg_pass_hist'] <= 5, 2,
+                 np.where(df['avg_pass_hist'] <= 10, 3, 4))
+    ).astype(float)
+
+    # 3. Predicted pace (number of front-runners per race)
+    df = df.sort_values('date_num').reset_index(drop=True)
+    n_escapers = df.groupby('race_id_str')['running_style'].transform(
+        lambda s: (s == 1).sum()
+    )
+    n_escapers_excl = n_escapers - (df['running_style'] == 1).astype(int)
+    df['n_escapers'] = n_escapers_excl.clip(0)
+
+    n_front = df.groupby('race_id_str')['running_style'].transform(
+        lambda s: (s <= 2).sum()
+    )
+    n_front_excl = n_front - (df['running_style'] <= 2).astype(int)
+    df['n_front_runners'] = n_front_excl.clip(0)
+
+    df['front_ratio'] = df['n_front_runners'] / df['num_horses'].clip(1)
+
+    # 0=スロー, 1=ミドル, 2=ハイ
+    df['predicted_pace'] = np.where(
+        df['front_ratio'] < 0.2, 0,
+        np.where(df['front_ratio'] > 0.4, 2, 1)
+    ).astype(float)
+
+    # 4. Pace advantage score
+    adv_map = {
+        (0, 1): 2.0, (0, 2): 1.0, (0, 3): -1.0, (0, 4): -2.0,
+        (1, 1): 0.0, (1, 2): 0.5, (1, 3): 0.5, (1, 4): 0.0,
+        (2, 1): -2.0, (2, 2): -1.0, (2, 3): 1.0, (2, 4): 2.0,
+    }
+    pace_int = df['predicted_pace'].astype(int)
+    style_int = df['running_style'].astype(int)
+    df['pace_advantage'] = [
+        adv_map.get((p, s), 0.0) for p, s in zip(pace_int, style_int)
+    ]
+
+    # 5. Style × Pace cross feature
+    df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
+
+    # Cleanup
+    drop_cols = [c for c in df.columns if c.startswith('_p1_') or c in
+                 ('pass1_val', 'avg_pass_hist', 'n_escapers', 'n_front_runners', 'front_ratio')]
+    df = df.drop(columns=drop_cols, errors='ignore')
+    df = df.sort_values(['horse_id', 'date_num', 'race_num']).reset_index(drop=True)
+    print(f"  Pace features computed: running_style, predicted_pace, pace_advantage, style_vs_pace")
+
+    return df
+
+
 def load_lap_data():
     """Load lap_times.csv for race-level pace features."""
     if not os.path.exists(LAP_PATH):
@@ -681,9 +757,20 @@ V93_NEW_FEATURES = [
 
 FEATURES_V93 = FEATURES_V92 + V93_NEW_FEATURES
 
+# V9.3 Pace/Running Style features (from experiments, ADOPT judgement)
+PACE_FEATURES = [
+    'running_style',     # 脚質分類 (1=逃げ, 2=先行, 3=差し, 4=追込)
+    'predicted_pace',    # レースの予測ペース (0=スロー, 1=ミドル, 2=ハイ)
+    'pace_advantage',    # ペース有利度スコア (-2 to +2)
+    'style_vs_pace',     # 脚質×ペース相性 (cross feature)
+]
+
+FEATURES_V93_PACE = FEATURES_V93 + PACE_FEATURES
+
 # PKL feature names (rename num_horses_val → num_horses for compatibility)
 FEATURES_V92_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V92]
 FEATURES_V93_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V93]
+FEATURES_V93_PACE_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V93_PACE]
 FEATURES_V91_PKL = [f if f != 'num_horses_val' else 'num_horses' for f in FEATURES_V91]
 
 

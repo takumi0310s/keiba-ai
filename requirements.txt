@@ -6,3 +6,4 @@ numpy
 lightgbm
 xgboost
 scikit-learn
+catboost
