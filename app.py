@@ -1608,13 +1608,14 @@ st.markdown(CSS, unsafe_allow_html=True)
 @st.cache_resource(ttl=3600)
 def load_model():
     import os, gzip
-    # v8 → v6 → v5 → v3 → v2 → v1 の順で検索
+    # v9_central → v8 → v6 → v5 → v3 → v2 → v1 の順で検索
     for fname in [
+        "keiba_model_v9_central.pkl.gz", "keiba_model_v9_central.pkl",
         "keiba_model_v8.pkl.gz", "keiba_model_v8.pkl",
-        "keiba_model_v6.pkl.gz", "keiba_model_v6_pkl.gz", "keiba_model_v6.pkl",
-        "keiba_model_v5.pkl.gz", "keiba_model_v5_pkl.gz", "keiba_model_v5.pkl",
-        "keiba_model_v3.pkl.gz", "keiba_model_v3_pkl.gz", "keiba_model_v3.pkl",
-        "keiba_model_v2.pkl.gz", "keiba_model_v2_pkl.gz", "keiba_model_v2.pkl",
+        "keiba_model_v6.pkl.gz", "keiba_model_v6.pkl",
+        "keiba_model_v5.pkl.gz", "keiba_model_v5.pkl",
+        "keiba_model_v3.pkl.gz", "keiba_model_v3.pkl",
+        "keiba_model_v2.pkl.gz", "keiba_model_v2.pkl",
         "keiba_model.pkl.gz",
     ]:
         if os.path.exists(fname):
@@ -2854,11 +2855,19 @@ def run_system_checks():
     """全システムの動作確認。返り値: [(name, ok, detail), ...]"""
     checks = []
     # 1. モデルファイル確認
-    model_files = ["keiba_model_v8.pkl", "keiba_model_v8.pkl.gz"]
+    model_files = [
+        "keiba_model_v9_central.pkl.gz", "keiba_model_v9_central.pkl",
+        "keiba_model_v8.pkl.gz", "keiba_model_v8.pkl",
+    ]
     found = any(os.path.exists(f) for f in model_files)
-    v9c = os.path.exists("keiba_model_v9_central.pkl")
-    v9_text = f' / v9: 中央' if v9c else ''
-    checks.append(('モデルファイル', found, f'v8検出{v9_text}' if found else 'モデルファイルが見つかりません'))
+    v9c = os.path.exists("keiba_model_v9_central.pkl.gz") or os.path.exists("keiba_model_v9_central.pkl")
+    v9l = os.path.exists("keiba_model_v9_central_live.pkl.gz") or os.path.exists("keiba_model_v9_central_live.pkl")
+    v9_text = ''
+    if v9c:
+        v9_text += ' / Pattern A検出'
+    if v9l:
+        v9_text += ' / Pattern B検出'
+    checks.append(('モデルファイル', found, f'モデル検出{v9_text}' if found else 'モデルファイルが見つかりません'))
     # 2. 特徴量チェック
     try:
         test_features = FEATURES if FEATURES else FEATURES_V1
