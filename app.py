@@ -1695,10 +1695,10 @@ def get_feature_lookups():
     try:
         import gzip as _gzip
         _base = os.path.dirname(os.path.abspath(__file__))
-        # lite版 → フル版gz → フル版pkl の優先順
-        for candidate in ['data/feature_lookups_lite.pkl.gz',
+        # フル版pkl → フル版gz → lite版 の優先順（ローカルはフル版で87/87特徴量）
+        for candidate in ['data/feature_lookups.pkl',
                           'data/feature_lookups.pkl.gz',
-                          'data/feature_lookups.pkl']:
+                          'data/feature_lookups_lite.pkl.gz']:
             fpath = os.path.join(_base, candidate)
             if os.path.exists(fpath):
                 opener = _gzip.open if fpath.endswith('.gz') else open
@@ -1919,24 +1919,31 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                 aa = bt.find_all("a", href=re.compile(r"/horse/"))
                 if aa:
                     result['father'] = aa[0].get_text(strip=True)
-        # Mother's father (母の父)
+        # 血統テーブルから母の父を取得
         bt = soup.find("table", summary=re.compile(".*血統.*"))
         if bt:
             all_links = bt.find_all("a", href=re.compile(r"/horse/"))
-            # 典型的な血統テーブル: 父, 父父, 父母, 母, 母父, 母母
-            # 母の父は通常5番目（0-indexed: 4）だが構造によって異なる
-            # テキストで"母の父"を探す方が確実
-            for tr in bt.find_all("tr"):
-                tds = tr.find_all("td")
-                for td in tds:
-                    text = td.get_text(strip=True)
-                    if text and td.find("a", href=re.compile(r"/horse/")):
-                        # 母の父を特定するのは複雑なので、all_linksの4番目を使う
-                        pass
             if len(all_links) >= 5:
                 result['mother_father'] = all_links[4].get_text(strip=True)
             elif len(all_links) >= 3:
                 result['mother_father'] = all_links[2].get_text(strip=True)
+        # 血統テーブルが本ページにない場合、/horse/ped/ からフォールバック取得
+        if not result['father'] and horse_id:
+            try:
+                ped_url = "https://db.netkeiba.com/horse/ped/" + horse_id + "/"
+                ped_resp = requests.get(ped_url, headers=HEADERS, timeout=8)
+                ped_resp.encoding = "EUC-JP"
+                ped_soup = BeautifulSoup(ped_resp.text, "html.parser")
+                ped_table = ped_soup.find("table", class_="blood_table")
+                if ped_table:
+                    ped_links = [a for a in ped_table.find_all("a", href=re.compile(r"/horse/\d"))
+                                 if 'ped' not in a['href'] and 'sire' not in a['href']]
+                    if len(ped_links) >= 1:
+                        result['father'] = ped_links[0].get_text(strip=True)
+                    if len(ped_links) >= 4 and not result['mother_father']:
+                        result['mother_father'] = ped_links[3].get_text(strip=True)
+            except Exception:
+                pass
 
         table = soup.find("table", class_="db_h_race_results")
         if not table:
@@ -3573,6 +3580,9 @@ _LEGIT_ZERO_FEATURES = {
     'location_enc', 'rest_category', 'dist_cat',
     'prev_prize', 'top3_count_3r', 'course_enc', 'weight_cat',
     'weight_cat_dist', 'surface_dist_enc', 'course_surface',
+    'has_training', 'has_wood_training', 'has_sakaro_training',
+    'wood_count_2w', 'total_training_count', 'prev_agari_relative',
+    'horse_career_races', 'predicted_pace', 'pop_rank',
 }
 
 def get_feature_summary(df, use_features):
@@ -4589,6 +4599,100 @@ if st.button("🔍 予想する") and url_input:
         df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
         df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
         df['is_nar'] = 1 if is_nar else 0
+
+    # === V9.2/V9.3特徴量をルックアップから補完 ===
+    _lookups = get_feature_lookups()
+    _training_mean = _lookups.get('training_mean', 49.0)
+    _horse_stats_lk = _lookups.get('horse_stats', {})
+    _sire_surf_lk = _lookups.get('sire_surface_wr', {})
+    _sire_dist_lk = _lookups.get('sire_dist_wr', {})
+    _bms_surf_lk = _lookups.get('bms_surface_wr', {})
+    _jockey_surf_lk = _lookups.get('jockey_surface_wr', {})
+    _frame_lk = _lookups.get('frame_course_dist_wr', {})
+    _trainer_lk = _lookups.get('trainer_top3', {})
+
+    # 調教特徴量
+    if 'training_time_filled' not in df.columns or (df['training_time_filled'] == 0).all():
+        df['training_time_filled'] = _training_mean
+        df['has_training'] = 0
+        df['training_per_dist'] = _training_mean / max(dist / 200, 1)
+    # 馬キャリア特徴量
+    _horse_name_map = _lookups.get('horse_name_to_id', {})
+    for _ih in range(len(df)):
+        _hid_str = str(horses[_ih].get('horse_id', '')) if _ih < len(horses) else ''
+        _hid_int = int(_hid_str) if _hid_str.isdigit() else 0
+        _hs = _horse_stats_lk.get(_hid_int, {})
+        # netkeiba IDでヒットしない場合、馬名でフォールバック
+        if not _hs and _ih < len(horses):
+            _hname = horses[_ih].get('horse_name', '') or str(df.iloc[_ih].get('馬名', ''))
+            _mapped_id = _horse_name_map.get(_hname, 0)
+            if _mapped_id:
+                _hs = _horse_stats_lk.get(_mapped_id, {})
+        if _hs:
+            if 'horse_career_races' not in df.columns or df.iloc[_ih].get('horse_career_races', 0) == 0:
+                df.loc[df.index[_ih], 'horse_career_races'] = _hs.get('career_races', 0)
+                df.loc[df.index[_ih], 'horse_career_wr'] = _hs.get('career_wr', 0.1)
+                df.loc[df.index[_ih], 'horse_career_top3r'] = _hs.get('career_top3r', 0.25)
+            _dc_val = int(df.iloc[_ih].get('dist_cat', 2))
+            _sv_val = int(df.iloc[_ih].get('surface_enc', df.iloc[_ih].get('芝ダート_enc', 0)))
+            df.loc[df.index[_ih], 'horse_dist_top3r'] = _hs.get('dist_top3', {}).get(_dc_val, 0.25)
+            df.loc[df.index[_ih], 'horse_surface_top3r'] = _hs.get('surf_top3', {}).get(_sv_val, 0.25)
+            # 調教データ補完
+            _lt4f = _hs.get('last_training_4f', 0)
+            if _lt4f > 0 and (df.iloc[_ih].get('training_time_filled', 0) == _training_mean or df.iloc[_ih].get('training_time_filled', 0) == 0):
+                df.loc[df.index[_ih], 'training_time_filled'] = _lt4f
+                df.loc[df.index[_ih], 'has_training'] = 1
+    # sire/bms/jockey/trainer performance
+    for _ih in range(len(df)):
+        _father = str(df.iloc[_ih].get('父', '') if '父' in df.columns else '')
+        _mother_f = str(df.iloc[_ih].get('母の父', '') if '母の父' in df.columns else '')
+        _sv = int(df.iloc[_ih].get('surface_enc', df.iloc[_ih].get('芝ダート_enc', 0)))
+        _dc = int(df.iloc[_ih].get('dist_cat', 2))
+        df.loc[df.index[_ih], 'sire_surface_wr'] = _sire_surf_lk.get((_father, _sv), 0.1)
+        df.loc[df.index[_ih], 'sire_dist_wr'] = _sire_dist_lk.get((_father, _dc), 0.1)
+        df.loc[df.index[_ih], 'bms_surface_wr'] = _bms_surf_lk.get((_mother_f, _sv), 0.1)
+        _jn = str(df.iloc[_ih].get('騎手名', ''))
+        df.loc[df.index[_ih], 'jockey_surface_wr'] = _jockey_surf_lk.get((_jn, _sv), df.iloc[_ih].get('騎手勝率', 0.08))
+        # 調教師複勝率
+        _tn = str(df.iloc[_ih].get('調教師', ''))
+        if _tn and _trainer_lk:
+            df.loc[df.index[_ih], 'trainer_top3'] = _trainer_lk.get(_tn, 0.25)
+            df.loc[df.index[_ih], 'trainer_top3_calc'] = _trainer_lk.get(_tn, 0.25)
+    # 木/坂路調教
+    if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
+        df['wood_best_4f_filled'] = 52.0
+        df['has_wood_training'] = 0
+        df['wood_count_2w'] = 0
+        df['sakaro_best_4f_filled'] = 53.0
+        df['sakaro_best_3f_filled'] = 39.0
+        df['has_sakaro_training'] = 0
+        df['total_training_count'] = 0
+    # ペース/ラップ特徴量
+    if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
+        df['prev_race_first3f'] = 35.0
+        df['prev_race_last3f'] = 35.5
+        df['prev_race_pace_diff'] = 0.5
+        df['prev_agari_relative'] = 0.0
+    # 枠有利度
+    _ce = int(df.iloc[0].get('course_enc', df.iloc[0].get('競馬場コード_enc', 0)))
+    for _ih in range(len(df)):
+        _br = float(df.iloc[_ih].get('bracket', df.iloc[_ih].get('枠番', 4)))
+        _dc = float(df.iloc[_ih].get('dist_cat', 2))
+        _bp = 0.0 if _br <= 3 else (1.0 if _br <= 6 else 2.0)
+        df.loc[df.index[_ih], 'frame_course_dist_wr'] = _frame_lk.get((_bp, float(_ce), _dc), 0.08)
+    # ペース特徴量
+    if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
+        for _ih in range(len(df)):
+            _pass_avg = float(df.iloc[_ih].get('通過順平均', 5.0) if '通過順平均' in df.columns else 5.0)
+            _rs = 1 if _pass_avg <= 2 else (2 if _pass_avg <= 5 else (3 if _pass_avg <= 10 else 4))
+            df.loc[df.index[_ih], 'running_style'] = float(_rs)
+        _n_front = (df['running_style'] <= 2).sum()
+        _front_ratio = _n_front / max(num_horses, 1)
+        _pace = 0 if _front_ratio < 0.2 else (2 if _front_ratio > 0.4 else 1)
+        df['predicted_pace'] = float(_pace)
+        _adv_map = {(0,1):2,(0,2):1,(0,3):-1,(0,4):-2,(1,1):0,(1,2):0.5,(1,3):0.5,(1,4):0,(2,1):-2,(2,2):-1,(2,3):1,(2,4):2}
+        df['pace_advantage'] = df['running_style'].apply(lambda s: _adv_map.get((_pace, int(s)), 0.0))
+        df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
 
     # === リアルタイムオッズ特徴量 ===
     if odds_available and '単勝オッズ' in df.columns:
@@ -5664,6 +5768,7 @@ def _batch_score_race(horses, race_info, is_nar):
         bms_surf_lk = lookups.get('bms_surface_wr', {})
         jockey_surf_lk = lookups.get('jockey_surface_wr', {})
         frame_lk = lookups.get('frame_course_dist_wr', {})
+        trainer_lk = lookups.get('trainer_top3', {})
 
         # 調教特徴量
         if 'training_time_filled' not in df.columns or (df['training_time_filled'] == 0).all():
@@ -5671,10 +5776,17 @@ def _batch_score_race(horses, race_info, is_nar):
             df['has_training'] = 0
             df['training_per_dist'] = training_mean / max(dist / 200, 1)
         # 馬キャリア特徴量
+        horse_name_map = lookups.get('horse_name_to_id', {})
         for idx_h in range(len(df)):
             hid_str = str(horses[idx_h].get('horse_id', '')) if idx_h < len(horses) else ''
             hid_int = int(hid_str) if hid_str.isdigit() else 0
             hs = horse_stats_lk.get(hid_int, {})
+            # netkeiba IDでヒットしない場合、馬名でフォールバック
+            if not hs and idx_h < len(horses):
+                hname = horses[idx_h].get('horse_name', '') or str(df.iloc[idx_h].get('馬名', ''))
+                mapped_id = horse_name_map.get(hname, 0)
+                if mapped_id:
+                    hs = horse_stats_lk.get(mapped_id, {})
             if hs:
                 if 'horse_career_races' not in df.columns or df.iloc[idx_h].get('horse_career_races', 0) == 0:
                     df.loc[df.index[idx_h], 'horse_career_races'] = hs.get('career_races', 0)
@@ -5684,7 +5796,12 @@ def _batch_score_race(horses, race_info, is_nar):
                 surf_val = int(df.iloc[idx_h].get('surface_enc', surf_enc))
                 df.loc[df.index[idx_h], 'horse_dist_top3r'] = hs.get('dist_top3', {}).get(dist_cat_val, 0.25)
                 df.loc[df.index[idx_h], 'horse_surface_top3r'] = hs.get('surf_top3', {}).get(surf_val, 0.25)
-        # sire/bms performance
+                # 調教データ補完
+                lt4f = hs.get('last_training_4f', 0)
+                if lt4f > 0 and (df.iloc[idx_h].get('training_time_filled', 0) == training_mean or df.iloc[idx_h].get('training_time_filled', 0) == 0):
+                    df.loc[df.index[idx_h], 'training_time_filled'] = lt4f
+                    df.loc[df.index[idx_h], 'has_training'] = 1
+        # sire/bms/jockey/trainer performance
         for idx_h in range(len(df)):
             father = str(df.iloc[idx_h].get('父', '') if '父' in df.columns else '')
             mother_f = str(df.iloc[idx_h].get('母の父', '') if '母の父' in df.columns else '')
@@ -5695,6 +5812,11 @@ def _batch_score_race(horses, race_info, is_nar):
             df.loc[df.index[idx_h], 'bms_surface_wr'] = bms_surf_lk.get((mother_f, sv), 0.1)
             jn = str(df.iloc[idx_h].get('騎手名', ''))
             df.loc[df.index[idx_h], 'jockey_surface_wr'] = jockey_surf_lk.get((jn, sv), df.iloc[idx_h].get('騎手勝率', 0.08))
+            # 調教師複勝率
+            tn = str(df.iloc[idx_h].get('調教師', ''))
+            if tn and trainer_lk:
+                df.loc[df.index[idx_h], 'trainer_top3'] = trainer_lk.get(tn, 0.25)
+                df.loc[df.index[idx_h], 'trainer_top3_calc'] = trainer_lk.get(tn, 0.25)
         # 木/坂路調教
         if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
             df['wood_best_4f_filled'] = 52.0
@@ -5715,7 +5837,8 @@ def _batch_score_race(horses, race_info, is_nar):
         for idx_h in range(len(df)):
             br = float(df.iloc[idx_h].get('bracket', df.iloc[idx_h].get('枠番', 4)))
             dc = float(df.iloc[idx_h].get('dist_cat', 2))
-            df.loc[df.index[idx_h], 'frame_course_dist_wr'] = frame_lk.get((float(ce), dc, br), 0.08)
+            bp = 0.0 if br <= 3 else (1.0 if br <= 6 else 2.0)
+            df.loc[df.index[idx_h], 'frame_course_dist_wr'] = frame_lk.get((bp, float(ce), dc), 0.08)
         # ペース特徴量
         if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
             for idx_h in range(len(df)):

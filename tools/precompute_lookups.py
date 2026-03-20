@@ -123,10 +123,21 @@ def main():
     trainer['rate'] = trainer.apply(
         lambda r: bayesian_rate(r['top3'], r['total'], ALPHA_TRAINER, 0.25), axis=1
     )
-    lookups['trainer_top3'] = {
+    trainer_dict = {
         row['trainer']: row['rate'] for _, row in trainer.iterrows()
     }
-    print(f"  {len(lookups['trainer_top3']):,} entries")
+    # netkeibaでは姓のみ表示されるため、姓だけのキーも追加（重複時は最多出走の調教師を優先）
+    surname_best = {}  # surname -> (rate, total)
+    for _, row in trainer.iterrows():
+        full = str(row['trainer'])
+        surname = full.split()[0] if ' ' in full else full[:2] if len(full) >= 4 else full
+        if surname not in surname_best or row['total'] > surname_best[surname][1]:
+            surname_best[surname] = (row['rate'], row['total'])
+    for surname, (rate, _) in surname_best.items():
+        if surname not in trainer_dict:
+            trainer_dict[surname] = rate
+    lookups['trainer_top3'] = trainer_dict
+    print(f"  {len(lookups['trainer_top3']):,} entries (incl. surname keys)")
 
     # === 5. Jockey surface win rate ===
     print("Computing jockey_surface_wr...")
@@ -136,11 +147,23 @@ def main():
     jockey_surf['wr'] = jockey_surf.apply(
         lambda r: bayesian_rate(r['wins'], r['total'], ALPHA_JOCKEY, 0.05), axis=1
     )
-    lookups['jockey_surface_wr'] = {
+    jockey_dict = {
         (row['jockey'], row['surface_enc']): row['wr']
         for _, row in jockey_surf.iterrows()
     }
-    print(f"  {len(lookups['jockey_surface_wr']):,} entries")
+    # netkeibaでは姓のみ表示されるため、姓だけのキーも追加
+    surname_jockey_best = {}  # (surname, surface_enc) -> (wr, total)
+    for _, row in jockey_surf.iterrows():
+        full = str(row['jockey'])
+        surname = full.split()[0] if ' ' in full else full[:2] if len(full) >= 4 else full
+        key = (surname, row['surface_enc'])
+        if key not in surname_jockey_best or row['total'] > surname_jockey_best[key][1]:
+            surname_jockey_best[key] = (row['wr'], row['total'])
+    for key, (wr, _) in surname_jockey_best.items():
+        if key not in jockey_dict:
+            jockey_dict[key] = wr
+    lookups['jockey_surface_wr'] = jockey_dict
+    print(f"  {len(lookups['jockey_surface_wr']):,} entries (incl. surname keys)")
 
     # === 6. Frame × Course × Distance win rate ===
     print("Computing frame_course_dist_wr...")
@@ -198,7 +221,18 @@ def main():
         }
 
     lookups['horse_stats'] = horse_stats
-    print(f"  {len(horse_stats):,} horses")
+    # 馬名 -> horse_id のマッピングも追加（netkeibaのhorse_idとは異なるため馬名で引けるように）
+    horse_name_map = {}
+    for hid, grp in horse_groups:
+        hname = grp.iloc[-1]['horse_name']
+        if pd.notna(hname) and hname:
+            # 全角/半角スペースのパディングをstrip
+            hname_clean = str(hname).strip().replace('\u3000', '').strip()
+            if hname_clean:
+                # 同名馬がいる場合は最も直近のデータを持つ方を優先
+                horse_name_map[hname_clean] = int(hid)
+    lookups['horse_name_to_id'] = horse_name_map
+    print(f"  {len(horse_stats):,} horses, {len(horse_name_map):,} name mappings")
 
     # === 8. Race-level agari stats (for prev_agari_relative) ===
     print("Computing race_avg_agari...")
