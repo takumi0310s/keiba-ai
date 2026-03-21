@@ -3231,7 +3231,7 @@ def parse_shutuba(race_id, is_nar=False):
     race_name = "レース"
     race_num = ""
     race_grade = ""
-    tag = soup.find("div", class_="RaceName")
+    tag = soup.find(class_="RaceName")
     if tag and tag.get_text(strip=True):
         race_name = tag.get_text(strip=True)
         # グレードアイコンを検出 (Icon_GradeType1=G1, 2=G2, 3=G3, 5=OP, 15=Listed, etc.)
@@ -3288,7 +3288,7 @@ def parse_shutuba(race_id, is_nar=False):
     cm = re.search(r'馬場:(\S+)', d01t)
     if not cm:
         cm = re.search(r'(良|稍重|稍|重|不良)', d01t)
-    condition = cm.group(1) if cm else '良'
+    condition = cm.group(1).rstrip('/') if cm else '良'
     d02 = soup.find("div", class_="RaceData02")
     d02t = d02.get_text(strip=True) if d02 else d01t
     all_text = d01t + " " + d02t

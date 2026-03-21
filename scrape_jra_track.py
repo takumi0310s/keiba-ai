@@ -55,7 +55,7 @@ def fetch_jra_track_info(course_name):
         # JRA馬場情報トップページ（含水率テーブルあり）
         url = "https://www.jra.go.jp/keiba/baba/"
         resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = 'utf-8'
+        resp.encoding = resp.apparent_encoding or 'shift_jis'
         soup = BeautifulSoup(resp.text, 'html.parser')
 
         # テーブルから含水率・クッション値を抽出
@@ -73,7 +73,7 @@ def fetch_jra_track_info(course_name):
             if target_link.startswith('/'):
                 target_link = f"https://www.jra.go.jp{target_link}"
             resp2 = requests.get(target_link, headers=HEADERS, timeout=10)
-            resp2.encoding = 'utf-8'
+            resp2.encoding = resp2.apparent_encoding or 'shift_jis'
             soup2 = BeautifulSoup(resp2.text, 'html.parser')
             _parse_baba_page(soup2, course_name, result)
         else:
@@ -101,7 +101,7 @@ def _parse_baba_tables(soup, result):
             if len(cells) >= 3:
                 nums = []
                 for c in cells[1:]:
-                    m = re.search(r'([\d.]+)', c)
+                    m = re.search(r'(\d+(?:\.\d+)?)', c)
                     if m:
                         nums.append(float(m.group(1)))
 
@@ -117,18 +117,13 @@ def _parse_baba_tables(soup, result):
                     if len(nums) >= 2:
                         result['moisture_dirt_4c'] = nums[1]
 
-    # クッション値を探す（ページ内テキストから）
+    # クッション値を探す（"クッション値 : 9.5" のような明示的パターンのみ）
     text = soup.get_text()
-    # "クッション値 9.5" のようなパターン
-    for m in re.finditer(r'([\d.]+)', text):
-        v = float(m.group(1))
+    cushion_m = re.search(r'クッション値\s*[:：]\s*(\d+(?:\.\d+)?)', text)
+    if cushion_m:
+        v = float(cushion_m.group(1))
         if 5.0 <= v <= 15.0:
-            # クッション値の文脈かチェック
-            start = max(0, m.start() - 50)
-            context = text[start:m.start()]
-            if 'クッション' in context or 'cushion' in context.lower():
-                result['cushion_value'] = v
-                break
+            result['cushion_value'] = v
 
 
 def _parse_baba_page(soup, course_name, result):
@@ -136,12 +131,12 @@ def _parse_baba_page(soup, course_name, result):
     text = soup.get_text()
 
     # クッション値: "クッション値 : 9.5" のようなパターン
-    cushion_match = re.search(r'クッション値\s*[:：]?\s*([\d.]+)', text)
+    # クッション値: コロン付きの明示的パターンのみマッチ（参照テーブル除外）
+    cushion_match = re.search(r'クッション値\s*[:：]\s*(\d+(?:\.\d+)?)', text)
     if cushion_match:
-        try:
-            result['cushion_value'] = float(cushion_match.group(1))
-        except ValueError:
-            pass
+        v = float(cushion_match.group(1))
+        if 5.0 <= v <= 15.0:
+            result['cushion_value'] = v
 
     # 含水率: "含水率" の後に数値が続くパターン
     # 芝ゴール前、芝4コーナー、ダートゴール前、ダート4コーナー
@@ -169,7 +164,7 @@ def _parse_baba_page(soup, course_name, result):
 
             # 含水率の数値を探す
             if '含水率' in cell_text or 'moisture' in cell_text.lower():
-                nums = re.findall(r'([\d.]+)\s*%?', cell_text)
+                nums = re.findall(r'(\d+(?:\.\d+)?)\s*%?', cell_text)
                 if len(nums) >= 2:
                     if '芝' in cell_text:
                         result['moisture_turf_goal'] = float(nums[0])
@@ -180,14 +175,13 @@ def _parse_baba_page(soup, course_name, result):
                         if len(nums) >= 2:
                             result['moisture_dirt_4c'] = float(nums[1])
 
-            # クッション値
-            if 'クッション' in cell_text:
-                nums = re.findall(r'([\d.]+)', cell_text)
-                for n in nums:
-                    v = float(n)
-                    if 5.0 <= v <= 15.0:  # クッション値の妥当範囲
+            # クッション値（"クッション値 : 9.5" 形式のみ、説明テーブルを除外）
+            if 'クッション値' in cell_text and '以上' not in cell_text and '硬' not in cell_text:
+                cv_m = re.search(r'クッション値\s*[:：]?\s*(\d+(?:\.\d+)?)', cell_text)
+                if cv_m:
+                    v = float(cv_m.group(1))
+                    if 5.0 <= v <= 15.0:
                         result['cushion_value'] = v
-                        break
 
     # 馬場状態
     for pattern, key in [
