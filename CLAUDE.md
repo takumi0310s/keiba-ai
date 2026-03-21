@@ -682,6 +682,30 @@ keiba-ai/
 
 ---
 
+## 毎回の起動手順（コピペ用）
+
+### 土曜朝（実戦前）
+```bash
+cd keiba-ai
+git pull
+python tools/pre_race_check.py
+python -m streamlit run app.py
+```
+
+### エラーが出た場合
+```bash
+claude --dangerously-skip-permissions
+```
+→「pre_race_checkでエラーが出た。修正して」
+
+### Claude Code起動（開発作業）
+```bash
+cd keiba-ai
+claude --dangerously-skip-permissions
+```
+
+---
+
 ## 12. コマンド集
 
 ### 起動
