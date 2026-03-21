@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-03-13
+Last updated: 2026-03-21
 
 ---
 
@@ -643,6 +643,42 @@ keiba-ai/
 └── archive/                        # === アーカイブ ===
     └── nar/                        # 地方(NAR)関連一式
 ```
+
+---
+
+## 実戦前チェックリスト（毎週土曜朝に実行）
+
+開催日の朝、予測を始める前に必ず以下を実行すること。
+
+### チェック項目
+
+1. **モデルファイル（pkl.gz）の読み込み確認** — `keiba_model_v9_central_live.pkl.gz` / `keiba_model_v9_central.pkl.gz` が正常にロードできるか
+2. **feature_lookups.pklの存在・サイズ確認** — `data/feature_lookups.pkl` または `.pkl.gz` が存在し、キー数10以上あるか
+3. **netkeibaへのアクセス確認** — 出馬表ページ・オッズAPIからレスポンスが返るか
+4. **JRA馬場データのアクセス・エンコーディング確認** — `scrape_jra_track.py` がShift_JISで正しくパースできるか
+5. **気象庁APIの確認** — `scrape_weather.py` が気温・湿度・風速を返すか
+6. **DBの存在・レコード数確認** — SQLite DBが存在し、過去予測レコードが読めるか
+7. **今日の最初のレースURLで特徴量テスト** — 87/87特徴量が全て生成されるか
+8. **ゼロ特徴量が5個以上なら警告** — 0値の特徴量が多い場合は原因調査
+
+### チェック基準
+
+| 結果 | 判断 |
+|------|------|
+| 全項目OK | **実戦開始** |
+| 警告あり | 影響確認してから判断 |
+| エラーあり | **修正するまで実戦禁止** |
+
+### よくあるバグと対処法
+
+| 症状 | 原因・対処 |
+|------|-----------|
+| 特徴量18/87 | app.pyのバージョン条件（`use_version in ('v5','v6','v8','v9')` 等）にモデルバージョンが含まれているか確認 |
+| cushion_value=0 | `scrape_jra_track.py`のencodingが`shift_jis`になっているか確認（JRA公式はShift_JIS） |
+| モデル読み込み失敗 | `pkl.gz`形式対応を確認（`gzip.open` + `pickle.load`） |
+| netkeiba 403 | `User-Agent`ヘッダーが設定されているか確認 |
+| オッズ全て0 | `fetch_realtime_odds()`のJSON APIエンドポイント確認。レース前はオッズ未発売の場合あり |
+| RaceName=Unknown | `soup.find(class_="RaceName")`でタグ種別を限定せず検索しているか確認（`<h1>`の場合あり） |
 
 ---
 
