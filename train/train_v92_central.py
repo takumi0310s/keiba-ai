@@ -655,6 +655,10 @@ def compute_lag_features(df):
         df['prev_race_first3f'] = grp['race_first3f'].shift(1).fillna(35.8)
         df['prev_race_last3f'] = grp['race_last3f'].shift(1).fillna(36.5)
         df['prev_race_pace_diff'] = grp['race_pace_diff'].shift(1).fillna(0.0)
+    else:
+        df['prev_race_first3f'] = 35.8
+        df['prev_race_last3f'] = 36.5
+        df['prev_race_pace_diff'] = 0.0
 
     # Horse agari relative to race pace (how much better/worse than race avg)
     df['prev_agari_relative'] = df['prev_last3f'] - df['prev_race_last3f']
