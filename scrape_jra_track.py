@@ -3,17 +3,23 @@
 取得データ:
 - クッション値（芝レースの場合）
 - 含水率（芝ゴール前/4コーナー、ダートゴール前/4コーナー）
-- 馬場状態
+- 馬場状態・天候
 
 JRA馬場情報ページ: https://www.jra.go.jp/keiba/baba/
+データはJavaScript経由で3つのAPIから動的ロードされる:
+  1. _data_cushion.html  - クッション値（HTML形式）
+  2. _data_moist.html    - 含水率（HTML形式）
+  3. /JRADB/accessJ.html - 馬場状態・天候（JSON API, POST）
 """
 import requests
 from bs4 import BeautifulSoup
-import re
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
-# 競馬場名 → JRA公式URLパス
+BASE_URL = "https://www.jra.go.jp"
+
+# 競馬場名 → JRA API内のrc ID (sort値)
+# A/B/Cは開催順で毎週変わるため、JRADB APIのjyonameで動的マッピング
 COURSE_TO_JRA = {
     '札幌': 'sapporo', '函館': 'hakodate', '福島': 'fukushima',
     '新潟': 'niigata', '東京': 'tokyo', '中山': 'nakayama',
@@ -21,22 +27,149 @@ COURSE_TO_JRA = {
 }
 
 
+def _get_venue_sort_map():
+    """JRADB APIから今日の開催場 → sort(A/B/C)マッピングを取得"""
+    try:
+        r = requests.post(
+            f"{BASE_URL}/JRADB/accessJ.html",
+            data={'CNAME': 'pw01iwtS3/CD'},
+            headers=HEADERS,
+            timeout=10,
+        )
+        r.encoding = 'shift_jis'
+        data = r.json()
+        mapping = {}  # {'中山': {'sort': 'A', 'weather': '晴', 'ba_s': '良', 'ba_d': '良'}, ...}
+        for info in data.get('kaisai_info', []):
+            name = info.get('jyoname', '')
+            if name:
+                mapping[name] = {
+                    'sort': info.get('sort', ''),
+                    'weather': info.get('weather', ''),
+                    'ba_s': info.get('ba_s', ''),
+                    'ba_d': info.get('ba_d', ''),
+                }
+        return mapping
+    except Exception:
+        return {}
+
+
+def _fetch_cushion_data():
+    """クッション値データを取得 (HTML形式)
+
+    Returns:
+        dict: {'rcA': [{'time': '...', 'value': 10.0}, ...], 'rcB': [...], ...}
+    """
+    result = {}
+    try:
+        r = requests.get(f"{BASE_URL}/keiba/baba/_data_cushion.html", headers=HEADERS, timeout=10)
+        r.encoding = 'shift_jis'
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        for rc_div in soup.find_all('div', id=lambda x: x and x.startswith('rc')):
+            rc_id = rc_div.get('id', '')
+            venue_name = rc_div.get('title', '')
+            entries = []
+            for unit in rc_div.find_all('div', class_='unit'):
+                time_tag = unit.find('div', class_='time')
+                val_tag = unit.find('div', class_='cushion')
+                if time_tag and val_tag:
+                    try:
+                        entries.append({
+                            'time': time_tag.get_text(strip=True),
+                            'value': float(val_tag.get_text(strip=True)),
+                        })
+                    except (ValueError, TypeError):
+                        pass
+            if entries:
+                result[rc_id] = {'venue': venue_name, 'data': entries}
+    except Exception:
+        pass
+    return result
+
+
+def _fetch_moist_data():
+    """含水率データを取得 (HTML形式)
+
+    Returns:
+        dict: {'rcA': {'venue': '中山', 'data': [{'time': ..., 'turf_goal': ..., ...}]}, ...}
+    """
+    result = {}
+    try:
+        r = requests.get(f"{BASE_URL}/keiba/baba/_data_moist.html", headers=HEADERS, timeout=10)
+        r.encoding = 'shift_jis'
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        for rc_div in soup.find_all('div', id=lambda x: x and x.startswith('rc')):
+            rc_id = rc_div.get('id', '')
+            venue_name = rc_div.get('title', '')
+            entries = []
+            for unit in rc_div.find_all('div', class_='unit'):
+                time_tag = unit.find('div', class_='time')
+                time_str = time_tag.get_text(strip=True) if time_tag else ''
+
+                entry = {'time': time_str}
+                turf_div = unit.find('div', class_='turf')
+                if turf_div:
+                    mg = turf_div.find('span', class_='mg')
+                    m4c = turf_div.find('span', class_='m4c')
+                    if mg:
+                        try:
+                            entry['turf_goal'] = float(mg.get_text(strip=True))
+                        except (ValueError, TypeError):
+                            pass
+                    if m4c:
+                        try:
+                            entry['turf_4c'] = float(m4c.get_text(strip=True))
+                        except (ValueError, TypeError):
+                            pass
+
+                dirt_div = unit.find('div', class_='dirt')
+                if dirt_div:
+                    mg = dirt_div.find('span', class_='mg')
+                    m4c = dirt_div.find('span', class_='m4c')
+                    if mg:
+                        try:
+                            entry['dirt_goal'] = float(mg.get_text(strip=True))
+                        except (ValueError, TypeError):
+                            pass
+                    if m4c:
+                        try:
+                            entry['dirt_4c'] = float(m4c.get_text(strip=True))
+                        except (ValueError, TypeError):
+                            pass
+
+                if len(entry) > 1:  # time + at least one value
+                    entries.append(entry)
+
+            if entries:
+                result[rc_id] = {'venue': venue_name, 'data': entries}
+    except Exception:
+        pass
+    return result
+
+
 def fetch_jra_track_info(course_name):
     """JRA公式から馬場情報を取得
+
+    3つのAPIを叩いてクッション値・含水率・馬場状態を取得する。
+    - _data_cushion.html: クッション値（最新測定値）
+    - _data_moist.html: 含水率（芝/ダート × ゴール前/4コーナー）
+    - /JRADB/accessJ.html: 馬場状態・天候（リアルタイム）
 
     Args:
         course_name: 競馬場名（例: '東京', '阪神'）
 
     Returns:
         dict: {
-            'cushion_value': float or None,  # クッション値（芝のみ）
-            'moisture_turf_goal': float or None,  # 含水率 芝ゴール前
-            'moisture_turf_4c': float or None,    # 含水率 芝4コーナー
-            'moisture_dirt_goal': float or None,   # 含水率 ダートゴール前
-            'moisture_dirt_4c': float or None,     # 含水率 ダート4コーナー
-            'condition_turf': str or None,  # 芝馬場状態
-            'condition_dirt': str or None,  # ダート馬場状態
-            'source': 'jra',
+            'cushion_value': float or None,
+            'moisture_turf_goal': float or None,
+            'moisture_turf_4c': float or None,
+            'moisture_dirt_goal': float or None,
+            'moisture_dirt_4c': float or None,
+            'condition_turf': str or None,
+            'condition_dirt': str or None,
+            'weather': str or None,
+            'source': 'jra_api',
         }
     """
     result = {
@@ -44,153 +177,52 @@ def fetch_jra_track_info(course_name):
         'moisture_turf_goal': None, 'moisture_turf_4c': None,
         'moisture_dirt_goal': None, 'moisture_dirt_4c': None,
         'condition_turf': None, 'condition_dirt': None,
-        'source': 'jra',
+        'weather': None,
+        'source': 'jra_api',
     }
 
-    jra_code = COURSE_TO_JRA.get(course_name)
-    if not jra_code:
+    if course_name not in COURSE_TO_JRA:
         return result
 
     try:
-        # JRA馬場情報トップページ（含水率テーブルあり）
-        url = "https://www.jra.go.jp/keiba/baba/"
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = resp.apparent_encoding or 'shift_jis'
-        soup = BeautifulSoup(resp.text, 'html.parser')
+        # 1. JRADB APIで開催場→sort(A/B/C)マッピングと馬場状態を取得
+        venue_map = _get_venue_sort_map()
+        venue_info = venue_map.get(course_name)
+        if not venue_info:
+            return result
 
-        # テーブルから含水率・クッション値を抽出
-        _parse_baba_tables(soup, result)
+        sort_letter = venue_info['sort']  # 'A', 'B', or 'C'
+        rc_id = f'rc{sort_letter}'
 
-        # 開催場のリンクを探す（概要ページ）
-        target_link = None
-        for a in soup.find_all('a', href=True):
-            href = a['href']
-            if jra_code in href and 'baba' in href:
-                target_link = href
-                break
+        # 馬場状態・天候
+        result['condition_turf'] = venue_info.get('ba_s') or None
+        result['condition_dirt'] = venue_info.get('ba_d') or None
+        result['weather'] = venue_info.get('weather') or None
 
-        if target_link:
-            if target_link.startswith('/'):
-                target_link = f"https://www.jra.go.jp{target_link}"
-            resp2 = requests.get(target_link, headers=HEADERS, timeout=10)
-            resp2.encoding = resp2.apparent_encoding or 'shift_jis'
-            soup2 = BeautifulSoup(resp2.text, 'html.parser')
-            _parse_baba_page(soup2, course_name, result)
-        else:
-            _parse_baba_page(soup, course_name, result)
+        # 2. クッション値（最新値を取得）
+        cushion_data = _fetch_cushion_data()
+        if rc_id in cushion_data:
+            entries = cushion_data[rc_id]['data']
+            if entries:
+                v = entries[0]['value']  # 最新（先頭）
+                if 5.0 <= v <= 15.0:
+                    result['cushion_value'] = v
+
+        # 3. 含水率（最新値を取得）
+        moist_data = _fetch_moist_data()
+        if rc_id in moist_data:
+            entries = moist_data[rc_id]['data']
+            if entries:
+                latest = entries[0]  # 最新（先頭）
+                result['moisture_turf_goal'] = latest.get('turf_goal')
+                result['moisture_turf_4c'] = latest.get('turf_4c')
+                result['moisture_dirt_goal'] = latest.get('dirt_goal')
+                result['moisture_dirt_4c'] = latest.get('dirt_4c')
 
     except Exception as e:
         print(f"  [JRA Track] {course_name}: {e}")
 
     return result
-
-
-def _parse_baba_tables(soup, result):
-    """JRA馬場トップページのテーブルからデータ抽出
-    Table 0: クッション値説明
-    Table 1: 含水率（ゴール前/4コーナー × 芝/ダート）
-    Table 2: 含水率→馬場状態 対応表
-    """
-    tables = soup.find_all('table')
-
-    # Table 1: 含水率テーブル（3行: ヘッダー, 芝, ダート）
-    if len(tables) > 1:
-        rows = tables[1].find_all('tr')
-        for row in rows:
-            cells = [c.get_text(strip=True) for c in row.find_all(['th', 'td'])]
-            if len(cells) >= 3:
-                nums = []
-                for c in cells[1:]:
-                    m = re.search(r'(\d+(?:\.\d+)?)', c)
-                    if m:
-                        nums.append(float(m.group(1)))
-
-                row_text = cells[0]
-                if any(k in row_text for k in ['芝', 'turf']):
-                    if len(nums) >= 1:
-                        result['moisture_turf_goal'] = nums[0]
-                    if len(nums) >= 2:
-                        result['moisture_turf_4c'] = nums[1]
-                elif any(k in row_text for k in ['ダ', 'dirt']):
-                    if len(nums) >= 1:
-                        result['moisture_dirt_goal'] = nums[0]
-                    if len(nums) >= 2:
-                        result['moisture_dirt_4c'] = nums[1]
-
-    # クッション値を探す（"クッション値 : 9.5" のような明示的パターンのみ）
-    text = soup.get_text()
-    cushion_m = re.search(r'クッション値\s*[:：]\s*(\d+(?:\.\d+)?)', text)
-    if cushion_m:
-        v = float(cushion_m.group(1))
-        if 5.0 <= v <= 15.0:
-            result['cushion_value'] = v
-
-
-def _parse_baba_page(soup, course_name, result):
-    """馬場情報ページからデータを抽出"""
-    text = soup.get_text()
-
-    # クッション値: "クッション値 : 9.5" のようなパターン
-    # クッション値: コロン付きの明示的パターンのみマッチ（参照テーブル除外）
-    cushion_match = re.search(r'クッション値\s*[:：]\s*(\d+(?:\.\d+)?)', text)
-    if cushion_match:
-        v = float(cushion_match.group(1))
-        if 5.0 <= v <= 15.0:
-            result['cushion_value'] = v
-
-    # 含水率: "含水率" の後に数値が続くパターン
-    # 芝ゴール前、芝4コーナー、ダートゴール前、ダート4コーナー
-    moisture_patterns = [
-        (r'芝.*?ゴール前\s*[:：]?\s*([\d.]+)\s*%', 'moisture_turf_goal'),
-        (r'芝.*?4コーナー\s*[:：]?\s*([\d.]+)\s*%', 'moisture_turf_4c'),
-        (r'ダート.*?ゴール前\s*[:：]?\s*([\d.]+)\s*%', 'moisture_dirt_goal'),
-        (r'ダート.*?4コーナー\s*[:：]?\s*([\d.]+)\s*%', 'moisture_dirt_4c'),
-    ]
-    for pattern, key in moisture_patterns:
-        m = re.search(pattern, text, re.DOTALL)
-        if m:
-            try:
-                result[key] = float(m.group(1))
-            except ValueError:
-                pass
-
-    # 含水率テーブルからの抽出（テーブル形式の場合）
-    tables = soup.find_all('table')
-    for table in tables:
-        rows = table.find_all('tr')
-        for row in rows:
-            cells = [c.get_text(strip=True) for c in row.find_all(['th', 'td'])]
-            cell_text = ' '.join(cells)
-
-            # 含水率の数値を探す
-            if '含水率' in cell_text or 'moisture' in cell_text.lower():
-                nums = re.findall(r'(\d+(?:\.\d+)?)\s*%?', cell_text)
-                if len(nums) >= 2:
-                    if '芝' in cell_text:
-                        result['moisture_turf_goal'] = float(nums[0])
-                        if len(nums) >= 2:
-                            result['moisture_turf_4c'] = float(nums[1])
-                    elif 'ダート' in cell_text:
-                        result['moisture_dirt_goal'] = float(nums[0])
-                        if len(nums) >= 2:
-                            result['moisture_dirt_4c'] = float(nums[1])
-
-            # クッション値（"クッション値 : 9.5" 形式のみ、説明テーブルを除外）
-            if 'クッション値' in cell_text and '以上' not in cell_text and '硬' not in cell_text:
-                cv_m = re.search(r'クッション値\s*[:：]?\s*(\d+(?:\.\d+)?)', cell_text)
-                if cv_m:
-                    v = float(cv_m.group(1))
-                    if 5.0 <= v <= 15.0:
-                        result['cushion_value'] = v
-
-    # 馬場状態
-    for pattern, key in [
-        (r'芝\s*[:：]?\s*(良|稍重|稍|重|不良)', 'condition_turf'),
-        (r'ダート\s*[:：]?\s*(良|稍重|稍|重|不良)', 'condition_dirt'),
-    ]:
-        m = re.search(pattern, text)
-        if m:
-            result[key] = m.group(1)
 
 
 def get_moisture_rate(track_info, surface):
@@ -207,9 +239,12 @@ def get_moisture_rate(track_info, surface):
 
 if __name__ == '__main__':
     import json
-    for course in ['東京', '中山', '阪神']:
+    for course in ['中山', '阪神', '中京']:
         print(f"\n{'='*40}")
         print(f"  {course}")
         print(f"{'='*40}")
         info = fetch_jra_track_info(course)
         print(json.dumps(info, ensure_ascii=False, indent=2))
+        mr_turf = get_moisture_rate(info, '芝')
+        mr_dirt = get_moisture_rate(info, 'ダ')
+        print(f"  含水率平均: 芝={mr_turf}, ダート={mr_dirt}")
