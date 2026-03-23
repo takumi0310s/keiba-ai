@@ -1,0 +1,10 @@
+{
+  "binary_auc": 0.8034,
+  "binary_ndcg3": 0.5671,
+  "binary_roi": 3626.9,
+  "ranker_auc": 0.7367,
+  "ranker_ndcg3": 0.4782,
+  "ranker_roi": 2691.8,
+  "ranker_alt_roi": 2687.6,
+  "adopted": false
+}

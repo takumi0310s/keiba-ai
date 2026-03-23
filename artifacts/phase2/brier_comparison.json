@@ -1,0 +1,9 @@
+{
+  "baseline_brier": 0.135035,
+  "platt_brier": 0.135991,
+  "isotonic_brier": 0.134911,
+  "baseline_roi": 3626.9,
+  "platt_roi": 3626.9,
+  "isotonic_roi": 3601.7,
+  "adopted": "isotonic"
+}

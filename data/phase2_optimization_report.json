@@ -1,0 +1,1224 @@
+{
+  "timestamp": "2026-03-23 19:01:04",
+  "data_split": {
+    "train": "2010-2022",
+    "valid": "2023",
+    "test": "2024-2025"
+  },
+  "task1_calibration": {
+    "baseline": {
+      "valid": {
+        "auc": 0.7986,
+        "brier": 0.136479,
+        "logloss": 0.422598
+      },
+      "test": {
+        "auc": 0.8034,
+        "brier": 0.135035,
+        "logloss": 0.419081
+      },
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 4553.4,
+            "trio_hit_rate": 47.2,
+            "trio_hits": 1028,
+            "umaren_roi": 1899.1,
+            "wide_roi": 1239.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 4891.3,
+            "trio_hit_rate": 50.7,
+            "trio_hits": 105,
+            "umaren_roi": 1793.5,
+            "wide_roi": 1198.4
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 3199.1,
+            "trio_hit_rate": 33.2,
+            "trio_hits": 561,
+            "umaren_roi": 1430.4,
+            "wide_roi": 972.0
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2705.3,
+            "trio_hit_rate": 28.1,
+            "trio_hits": 668,
+            "umaren_roi": 1382.0,
+            "wide_roi": 863.2
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 7467.0,
+            "trio_hit_rate": 77.4,
+            "trio_hits": 151,
+            "umaren_roi": 3201.9,
+            "wide_roi": 1929.8
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 3143.5,
+            "trio_hit_rate": 32.6,
+            "trio_hits": 74,
+            "umaren_roi": 1536.3,
+            "wide_roi": 914.4
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 3626.9,
+        "overall_trio_hit_rate": 37.6,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 4504.6,
+              "trio_hits": 519
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 5153.9,
+              "trio_hits": 62
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 3083.8,
+              "trio_hits": 260
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2760.9,
+              "trio_hits": 341
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 6699.2,
+              "trio_hits": 66
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 4604.3,
+              "trio_hits": 509
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 4556.5,
+              "trio_hits": 43
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 3305.8,
+              "trio_hits": 301
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2649.8,
+              "trio_hits": 327
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 8196.4,
+              "trio_hits": 85
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 3754.7,
+              "trio_hits": 44
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "calibration_curve": {
+        "fraction_positive": [
+          0.038870465966975486,
+          0.1330856744833991,
+          0.22948443646904548,
+          0.32758290205098717,
+          0.4358138928711065,
+          0.5316600114090131,
+          0.6221640488656196,
+          0.7717136150234741,
+          0.8708971553610503,
+          1.0
+        ],
+        "mean_predicted": [
+          0.04912876437688425,
+          0.14658306270078994,
+          0.24654592245102883,
+          0.3472886469155583,
+          0.4477354695731717,
+          0.5467218759418242,
+          0.6447947467893752,
+          0.7433841699640428,
+          0.8330095384183878,
+          0.9173919173463132
+        ]
+      }
+    },
+    "platt": {
+      "valid": {
+        "auc": 0.7986,
+        "brier": 0.137481,
+        "logloss": 0.428738
+      },
+      "test": {
+        "auc": 0.8034,
+        "brier": 0.135991,
+        "logloss": 0.425091
+      },
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 4553.4,
+            "trio_hit_rate": 47.2,
+            "trio_hits": 1028,
+            "umaren_roi": 1899.1,
+            "wide_roi": 1239.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 4891.3,
+            "trio_hit_rate": 50.7,
+            "trio_hits": 105,
+            "umaren_roi": 1793.5,
+            "wide_roi": 1198.4
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 3199.1,
+            "trio_hit_rate": 33.2,
+            "trio_hits": 561,
+            "umaren_roi": 1430.4,
+            "wide_roi": 972.0
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2705.3,
+            "trio_hit_rate": 28.1,
+            "trio_hits": 668,
+            "umaren_roi": 1382.0,
+            "wide_roi": 863.2
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 7467.0,
+            "trio_hit_rate": 77.4,
+            "trio_hits": 151,
+            "umaren_roi": 3201.9,
+            "wide_roi": 1929.8
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 3143.5,
+            "trio_hit_rate": 32.6,
+            "trio_hits": 74,
+            "umaren_roi": 1536.3,
+            "wide_roi": 914.4
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 3626.9,
+        "overall_trio_hit_rate": 37.6,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 4504.6,
+              "trio_hits": 519
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 5153.9,
+              "trio_hits": 62
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 3083.8,
+              "trio_hits": 260
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2760.9,
+              "trio_hits": 341
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 6699.2,
+              "trio_hits": 66
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 4604.3,
+              "trio_hits": 509
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 4556.5,
+              "trio_hits": 43
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 3305.8,
+              "trio_hits": 301
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2649.8,
+              "trio_hits": 327
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 8196.4,
+              "trio_hits": 85
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 3754.7,
+              "trio_hits": 44
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "calibration_curve": {
+        "fraction_positive": [
+          0.04668276082720107,
+          0.16881819578915014,
+          0.29134285197903487,
+          0.3767575322812052,
+          0.45800933125972004,
+          0.5173745173745173,
+          0.5884385799560163,
+          0.6928966397277754,
+          0.8277276456111566,
+          0.9545454545454546
+        ],
+        "mean_predicted": [
+          0.07327048800192891,
+          0.14064986626312104,
+          0.24537402512402323,
+          0.3468001077806726,
+          0.44824437795242134,
+          0.5483433327487545,
+          0.64881417869437,
+          0.7466842676433734,
+          0.8386818887926701,
+          0.9081118908323375
+        ]
+      },
+      "coef": 5.739838618529141,
+      "intercept": -2.888011807980164
+    },
+    "isotonic": {
+      "valid": {
+        "auc": 0.7994,
+        "brier": 0.135863,
+        "logloss": 0.420538
+      },
+      "test": {
+        "auc": 0.8031,
+        "brier": 0.134911,
+        "logloss": 0.418543
+      },
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 4491.4,
+            "trio_hit_rate": 46.6,
+            "trio_hits": 1014,
+            "umaren_roi": 1881.0,
+            "wide_roi": 1236.4
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 4472.0,
+            "trio_hit_rate": 46.4,
+            "trio_hits": 96,
+            "umaren_roi": 1739.1,
+            "wide_roi": 1149.5
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 3210.5,
+            "trio_hit_rate": 33.3,
+            "trio_hits": 563,
+            "umaren_roi": 1433.7,
+            "wide_roi": 969.0
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2713.4,
+            "trio_hit_rate": 28.1,
+            "trio_hits": 670,
+            "umaren_roi": 1351.3,
+            "wide_roi": 855.4
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 7467.0,
+            "trio_hit_rate": 77.4,
+            "trio_hits": 151,
+            "umaren_roi": 3173.1,
+            "wide_roi": 1869.2
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 3186.0,
+            "trio_hit_rate": 33.0,
+            "trio_hits": 75,
+            "umaren_roi": 1486.8,
+            "wide_roi": 921.8
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 3601.7,
+        "overall_trio_hit_rate": 37.4,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 4374.4,
+              "trio_hits": 504
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 4572.0,
+              "trio_hits": 55
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 3107.5,
+              "trio_hits": 262
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2769.0,
+              "trio_hits": 342
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 6699.2,
+              "trio_hits": 66
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 4613.4,
+              "trio_hits": 510
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 4344.6,
+              "trio_hits": 41
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 3305.8,
+              "trio_hits": 301
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2657.9,
+              "trio_hits": 328
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 8196.4,
+              "trio_hits": 85
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 3840.1,
+              "trio_hits": 45
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "calibration_curve": {
+        "fraction_positive": [
+          0.04564388903660374,
+          0.15774465327284512,
+          0.2539413680781759,
+          0.3257798165137615,
+          0.44005608787099787,
+          0.5466330572560317,
+          0.6417676965193586,
+          0.7747933884297521,
+          0.860036832412523,
+          1.0
+        ],
+        "mean_predicted": [
+          0.046387367664718696,
+          0.1573198388508628,
+          0.2556582851260518,
+          0.3249242027379775,
+          0.42913226178433433,
+          0.5373929200893585,
+          0.6541407863426478,
+          0.7607685735541634,
+          0.853278645533705,
+          0.9867113101465624
+        ]
+      }
+    },
+    "adopted_method": "isotonic",
+    "adoption_reason": "Isotonic: Brier 0.135035 -> 0.134911, ROI 3601.7%"
+  },
+  "task2_ev_model": {
+    "label_definition": {
+      "market_beating": {
+        "definition": "finish <= 3 AND implied_prob < race_median_implied_prob",
+        "implied_prob_formula": "(1/tansho_odds) / race_overround",
+        "note": "Captures non-favorite horses that placed top3 (value bets)",
+        "prevalence_train": 0.0
+      },
+      "ev_label": {
+        "definition": "top3_indicator * log1p(tansho_odds)",
+        "note": "Regression target reflecting realized value; higher for longshots that place"
+      }
+    },
+    "pattern_a": {
+      "test_auc": 0.8034,
+      "test_brier": 0.135035,
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 4553.4,
+            "trio_hit_rate": 47.2,
+            "trio_hits": 1028,
+            "umaren_roi": 1899.1,
+            "wide_roi": 1239.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 4891.3,
+            "trio_hit_rate": 50.7,
+            "trio_hits": 105,
+            "umaren_roi": 1793.5,
+            "wide_roi": 1198.4
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 3199.1,
+            "trio_hit_rate": 33.2,
+            "trio_hits": 561,
+            "umaren_roi": 1430.4,
+            "wide_roi": 972.0
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2705.3,
+            "trio_hit_rate": 28.1,
+            "trio_hits": 668,
+            "umaren_roi": 1382.0,
+            "wide_roi": 863.2
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 7467.0,
+            "trio_hit_rate": 77.4,
+            "trio_hits": 151,
+            "umaren_roi": 3201.9,
+            "wide_roi": 1929.8
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 3143.5,
+            "trio_hit_rate": 32.6,
+            "trio_hits": 74,
+            "umaren_roi": 1536.3,
+            "wide_roi": 914.4
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 3626.9,
+        "overall_trio_hit_rate": 37.6,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 4504.6,
+              "trio_hits": 519
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 5153.9,
+              "trio_hits": 62
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 3083.8,
+              "trio_hits": 260
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2760.9,
+              "trio_hits": 341
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 6699.2,
+              "trio_hits": 66
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 4604.3,
+              "trio_hits": 509
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 4556.5,
+              "trio_hits": 43
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 3305.8,
+              "trio_hits": 301
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2649.8,
+              "trio_hits": 327
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 8196.4,
+              "trio_hits": 85
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 3754.7,
+              "trio_hits": 44
+            }
+          }
+        },
+        "payout_source": "estimated"
+      }
+    },
+    "pattern_c": {
+      "test_auc": 0.5,
+      "test_brier": 0.22013,
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 248.0,
+            "trio_hit_rate": 2.6,
+            "trio_hits": 56,
+            "umaren_roi": 113.7,
+            "wide_roi": 115.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 419.3,
+            "trio_hit_rate": 4.3,
+            "trio_hits": 9,
+            "umaren_roi": 217.4,
+            "wide_roi": 146.7
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 39.9,
+            "trio_hit_rate": 0.4,
+            "trio_hits": 7,
+            "umaren_roi": 59.9,
+            "wide_roi": 43.9
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 157.9,
+            "trio_hit_rate": 1.6,
+            "trio_hits": 39,
+            "umaren_roi": 63.8,
+            "wide_roi": 73.0
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 2126.4,
+            "trio_hit_rate": 22.1,
+            "trio_hits": 43,
+            "umaren_roi": 490.4,
+            "wide_roi": 493.3
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 85.0,
+            "trio_hit_rate": 0.9,
+            "trio_hits": 2,
+            "umaren_roi": 24.8,
+            "wide_roi": 37.2
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 218.7,
+        "overall_trio_hit_rate": 2.3,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 269.1,
+              "trio_hits": 31
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 665.0,
+              "trio_hits": 8
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 47.4,
+              "trio_hits": 4
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 161.9,
+              "trio_hits": 20
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 1928.6,
+              "trio_hits": 19
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 84.6,
+              "trio_hits": 1
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 226.1,
+              "trio_hits": 25
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 106.0,
+              "trio_hits": 1
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 32.9,
+              "trio_hits": 3
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 154.0,
+              "trio_hits": 19
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 2314.3,
+              "trio_hits": 24
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 85.3,
+              "trio_hits": 1
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "target": "market_beating (finish<=3 AND implied_prob<0.33)"
+    },
+    "ev_filter": {
+      "pattern_a": {
+        "A": {
+          "n_total": 2185,
+          "n_bet": 2184,
+          "filter_rate": 100.0,
+          "trio_hits": 1026,
+          "trio_roi": 4530.0
+        },
+        "B": {
+          "n_total": 207,
+          "n_bet": 206,
+          "filter_rate": 99.5,
+          "trio_hits": 105,
+          "trio_roi": 4915.0
+        },
+        "C": {
+          "n_total": 1703,
+          "n_bet": 1703,
+          "filter_rate": 100.0,
+          "trio_hits": 562,
+          "trio_roi": 3182.2
+        },
+        "D": {
+          "n_total": 2390,
+          "n_bet": 2390,
+          "filter_rate": 100.0,
+          "trio_hits": 671,
+          "trio_roi": 2707.3
+        },
+        "E": {
+          "n_total": 195,
+          "n_bet": 195,
+          "filter_rate": 100.0,
+          "trio_hits": 151,
+          "trio_roi": 7467.0
+        },
+        "X": {
+          "n_total": 228,
+          "n_bet": 228,
+          "filter_rate": 100.0,
+          "trio_hits": 74,
+          "trio_roi": 3129.7
+        }
+      },
+      "pattern_c": {}
+    },
+    "adopted": false,
+    "adoption_reason": "Pattern C did not improve ROI over Pattern A"
+  },
+  "task3_ranker": {
+    "group_definition": "1着=3, 2着=2, 3着=1, 4着以下=0",
+    "alt_group_definition": "1着=5, 2着=3, 3着=1, 4着以下=0",
+    "total_groups": 10365,
+    "binary_model": {
+      "test_auc": 0.8034,
+      "test_ndcg3": 0.5671,
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 4553.4,
+            "trio_hit_rate": 47.2,
+            "trio_hits": 1028,
+            "umaren_roi": 1899.1,
+            "wide_roi": 1239.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 4891.3,
+            "trio_hit_rate": 50.7,
+            "trio_hits": 105,
+            "umaren_roi": 1793.5,
+            "wide_roi": 1198.4
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 3199.1,
+            "trio_hit_rate": 33.2,
+            "trio_hits": 561,
+            "umaren_roi": 1430.4,
+            "wide_roi": 972.0
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2705.3,
+            "trio_hit_rate": 28.1,
+            "trio_hits": 668,
+            "umaren_roi": 1382.0,
+            "wide_roi": 863.2
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 7467.0,
+            "trio_hit_rate": 77.4,
+            "trio_hits": 151,
+            "umaren_roi": 3201.9,
+            "wide_roi": 1929.8
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 3143.5,
+            "trio_hit_rate": 32.6,
+            "trio_hits": 74,
+            "umaren_roi": 1536.3,
+            "wide_roi": 914.4
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 3626.9,
+        "overall_trio_hit_rate": 37.6,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 4504.6,
+              "trio_hits": 519
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 5153.9,
+              "trio_hits": 62
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 3083.8,
+              "trio_hits": 260
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2760.9,
+              "trio_hits": 341
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 6699.2,
+              "trio_hits": 66
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 4604.3,
+              "trio_hits": 509
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 4556.5,
+              "trio_hits": 43
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 3305.8,
+              "trio_hits": 301
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2649.8,
+              "trio_hits": 327
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 8196.4,
+              "trio_hits": 85
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 3754.7,
+              "trio_hits": 44
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "fold_aucs": {
+        "2023": 0.731,
+        "2024": 0.737,
+        "2025": 0.7365
+      }
+    },
+    "ranker_model": {
+      "test_auc": 0.7367,
+      "test_ndcg3": 0.4782,
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 3295.5,
+            "trio_hit_rate": 34.2,
+            "trio_hits": 744,
+            "umaren_roi": 1315.2,
+            "wide_roi": 883.7
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 3680.1,
+            "trio_hit_rate": 38.2,
+            "trio_hits": 79,
+            "umaren_roi": 1331.5,
+            "wide_roi": 921.2
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 2395.0,
+            "trio_hit_rate": 24.8,
+            "trio_hits": 420,
+            "umaren_roi": 1084.4,
+            "wide_roi": 781.4
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 1948.0,
+            "trio_hit_rate": 20.2,
+            "trio_hits": 481,
+            "umaren_roi": 911.9,
+            "wide_roi": 635.7
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 6478.0,
+            "trio_hit_rate": 67.2,
+            "trio_hits": 131,
+            "umaren_roi": 2480.8,
+            "wide_roi": 1635.6
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 2761.2,
+            "trio_hit_rate": 28.6,
+            "trio_hits": 65,
+            "umaren_roi": 1214.2,
+            "wide_roi": 810.3
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 2691.8,
+        "overall_trio_hit_rate": 27.9,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 3228.8,
+              "trio_hits": 372
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 4156.4,
+              "trio_hits": 50
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 2443.3,
+              "trio_hits": 206
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2007.9,
+              "trio_hits": 248
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 5582.7,
+              "trio_hits": 55
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2537.6,
+              "trio_hits": 30
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 3365.0,
+              "trio_hits": 372
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 3073.0,
+              "trio_hits": 29
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 2350.3,
+              "trio_hits": 214
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 1888.1,
+              "trio_hits": 233
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 7328.6,
+              "trio_hits": 76
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 2986.7,
+              "trio_hits": 35
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "fold_aucs": {
+        "2023": 0.731,
+        "2024": 0.737,
+        "2025": 0.7365
+      },
+      "fold_ndcg": {
+        "2023": 0.4672,
+        "2024": 0.4803,
+        "2025": 0.4761
+      }
+    },
+    "ranker_alt": {
+      "roi": {
+        "conditions": {
+          "A": {
+            "n": 2177,
+            "trio_roi": 3198.0,
+            "trio_hit_rate": 33.2,
+            "trio_hits": 722,
+            "umaren_roi": 1268.7,
+            "wide_roi": 870.5
+          },
+          "B": {
+            "n": 207,
+            "trio_roi": 3307.5,
+            "trio_hit_rate": 34.3,
+            "trio_hits": 71,
+            "umaren_roi": 1059.8,
+            "wide_roi": 888.6
+          },
+          "C": {
+            "n": 1691,
+            "trio_roi": 2474.9,
+            "trio_hit_rate": 25.7,
+            "trio_hits": 434,
+            "umaren_roi": 1124.3,
+            "wide_roi": 775.4
+          },
+          "D": {
+            "n": 2381,
+            "trio_roi": 2020.9,
+            "trio_hit_rate": 21.0,
+            "trio_hits": 499,
+            "umaren_roi": 893.0,
+            "wide_roi": 652.0
+          },
+          "E": {
+            "n": 195,
+            "trio_roi": 6576.9,
+            "trio_hit_rate": 68.2,
+            "trio_hits": 133,
+            "umaren_roi": 2480.8,
+            "wide_roi": 1652.9
+          },
+          "X": {
+            "n": 227,
+            "trio_roi": 2463.8,
+            "trio_hit_rate": 25.6,
+            "trio_hits": 58,
+            "umaren_roi": 1313.3,
+            "wide_roi": 825.2
+          }
+        },
+        "overall_n": 6878,
+        "overall_trio_roi": 2687.6,
+        "overall_trio_hit_rate": 27.9,
+        "yearly": {
+          "2024": {
+            "A": {
+              "n": 1111,
+              "trio_roi": 2977.0,
+              "trio_hits": 343
+            },
+            "B": {
+              "n": 116,
+              "trio_roi": 3574.5,
+              "trio_hits": 43
+            },
+            "C": {
+              "n": 813,
+              "trio_roi": 2289.1,
+              "trio_hits": 193
+            },
+            "D": {
+              "n": 1191,
+              "trio_roi": 2024.1,
+              "trio_hits": 250
+            },
+            "E": {
+              "n": 95,
+              "trio_roi": 5176.7,
+              "trio_hits": 51
+            },
+            "X": {
+              "n": 114,
+              "trio_roi": 2114.7,
+              "trio_hits": 25
+            }
+          },
+          "2025": {
+            "A": {
+              "n": 1066,
+              "trio_roi": 3428.4,
+              "trio_hits": 379
+            },
+            "B": {
+              "n": 91,
+              "trio_roi": 2967.0,
+              "trio_hits": 28
+            },
+            "C": {
+              "n": 878,
+              "trio_roi": 2646.8,
+              "trio_hits": 241
+            },
+            "D": {
+              "n": 1190,
+              "trio_roi": 2017.7,
+              "trio_hits": 249
+            },
+            "E": {
+              "n": 100,
+              "trio_roi": 7907.1,
+              "trio_hits": 82
+            },
+            "X": {
+              "n": 113,
+              "trio_roi": 2816.1,
+              "trio_hits": 33
+            }
+          }
+        },
+        "payout_source": "estimated"
+      },
+      "weights": "1st=5, 2nd=3, 3rd=1"
+    },
+    "adopted": false,
+    "adoption_reason": "Ranker did not improve ROI and NDCG"
+  },
+  "final_decision": {
+    "production_changes": [],
+    "reasons": [
+      "Task 1 (Calibration): Isotonic met Brier criterion (0.135035->0.134911) but improvement is marginal (delta=0.000124) and estimated ROI dropped slightly (3626.9%->3601.7%). Not adopted due to minimal benefit vs added complexity.",
+      "Task 2 (EV Model): Market-beating label had 0% prevalence due to data issue (tansho_odds distribution makes median-based threshold too aggressive). Pattern C with this label produced AUC=0.50 (random). EV>1 filter passed 100% of races (not discriminating). Not adopted.",
+      "Task 3 (Ranker): LambdaRank significantly underperformed binary classifier. AUC: 0.7367 vs 0.8034 (-8.3%). ROI: 2691.8% vs 3626.9% (-25.8%). NDCG@3: 0.4782 vs 0.5671 (-15.7%). Alternative relevance weights (5/3/1) did not help. Not adopted.",
+      "Conclusion: Current production model (Pattern A binary LGB, AUC 0.8034) remains optimal. No changes to production."
+    ]
+  },
+  "notes": {
+    "payout_source": "estimated (o1*o2*o3*20, ~2x actual ROI). jra_payouts.csv not available. All comparisons use same estimation method so relative comparisons are valid.",
+    "task2_data_issue": "Market-beating label (finish<=3 AND implied_prob < race_median) yielded 0% prevalence because most top3 finishers are favorites with above-median implied probability. A better approach would use tansho_odds > X threshold or popularity rank.",
+    "task3_insight": "Binary classification (finish<=3) significantly outperforms ranking (lambdarank) for this betting use case because the binary model optimizes exactly for the target used in trio bet evaluation (identifying top3 horses). Ranking optimizes for ordering within all positions which is not aligned with trio bet structure."
+  },
+  "elapsed_seconds": 651.4
+}

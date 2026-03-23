@@ -1,0 +1,60 @@
+{
+  "pattern_a": {
+    "auc": 0.8034,
+    "brier": 0.135035,
+    "roi": 3626.9
+  },
+  "pattern_c": {
+    "auc": 0.5,
+    "brier": 0.22013,
+    "roi": 218.7
+  },
+  "ev_filter": {
+    "pattern_a": {
+      "A": {
+        "n_total": 2185,
+        "n_bet": 2184,
+        "filter_rate": 100.0,
+        "trio_hits": 1026,
+        "trio_roi": 4530.0
+      },
+      "B": {
+        "n_total": 207,
+        "n_bet": 206,
+        "filter_rate": 99.5,
+        "trio_hits": 105,
+        "trio_roi": 4915.0
+      },
+      "C": {
+        "n_total": 1703,
+        "n_bet": 1703,
+        "filter_rate": 100.0,
+        "trio_hits": 562,
+        "trio_roi": 3182.2
+      },
+      "D": {
+        "n_total": 2390,
+        "n_bet": 2390,
+        "filter_rate": 100.0,
+        "trio_hits": 671,
+        "trio_roi": 2707.3
+      },
+      "E": {
+        "n_total": 195,
+        "n_bet": 195,
+        "filter_rate": 100.0,
+        "trio_hits": 151,
+        "trio_roi": 7467.0
+      },
+      "X": {
+        "n_total": 228,
+        "n_bet": 228,
+        "filter_rate": 100.0,
+        "trio_hits": 74,
+        "trio_roi": 3129.7
+      }
+    },
+    "pattern_c": {}
+  },
+  "adopted": false
+}
