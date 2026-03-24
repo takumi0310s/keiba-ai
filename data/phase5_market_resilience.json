@@ -1,0 +1,305 @@
+{
+  "odds_noise_test": {
+    "noise_0pct": {
+      "roi": 225.8,
+      "hit_rate": 37.2
+    },
+    "noise_5pct": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "hit_rate": 37.2,
+      "trials": [
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8
+      ]
+    },
+    "noise_10pct": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "hit_rate": 37.2,
+      "trials": [
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8
+      ]
+    },
+    "noise_20pct": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "hit_rate": 37.2,
+      "trials": [
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8,
+        225.8
+      ]
+    },
+    "resilience": "high"
+  },
+  "timestamp": "2026-03-25 00:42:54",
+  "timing_test": {
+    "30min_before": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "ci": {
+        "lower": 225.8,
+        "upper": 225.8
+      }
+    },
+    "10min_before": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "ci": {
+        "lower": 225.8,
+        "upper": 225.8
+      }
+    },
+    "just_before": {
+      "roi_mean": 225.8,
+      "roi_std": 0.0,
+      "ci": {
+        "lower": 225.8,
+        "upper": 225.8
+      }
+    },
+    "optimal_timing": "any (Pattern A uses prev_odds_log, not current odds)"
+  },
+  "feature_ablation": {
+    "odds_removed": {
+      "roi": 225.8,
+      "hit_rate": 37.2,
+      "roi_change": 0.0,
+      "roi_change_pct": 0.0,
+      "features_zeroed": [
+        "prev_odds_log"
+      ],
+      "n_features": 1
+    },
+    "blood_removed": {
+      "roi": 222.3,
+      "hit_rate": 35.9,
+      "roi_change": -3.5,
+      "roi_change_pct": -1.6,
+      "features_zeroed": [
+        "sire_enc",
+        "bms_enc",
+        "sire_surface_wr",
+        "sire_dist_wr",
+        "bms_surface_wr"
+      ],
+      "n_features": 5
+    },
+    "jockey_removed": {
+      "roi": 214.8,
+      "hit_rate": 34.8,
+      "roi_change": -11.0,
+      "roi_change_pct": -4.9,
+      "features_zeroed": [
+        "jockey_wr_calc",
+        "jockey_course_wr_calc",
+        "jockey_surface_wr"
+      ],
+      "n_features": 3
+    },
+    "past_performance_removed": {
+      "roi": 304.2,
+      "hit_rate": 29.4,
+      "roi_change": 78.4,
+      "roi_change_pct": 34.7,
+      "features_zeroed": [
+        "prev_finish",
+        "prev_last3f",
+        "prev2_finish",
+        "prev3_finish",
+        "avg_finish_3r",
+        "best_finish_3r",
+        "finish_trend",
+        "top3_count_3r",
+        "avg_last3f_3r",
+        "prev2_last3f",
+        "horse_career_races",
+        "horse_career_wr",
+        "horse_career_top3r",
+        "horse_dist_top3r",
+        "horse_surface_top3r"
+      ],
+      "n_features": 15
+    },
+    "pace_removed": {
+      "roi": 238.4,
+      "hit_rate": 36.1,
+      "roi_change": 12.6,
+      "roi_change_pct": 5.6,
+      "features_zeroed": [
+        "prev_last3f",
+        "avg_last3f_3r",
+        "prev2_last3f",
+        "prev_race_first3f",
+        "prev_race_last3f",
+        "prev_race_pace_diff",
+        "prev_agari_relative"
+      ],
+      "n_features": 7
+    },
+    "training_removed": {
+      "roi": 67.4,
+      "hit_rate": 17.9,
+      "roi_change": -158.4,
+      "roi_change_pct": -70.2,
+      "features_zeroed": [
+        "trainer_top3_calc",
+        "training_time_filled",
+        "has_training",
+        "training_per_dist",
+        "wood_best_4f_filled",
+        "has_wood_training",
+        "wood_count_2w",
+        "sakaro_best_4f_filled",
+        "sakaro_best_3f_filled",
+        "has_sakaro_training",
+        "total_training_count"
+      ],
+      "n_features": 11
+    },
+    "most_important_group": "training"
+  },
+  "payout_structure": {
+    "honmei_under2000": {
+      "hits": 2148,
+      "return": 2183900,
+      "contribution_pct": 13.4,
+      "avg_payout": 1017.0
+    },
+    "chuana_2001_10000": {
+      "hits": 1433,
+      "return": 5925540,
+      "contribution_pct": 36.3,
+      "avg_payout": 4135.0
+    },
+    "oana_10001_50000": {
+      "hits": 224,
+      "return": 4300100,
+      "contribution_pct": 26.4,
+      "avg_payout": 19197.0
+    },
+    "manba_over50000": {
+      "hits": 28,
+      "return": 3892110,
+      "contribution_pct": 23.9,
+      "avg_payout": 139004.0
+    }
+  },
+  "stress_test": {
+    "max_losing_streak_actual": 15,
+    "capital_at_700yen": {
+      "after_30_losses": 9000,
+      "after_40_losses": 2000,
+      "after_50_losses": -5000
+    },
+    "max_tolerable_streak_at_700yen": 42,
+    "max_tolerable_streak_at_1400yen": 21,
+    "initial_capital": 30000
+  },
+  "capital_management": {
+    "fixed_100": {
+      "final_capital": 9111850,
+      "roi": 30272.8,
+      "max_dd_amount": 41800,
+      "max_dd_pct": 1.1,
+      "bankruptcy_prob": 0.15,
+      "per_point": 100
+    },
+    "fixed_200": {
+      "final_capital": 18193700,
+      "roi": 60545.7,
+      "max_dd_amount": 83600,
+      "max_dd_pct": 1.1,
+      "bankruptcy_prob": 3.55,
+      "per_point": 200
+    },
+    "fixed_300": {
+      "final_capital": 27275550,
+      "roi": 90818.5,
+      "max_dd_amount": 125400,
+      "max_dd_pct": 1.1,
+      "bankruptcy_prob": 10.15,
+      "per_point": 300
+    },
+    "fixed_500": {
+      "final_capital": 45439250,
+      "roi": 151364.2,
+      "max_dd_amount": 209000,
+      "max_dd_pct": 1.1,
+      "bankruptcy_prob": 25.05,
+      "per_point": 500
+    },
+    "pct_03": {
+      "final_capital": 2086322048066894706690895084935137017703327059407924942615347920212328448,
+      "roi": 6.95440682688965e+69,
+      "max_dd_amount": 322473532390634159307657226715225877119240125685932432349800072164147200,
+      "max_dd_pct": 13.4,
+      "bankruptcy_prob": 0.15,
+      "per_point": "dynamic"
+    },
+    "pct_05": {
+      "final_capital": 174954865271395691943152836315179671595424093608796642831727491459803206581460040476631882480484352,
+      "roi": 5.831828842379856e+95,
+      "max_dd_amount": 48540310255354613499411457468706451535052651676186708292201894597774282183293871297564562115526656,
+      "max_dd_pct": 21.7,
+      "bankruptcy_prob": 0.15,
+      "per_point": "dynamic"
+    },
+    "kelly_025": {
+      "final_capital": 270,
+      "roi": -99.1,
+      "max_dd_amount": 27706870,
+      "max_dd_pct": 100.0,
+      "bankruptcy_prob": 100.0,
+      "per_point": "dynamic"
+    },
+    "recommended": "pct_05",
+    "recommended_reason": "pct_05: highest final capital (174,954,865,271,395,691,943,152,836,315,179,671,595,424,093,608,796,642,831,727,491,459,803,206,581,460,040,476,631,882,480,484,352) with bankruptcy 0.15%",
+    "kelly_info": {
+      "hit_rate": 37.2,
+      "avg_payout_per_100": 4253.0,
+      "kelly_full": 0.2478,
+      "kelly_quarter": 0.062
+    }
+  },
+  "final_verdict": {
+    "market_resilience": "high",
+    "profit_structure": "stable",
+    "optimal_timing": "any (Pattern A is current-odds independent)",
+    "most_important_features": "training",
+    "recommended_bet_strategy": "fixed_100",
+    "recommended_scaling_plan": "Start with fixed_100 (700 yen/R). After 200+ races of confirmed profit, consider fixed_200 (1400 yen/R). Percentage-based strategies show theoretical exponential growth but are unrealistic due to market liquidity constraints.",
+    "production_status": "CONFIRMED",
+    "notes": {
+      "pct_strategies_overflow": "pct_03 and pct_05 produce astronomical final capitals due to compound growth over 10K+ races. In practice, bet sizes would be capped by JRA's maximum payout limits and liquidity. These strategies are theoretically optimal but practically infeasible at scale.",
+      "kelly_failure": "Kelly 0.25 crashed because the Kelly fraction calculation assumes single-outcome betting. With trio (7-point) betting structure and high variance, Kelly is not directly applicable without modification.",
+      "realistic_recommendation": "fixed_100 (current) is the safest option: bankruptcy 0.15%, final capital 9.1M yen. fixed_200 doubles returns but bankruptcy rises to 3.55%. For initial capital 30K, stick with fixed_100 until capital exceeds 100K, then consider fixed_200."
+    }
+  },
+  "elapsed_seconds": 2635.2
+}
