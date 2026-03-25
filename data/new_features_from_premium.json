@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-26 01:32:01",
+  "generated_at": "2026-03-26 01:57:56",
   "data_collected": {
     "training_times": {
       "file": "data/netkeiba_training_times.csv",
@@ -18,8 +18,14 @@
       "note": "テキスト傾向データ。特徴量化は困難"
     },
     "speed_index": {
-      "status": "NOT_AVAILABLE",
-      "note": "speed_index.html は 404。netkeiba にタイム指数ページは存在しない"
+      "status": "AVAILABLE",
+      "file": "data/netkeiba_speed_index.csv",
+      "rows": 2349,
+      "races": 184,
+      "url": "https://race.netkeiba.com/race/speed.html?race_id=XXXX",
+      "note": "speed_index.html→404だがspeed.htmlにSpeedIndex_Tableが存在",
+      "coverage_max": "93%",
+      "coverage_avg5": "93%"
     },
     "extended_form": {
       "status": "DUPLICATE",
@@ -78,9 +84,29 @@
       "coverage": "約50-70%",
       "note": "-3〜+3のスコア",
       "overlap": "なし(新規)"
+    },
+    "speed_index_max": {
+      "source": "speed.html 最高指数",
+      "coverage": "93%",
+      "note": "netkeiba独自のタイム指数。1000=該当なし、1100前後が平均",
+      "overlap": "なし(完全新規)"
+    },
+    "speed_index_avg5": {
+      "source": "speed.html 5走平均指数",
+      "coverage": "93%",
+      "note": "直近5走の平均タイム指数",
+      "overlap": "avg_finish_3rと部分相関の可能性"
+    },
+    "speed_index_run1": {
+      "source": "speed.html 前走指数",
+      "coverage": "99%",
+      "note": "前走のタイム指数。prev_finishより情報量多い",
+      "overlap": "prev_finish/prev_last3fと部分相関"
     }
   },
   "recommendations": [
+    "speed_index_max (最高指数): netkeiba独自指数。カバレッジ高く最有望",
+    "speed_index_avg5 (5走平均): 安定した能力指標",
     "time_1f_last (ラスト1F): 追い切りの末脚を直接測定。最も有望な新規特徴量",
     "training_intensity (強度): 馬なり/強め/一杯で調教内容を反映。エンコード必要",
     "time_6f (CW 6Fタイム): CW調教の全体タイム。坂路馬はカバレッジ0%",
