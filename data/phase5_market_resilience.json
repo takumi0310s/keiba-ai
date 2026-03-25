@@ -57,7 +57,7 @@
     },
     "resilience": "high"
   },
-  "timestamp": "2026-03-25 00:42:54",
+  "timestamp": "2026-03-25 09:49:29",
   "timing_test": {
     "30min_before": {
       "roi_mean": 225.8,
@@ -301,5 +301,161 @@
       "realistic_recommendation": "fixed_100 (current) is the safest option: bankruptcy 0.15%, final capital 9.1M yen. fixed_200 doubles returns but bankruptcy rises to 3.55%. For initial capital 30K, stick with fixed_100 until capital exceeds 100K, then consider fixed_200."
     }
   },
-  "elapsed_seconds": 2635.2
+  "elapsed_seconds": 2635.2,
+  "feature_ablation_pattern_b": {
+    "model": "v10_live",
+    "n_features": 87,
+    "pattern": "B",
+    "baseline": {
+      "roi": 425.5,
+      "hit_rate": 16.2,
+      "races": 10314
+    },
+    "ablations": {
+      "odds": {
+        "roi": 383.3,
+        "hit_rate": 17.0,
+        "roi_change": -42.2,
+        "roi_change_pct": -9.9,
+        "features_zeroed": [
+          "odds_log",
+          "pop_rank",
+          "prev_odds_log"
+        ],
+        "n_features": 3
+      },
+      "odds_current_only": {
+        "roi": 385.7,
+        "hit_rate": 16.5,
+        "roi_change": -39.8,
+        "roi_change_pct": -9.4,
+        "features_zeroed": [
+          "odds_log",
+          "pop_rank"
+        ],
+        "n_features": 2
+      },
+      "blood": {
+        "roi": 406.5,
+        "hit_rate": 17.5,
+        "roi_change": -19.0,
+        "roi_change_pct": -4.5,
+        "features_zeroed": [
+          "sire_enc",
+          "bms_enc",
+          "sire_surface_wr",
+          "sire_dist_wr",
+          "bms_surface_wr"
+        ],
+        "n_features": 5
+      },
+      "jockey": {
+        "roi": 421.5,
+        "hit_rate": 16.9,
+        "roi_change": -4.0,
+        "roi_change_pct": -0.9,
+        "features_zeroed": [
+          "jockey_wr_calc",
+          "jockey_course_wr_calc",
+          "jockey_surface_wr"
+        ],
+        "n_features": 3
+      },
+      "past_performance": {
+        "roi": 437.8,
+        "hit_rate": 20.4,
+        "roi_change": 12.3,
+        "roi_change_pct": 2.9,
+        "features_zeroed": [
+          "prev_finish",
+          "prev2_finish",
+          "prev3_finish",
+          "prev_last3f",
+          "prev2_last3f",
+          "prev_pass4",
+          "prev_prize",
+          "avg_finish_3r",
+          "best_finish_3r",
+          "finish_trend",
+          "top3_count_3r",
+          "avg_last3f_3r",
+          "horse_career_races",
+          "horse_career_wr",
+          "horse_career_top3r",
+          "horse_dist_top3r",
+          "horse_surface_top3r"
+        ],
+        "n_features": 17
+      },
+      "pace": {
+        "roi": 406.0,
+        "hit_rate": 15.7,
+        "roi_change": -19.5,
+        "roi_change_pct": -4.6,
+        "features_zeroed": [
+          "prev_race_first3f",
+          "prev_race_last3f",
+          "prev_race_pace_diff",
+          "prev_agari_relative",
+          "running_style",
+          "predicted_pace",
+          "pace_advantage",
+          "style_vs_pace"
+        ],
+        "n_features": 8
+      },
+      "training": {
+        "roi": 49.0,
+        "hit_rate": 2.9,
+        "roi_change": -376.5,
+        "roi_change_pct": -88.5,
+        "features_zeroed": [
+          "training_time_filled",
+          "has_training",
+          "training_per_dist",
+          "wood_best_4f_filled",
+          "has_wood_training",
+          "wood_count_2w",
+          "sakaro_best_4f_filled",
+          "sakaro_best_3f_filled",
+          "has_sakaro_training",
+          "total_training_count"
+        ],
+        "n_features": 10
+      },
+      "weight": {
+        "roi": 402.4,
+        "hit_rate": 15.3,
+        "roi_change": -23.1,
+        "roi_change_pct": -5.4,
+        "features_zeroed": [
+          "horse_weight",
+          "weight_change",
+          "weight_change_abs",
+          "weight_cat",
+          "weight_cat_dist"
+        ],
+        "n_features": 5
+      },
+      "track_weather": {
+        "roi": 429.8,
+        "hit_rate": 16.4,
+        "roi_change": 4.3,
+        "roi_change_pct": 1.0,
+        "features_zeroed": [
+          "condition_enc",
+          "cond_surface",
+          "weather_enc",
+          "cushion_value",
+          "moisture_rate",
+          "temperature",
+          "humidity",
+          "wind_speed",
+          "precipitation"
+        ],
+        "n_features": 9
+      }
+    },
+    "most_important_group": "training"
+  }
 }
