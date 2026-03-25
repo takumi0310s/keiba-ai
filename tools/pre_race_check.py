@@ -164,6 +164,35 @@ def check_netkeiba():
     except Exception as e:
         fail("オッズAPI", f"接続エラー: {e}")
 
+    # 追い切りデータ（調教ランク）テスト
+    try:
+        test_race = "202606020501"  # 最近のレースID
+        url = f"https://race.netkeiba.com/race/oikiri.html?race_id={test_race}"
+        r = requests.get(url, headers=HEADERS, timeout=10)
+        r.encoding = "EUC-JP"
+        from bs4 import BeautifulSoup as BS
+        soup = BS(r.text, "html.parser")
+        wrapper = soup.find("div", class_="OikiriAllWrapper")
+        if wrapper:
+            rows = wrapper.find_all("tr")
+            rank_count = 0
+            for row in rows:
+                td_umaban = row.select_one("td.Umaban")
+                if td_umaban:
+                    for td in row.find_all("td"):
+                        for cls in td.get("class", []):
+                            if cls.startswith("Rank_"):
+                                rank_count += 1
+                                break
+            if rank_count > 0:
+                ok("追い切りデータ", f"{rank_count}馬のランク取得成功")
+            else:
+                warn("追い切りデータ", "Wrapperあるがランク取得0件")
+        else:
+            warn("追い切りデータ", "OikiriAllWrapper未検出（レース未発走の可能性）")
+    except Exception as e:
+        warn("追い切りデータ", f"取得テスト失敗: {e}")
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 4. JRA馬場データ確認

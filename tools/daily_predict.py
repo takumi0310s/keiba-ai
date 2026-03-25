@@ -9,6 +9,7 @@ Usage:
 import pandas as pd
 import numpy as np
 import pickle
+import gzip
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -63,6 +64,61 @@ CONDITION_PROFILES = {
     'E': {'bet_type':'umaren','label':'条件E','desc':'7頭以下','investment':700,'roi':118.0,'hit_rate':53.4,'recommended':True},
     'X': {'bet_type':'trio','label':'条件X','desc':'15頭+/重~不良','investment':700,'roi':330.5,'hit_rate':35.5,'recommended':True},
 }
+
+def fetch_oikiri_ranks(race_id):
+    """netkeibaの追い切りページから各馬の調教ランク(A/B/C/D)を取得。
+    返り値: {馬番: rank}
+    """
+    ranks = {}
+    try:
+        url = f"https://race.netkeiba.com/race/oikiri.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=8)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        wrapper = soup.find("div", class_="OikiriAllWrapper")
+        if not wrapper:
+            return ranks
+        for row in wrapper.find_all("tr"):
+            td_umaban = row.select_one("td.Umaban")
+            if not td_umaban:
+                continue
+            try:
+                umaban = int(td_umaban.get_text(strip=True))
+            except (ValueError, TypeError):
+                continue
+            rank = ""
+            for td in row.find_all("td"):
+                for cls in td.get("class", []):
+                    if cls.startswith("Rank_"):
+                        rank = cls.replace("Rank_", "")
+                        # Rank_まずまず → C, Rank_好調教 → A etc. Normalize to A/B/C/D
+                        break
+                if rank:
+                    break
+            if not rank:
+                continue
+            # Normalize rank text to A/B/C/D
+            if rank in ('A', 'B', 'C', 'D'):
+                ranks[umaban] = rank
+            elif any(x in rank for x in ['好調教', '抜群', '絶好']):
+                ranks[umaban] = 'A'
+            elif any(x in rank for x in ['上々', '乗込入念', '良化']):
+                ranks[umaban] = 'B'
+            elif any(x in rank for x in ['まずまず', '平凡', '先着平凡', '乗込']):
+                ranks[umaban] = 'C'
+            else:
+                ranks[umaban] = 'C'  # Unknown → default C
+    except Exception:
+        pass
+    return ranks
+
+
+# 追い切りランク → 調教タイム推定マッピング
+# 学習データの分布: wood 4F mean=53.6 std=1.8, sakaro 4F mean=56.6 std=3.0
+RANK_TO_WOOD_4F = {'A': 51.5, 'B': 53.0, 'C': 54.5, 'D': 55.5}
+RANK_TO_SAKARO_4F = {'A': 53.5, 'B': 56.0, 'C': 58.0, 'D': 59.5}
+RANK_TO_SAKARO_3F = {'A': 37.5, 'B': 39.0, 'C': 40.5, 'D': 41.5}
+
 
 MODERN_JOCKEY_WR = {
     'ルメール':0.220,'C.ルメール':0.220,'川田将雅':0.210,'川田':0.210,'武豊':0.171,
@@ -205,65 +261,42 @@ def generate_umaren_bets(df_sorted):
 
 # ===== モデルロード =====
 
+def _load_pkl(fpath):
+    """pkl or pkl.gz をロードする"""
+    for p in [fpath + '.gz', fpath]:
+        if os.path.exists(p):
+            try:
+                opener = gzip.open if p.endswith('.gz') else open
+                with opener(p, 'rb') as f:
+                    return pickle.load(f), p
+            except Exception as e:
+                print(f"[WARN] {os.path.basename(p)} ロード失敗: {e}")
+    return None, None
+
+
 def load_models():
     """Pattern B優先、Pattern Aフォールバック"""
     result = {'model': None, 'features': None, 'sire_map': {}, 'bms_map': {},
               'version': 'v9', 'n_top_encode': 80, 'is_live': False}
-    # Pattern B
-    fpath_b = os.path.join(BASE_DIR, 'keiba_model_v9_central_live.pkl')
-    if os.path.exists(fpath_b):
-        try:
-            with open(fpath_b, 'rb') as f:
-                data = pickle.load(f)
-            if isinstance(data, dict) and 'model' in data:
-                result['model'] = data['model']
-                result['features'] = data.get('features')
-                result['sire_map'] = data.get('sire_map', {})
-                result['bms_map'] = data.get('bms_map', {})
-                result['version'] = data.get('version', 'v9')
-                result['n_top_encode'] = data.get('n_top_encode', 80)
-                result['is_live'] = True
-                print(f"[MODEL] Pattern B (当日情報込み) ロード完了")
-                return result
-        except Exception as e:
-            print(f"[WARN] Pattern Bロード失敗: {e}")
 
-    # Pattern A
-    fpath_a = os.path.join(BASE_DIR, 'keiba_model_v9_central.pkl')
-    if os.path.exists(fpath_a):
-        try:
-            with open(fpath_a, 'rb') as f:
-                data = pickle.load(f)
-            if isinstance(data, dict) and 'model' in data:
-                result['model'] = data['model']
-                result['features'] = data.get('features')
-                result['sire_map'] = data.get('sire_map', {})
-                result['bms_map'] = data.get('bms_map', {})
-                result['version'] = data.get('version', 'v9')
-                result['n_top_encode'] = data.get('n_top_encode', 80)
-                result['is_live'] = False
-                print(f"[MODEL] Pattern A (リークフリー) ロード完了")
-                return result
-        except Exception as e:
-            print(f"[WARN] Pattern Aロード失敗: {e}")
+    candidates = [
+        (os.path.join(BASE_DIR, 'keiba_model_v9_central_live.pkl'), True, 'Pattern B (当日情報込み)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v9_central.pkl'), False, 'Pattern A (リークフリー)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v8.pkl'), False, 'V8フォールバック'),
+    ]
 
-    # V8 fallback
-    fpath_v8 = os.path.join(BASE_DIR, 'keiba_model_v8.pkl')
-    if os.path.exists(fpath_v8):
-        try:
-            with open(fpath_v8, 'rb') as f:
-                data = pickle.load(f)
-            if isinstance(data, dict) and 'model' in data:
-                result['model'] = data['model']
-                result['features'] = data.get('features')
-                result['sire_map'] = data.get('sire_map', {})
-                result['bms_map'] = data.get('bms_map', {})
-                result['version'] = data.get('version', 'v8')
-                result['is_live'] = False
-                print(f"[MODEL] V8フォールバックロード完了")
-                return result
-        except Exception as e:
-            print(f"[ERROR] V8ロード失敗: {e}")
+    for fpath, is_live, label in candidates:
+        data, loaded_path = _load_pkl(fpath)
+        if data and isinstance(data, dict) and 'model' in data:
+            result['model'] = data['model']
+            result['features'] = data.get('features')
+            result['sire_map'] = data.get('sire_map', {})
+            result['bms_map'] = data.get('bms_map', {})
+            result['version'] = data.get('version', 'v9')
+            result['n_top_encode'] = data.get('n_top_encode', 80)
+            result['is_live'] = is_live
+            print(f"[MODEL] {label} ロード完了 ({os.path.basename(loaded_path)})")
+            return result
 
     return result
 
@@ -944,7 +977,7 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['has_training'] = (df['training_time_filled'] != training_mean).astype(int)
         df['training_per_dist'] = df['training_time_filled'] / (dist / 1000.0) if dist > 0 else 0
 
-        # 調教関連（未対応 → デフォルト）
+        # 調教関連 — 追い切りランクから推定
         df['wood_best_4f_filled'] = training_mean
         df['has_wood_training'] = 0
         df['wood_count_2w'] = 0
@@ -952,6 +985,25 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['sakaro_best_3f_filled'] = training_mean - 13.0
         df['has_sakaro_training'] = 0
         df['total_training_count'] = 0
+        # 追い切りランクで上書き
+        oikiri_ranks = fetch_oikiri_ranks(race_id)
+        oikiri_filled = 0
+        if oikiri_ranks:
+            for idx_h in range(len(df)):
+                _umaban = int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0)))
+                _rank = oikiri_ranks.get(_umaban, '')
+                if _rank in RANK_TO_WOOD_4F:
+                    df.loc[df.index[idx_h], 'wood_best_4f_filled'] = RANK_TO_WOOD_4F[_rank]
+                    df.loc[df.index[idx_h], 'has_wood_training'] = 1
+                    df.loc[df.index[idx_h], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
+                    df.loc[df.index[idx_h], 'sakaro_best_4f_filled'] = RANK_TO_SAKARO_4F[_rank]
+                    df.loc[df.index[idx_h], 'sakaro_best_3f_filled'] = RANK_TO_SAKARO_3F[_rank]
+                    df.loc[df.index[idx_h], 'has_sakaro_training'] = 1
+                    df.loc[df.index[idx_h], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
+                    df.loc[df.index[idx_h], 'training_time_filled'] = RANK_TO_WOOD_4F[_rank]
+                    df.loc[df.index[idx_h], 'has_training'] = 1
+                    oikiri_filled += 1
+            print(f"  [調教] 追い切りランク: {oikiri_filled}/{len(df)}馬取得")
 
         # ペース関連（未対応 → デフォルト）
         df['prev_race_first3f'] = 0
