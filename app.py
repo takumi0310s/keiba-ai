@@ -3645,12 +3645,17 @@ def render_feature_summary(summary):
     # 調教データ取得状況
     training_status = ''
     training_count = summary.get('training_filled_count', 0)
+    realtime_count = summary.get('training_realtime_count', 0)
     total_horses = summary.get('total_horses', 0)
     if total_horses > 0:
-        if training_count > 0:
-            training_status = f' | 調教データ: {training_count}/{total_horses}馬リアルタイム取得'
+        if realtime_count > 0:
+            training_status = f' | 調教: {realtime_count}/{total_horses}馬 実タイム取得'
+            if training_count > realtime_count:
+                training_status += f' (+{training_count - realtime_count}馬 ランク推定)'
+        elif training_count > 0:
+            training_status = f' | 調教: {training_count}/{total_horses}馬 ランク推定'
         else:
-            training_status = f' | 調教データ: デフォルト値使用'
+            training_status = f' | 調教: デフォルト値使用'
 
     html = f'<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
     html += f'<span style="color:{color} !important">{status}{training_status}</span>'
@@ -4668,14 +4673,9 @@ if st.button("🔍 予想する") and url_input:
         if _tn and _trainer_lk:
             df.loc[df.index[_ih], 'trainer_top3'] = _trainer_lk.get(_tn, 0.25)
             df.loc[df.index[_ih], 'trainer_top3_calc'] = _trainer_lk.get(_tn, 0.25)
-    # 木/坂路調教 — 追い切りランク(A/B/C/D)から調教特徴量を推定
-    # 追い切りランクがある馬は「調教データあり」として扱い、
-    # ランクに応じた推定タイムを設定する（A=好時計, B=標準, C/D=やや遅め）
-    # 学習データの分布: wood 4F mean=53.6 std=1.8, sakaro 4F mean=56.6 std=3.0
-    _RANK_TO_WOOD_4F = {'A': 51.5, 'B': 53.0, 'C': 54.5, 'D': 55.5}
-    _RANK_TO_SAKARO_4F = {'A': 53.5, 'B': 56.0, 'C': 58.0, 'D': 59.5}
-    _RANK_TO_SAKARO_3F = {'A': 37.5, 'B': 39.0, 'C': 40.5, 'D': 41.5}
+    # 木/坂路調教 — scrape_training.py で実タイム or ランク推定を取得
     _training_filled_count = 0
+    _training_realtime_count = 0
     if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
         df['wood_best_4f_filled'] = 52.0
         df['has_wood_training'] = 0
@@ -4684,21 +4684,40 @@ if st.button("🔍 予想する") and url_input:
         df['sakaro_best_3f_filled'] = 39.0
         df['has_sakaro_training'] = 0
         df['total_training_count'] = 0
-    # 追い切りランクで上書き（ランクがある馬のみ）
-    for _ih in range(len(df)):
-        if _ih < len(horses):
-            _rank = horses[_ih].get('調教ランク', '')
-            if _rank in _RANK_TO_WOOD_4F:
-                df.loc[df.index[_ih], 'wood_best_4f_filled'] = _RANK_TO_WOOD_4F[_rank]
-                df.loc[df.index[_ih], 'has_wood_training'] = 1
-                df.loc[df.index[_ih], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
-                df.loc[df.index[_ih], 'sakaro_best_4f_filled'] = _RANK_TO_SAKARO_4F[_rank]
-                df.loc[df.index[_ih], 'sakaro_best_3f_filled'] = _RANK_TO_SAKARO_3F[_rank]
-                df.loc[df.index[_ih], 'has_sakaro_training'] = 1
-                df.loc[df.index[_ih], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
-                df.loc[df.index[_ih], 'training_time_filled'] = _RANK_TO_WOOD_4F[_rank]
-                df.loc[df.index[_ih], 'has_training'] = 1
+    try:
+        from scrape_training import get_training_features, fetch_training_times
+        _training_feats = get_training_features(race_id, len(df), is_nar=is_nar)
+        _raw_training = fetch_training_times(race_id, is_nar=is_nar)
+        for _ih in range(len(df)):
+            _umaban = int(df.iloc[_ih].get('馬番', 0)) if '馬番' in df.columns else 0
+            if _umaban in _training_feats:
+                _tf = _training_feats[_umaban]
+                for _key, _val in _tf.items():
+                    df.loc[df.index[_ih], _key] = _val
                 _training_filled_count += 1
+                # Check if we got real times (not rank-based)
+                _rd = _raw_training.get(_umaban, {})
+                if _rd.get('time_4f', 0) > 0:
+                    _training_realtime_count += 1
+    except Exception:
+        # Fallback: use oikiri ranks already in horses dict
+        _RANK_TO_WOOD_4F = {'A': 51.5, 'B': 53.0, 'C': 54.5, 'D': 55.5}
+        _RANK_TO_SAKARO_4F = {'A': 53.5, 'B': 56.0, 'C': 58.0, 'D': 59.5}
+        _RANK_TO_SAKARO_3F = {'A': 37.5, 'B': 39.0, 'C': 40.5, 'D': 41.5}
+        for _ih in range(len(df)):
+            if _ih < len(horses):
+                _rank = horses[_ih].get('調教ランク', '')
+                if _rank in _RANK_TO_WOOD_4F:
+                    df.loc[df.index[_ih], 'wood_best_4f_filled'] = _RANK_TO_WOOD_4F[_rank]
+                    df.loc[df.index[_ih], 'has_wood_training'] = 1
+                    df.loc[df.index[_ih], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
+                    df.loc[df.index[_ih], 'sakaro_best_4f_filled'] = _RANK_TO_SAKARO_4F[_rank]
+                    df.loc[df.index[_ih], 'sakaro_best_3f_filled'] = _RANK_TO_SAKARO_3F[_rank]
+                    df.loc[df.index[_ih], 'has_sakaro_training'] = 1
+                    df.loc[df.index[_ih], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
+                    df.loc[df.index[_ih], 'training_time_filled'] = _RANK_TO_WOOD_4F[_rank]
+                    df.loc[df.index[_ih], 'has_training'] = 1
+                    _training_filled_count += 1
     # ペース/ラップ特徴量
     if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
         df['prev_race_first3f'] = 35.0
@@ -4787,6 +4806,7 @@ if st.button("🔍 予想する") and url_input:
     # 特徴量サマリー（フォールバック前に計算）
     _feat_summary = get_feature_summary(df, use_features)
     _feat_summary['training_filled_count'] = _training_filled_count
+    _feat_summary['training_realtime_count'] = _training_realtime_count
     _feat_summary['total_horses'] = len(df)
     for f in use_features:
         if f not in df.columns:

@@ -977,7 +977,7 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['has_training'] = (df['training_time_filled'] != training_mean).astype(int)
         df['training_per_dist'] = df['training_time_filled'] / (dist / 1000.0) if dist > 0 else 0
 
-        # 調教関連 — 追い切りランクから推定
+        # 調教関連 — scrape_training.py で実タイム or ランク推定を取得
         df['wood_best_4f_filled'] = training_mean
         df['has_wood_training'] = 0
         df['wood_count_2w'] = 0
@@ -985,25 +985,41 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         df['sakaro_best_3f_filled'] = training_mean - 13.0
         df['has_sakaro_training'] = 0
         df['total_training_count'] = 0
-        # 追い切りランクで上書き
-        oikiri_ranks = fetch_oikiri_ranks(race_id)
         oikiri_filled = 0
-        if oikiri_ranks:
+        realtime_count = 0
+        try:
+            from scrape_training import get_training_features, fetch_training_times
+            _tf = get_training_features(race_id, len(df))
+            _raw = fetch_training_times(race_id)
             for idx_h in range(len(df)):
                 _umaban = int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0)))
-                _rank = oikiri_ranks.get(_umaban, '')
-                if _rank in RANK_TO_WOOD_4F:
-                    df.loc[df.index[idx_h], 'wood_best_4f_filled'] = RANK_TO_WOOD_4F[_rank]
-                    df.loc[df.index[idx_h], 'has_wood_training'] = 1
-                    df.loc[df.index[idx_h], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
-                    df.loc[df.index[idx_h], 'sakaro_best_4f_filled'] = RANK_TO_SAKARO_4F[_rank]
-                    df.loc[df.index[idx_h], 'sakaro_best_3f_filled'] = RANK_TO_SAKARO_3F[_rank]
-                    df.loc[df.index[idx_h], 'has_sakaro_training'] = 1
-                    df.loc[df.index[idx_h], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
-                    df.loc[df.index[idx_h], 'training_time_filled'] = RANK_TO_WOOD_4F[_rank]
-                    df.loc[df.index[idx_h], 'has_training'] = 1
+                if _umaban in _tf:
+                    for _k, _v in _tf[_umaban].items():
+                        df.loc[df.index[idx_h], _k] = _v
                     oikiri_filled += 1
-            print(f"  [調教] 追い切りランク: {oikiri_filled}/{len(df)}馬取得")
+                    if _raw.get(_umaban, {}).get('time_4f', 0) > 0:
+                        realtime_count += 1
+            src = f"{realtime_count}馬実タイム" if realtime_count > 0 else f"{oikiri_filled}馬ランク推定"
+            print(f"  [調教] {src} / {len(df)}馬中{oikiri_filled}馬取得")
+        except Exception:
+            # Fallback: oikiri ranks
+            oikiri_ranks = fetch_oikiri_ranks(race_id)
+            if oikiri_ranks:
+                for idx_h in range(len(df)):
+                    _umaban = int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0)))
+                    _rank = oikiri_ranks.get(_umaban, '')
+                    if _rank in RANK_TO_WOOD_4F:
+                        df.loc[df.index[idx_h], 'wood_best_4f_filled'] = RANK_TO_WOOD_4F[_rank]
+                        df.loc[df.index[idx_h], 'has_wood_training'] = 1
+                        df.loc[df.index[idx_h], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
+                        df.loc[df.index[idx_h], 'sakaro_best_4f_filled'] = RANK_TO_SAKARO_4F[_rank]
+                        df.loc[df.index[idx_h], 'sakaro_best_3f_filled'] = RANK_TO_SAKARO_3F[_rank]
+                        df.loc[df.index[idx_h], 'has_sakaro_training'] = 1
+                        df.loc[df.index[idx_h], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
+                        df.loc[df.index[idx_h], 'training_time_filled'] = RANK_TO_WOOD_4F[_rank]
+                        df.loc[df.index[idx_h], 'has_training'] = 1
+                        oikiri_filled += 1
+                print(f"  [調教] 追い切りランク: {oikiri_filled}/{len(df)}馬取得")
 
         # ペース関連（未対応 → デフォルト）
         df['prev_race_first3f'] = 0
