@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-03-26 01:32:01",
+  "data_collected": {
+    "training_times": {
+      "file": "data/netkeiba_training_times.csv",
+      "rows": 2551,
+      "races": 203,
+      "coverage_4f": "70%"
+    },
+    "stable_comments": {
+      "file": "data/netkeiba_stable_comments.csv",
+      "rows": 856,
+      "races": 69
+    },
+    "race_tendency": {
+      "file": "data/netkeiba_race_tendency.csv",
+      "rows": 3,
+      "note": "テキスト傾向データ。特徴量化は困難"
+    },
+    "speed_index": {
+      "status": "NOT_AVAILABLE",
+      "note": "speed_index.html は 404。netkeiba にタイム指数ページは存在しない"
+    },
+    "extended_form": {
+      "status": "DUPLICATE",
+      "note": "馬柱5走表はjra_races_full.csvと完全重複。新規データなし"
+    },
+    "nar_premium": {
+      "status": "SKIPPED",
+      "note": "中央モデル優先。NAR用は将来実装"
+    }
+  },
+  "existing_training_features_87": [
+    "training_time_filled",
+    "has_training",
+    "training_per_dist",
+    "wood_best_4f_filled",
+    "has_wood_training",
+    "wood_count_2w",
+    "sakaro_best_4f_filled",
+    "sakaro_best_3f_filled",
+    "has_sakaro_training",
+    "total_training_count"
+  ],
+  "new_feature_candidates": {
+    "time_6f": {
+      "source": "oikiri 6Fタイム",
+      "coverage": "10%",
+      "note": "CWのみ(坂路は非該当)",
+      "overlap": "なし(新規)"
+    },
+    "time_5f": {
+      "source": "oikiri 5Fタイム",
+      "coverage": "10%",
+      "note": "CWのみ",
+      "overlap": "なし(新規)"
+    },
+    "time_1f_last": {
+      "source": "oikiri ラスト1F",
+      "coverage": "86%",
+      "note": "追い切りのラスト1ハロン",
+      "overlap": "なし(新規)"
+    },
+    "training_intensity": {
+      "source": "oikiri 調教強度",
+      "coverage": "27%",
+      "note": "馬なり/強め/一杯のカテゴリ変数",
+      "overlap": "なし(新規)"
+    },
+    "training_course_type": {
+      "source": "oikiri コース種別",
+      "coverage": "100%",
+      "note": "CW/坂路/ポリの実コース",
+      "overlap": "has_wood/sakaro_trainingと部分重複"
+    },
+    "stable_comment_score": {
+      "source": "厩舎コメント",
+      "coverage": "約50-70%",
+      "note": "-3〜+3のスコア",
+      "overlap": "なし(新規)"
+    }
+  },
+  "recommendations": [
+    "time_1f_last (ラスト1F): 追い切りの末脚を直接測定。最も有望な新規特徴量",
+    "training_intensity (強度): 馬なり/強め/一杯で調教内容を反映。エンコード必要",
+    "time_6f (CW 6Fタイム): CW調教の全体タイム。坂路馬はカバレッジ0%",
+    "stable_comment_score: 厩舎の主観評価。ノイズが多いが情報は新規"
+  ],
+  "not_recommended": [
+    "time_5f: time_4fと高相関(情報重複)",
+    "training_course_type: has_wood/sakaro_trainingで概ねカバー済み"
+  ]
+}

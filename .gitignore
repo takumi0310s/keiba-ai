@@ -22,6 +22,9 @@ data/feature_lookups.pkl
 data/feature_lookups.pkl.gz
 data/jra_payouts.csv
 data/jra_payout_progress.json
+data/netkeiba_training_times.csv
+data/netkeiba_stable_comments.csv
+data/netkeiba_race_tendency.csv
 
 # Large files not needed on Streamlit Cloud (use .pkl.gz versions)
 keiba_model_v8.pkl
