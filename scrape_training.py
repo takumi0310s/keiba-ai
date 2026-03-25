@@ -156,9 +156,8 @@ def fetch_training_times(race_id, is_nar=False):
                 'date': '', 'is_sakaro': False, 'is_wood': False, 'laps': [],
             }
 
-        # Now try to parse premium content: detailed training time data
-        # Premium content is in TrainingTimeDataList or in extended table rows
-        _parse_premium_training(soup, result)
+        # Parse premium content from OikiriTable rows + TrainingTimeDataList
+        _parse_premium_oikiri(soup, result)
 
         _CACHE[race_id] = result
 
@@ -168,113 +167,94 @@ def fetch_training_times(race_id, is_nar=False):
     return result
 
 
-def _parse_premium_training(soup, result):
-    """Parse premium training time data from the oikiri page.
+def _parse_premium_oikiri(soup, result):
+    """Parse premium training data from the oikiri page.
 
-    Tries multiple HTML patterns since netkeiba's structure varies.
+    Structure (verified 2026-03):
+    - table.OikiriTable contains tr.OikiriDataHead{N} per horse
+    - Each tr has: 枠, 馬番, 印, 馬名, 日付, コース, 馬場, 乗り役, タイム(6F~1F)
+    - Also: ul.TrainingTimeDataList per horse with 5 items: [6F?, 5F?, 4F, 3F, 1F]
+      each formatted as "52.3(14.4)" = cumulative_time(lap_time)
     """
-    # Pattern 1: TrainingTimeDataList (ul > li structure)
-    for ul in soup.find_all("ul", class_=re.compile(r"TrainingTimeDataList")):
-        _parse_training_list(ul, result)
+    # Find the premium table
+    table = soup.find("table", class_=re.compile(r"OikiriTable"))
+    if not table:
+        return
 
-    # Pattern 2: Extended table with training details
-    # Sometimes training times appear in additional table rows/cells
-    for table in soup.find_all("table"):
-        _parse_training_table(table, result)
+    # Get all TrainingTimeDataList (one per horse, in order)
+    time_lists = soup.find_all("ul", class_="TrainingTimeDataList")
 
-    # Pattern 3: div-based training data (newer layout)
-    for div in soup.find_all("div", class_=re.compile(r"OikiriDataHead|TrainingDetail")):
-        _parse_training_div(div, result)
-
-
-def _parse_training_list(ul, result):
-    """Parse ul.TrainingTimeDataList structure."""
-    lis = ul.find_all("li", recursive=False)
-    current_umaban = 0
-
-    for li in lis:
-        # Check if this li has a horse number
-        umaban_elem = li.find(class_=re.compile(r"Umaban|Horse_Num"))
-        if umaban_elem:
-            try:
-                current_umaban = int(umaban_elem.get_text(strip=True))
-            except (ValueError, TypeError):
-                pass
-
-        if current_umaban == 0 or current_umaban not in result:
+    rows = table.find_all("tr", class_=re.compile(r"OikiriDataHead"))
+    for idx, row in enumerate(rows):
+        # Extract umaban
+        td_umaban = row.select_one("td.Umaban")
+        if not td_umaban:
+            continue
+        try:
+            umaban = int(td_umaban.get_text(strip=True))
+        except (ValueError, TypeError):
+            continue
+        if umaban not in result:
             continue
 
-        text = li.get_text(strip=True)
+        full_text = row.get_text(strip=True)
 
-        # Extract training course
-        course = _extract_course(text)
-        if course:
-            result[current_umaban]['course'] = course
-            result[current_umaban]['is_sakaro'] = '坂路' in course
-            result[current_umaban]['is_wood'] = any(x in course for x in ['CW', 'ウッド', 'Ｗ'])
-
-        # Extract times (patterns: 52.3-38.1-12.5 or 4F 52.3)
-        _extract_times(text, result[current_umaban])
+        # Extract course from row text: 美Ｗ=美浦ウッド, 美坂=美浦坂路, 栗Ｗ=栗東ウッド, 栗坂=栗東坂路
+        if re.search(r'[美栗]坂', full_text):
+            result[umaban]['course'] = '坂路'
+            result[umaban]['is_sakaro'] = True
+        elif re.search(r'[美栗][ＷW]', full_text):
+            result[umaban]['course'] = 'CW'
+            result[umaban]['is_wood'] = True
+        elif re.search(r'ポリ', full_text):
+            result[umaban]['course'] = 'ポリトラック'
+            result[umaban]['is_wood'] = True
 
         # Extract intensity
-        intensity = _extract_intensity(text)
-        if intensity:
-            result[current_umaban]['intensity'] = intensity
-
-        # Extract date
-        date = _extract_date(text)
-        if date:
-            result[current_umaban]['date'] = date
-
-
-def _parse_training_table(table, result):
-    """Parse extended training table for time data."""
-    rows = table.find_all("tr")
-    for row in rows:
-        tds = row.find_all("td")
-        if len(tds) < 3:
-            continue
-
-        # Try to find umaban
-        umaban = 0
-        for td in tds:
-            cls = " ".join(td.get("class", []))
-            if "Umaban" in cls:
-                try:
-                    umaban = int(td.get_text(strip=True))
-                except (ValueError, TypeError):
-                    pass
-                break
-
-        if umaban == 0 or umaban not in result:
-            continue
-
-        # Look for time data in remaining cells
-        full_text = row.get_text(strip=True)
-        _extract_times(full_text, result[umaban])
-
-        course = _extract_course(full_text)
-        if course:
-            result[umaban]['course'] = course
-            result[umaban]['is_sakaro'] = '坂路' in course
-            result[umaban]['is_wood'] = any(x in course for x in ['CW', 'ウッド', 'Ｗ'])
-
         intensity = _extract_intensity(full_text)
         if intensity:
             result[umaban]['intensity'] = intensity
 
+        # Extract date
+        date = _extract_date(full_text)
+        if date:
+            result[umaban]['date'] = date
 
-def _parse_training_div(div, result):
-    """Parse div-based training detail sections."""
-    text = div.get_text(strip=True)
-    # Try to associate with a horse number
-    umaban_match = re.search(r'(\d{1,2})番', text)
-    if not umaban_match:
-        return
-    umaban = int(umaban_match.group(1))
-    if umaban not in result:
-        return
-    _extract_times(text, result[umaban])
+        # Extract times from TrainingTimeDataList
+        if idx < len(time_lists):
+            ul = time_lists[idx]
+            lis = ul.find_all("li")
+            # 5 items: index 0=6F(?), 1=5F(?), 2=4F, 3=3F, 4=1F
+            # Format: "52.3(14.4)" or "-" (no data)
+            times = []
+            for li in lis:
+                text = li.get_text(strip=True)
+                m = re.match(r'(\d+\.?\d*)\(', text)
+                if m:
+                    times.append(float(m.group(1)))
+                else:
+                    times.append(0.0)
+
+            # Assign: positions depend on course
+            # CW (ウッド): 6F, 5F, 4F, 3F, 1F (all 5 values)
+            # 坂路: -, 4F, 3F, 2F, 1F (first is "-")
+            if len(times) >= 5:
+                if times[0] > 0:
+                    # CW: times[2]=4F, times[3]=3F, times[4]=1F
+                    if 35 < times[2] < 70:
+                        result[umaban]['time_4f'] = times[2]
+                    if 25 < times[3] < 50:
+                        result[umaban]['time_3f'] = times[3]
+                    if 10 < times[4] < 20:
+                        result[umaban]['time_1f'] = times[4]
+                else:
+                    # 坂路: times[1]=4F, times[2]=3F, times[4]=1F
+                    if 35 < times[1] < 70:
+                        result[umaban]['time_4f'] = times[1]
+                    if 25 < times[2] < 50:
+                        result[umaban]['time_3f'] = times[2]
+                    if 10 < times[4] < 20:
+                        result[umaban]['time_1f'] = times[4]
 
 
 def _extract_times(text, entry):
@@ -414,21 +394,30 @@ def get_training_features(race_id, num_horses, is_nar=False):
             feat['training_time_filled'] = data['time_4f']
             feat['has_training'] = 1
 
-            if data['is_wood'] or data['is_sakaro']:
-                if data['is_wood']:
-                    feat['wood_best_4f_filled'] = data['time_4f']
-                    feat['has_wood_training'] = 1
-                    feat['wood_count_2w'] = 2
-                if data['is_sakaro']:
-                    feat['sakaro_best_4f_filled'] = data['time_4f']
-                    feat['has_sakaro_training'] = 1
-                    if data['time_3f'] > 0:
-                        feat['sakaro_best_3f_filled'] = data['time_3f']
-            else:
-                # Unknown course → treat as wood
+            if data['is_sakaro']:
+                feat['sakaro_best_4f_filled'] = data['time_4f']
+                feat['has_sakaro_training'] = 1
+                if data['time_3f'] > 0:
+                    feat['sakaro_best_3f_filled'] = data['time_3f']
+                # 坂路の馬もwood側にはデフォルト平均をセット（学習データと同じ扱い）
+                feat['wood_best_4f_filled'] = 52.0
+                feat['has_wood_training'] = 0
+                feat['wood_count_2w'] = 0
+            elif data['is_wood']:
                 feat['wood_best_4f_filled'] = data['time_4f']
                 feat['has_wood_training'] = 1
                 feat['wood_count_2w'] = 2
+                # CW馬もsakaro側にはデフォルト平均をセット
+                feat['sakaro_best_4f_filled'] = 53.0
+                feat['sakaro_best_3f_filled'] = 39.0
+                feat['has_sakaro_training'] = 0
+            else:
+                feat['wood_best_4f_filled'] = data['time_4f']
+                feat['has_wood_training'] = 1
+                feat['wood_count_2w'] = 2
+                feat['sakaro_best_4f_filled'] = 53.0
+                feat['sakaro_best_3f_filled'] = 39.0
+                feat['has_sakaro_training'] = 0
             feat['total_training_count'] = 3
         elif rank in RANK_TO_WOOD_4F:
             # Fallback: rank-based estimation
