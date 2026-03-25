@@ -437,8 +437,136 @@ def get_training_features(race_id, num_horses, is_nar=False):
     return features
 
 
+# ============================================================
+# 厩舎コメント取得・スコア化
+# ============================================================
+
+# ポジティブ/ネガティブキーワード → スコア
+_POSITIVE_KEYWORDS = {
+    3: ['抜群', '絶好調', '文句なし', '破格', '圧巻', '最高', '凄い動き'],
+    2: ['好調', '上昇', '仕上がり良', '動き良', '好内容', '力強い', '好時計', '良化', '好気配',
+        '成長', '充実', '上積み', '好仕上', '態勢整', '万全', '上向き', '具合は良',
+        '楽しみ', '期待', '魅力', '自信', 'いい動き', 'いい状態', '良い状態',
+        '手応え十分', '申し分', '素晴らし', '状態良'],
+    1: ['順調', 'まずまず', '変わりなく', '無難', '及第点', '堅実', '安定', '問題な',
+        'しっかり', 'いつも通り', '落ち着い', '悪くな', '前走と同じ', '変わらず'],
+}
+_NEGATIVE_KEYWORDS = {
+    -1: ['平凡', '物足りない', '平行線', 'ひと息', '微妙', '地味', '強調材料に欠け',
+         '前走ほどでは', 'もう一つ', 'どうか', '未知数'],
+    -2: ['不安', '下降', '太め', 'イマイチ', '重め', '気になる', '反応鈍い', '落ち',
+         '心配', '課題', '苦しい', '力んで', 'ピリッとしない'],
+    -3: ['休み明け', '状態悪', '仕上がり途上', '不振', '深刻', '故障', '痛め'],
+}
+
+
+def _score_comment(text):
+    """コメントテキストをスコア化。"""
+    if not text:
+        return 0
+    score = 0
+    for s, keywords in _POSITIVE_KEYWORDS.items():
+        for kw in keywords:
+            if kw in text:
+                score = max(score, s)
+    for s, keywords in _NEGATIVE_KEYWORDS.items():
+        for kw in keywords:
+            if kw in text:
+                score = min(score, s)
+    return score
+
+
+_COMMENT_CACHE = {}
+
+
+def fetch_stable_comments(race_id, is_nar=False):
+    """netkeibaの厩舎コメントページから各馬のコメントとスコアを取得。
+
+    Returns:
+        dict: {馬番: {'comment': str, 'score': int (-3 to +3)}}
+    """
+    if race_id in _COMMENT_CACHE:
+        return _COMMENT_CACHE[race_id]
+
+    result = {}
+    try:
+        session = _make_session()
+        if is_nar:
+            url = f"https://nar.netkeiba.com/race/comment.html?race_id={race_id}"
+        else:
+            url = f"https://race.netkeiba.com/race/comment.html?race_id={race_id}"
+
+        if session:
+            resp = session.get(url, timeout=10)
+        else:
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        table = soup.find("table", class_=re.compile(r"Stable_Comment|Comment_Table"))
+        if not table:
+            _COMMENT_CACHE[race_id] = result
+            return result
+
+        rows = table.find_all("tr")
+        for row in rows:
+            tds = row.find_all("td")
+            if len(tds) < 4:
+                continue
+            # Column order: 枠, 馬番, 馬名, コメント, [評価]
+            try:
+                umaban = int(tds[1].get_text(strip=True))
+            except (ValueError, TypeError, IndexError):
+                continue
+            comment = tds[3].get_text(strip=True) if len(tds) > 3 else ""
+            score = _score_comment(comment)
+            result[umaban] = {'comment': comment, 'score': score}
+
+        _COMMENT_CACHE[race_id] = result
+    except Exception:
+        pass
+    return result
+
+
+# ============================================================
+# Cookie状態チェック（キャッシュ付き）
+# ============================================================
+_COOKIE_STATUS = None  # (bool, str) or None
+
+
+def get_cookie_status(force=False):
+    """Cookie状態を取得（キャッシュ付き）。"""
+    global _COOKIE_STATUS
+    if _COOKIE_STATUS is not None and not force:
+        return _COOKIE_STATUS
+    _COOKIE_STATUS = check_premium_access()
+    return _COOKIE_STATUS
+
+
+def is_cookie_valid():
+    """Cookie有効かどうか。"""
+    ok, _ = get_cookie_status()
+    return ok
+
+
+def cookie_warning_html():
+    """Cookie無効時の警告HTML（app.py表示用）。空文字ならOK。"""
+    ok, msg = get_cookie_status()
+    if ok:
+        return ''
+    if _load_cookie() is None:
+        return ''  # Cookie未設定 → 警告不要（無料モード）
+    # Cookie設定済みだが無効
+    return (
+        '<div style="margin:8px 0;padding:10px 16px;background:#3a1a0a;'
+        'border:1px solid #e67e22;border-radius:8px;color:#e67e22;font-size:0.85em;">'
+        '&#9888; netkeiba Cookie期限切れ: 調教実タイムが取得できません。'
+        'ブラウザで再ログインし .env の NETKEIBA_COOKIE を更新してください。'
+        '（ランク推定でフォールバック中）</div>'
+    )
+
+
 if __name__ == '__main__':
-    # Test
     import sys, io
     if sys.platform == 'win32':
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -446,18 +574,16 @@ if __name__ == '__main__':
     ok, msg = check_premium_access()
     print(f"Premium: {msg}")
 
-    if ok:
-        data = fetch_training_times('202609010901')
-        print(f"\nTraining data for 202609010901: {len(data)} horses")
-        for umaban, d in sorted(data.items()):
-            print(f"  馬番{umaban}: rank={d['rank']} course={d['course']} "
-                  f"4F={d['time_4f']} 3F={d['time_3f']} 1F={d['time_1f']} "
-                  f"intensity={d['intensity']}")
-    else:
-        print("Testing with rank-only mode (no premium)...")
-        data = fetch_training_times('202609010901')
-        print(f"Rank data: {len(data)} horses")
-        features = get_training_features('202609010901', 10)
-        print(f"Features: {len(features)} horses")
-        for umaban, f in sorted(features.items()):
-            print(f"  馬番{umaban}: {f}")
+    # Test training times
+    test_id = '202606020501'
+    data = fetch_training_times(test_id)
+    realtime = sum(1 for d in data.values() if d.get('time_4f', 0) > 0)
+    print(f"\nTraining: {len(data)} horses ({realtime} realtime)")
+    for umaban, d in sorted(data.items())[:5]:
+        print(f"  馬番{umaban}: rank={d['rank']} 4F={d['time_4f']} course={d['course']}")
+
+    # Test stable comments
+    comments = fetch_stable_comments(test_id)
+    print(f"\nComments: {len(comments)} horses")
+    for umaban, c in sorted(comments.items())[:5]:
+        print(f"  馬番{umaban}: score={c['score']:+d} comment={c['comment'][:40]}")

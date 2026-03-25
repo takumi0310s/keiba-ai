@@ -3642,20 +3642,25 @@ def render_feature_summary(summary):
     if default_count > 0:
         status += f' <span style="color:#6a6a80 !important">(+{default_count}個はデフォルト値で補完)</span>'
 
-    # 調教データ取得状況
+    # 調教・厩舎コメント取得状況
     training_status = ''
     training_count = summary.get('training_filled_count', 0)
     realtime_count = summary.get('training_realtime_count', 0)
+    comment_count = summary.get('comment_count', 0)
     total_horses = summary.get('total_horses', 0)
     if total_horses > 0:
+        parts = []
         if realtime_count > 0:
-            training_status = f' | 調教: {realtime_count}/{total_horses}馬 実タイム取得'
+            parts.append(f'調教: {realtime_count}/{total_horses}馬 実タイム')
             if training_count > realtime_count:
-                training_status += f' (+{training_count - realtime_count}馬 ランク推定)'
+                parts.append(f'+{training_count - realtime_count}馬 ランク推定')
         elif training_count > 0:
-            training_status = f' | 調教: {training_count}/{total_horses}馬 ランク推定'
+            parts.append(f'調教: {training_count}/{total_horses}馬 ランク推定')
         else:
-            training_status = f' | 調教: デフォルト値使用'
+            parts.append('調教: デフォルト値')
+        if comment_count > 0:
+            parts.append(f'厩舎コメント: {comment_count}/{total_horses}馬')
+        training_status = ' | ' + ' / '.join(parts)
 
     html = f'<div style="margin:6px 0 10px 0;padding:6px 12px;font-size:0.78em;color:#8a8a9a !important;border-top:1px solid rgba(255,255,255,0.06);">'
     html += f'<span style="color:{color} !important">{status}{training_status}</span>'
@@ -4326,12 +4331,23 @@ if st.button("🔍 予想する") and url_input:
     # Fetch training (oikiri) data
     with st.spinner("調教データを取得中..."):
         training_data = fetch_training_data(race_id, is_nar=is_nar)
+    # Fetch stable comments (premium)
+    _stable_comments = {}
+    with st.spinner("厩舎コメントを取得中..."):
+        try:
+            from scrape_training import fetch_stable_comments, cookie_warning_html
+            _stable_comments = fetch_stable_comments(race_id, is_nar=is_nar)
+            _cookie_warn = cookie_warning_html()
+            if _cookie_warn:
+                st.markdown(_cookie_warn, unsafe_allow_html=True)
+        except Exception:
+            pass
     for horse in horses:
         umaban = horse.get('馬番', 0)
         if umaban in realtime_odds:
             horse['単勝オッズ'] = realtime_odds[umaban]
         else:
-            horse['単勝オッズ'] = 0.0  # 取得できなかった場合
+            horse['単勝オッズ'] = 0.0
         # 調教データ
         if umaban in training_data:
             horse['調教ランク'] = training_data[umaban]['rank']
@@ -4341,6 +4357,13 @@ if st.button("🔍 予想する") and url_input:
             horse['調教ランク'] = ''
             horse['調教評価'] = ''
             horse['調教ラベル'] = ''
+        # 厩舎コメント
+        if umaban in _stable_comments:
+            horse['厩舎コメント'] = _stable_comments[umaban]['comment']
+            horse['厩舎スコア'] = _stable_comments[umaban]['score']
+        else:
+            horse['厩舎コメント'] = ''
+            horse['厩舎スコア'] = 0
     odds_available = len(realtime_odds) > 0
     # Fetch track bias (当日前レース結果分析)
     with st.spinner("馬場バイアスを分析中..."):
@@ -4808,6 +4831,7 @@ if st.button("🔍 予想する") and url_input:
     _feat_summary['training_filled_count'] = _training_filled_count
     _feat_summary['training_realtime_count'] = _training_realtime_count
     _feat_summary['total_horses'] = len(df)
+    _feat_summary['comment_count'] = sum(1 for h in horses if h.get('厩舎コメント', ''))
     for f in use_features:
         if f not in df.columns:
             df[f] = 0

@@ -164,17 +164,17 @@ def check_netkeiba():
     except Exception as e:
         fail("オッズAPI", f"接続エラー: {e}")
 
-    # 追い切りデータ（調教ランク + プレミアム実タイム）テスト
+    # 追い切りデータ（調教ランク + プレミアム実タイム + 厩舎コメント）テスト
     try:
         sys.path.insert(0, BASE_DIR)
-        from scrape_training import check_premium_access, fetch_training_times
+        from scrape_training import check_premium_access, fetch_training_times, fetch_stable_comments
         premium_ok, premium_msg = check_premium_access()
         if premium_ok:
             ok("調教タイム(Premium)", premium_msg)
         else:
             warn("調教タイム(Premium)", premium_msg)
 
-        # Test rank fetch (always free)
+        # Test rank + time fetch
         test_race = "202606020501"
         data = fetch_training_times(test_race)
         rank_count = sum(1 for d in data.values() if d.get('rank'))
@@ -185,6 +185,13 @@ def check_netkeiba():
             ok("追い切りデータ", f"{rank_count}馬のランク取得（実タイムはPremium Cookie要）")
         else:
             warn("追い切りデータ", "取得0件（レース未発走の可能性）")
+
+        # Test stable comments
+        comments = fetch_stable_comments(test_race)
+        if comments:
+            ok("厩舎コメント", f"{len(comments)}馬のコメント取得")
+        else:
+            warn("厩舎コメント", "取得0件")
     except Exception as e:
         warn("追い切りデータ", f"テスト失敗: {e}")
 

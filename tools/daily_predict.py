@@ -988,7 +988,7 @@ def build_features(horses, race_info, model_data, odds_dict=None,
         oikiri_filled = 0
         realtime_count = 0
         try:
-            from scrape_training import get_training_features, fetch_training_times
+            from scrape_training import get_training_features, fetch_training_times, fetch_stable_comments
             _tf = get_training_features(race_id, len(df))
             _raw = fetch_training_times(race_id)
             for idx_h in range(len(df)):
@@ -1001,6 +1001,10 @@ def build_features(horses, race_info, model_data, odds_dict=None,
                         realtime_count += 1
             src = f"{realtime_count}馬実タイム" if realtime_count > 0 else f"{oikiri_filled}馬ランク推定"
             print(f"  [調教] {src} / {len(df)}馬中{oikiri_filled}馬取得")
+            # 厩舎コメント取得（ログ用）
+            _comments = fetch_stable_comments(race_id)
+            if _comments:
+                print(f"  [厩舎] コメント {len(_comments)}馬取得")
         except Exception:
             # Fallback: oikiri ranks
             oikiri_ranks = fetch_oikiri_ranks(race_id)
