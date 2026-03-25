@@ -1005,6 +1005,16 @@ def build_features(horses, race_info, model_data, odds_dict=None,
             _comments = fetch_stable_comments(race_id)
             if _comments:
                 print(f"  [厩舎] コメント {len(_comments)}馬取得")
+            # タイム指数取得（ログ用）
+            try:
+                from scrape_speed_index import scrape_speed_index, _load_session as _si_load
+                _si_sess = _si_load()
+                if _si_sess:
+                    _si_rows = scrape_speed_index(_si_sess, race_id)
+                    if _si_rows:
+                        print(f"  [指数] タイム指数 {len(_si_rows)}馬取得")
+            except Exception:
+                pass
         except Exception:
             # Fallback: oikiri ranks
             oikiri_ranks = fetch_oikiri_ranks(race_id)

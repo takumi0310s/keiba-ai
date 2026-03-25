@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-26 01:57:56",
+  "generated_at": "2026-03-26 08:24:10",
   "data_collected": {
     "training_times": {
       "file": "data/netkeiba_training_times.csv",
@@ -115,5 +115,61 @@
   "not_recommended": [
     "time_5f: time_4fと高相関(情報重複)",
     "training_course_type: has_wood/sakaro_trainingで概ねカバー済み"
-  ]
+  ],
+  "feature_priority": {
+    "priority_1_immediate": {
+      "features": [
+        "time_1f_last",
+        "index_max",
+        "index_run1"
+      ],
+      "reason": "High coverage (86-99%), completely new information, no overlap with existing 87 features",
+      "expected_impact": "HIGH - speed index captures ability in a single number that combines time+weight+course"
+    },
+    "priority_2_moderate": {
+      "features": [
+        "index_avg5",
+        "training_intensity",
+        "stable_comment_score"
+      ],
+      "reason": "Moderate coverage (27-93%), some noise but unique signal",
+      "expected_impact": "MEDIUM - additional context for prediction"
+    },
+    "priority_3_low": {
+      "features": [
+        "time_6f",
+        "time_5f",
+        "index_dist",
+        "index_course"
+      ],
+      "reason": "Low coverage or high correlation with priority 1 features",
+      "expected_impact": "LOW - likely redundant with higher priority features"
+    }
+  },
+  "overlap_analysis": {
+    "index_max_vs_existing": {
+      "prev_finish": "Partial (both measure ability but different angle: placement vs time-adjusted)",
+      "horse_career_wr": "Low (career win rate ≠ speed figure)",
+      "prev_odds_log": "Medium (market assessment correlates with speed figures)",
+      "verdict": "Mostly new information. Strong candidate."
+    },
+    "index_run1_vs_existing": {
+      "prev_finish": "Medium (前走着順 vs 前走指数 - similar race but different metric)",
+      "prev_last3f": "Medium (上がり3F reflects speed but for one segment)",
+      "verdict": "Partially overlapping but index is more comprehensive (adjusts for weight/course/pace)"
+    },
+    "time_1f_last_vs_existing": {
+      "wood_best_4f_filled": "Low (4F overall vs 1F last - different training phase)",
+      "sakaro_best_4f_filled": "Low",
+      "verdict": "New information. Measures finishing kick in training."
+    }
+  },
+  "retraining_plan": {
+    "step1": "Collect 2024-2025 full data (speed index + training times) for all races",
+    "step2": "Merge with jra_races_full.csv by race_id + umaban mapping",
+    "step3": "Add priority_1 features to Pattern A feature list (67 → 70)",
+    "step4": "Retrain with walk-forward validation, compare AUC/ROI",
+    "step5": "If improved, update production model",
+    "estimated_features_after": "87 + 3 (index_max, index_run1, time_1f_last) = 90"
+  }
 }
