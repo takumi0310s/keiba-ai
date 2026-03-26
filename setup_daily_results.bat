@@ -1,6 +1,6 @@
 @echo off
-REM 土日18:00に結果照合を自動実行
-REM 管理者権限で実行すること
+REM Register daily results check tasks (Sat/Sun 18:00)
+REM Run as Administrator
 
 echo Setting up Daily Results tasks...
 

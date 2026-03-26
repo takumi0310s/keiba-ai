@@ -1,6 +1,6 @@
 @echo off
-REM 土日AM9:30にレース自動予測＆通知を登録
-REM 管理者権限で実行すること
+REM Register race auto-notify tasks (Sat/Sun 09:30)
+REM Run as Administrator
 
 echo Setting up Race Auto-Notify tasks...
 

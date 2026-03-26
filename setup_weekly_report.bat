@@ -1,6 +1,6 @@
 @echo off
-REM 月曜AM8:00に週次レポートを自動実行
-REM 管理者権限で実行すること
+REM Register weekly report task (Monday 08:00)
+REM Run as Administrator
 
 echo Setting up Weekly Report task...
 
