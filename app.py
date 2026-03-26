@@ -5039,7 +5039,7 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_weather'] = weather_info
     st.session_state['pred_feat_summary'] = _feat_summary
 
-    # Discord通知（1レース単位、フォーメーション形式）
+    # Discord通知（1レース単位、フォーメーション+配当レンジ）
     try:
         from tools.notify import send_discord
         _top6 = df.head(6)
@@ -5056,9 +5056,23 @@ if st.button("🔍 予想する") and url_input:
                     f"1列目: {_n1}\n"
                     f"2列目: {', '.join(str(n) for n in _col2)}\n"
                     f"3列目: {', '.join(str(n) for n in _col3)}")
+        # Payout range from odds
+        _payout_line = ''
+        try:
+            _ro = realtime_odds or {}
+            if _ro:
+                _trio_bets = [(b[0], b[1], b[2]) for b in generate_trio_bets(df)]
+                _pays = []
+                for b in _trio_bets:
+                    _os = [_ro.get(int(x), 10.0) for x in b]
+                    _pays.append(max(100, int(_os[0] * _os[1] * _os[2] * 0.6 * 100)))
+                if _pays:
+                    _payout_line = f"\n💰 配当レンジ: {min(_pays):,}円〜{max(_pays):,}円"
+        except Exception:
+            pass
         send_discord(f"🏇 {race_name}",
-                     f"{_surf}{_dist}m {_track_cond}\n{_bet_msg}\n軸: {_name1}({_n1})",
-                     color="blue")
+                     f"{_surf}{_dist}m {_track_cond}\n{_bet_msg}\n軸: {_name1}({_n1}){_payout_line}",
+                     color="blue", channel="bets")
     except Exception:
         pass
 

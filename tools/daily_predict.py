@@ -1573,8 +1573,8 @@ if __name__ == "__main__":
                    f"条件: {cond_str}\n"
                    f"投資額: {total_inv:,}円\n\n"
                    + "\n".join(top3_lines))
-            send_discord(f"予測完了 ({n}R)", msg, color="green")
+            send_discord(f"予測完了 ({n}R)", msg, color="green", channel="bets")
         else:
-            send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow")
+            send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow", channel="bets")
     except Exception:
         pass

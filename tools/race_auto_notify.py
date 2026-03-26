@@ -197,14 +197,36 @@ def predict_and_notify(race_info, date_str):
         condition = rinfo.get('condition', '?')
         start_time = race_info.get('start_time', '?')
 
+        # Payout range estimate from tansho odds
+        payout_range = ''
+        try:
+            if bet_type != 'umaren' and len(bets) > 0:
+                payouts_est = []
+                for b in bets:
+                    o = [odds_dict.get(int(x), 10.0) for x in b]
+                    est = o[0] * o[1] * o[2] * 0.6  # trio ≈ product × 0.6
+                    payouts_est.append(max(100, int(est * 100)))
+                payout_range = f"\n💰 配当レンジ: {min(payouts_est):,}円〜{max(payouts_est):,}円"
+            elif bet_type == 'umaren' and odds_dict:
+                o1 = odds_dict.get(n1, 10.0)
+                o2 = odds_dict.get(n2, 10.0)
+                o3 = odds_dict.get(n3, 10.0)
+                est1 = max(100, int(o1 * o2 * 5))
+                est2 = max(100, int(o1 * o3 * 5))
+                payout_range = f"\n💰 配当目安: {est1:,}円 / {est2:,}円"
+        except Exception:
+            pass
+
         msg = (f"**{race_name}** {surface}{distance}m {condition} 条件{cond_key} {stars}\n\n"
                f"{bet_text}\n\n"
-               f"軸: {top1_name} ({n1}) スコア{top1_score:.2f}")
+               f"軸: {top1_name} ({n1}) スコア{top1_score:.2f}"
+               f"{payout_range}")
         if premium_line:
             msg += f"\n📊 {premium_line}"
 
         color = "green" if roi >= 200 else ("blue" if roi >= 100 else "yellow")
-        send_discord(f"🏇 {race_info['course']}{race_info['race_num']}R 発走{start_time}", msg, color=color)
+        send_discord(f"🏇 {race_info['course']}{race_info['race_num']}R 発走{start_time}",
+                     msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
 
     except Exception as e:
@@ -247,21 +269,30 @@ def schedule_race(race, date_str):
 
 
 def run_test():
-    """テストモード: ダミーレースで1回通知テスト"""
+    """テストモード: 両チャンネルにテスト通知"""
     print("=== TEST MODE ===")
     try:
         from notify import send_discord
-        ok = send_discord("🏇 テスト通知",
-                          "**テストレース** 芝2000m 良 条件A ★★★\n\n"
-                          "三連複フォーメーション 7点\n"
-                          "1列目: 5\n"
-                          "2列目: 2, 8\n"
-                          "3列目: 2, 3, 8, 11, 14\n"
-                          "投資額: 700円\n\n"
-                          "軸: テストホース (5) スコア0.85\n"
-                          "📊 指数: 1127 / 調教: A / 厩舎: 好調",
-                          color="green")
-        print(f"  Discord notification: {'OK' if ok else 'FAILED'}")
+
+        # Bets channel
+        ok1 = send_discord("🏇 テスト買い目",
+                           "**テストレース** 芝2000m 良 条件A ★★★\n\n"
+                           "三連複フォーメーション 7点\n"
+                           "1列目: 5\n"
+                           "2列目: 2, 8\n"
+                           "3列目: 2, 3, 8, 11, 14\n"
+                           "投資額: 700円\n\n"
+                           "軸: テストホース (5) スコア0.85\n"
+                           "💰 配当レンジ: 1,200円〜15,600円\n"
+                           "📊 指数: 1127 / 調教: A / 厩舎: 好調",
+                           color="green", channel="bets")
+        print(f"  Bets channel: {'OK' if ok1 else 'SKIPPED (URL未設定)'}")
+
+        # Updates channel
+        ok2 = send_discord("テスト通知",
+                           "システム通知のテストです。",
+                           color="blue", channel="updates")
+        print(f"  Updates channel: {'OK' if ok2 else 'SKIPPED (URL未設定)'}")
     except Exception as e:
         print(f"  Error: {e}")
 
