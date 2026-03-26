@@ -920,6 +920,24 @@ v11再学習: データカバレッジ不足(2024-2025のみ)で不採用。2020
 
 ---
 
+## タスク完了通知
+
+コマンドラインからDiscord通知を送信:
+```bash
+python tools/notify_done.py "タスク名" "詳細メッセージ"
+python tools/notify_done.py "エラー" "内容" --color red
+```
+
+## プロンプト標準テンプレート
+
+今後の全タスクプロンプトの末尾に以下を含めること:
+```
+git commit & push して。
+完了したら以下を実行：
+powershell -Command "[System.Media.SystemSounds]::Exclamation.Play()"
+python tools/notify_done.py "タスク名" "完了内容"
+```
+
 ## Compaction対応
 
 Claude Codeのコンテキスト圧縮時に失われやすい重要情報はこのCLAUDE.mdに集約。
