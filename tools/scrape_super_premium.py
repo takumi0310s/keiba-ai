@@ -38,8 +38,8 @@ sys.path.insert(0, BASE_DIR)
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-DELAY_MIN = 5
-DELAY_MAX = 10
+DELAY_MIN = 3
+DELAY_MAX = 5
 RETRY_DELAY = 30
 MAX_RETRIES = 3
 
