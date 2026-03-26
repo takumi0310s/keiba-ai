@@ -557,8 +557,53 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 開始")
     run_daily_results(date_str, source=args.source)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
+
+    # Discord通知（リッチ版）
     try:
         from notify import send_discord
-        send_discord("結果照合完了", f"{date_str} の結果照合が完了しました", color="blue")
+        result_path = os.path.join(BASE_DIR, "data", "daily_results", f"{date_str}.csv")
+        cumul_path = os.path.join(BASE_DIR, "data", "cumulative_results.csv")
+
+        if os.path.exists(result_path):
+            rdf = pd.read_csv(result_path, encoding='utf-8-sig')
+            settled = rdf[rdf['status'] == 'settled']
+            n = len(settled)
+            if n > 0:
+                hits = ((settled['trio_hit'] == 1) | (settled.get('umaren_hit', 0) == 1)).sum()
+                inv = settled['investment'].sum()
+                pay = settled['trio_payout'].fillna(0).sum() + settled.get('umaren_payout', pd.Series([0]*n)).fillna(0).sum()
+                profit = pay - inv
+                roi = pay / inv * 100 if inv > 0 else 0
+                sign = '+' if profit >= 0 else ''
+
+                # Hit details
+                hit_rows = settled[(settled['trio_hit'] == 1) | (settled.get('umaren_hit', 0) == 1)]
+                hit_lines = []
+                for _, hr in hit_rows.iterrows():
+                    p = int(hr.get('trio_payout', 0) or hr.get('umaren_payout', 0))
+                    hit_lines.append(f"  {hr.get('race_name','')} **{p:,}円**")
+
+                # Cumulative
+                cumul_msg = ''
+                if os.path.exists(cumul_path):
+                    cdf = pd.read_csv(cumul_path, encoding='utf-8-sig')
+                    cs = cdf[cdf['status'] == 'settled']
+                    if len(cs) > 0:
+                        c_inv = cs['investment'].sum()
+                        c_pay = cs['trio_payout'].fillna(0).sum()
+                        c_roi = c_pay / c_inv * 100 if c_inv > 0 else 0
+                        c_profit = c_pay - c_inv
+                        cumul_msg = f"\n累計: ROI {c_roi:.0f}% / {'+' if c_profit>=0 else ''}{c_profit:,}円"
+
+                color = "green" if profit >= 0 else "red"
+                msg = (f"**{date_str}** {hits}/{n}的中 ROI **{roi:.0f}%**\n"
+                       f"収支: **{sign}{profit:,}円** ({inv:,}円→{pay:,}円)\n"
+                       + ("\n".join(hit_lines) + "\n" if hit_lines else "")
+                       + cumul_msg)
+                send_discord(f"結果 {date_str} ({hits}/{n}的中)", msg, color=color)
+            else:
+                send_discord("結果照合", f"{date_str} 確定レース0件", color="yellow")
+        else:
+            send_discord("結果照合", f"{date_str} 結果ファイルなし", color="yellow")
     except Exception:
         pass

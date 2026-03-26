@@ -1541,8 +1541,33 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始")
     run_daily_predict(date_str)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 終了")
+
+    # Discord通知（リッチ版）
     try:
         from notify import send_discord
-        send_discord("予測完了", f"{date_str} の予測が完了しました", color="green")
+        csv_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
+        if os.path.exists(csv_path):
+            import pandas as pd
+            pdf = pd.read_csv(csv_path, encoding='utf-8-sig')
+            n = len(pdf)
+            total_inv = pdf['investment'].sum()
+            cond_counts = pdf['condition'].value_counts().to_dict()
+            cond_str = " / ".join(f"{k}:{v}件" for k, v in sorted(cond_counts.items()))
+
+            # Top 3 races (highest top1_score)
+            top3 = pdf.nlargest(3, 'top1_score')
+            top3_lines = []
+            for _, r in top3.iterrows():
+                top3_lines.append(
+                    f"**{r['race_name']}** [{r['condition']}] "
+                    f"軸:{r['top1_name']}({int(r['top1_num'])})")
+
+            msg = (f"**{date_str}** {n}レース予測完了\n"
+                   f"条件: {cond_str}\n"
+                   f"投資額: {total_inv:,}円\n\n"
+                   + "\n".join(top3_lines))
+            send_discord(f"予測完了 ({n}R)", msg, color="green")
+        else:
+            send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow")
     except Exception:
         pass

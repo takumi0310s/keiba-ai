@@ -5039,6 +5039,20 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_weather'] = weather_info
     st.session_state['pred_feat_summary'] = _feat_summary
 
+    # Discord通知（1レース単位）
+    try:
+        from tools.notify import send_discord
+        _top3 = df.head(3)
+        _top_names = " / ".join(f"{r['馬名']}({int(r['馬番'])})" for _, r in _top3.iterrows())
+        _surf = race_info.get('surface', '')
+        _dist = race_info.get('distance', '')
+        _track_cond = race_info.get('condition', '')
+        send_discord(f"{race_name}",
+                     f"{_surf}{_dist}m {_track_cond}\nTOP3: {_top_names}",
+                     color="blue")
+    except Exception:
+        pass
+
 # ===== 予測結果の表示（session_stateから） =====
 if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     df = st.session_state['pred_df']
