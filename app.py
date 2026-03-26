@@ -5039,16 +5039,25 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_weather'] = weather_info
     st.session_state['pred_feat_summary'] = _feat_summary
 
-    # Discord通知（1レース単位）
+    # Discord通知（1レース単位、フォーメーション形式）
     try:
         from tools.notify import send_discord
-        _top3 = df.head(3)
-        _top_names = " / ".join(f"{r['馬名']}({int(r['馬番'])})" for _, r in _top3.iterrows())
+        _top6 = df.head(6)
+        _n1 = int(_top6.iloc[0]['馬番'])
+        _n2 = int(_top6.iloc[1]['馬番'])
+        _n3 = int(_top6.iloc[2]['馬番'])
+        _name1 = _top6.iloc[0]['馬名']
         _surf = race_info.get('surface', '')
         _dist = race_info.get('distance', '')
         _track_cond = race_info.get('condition', '')
-        send_discord(f"{race_name}",
-                     f"{_surf}{_dist}m {_track_cond}\nTOP3: {_top_names}",
+        _col2 = sorted([_n2, _n3])
+        _col3 = sorted([int(_top6.iloc[i]['馬番']) for i in range(1, min(6, len(_top6)))])
+        _bet_msg = (f"三連複フォーメーション\n"
+                    f"1列目: {_n1}\n"
+                    f"2列目: {', '.join(str(n) for n in _col2)}\n"
+                    f"3列目: {', '.join(str(n) for n in _col3)}")
+        send_discord(f"🏇 {race_name}",
+                     f"{_surf}{_dist}m {_track_cond}\n{_bet_msg}\n軸: {_name1}({_n1})",
                      color="blue")
     except Exception:
         pass

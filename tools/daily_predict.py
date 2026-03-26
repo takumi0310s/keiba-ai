@@ -1554,13 +1554,20 @@ if __name__ == "__main__":
             cond_counts = pdf['condition'].value_counts().to_dict()
             cond_str = " / ".join(f"{k}:{v}件" for k, v in sorted(cond_counts.items()))
 
-            # Top 3 races (highest top1_score)
+            # Top 3 races (highest top1_score) with formation
             top3 = pdf.nlargest(3, 'top1_score')
             top3_lines = []
             for _, r in top3.iterrows():
-                top3_lines.append(
-                    f"**{r['race_name']}** [{r['condition']}] "
-                    f"軸:{r['top1_name']}({int(r['top1_num'])})")
+                bets_str = r.get('trio_bets', '')
+                # Parse bets to show formation
+                if r.get('bet_type') == 'umaren':
+                    top3_lines.append(
+                        f"**{r['race_name']}** [{r['condition']}] "
+                        f"馬連 軸:{int(r['top1_num'])}→{int(r['top2_num'])},{int(r['top3_num'])}")
+                else:
+                    top3_lines.append(
+                        f"**{r['race_name']}** [{r['condition']}] "
+                        f"三連複 軸:{int(r['top1_num'])} 2列:{int(r['top2_num'])},{int(r['top3_num'])}")
 
             msg = (f"**{date_str}** {n}レース予測完了\n"
                    f"条件: {cond_str}\n"
