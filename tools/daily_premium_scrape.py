@@ -98,7 +98,10 @@ def estimate_total(year):
 
 def get_next_year(source, progress):
     """Determine the next year to scrape for a source."""
-    completed = progress[source]['completed_years']
+    default = {'completed_years': [], 'current_year': None}
+    if source not in progress:
+        progress[source] = default
+    completed = progress[source].get('completed_years', [])
     for year in YEARS:
         if year not in completed:
             return year
@@ -236,8 +239,9 @@ def main():
     # Show overall status
     print(f"\n  Overall Status:")
     for source in sources:
-        completed = progress[source]['completed_years']
-        current = progress[source]['current_year']
+        sp = progress.get(source, {'completed_years': [], 'current_year': None})
+        completed = sp.get('completed_years', [])
+        current = sp.get('current_year')
         remaining = [y for y in YEARS if y not in completed and y != current]
         print(f"    {source}: done={completed}, current={current}, remaining={remaining}")
 
