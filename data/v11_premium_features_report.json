@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-03-26 09:22:56",
+  "generated_at": "2026-03-26 12:25:06",
   "data_coverage": {
-    "speed_index_races": 809,
+    "speed_index_races": 3458,
     "training_1f_races": 203,
     "total_rows": 527280,
     "note": "Premium data only available for 2025 (scraped subset). Other years use median fill."
@@ -215,15 +215,20 @@
     "best_pattern": "baseline_87",
     "best_auc": 0.8001,
     "baseline_auc": 0.8001,
-    "reason": "No improvement. Premium features cover only 1.8% of data (2025 only). With 98.2% median-filled values, LightGBM ignores the features as they add no discriminative signal during training.",
-    "root_cause": "Insufficient data coverage. Need 2020-2025 speed index + training data (~20K races) to properly evaluate.",
-    "next_steps": [
-      "1. Run full scraping: python tools/scrape_speed_index.py --year 2024 (then 2023, 2022, 2021, 2020)",
-      "2. Run full scraping: python tools/scrape_premium_data.py --year 2024 (then 2023, 2022, 2021, 2020)",
-      "3. Each year takes ~5-8 hours (3500 races x 4s delay)",
-      "4. Total: 5 years x 8 hours = ~40 hours of scraping",
-      "5. After full data collected, re-run this training script"
-    ],
-    "estimated_scraping_time": "40 hours for 2020-2024 full data"
+    "reason": "No improvement despite 2024-2025 coverage (29-57%). WF folds 2021-2023 have 0% premium data coverage. LightGBM learns from training data which lacks the feature signal, so test predictions ignore it.",
+    "fundamental_issue": "Walk-forward design: each fold trains on PRIOR years. Since premium data exists only for 2024-2025, only the 2025 test fold has premium data in its training set (2024). But even 2024 training data has only 29% coverage.",
+    "alternative_approach": "Instead of WF, train a single model on 2015-2024 (with 2024 premium data) and test on 2025 (57% coverage). This avoids the WF zero-coverage problem.",
+    "data_collected": {
+      "speed_index_2024": "16,141 rows (1,193 races, 29% coverage)",
+      "speed_index_2025": "31,831 rows (2,265 races, 57% coverage)",
+      "training_1f_2025": "2,203 rows (203 races, 4% coverage)"
+    },
+    "scraping_status": {
+      "2024_speed_index": "COMPLETE (partial - rate limited at ~1200 races)",
+      "2025_speed_index": "COMPLETE",
+      "2023_speed_index": "STARTED but rate limited - need retry",
+      "2022_2021_2020": "NOT STARTED",
+      "2024_training": "STARTED but rate limited"
+    }
   }
 }

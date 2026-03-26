@@ -376,7 +376,7 @@ def main():
 
     elapsed = time.time() - t0
     print(f"\n  Elapsed: {elapsed/60:.1f} minutes")
-    print(f"  Adoption: {'YES' if adopted else 'NO'} — {reason}")
+    print(f"  Adoption: {'YES' if adopted else 'NO'} - {reason}")
     print(f"  Report: data/v11_premium_features_report.json")
 
 
