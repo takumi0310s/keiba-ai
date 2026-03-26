@@ -438,10 +438,7 @@ def main():
 
     race_ids = sorted(set(rid for rid in race_ids if len(str(rid)) >= 10))
 
-    if args.limit > 0:
-        race_ids = race_ids[:args.limit]
-
-    # Check existing data
+    # Check existing data (before applying limit so limit applies to NEW races only)
     existing_pos = set()
     if os.path.exists(POSITION_CSV):
         try:
@@ -484,6 +481,10 @@ def main():
                    if str(rid) not in existing_pos
                    or str(rid) not in existing_track
                    or str(rid) not in existing_training]
+
+    # Apply limit AFTER filtering to new races
+    if args.limit > 0:
+        new_ids = new_ids[:args.limit]
 
     total = len(new_ids)
     print(f"  Total race IDs: {len(race_ids)}")
