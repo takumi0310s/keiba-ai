@@ -379,6 +379,16 @@ def main():
     print(f"  Adoption: {'YES' if adopted else 'NO'} - {reason}")
     print(f"  Report: data/v11_premium_features_report.json")
 
+    try:
+        sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
+        from notify import send_discord
+        color = "green" if adopted else "yellow"
+        send_discord(f"V11学習{'採用' if adopted else '不採用'}",
+                     f"AUC: {best_auc:.4f} (baseline: {baseline_auc:.4f})\n{reason}",
+                     color=color)
+    except Exception:
+        pass
+
 
 if __name__ == '__main__':
     main()

@@ -606,6 +606,15 @@ def main():
                 n = '?'
             print(f"  {name}: {path} ({size/1024:.0f}KB, {n} rows)")
 
+    try:
+        from notify import send_discord
+        send_discord("Super Premium取得完了",
+                     f"Position: {stats['position_races']}R / Track: {stats['track_races']}R / "
+                     f"Training: {stats['training_races']}R / エラー: {stats['errors']}",
+                     color="green" if stats['errors'] == 0 else "yellow")
+    except Exception:
+        pass
+
     return stats
 
 

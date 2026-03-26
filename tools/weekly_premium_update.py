@@ -159,6 +159,15 @@ def main():
     print(f"    Cache: {cache_file}")
     print("  Done!")
 
+    try:
+        sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
+        from notify import send_discord
+        send_discord("週末Premium更新完了",
+                     f"調教: {n_training}R / 指数: {n_si}R / コメント: {n_comment}R",
+                     color="green")
+    except Exception:
+        pass
+
 
 if __name__ == '__main__':
     main()

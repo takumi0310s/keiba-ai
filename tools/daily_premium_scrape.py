@@ -247,6 +247,13 @@ def main():
 
     print(f"{'='*60}")
 
+    try:
+        from notify import send_discord
+        send_discord("Daily Scrape完了", "\n".join(run_summary),
+                     color="green")
+    except Exception:
+        pass
+
 
 if __name__ == '__main__':
     main()

@@ -1541,3 +1541,8 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始")
     run_daily_predict(date_str)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 終了")
+    try:
+        from notify import send_discord
+        send_discord("予測完了", f"{date_str} の予測が完了しました", color="green")
+    except Exception:
+        pass

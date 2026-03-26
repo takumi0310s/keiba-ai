@@ -351,3 +351,8 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] weekly_report.py 開始")
     run_weekly_report(date_str)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] weekly_report.py 終了")
+    try:
+        from notify import send_discord
+        send_discord("週次レポート完了", f"{date_str} 週次レポート生成完了", color="blue")
+    except Exception:
+        pass

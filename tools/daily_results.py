@@ -557,3 +557,8 @@ if __name__ == "__main__":
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 開始")
     run_daily_results(date_str, source=args.source)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
+    try:
+        from notify import send_discord
+        send_discord("結果照合完了", f"{date_str} の結果照合が完了しました", color="blue")
+    except Exception:
+        pass

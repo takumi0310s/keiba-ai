@@ -420,6 +420,15 @@ def main():
                 n = '?'
             print(f"  {name}: {path} ({size/1024:.0f}KB, {n} rows)")
 
+    try:
+        from notify import send_discord
+        send_discord("Premium Data取得完了",
+                     f"調教: {stats['training_races']}R/{stats['training_rows']}行\n"
+                     f"コメント: {stats['comment_races']}R/{stats['comment_rows']}行\nエラー: {stats['errors']}",
+                     color="green" if stats['errors'] == 0 else "yellow")
+    except Exception:
+        pass
+
     return stats
 
 

@@ -282,10 +282,19 @@ def main():
 
     print(f"\n\n{'=' * 60}")
     print(f"  COMPLETE: {stats['races']} races, {stats['rows']} rows, {stats['errors']} errors")
+    total_rows = 0
     if os.path.exists(OUTPUT_CSV):
-        n = len(pd.read_csv(OUTPUT_CSV, encoding='utf-8-sig'))
-        print(f"  Output: {OUTPUT_CSV} ({n} total rows)")
+        total_rows = len(pd.read_csv(OUTPUT_CSV, encoding='utf-8-sig'))
+        print(f"  Output: {OUTPUT_CSV} ({total_rows} total rows)")
     print("=" * 60)
+
+    try:
+        from notify import send_discord
+        send_discord("Speed Index取得完了",
+                     f"{stats['races']}R / {stats['rows']}行 / エラー{stats['errors']}\n累計: {total_rows}行",
+                     color="green" if stats['errors'] == 0 else "yellow")
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':
