@@ -1372,6 +1372,15 @@ CSS = """
 [data-testid="stToolbar"] { display: none; }
 section[data-testid="stSidebar"] { display: none; }
 .block-container { max-width: 520px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+
+/* st.metric dark theme override */
+[data-testid="stMetric"] {
+    background: #161a24; border-radius: 10px; padding: 12px 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+[data-testid="stMetricLabel"] p { color: #6a6a80 !important; font-size: 0.8em; }
+[data-testid="stMetricValue"] { color: #e8e8f0 !important; }
+[data-testid="stMetricDelta"] svg { display: none; }
 h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 
 /* Header */
