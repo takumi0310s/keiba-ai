@@ -194,6 +194,24 @@ def _append_csv(rows):
             f.write(','.join(str(v).replace(',', '；') for v in row) + '\n')
 
 
+def _target_to_netkeiba(target_rid):
+    """Convert TARGET JV race_id (10-digit) to netkeiba format (12-digit).
+
+    TARGET: CC(2)+YY(2)+K(1)+N(1)+RR(2)+UU(2)
+    netkeiba: YYYY(4)+CC(2)+KK(2)+NN(2)+RR(2)
+    N can be hex: A=10, B=11, C=12
+    """
+    rid = str(target_rid).zfill(10)
+    cc = rid[0:2]
+    yy = rid[2:4]
+    k = rid[4:5]
+    n = rid[5:6]
+    rr = rid[6:8]
+    n_map = {'A': '10', 'B': '11', 'C': '12'}
+    n_dec = n_map.get(n, n.zfill(2))
+    return f"20{yy}{cc}{k.zfill(2)}{n_dec}{rr}"
+
+
 def get_race_ids(year):
     csv_path = os.path.join(DATA_DIR, 'jra_races_full.csv')
     df = pd.read_csv(csv_path, encoding='utf-8-sig', usecols=['year', 'race_id'], dtype=str, low_memory=False)
@@ -202,9 +220,7 @@ def get_race_ids(year):
     df = df[df['year_int'] == yr2]
     nk_ids = set()
     for rid in df['race_id'].dropna().unique():
-        rid = str(rid).zfill(10)
-        nk_id = f"20{rid[2:4]}{rid[0:2]}{rid[4:5].zfill(2)}{rid[5:6].zfill(2)}{rid[6:8]}"
-        nk_ids.add(nk_id)
+        nk_ids.add(_target_to_netkeiba(rid))
     return sorted(nk_ids)
 
 

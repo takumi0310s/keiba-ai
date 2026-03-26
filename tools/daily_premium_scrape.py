@@ -82,10 +82,14 @@ def estimate_total(year):
         df['year_int'] = pd.to_numeric(df['year'], errors='coerce')
         df = df[df['year_int'] == yr2]
         # Convert to netkeiba race-level ID (strip UU/umaban)
+        # N can be hex: A=10, B=11, C=12
+        n_map = {'A': '10', 'B': '11', 'C': '12'}
         nk_ids = set()
         for rid in df['race_id'].dropna().unique():
             rid = str(rid).zfill(10)
-            nk_id = f"20{rid[2:4]}{rid[0:2]}{rid[4:5].zfill(2)}{rid[5:6].zfill(2)}{rid[6:8]}"
+            n = rid[5:6]
+            n_dec = n_map.get(n, n.zfill(2))
+            nk_id = f"20{rid[2:4]}{rid[0:2]}{rid[4:5].zfill(2)}{n_dec}{rid[6:8]}"
             nk_ids.add(nk_id)
         return len(nk_ids)
     except Exception:

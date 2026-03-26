@@ -102,14 +102,26 @@ def _append_csv(path, rows, header):
             f.write(','.join(str(v).replace(',', '；') for v in row) + '\n')
 
 
-def get_race_ids_for_year(year):
-    """jra_races_full.csvからnetkeibaフォーマットのレースIDを生成。
+def _target_to_netkeiba(target_rid):
+    """Convert TARGET JV race_id (10-digit) to netkeiba format (12-digit).
 
-    TARGET race_id (10桁): CC(2)+YY(2)+K(1)+N(1)+RR(2)+UU(2)
-    netkeiba race_id (12桁): YYYY+CC(2)+K(1)+N(1)+RR(2)+(00)
-
-    変換: CC+YY+K+N+RR → 20YY+CC+K+N+RR
+    TARGET: CC(2)+YY(2)+K(1)+N(1)+RR(2)+UU(2)
+    netkeiba: YYYY(4)+CC(2)+KK(2)+NN(2)+RR(2)
+    N can be hex: A=10, B=11, C=12
     """
+    rid = str(target_rid).zfill(10)
+    cc = rid[0:2]
+    yy = rid[2:4]
+    k = rid[4:5]
+    n = rid[5:6]
+    rr = rid[6:8]
+    n_map = {'A': '10', 'B': '11', 'C': '12'}
+    n_dec = n_map.get(n, n.zfill(2))
+    return f"20{yy}{cc}{k.zfill(2)}{n_dec}{rr}"
+
+
+def get_race_ids_for_year(year):
+    """jra_races_full.csvからnetkeibaフォーマットのレースIDを生成。"""
     csv_path = os.path.join(DATA_DIR, 'jra_races_full.csv')
     df = pd.read_csv(csv_path, encoding='utf-8-sig',
                       usecols=['year', 'race_id', 'month'],
@@ -118,20 +130,9 @@ def get_race_ids_for_year(year):
     yr2 = year % 100
     df = df[df['year_int'] == yr2]
 
-    # Convert TARGET race_id to netkeiba format
-    # TARGET: CC(2)+YY(2)+K(1)+N(1)+RR(2)+UU(2) → 10 digits
-    # netkeiba: 20YY+CC(2)+0K(1)+0N(1)+RR(2) → 12 digits
     nk_ids = set()
     for rid in df['race_id'].dropna().unique():
-        rid = str(rid).zfill(10)
-        cc = rid[0:2]   # course code (01-10)
-        yy = rid[2:4]   # year (2 digit)
-        k = rid[4:5]    # kai
-        n = rid[5:6]    # nichi
-        rr = rid[6:8]   # race_num
-        # netkeiba: YYYY(4) + CC(2) + KK(2) + NN(2) + RR(2) = 12 digits
-        nk_id = f"20{yy}{cc}{k.zfill(2)}{n.zfill(2)}{rr}"
-        nk_ids.add(nk_id)
+        nk_ids.add(_target_to_netkeiba(rid))
 
     print(f"  Year {year}: {len(nk_ids)} unique netkeiba race_ids")
     return sorted(nk_ids)
@@ -320,8 +321,7 @@ def main():
         df['month_int'] = pd.to_numeric(df['month'], errors='coerce')
         month_rids = set()
         for rid in df[(df['year_int'] == yr2) & (df['month_int'] == args.month)]['race_id'].dropna().unique():
-            rid = str(rid).zfill(10)
-            nk_id = f"20{rid[2:4]}{rid[0:2]}{rid[4:5].zfill(2)}{rid[5:6].zfill(2)}{rid[6:8]}"
+            nk_id = _target_to_netkeiba(rid)
             month_rids.add(nk_id)
         race_ids = sorted(set(race_ids) & month_rids)
         print(f"  Filtered to month {args.month}: {len(race_ids)} races")
