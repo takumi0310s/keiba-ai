@@ -1,0 +1,88 @@
+{
+  "scrape_date": "2026-03-26",
+  "source": "netkeiba Super Premium",
+  "data_files": {
+    "netkeiba_ai_position.csv": {
+      "description": "AI展開予測 - 各馬のレース中ポジション予測",
+      "fields": ["race_id", "umaban", "horse_name", "position_left_pct", "position_top_pct", "color_class"],
+      "notes": "left_pct=0%が先頭(逃げ), 100%が最後方(追込). color_class: Color01-05で脚質タイプを示す"
+    },
+    "netkeiba_track_index.csv": {
+      "description": "馬場指数 - レース結果ページから取得",
+      "fields": ["race_id", "track_index", "track_comment"],
+      "notes": "track_index: 負の値=速い馬場, 正=遅い馬場. 過去レースのみ取得可能"
+    },
+    "netkeiba_training_eval.csv": {
+      "description": "調教評価 - OikiriTable全データ",
+      "fields": ["race_id", "umaban", "horse_name", "prev_review", "training_date", "training_course", "training_condition", "training_rider", "training_time_raw", "training_position", "training_intensity", "training_move", "training_rank"],
+      "notes": "training_rank: A=絶好/B=上々/C=普通/D=不足. training_move: 態勢整う,気配抜群等のテキスト評価"
+    },
+    "netkeiba_ai_opinion.csv": {
+      "description": "AI見解 - レース展開予測テキスト",
+      "fields": ["race_id", "pace", "opinion_text"],
+      "notes": "pace: H=ハイ/M=ミドル/S=スロー. opinion_text: AIによるレース分析テキスト"
+    },
+    "netkeiba_ana_best.csv": {
+      "description": "能力/上昇度ピックアップ",
+      "fields": ["race_id", "category", "horses"],
+      "notes": "category: 能力 or 上昇度. horses: 馬番+馬名略称の列挙"
+    }
+  },
+  "new_feature_candidates": [
+    {
+      "name": "ai_position_pct",
+      "source": "netkeiba_ai_position.csv → position_left_pct",
+      "description": "AI展開予測のポジション%(0=逃げ, 100=追込)",
+      "type": "continuous",
+      "overlap_with_existing": "prev_pass4(前走4角位置)と類似するが、AI予測は当該レースの展開予測",
+      "availability": "レース前(newspaper), Pattern B向け",
+      "expected_impact": "中-高: 脚質予測は着順と強い相関",
+      "priority": "HIGH"
+    },
+    {
+      "name": "training_rank_enc",
+      "source": "netkeiba_training_eval.csv → training_rank",
+      "description": "調教評価(A=3, B=2, C=1, D=0)の数値化",
+      "type": "ordinal",
+      "overlap_with_existing": "has_wood_training, wood_best_4f_filledと補完関係",
+      "availability": "レース前(newspaper), 両Pattern対応",
+      "expected_impact": "中: 調教評価は仕上がり状態を反映",
+      "priority": "HIGH"
+    },
+    {
+      "name": "track_index",
+      "source": "netkeiba_track_index.csv → track_index",
+      "description": "馬場指数(負=速い, 正=遅い)",
+      "type": "continuous",
+      "overlap_with_existing": "condition_enc(馬場状態)の詳細版。moisture_rate/cushion_valueとも関連",
+      "availability": "レース後のみ(result). 学習用特徴量として使えるが、予測時は前レースの値を使うなど工夫必要",
+      "expected_impact": "中: 馬場指数は既にcondition_encでカバーされている部分が大きい",
+      "priority": "MEDIUM"
+    },
+    {
+      "name": "predicted_pace_enc",
+      "source": "netkeiba_ai_opinion.csv → pace",
+      "description": "予測ペース(H=2, M=1, S=0)",
+      "type": "ordinal",
+      "overlap_with_existing": "prev_race_pace_diff(前走ペース差)と補完関係",
+      "availability": "レース前(newspaper), Pattern B向け",
+      "expected_impact": "低-中: ペース予測は展開依存で不確実",
+      "priority": "MEDIUM"
+    },
+    {
+      "name": "ana_best_ability",
+      "source": "netkeiba_ana_best.csv → 能力カテゴリ",
+      "description": "netkeiba能力ピックアップに選ばれたか(0/1)",
+      "type": "binary",
+      "overlap_with_existing": "独自特徴量、既存と重複なし",
+      "availability": "レース前(newspaper), 両Pattern対応",
+      "expected_impact": "低: サンプル数が限定的",
+      "priority": "LOW"
+    }
+  ],
+  "not_available": {
+    "predict_rap_per_horse": "前半3F/後半3Fの全馬データはJS動的読込でHTMLに1頭分のみ。マスターコース契約が必要",
+    "rap_summary_per_horse": "タイム指数の全馬データもJS動的読込で1頭分のみ",
+    "computer_prediction": "computer.htmlは404。このページは存在しない"
+  }
+}
