@@ -1,0 +1,229 @@
+{
+  "generated_at": "2026-03-26 09:22:56",
+  "data_coverage": {
+    "speed_index_races": 809,
+    "training_1f_races": 203,
+    "total_rows": 527280,
+    "note": "Premium data only available for 2025 (scraped subset). Other years use median fill."
+  },
+  "patterns": {},
+  "walk_forward": {
+    "baseline_87": {
+      "fold_aucs": {
+        "2021": 0.796,
+        "2022": 0.799,
+        "2023": 0.7986,
+        "2024": 0.8042,
+        "2025": 0.8027
+      },
+      "avg_auc": 0.8001,
+      "all_above_078": true,
+      "n_features": 67,
+      "roi_by_condition": {
+        "A": {
+          "n": 3212,
+          "hits": 1484,
+          "roi": 227.4,
+          "hit_rate": 46.2
+        },
+        "B": {
+          "n": 398,
+          "hits": 188,
+          "roi": 232.3,
+          "hit_rate": 47.2
+        },
+        "C": {
+          "n": 2473,
+          "hits": 819,
+          "roi": 344.8,
+          "hit_rate": 33.1
+        },
+        "D": {
+          "n": 3581,
+          "hits": 998,
+          "roi": 145.6,
+          "hit_rate": 27.9
+        },
+        "E": {
+          "n": 267,
+          "hits": 207,
+          "roi": 102.2,
+          "hit_rate": 77.5
+        },
+        "X": {
+          "n": 383,
+          "hits": 137,
+          "roi": 273.0,
+          "hit_rate": 35.8
+        }
+      }
+    },
+    "plus_index_89": {
+      "fold_aucs": {
+        "2021": 0.796,
+        "2022": 0.799,
+        "2023": 0.7986,
+        "2024": 0.8042,
+        "2025": 0.8027
+      },
+      "avg_auc": 0.8001,
+      "all_above_078": true,
+      "n_features": 69,
+      "roi_by_condition": {
+        "A": {
+          "n": 3212,
+          "hits": 1484,
+          "roi": 227.4,
+          "hit_rate": 46.2
+        },
+        "B": {
+          "n": 398,
+          "hits": 188,
+          "roi": 232.3,
+          "hit_rate": 47.2
+        },
+        "C": {
+          "n": 2473,
+          "hits": 819,
+          "roi": 344.8,
+          "hit_rate": 33.1
+        },
+        "D": {
+          "n": 3581,
+          "hits": 998,
+          "roi": 145.6,
+          "hit_rate": 27.9
+        },
+        "E": {
+          "n": 267,
+          "hits": 207,
+          "roi": 102.2,
+          "hit_rate": 77.5
+        },
+        "X": {
+          "n": 383,
+          "hits": 137,
+          "roi": 273.0,
+          "hit_rate": 35.8
+        }
+      }
+    },
+    "plus_1f_88": {
+      "fold_aucs": {
+        "2021": 0.796,
+        "2022": 0.799,
+        "2023": 0.7986,
+        "2024": 0.8042,
+        "2025": 0.8027
+      },
+      "avg_auc": 0.8001,
+      "all_above_078": true,
+      "n_features": 68,
+      "roi_by_condition": {
+        "A": {
+          "n": 3212,
+          "hits": 1484,
+          "roi": 227.4,
+          "hit_rate": 46.2
+        },
+        "B": {
+          "n": 398,
+          "hits": 188,
+          "roi": 232.3,
+          "hit_rate": 47.2
+        },
+        "C": {
+          "n": 2473,
+          "hits": 819,
+          "roi": 344.8,
+          "hit_rate": 33.1
+        },
+        "D": {
+          "n": 3581,
+          "hits": 998,
+          "roi": 145.6,
+          "hit_rate": 27.9
+        },
+        "E": {
+          "n": 267,
+          "hits": 207,
+          "roi": 102.2,
+          "hit_rate": 77.5
+        },
+        "X": {
+          "n": 383,
+          "hits": 137,
+          "roi": 273.0,
+          "hit_rate": 35.8
+        }
+      }
+    },
+    "all_90": {
+      "fold_aucs": {
+        "2021": 0.796,
+        "2022": 0.799,
+        "2023": 0.7986,
+        "2024": 0.8042,
+        "2025": 0.8027
+      },
+      "avg_auc": 0.8001,
+      "all_above_078": true,
+      "n_features": 70,
+      "roi_by_condition": {
+        "A": {
+          "n": 3212,
+          "hits": 1484,
+          "roi": 227.4,
+          "hit_rate": 46.2
+        },
+        "B": {
+          "n": 398,
+          "hits": 188,
+          "roi": 232.3,
+          "hit_rate": 47.2
+        },
+        "C": {
+          "n": 2473,
+          "hits": 819,
+          "roi": 344.8,
+          "hit_rate": 33.1
+        },
+        "D": {
+          "n": 3581,
+          "hits": 998,
+          "roi": 145.6,
+          "hit_rate": 27.9
+        },
+        "E": {
+          "n": 267,
+          "hits": 207,
+          "roi": 102.2,
+          "hit_rate": 77.5
+        },
+        "X": {
+          "n": 383,
+          "hits": 137,
+          "roi": 273.0,
+          "hit_rate": 35.8
+        }
+      }
+    }
+  },
+  "roi_comparison": {},
+  "adoption": {
+    "adopted": false,
+    "best_pattern": "baseline_87",
+    "best_auc": 0.8001,
+    "baseline_auc": 0.8001,
+    "reason": "No improvement. Premium features cover only 1.8% of data (2025 only). With 98.2% median-filled values, LightGBM ignores the features as they add no discriminative signal during training.",
+    "root_cause": "Insufficient data coverage. Need 2020-2025 speed index + training data (~20K races) to properly evaluate.",
+    "next_steps": [
+      "1. Run full scraping: python tools/scrape_speed_index.py --year 2024 (then 2023, 2022, 2021, 2020)",
+      "2. Run full scraping: python tools/scrape_premium_data.py --year 2024 (then 2023, 2022, 2021, 2020)",
+      "3. Each year takes ~5-8 hours (3500 races x 4s delay)",
+      "4. Total: 5 years x 8 hours = ~40 hours of scraping",
+      "5. After full data collected, re-run this training script"
+    ],
+    "estimated_scraping_time": "40 hours for 2020-2024 full data"
+  }
+}
