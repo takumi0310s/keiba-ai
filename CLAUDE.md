@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-03-21
+Last updated: 2026-03-26
 
 ---
 
@@ -802,14 +802,123 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 ## 定期タスク（Windows タスクスケジューラ）
 
-| 時間 | タスク | コマンド |
-|------|--------|---------|
-| 毎朝8:00 | 当日全レース予測 | `python tools/daily_predict.py` |
-| 毎晩20:00 | 結果照合・ROI計算 | `python tools/daily_results.py` |
-| 毎週月曜9:00 | 週次レポート | `python tools/weekly_report.py` |
+| 時間 | タスク | コマンド | バッチ |
+|------|--------|---------|--------|
+| 毎日 03:00 | プレミアムデータ事前取得 | `python tools/daily_premium_scrape.py` | `daily_premium_scrape.bat` |
+| 毎日 08:00 | 当日全レース予測 | `python tools/daily_predict.py` | `daily_predict.bat` |
+| 土日 09:30 | レース5分前自動予測＆Discord通知 | `python tools/race_auto_notify.py` | `race_auto_notify.bat` |
+| 土日 18:00 | 結果照合・ROI計算 | `python tools/daily_results.py` | `daily_results.bat` |
+| 毎晩 20:00 | 結果照合（平日含む） | `python tools/daily_results.py` | `daily_results.bat` |
+| 月曜 08:00 | 週次レポート | `python tools/weekly_report.py` | `weekly_report.bat` |
 
-バッチファイル: `daily_predict.bat`, `daily_results.bat`, `weekly_report.bat`
+一括登録: `setup_all_tasks.bat`（管理者権限で実行）
 ログ: `logs/` ディレクトリ
+
+---
+
+## netkeibaプレミアムデータ連携
+
+### 概要
+netkeibaスーパープレミアム会員のCookie認証でプレミアムデータを取得。
+Cookie設定: `.env` の `NETKEIBA_COOKIE` に保存。
+
+### 取得データ一覧
+
+| データ | ソース | 取得タイミング | 用途 |
+|--------|--------|------------|------|
+| 調教タイム(4F/3F/1F) | `oikiri.html` | 予測時リアルタイム | モデル特徴量（wood_best_4f_filled等） |
+| 追い切りランク(A/B/C/D) | `oikiri.html` | 予測時リアルタイム | タイム取得失敗時のフォールバック |
+| タイム指数 | `speed.html` | 予測時リアルタイム + 事前取得 | UI表示（モデル組込は再学習後） |
+| 厩舎コメント | `comment.html` | 予測時リアルタイム | スコア化(-3〜+3)してUI表示 |
+
+### 調教タイム取得の4段階フォールバック
+1. Premium実タイム (Cookie有効 → oikiri.html 4F/3F/1F秒数)
+2. ランク推定 (Cookie無効 → A:51.5s, B:53.0s, C:54.5s, D:55.5s)
+3. feature_lookups.pkl (キャッシュ値)
+4. デフォルト値 (52.0/53.0/39.0s)
+
+### 関連ファイル
+
+| ファイル | 用途 |
+|----------|------|
+| `scrape_training.py` | 調教タイム・コメント取得モジュール |
+| `tools/scrape_speed_index.py` | タイム指数一括取得 |
+| `tools/scrape_premium_data.py` | 調教タイム一括取得 |
+| `tools/bulk_scrape_history.py` | 過去データ一括取得（手動実行） |
+| `tools/daily_premium_scrape.py` | 週末レースデータ事前取得（AM3:00自動） |
+| `tools/weekly_premium_update.py` | 週末Premium更新 |
+
+### 蓄積データ状況
+
+| データ | ファイル | 行数 | 年度 |
+|--------|---------|------|------|
+| タイム指数 | `data/netkeiba_speed_index.csv` | ~92K | 2023-2025（部分） |
+| 調教タイム | `data/netkeiba_training_times.csv` | ~2.5K | 2025（部分） |
+| 厩舎コメント | `data/netkeiba_stable_comments.csv` | ~856 | 2025（部分） |
+
+---
+
+## Discord通知システム
+
+### チャンネル振り分け
+
+| チャンネル | 環境変数 | 内容 |
+|-----------|---------|------|
+| #買い目 | `DISCORD_WEBHOOK_BETS` | レース予測、フォーメーション、配当レンジ |
+| #アップデート | `DISCORD_WEBHOOK_UPDATES` | スクレイピング完了、結果照合、週次レポート |
+| フォールバック | `DISCORD_WEBHOOK_URL` | 上記未設定時 |
+
+### 通知形式
+
+**買い目通知（三連複）**:
+```
+🏇 中山11R 発走15:45
+アネモネS 芝1600m 良 条件A ★★★
+
+三連複フォーメーション 7点
+1列目: 1
+2列目: 2, 3
+3列目: 2, 3, 4, 5, 6
+
+軸: ホワイトオーキッド (1) スコア0.85
+💰 配当レンジ: 1,200円〜15,600円
+📊 指数: 1127 / 調教: A / 厩舎: 好調
+```
+
+### セットアップ
+```bash
+python tools/setup_discord.py  # 対話式Webhookセットアップ
+```
+
+---
+
+## 新規特徴量候補（v11用、データ蓄積中）
+
+| 特徴量 | ソース | カバレッジ | 優先度 |
+|--------|--------|-----------|--------|
+| `index_max` | speed.html 最高指数 | 93% | **最優先** |
+| `index_run1` | speed.html 前走指数 | 99% | **最優先** |
+| `time_1f_last` | oikiri.html ラスト1F | 86% | **最優先** |
+| `index_avg5` | speed.html 5走平均 | 93% | 中 |
+| `training_intensity` | oikiri.html 調教強度 | 27% | 中 |
+| `stable_comment_score` | comment.html 厩舎スコア | 50-70% | 低 |
+
+v11再学習: データカバレッジ不足(2024-2025のみ)で不採用。2020-2023の蓄積が必要。
+`python tools/bulk_scrape_history.py --status` で蓄積状況を確認可能。
+
+---
+
+## Phase 2-5 検証結果サマリー（2026-03-23〜26）
+
+| Phase | 内容 | 主要結果 |
+|-------|------|---------|
+| 2 | キャリブレーション・EV・ランカー | 全不採用。推定ROI式の膨張(~16x)を発見 |
+| 2b | ROI信頼性検証（7タスク） | リークなし、過学習なし、ランダムの10.4倍 |
+| 3 | **実配当ROI検証** | **Trio 225.8%** [CI: 198.5-264.6%] P(>100%)=100% |
+| 4 | OOS・ライブ検証 | 2025準OOS: 246.3% [201-301%] 判定VALID |
+| 5 | 市場耐性・資金管理 | 耐性HIGH、調教が最重要(-88%)、破産0.16% |
+
+---
 
 ## Compaction対応
 
