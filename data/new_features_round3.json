@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-03-26",
+  "investigation_status": {
+    "netkeiba_blocked": true,
+    "reason": "IP rate limited by netkeiba (race.netkeiba.com and db.netkeiba.com returning HTTP 400 with empty body). Caused by intensive parallel scraping of speed_index + training_times for 2024-2025.",
+    "recovery": "Wait 6-24 hours for IP block to lift, or use different IP/VPN."
+  },
+  "task1_shinba_eval": {
+    "status": "BLOCKED",
+    "planned_url": "https://race.netkeiba.com/race/newspaper.html or shutuba.html",
+    "note": "newspaper.html returns 400 for completed races. May only work for upcoming races. Need to verify after block lifts.",
+    "class_code_shinba": 15,
+    "shinba_count_2025": 43959
+  },
+  "task2_mochi_time": {
+    "status": "BLOCKED",
+    "planned_url": "shutuba.html or data_list.html",
+    "note": "data_list.html has race tendency text but not per-horse持ちタイム. Need shutuba.html investigation after block lifts."
+  },
+  "task3_mid_training": {
+    "status": "PARTIAL",
+    "note": "oikiri.html shows only final追切 (1 training per horse). 中間追切 button exists but content may require JS rendering or premium access. Current scraper already captures the最終追切 data.",
+    "existing_coverage": "Final追切 4F/3F/1F times (93% coverage in scraped data)"
+  },
+  "task4_jockey_trainer_db": {
+    "status": "BLOCKED",
+    "planned_url": "db.netkeiba.com/jockey/result/XXXXX/",
+    "note": "db.netkeiba.com is blocked. These stats overlap significantly with existing jockey_wr_calc and trainer_top3_calc features.",
+    "overlap_assessment": "HIGH - existing expanding-window stats cover 90%+ of this data"
+  },
+  "task5_blood_analysis": {
+    "status": "BLOCKED",
+    "planned_url": "db.netkeiba.com/sire/result/XXXXX/",
+    "note": "db.netkeiba.com blocked. Existing sire_surface_wr, sire_dist_wr, bms_surface_wr features already capture blood×surface/distance performance.",
+    "overlap_assessment": "HIGH - existing features cover main blood patterns"
+  },
+  "task6_daily_scrape": {
+    "status": "COMPLETE",
+    "script": "tools/daily_premium_scrape.py",
+    "bat": "daily_premium_scrape.bat",
+    "setup": "setup_daily_scrape.bat",
+    "schedule": "Daily AM 3:00",
+    "max_requests": "500/source/day"
+  },
+  "priority_assessment": {
+    "already_captured": [
+      "speed_index (index_max, index_run1, etc.) - 48K rows",
+      "training_times (4F/3F/1F, rank, intensity) - 2.5K rows",
+      "stable_comments (score) - 856 rows"
+    ],
+    "high_value_blocked": [
+      "newspaper_shinba_eval - IF it exists as structured data (not just text)",
+      "mochi_time (持ちタイム) - IF it provides distance-specific best times not in race data"
+    ],
+    "low_value_high_overlap": [
+      "jockey_trainer_db - 90%+ overlap with existing features",
+      "blood_analysis - 90%+ overlap with existing sire/bms features",
+      "mid_training - only adds 中間 data, final追切 already captured"
+    ]
+  },
+  "recommendation": "Wait for IP block to lift (6-24h). Then investigate newspaper.html and shutuba.html for unique structured data. Focus daily_premium_scrape.py on completing speed_index 2020-2023 (highest ROI impact based on v11 training analysis)."
+}

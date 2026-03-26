@@ -43,8 +43,7 @@ def load_progress():
             return json.load(f)
     return {
         'speed_index': {'completed_years': [], 'current_year': None},
-        'newspaper': {'completed_years': [], 'current_year': None},
-        'result': {'completed_years': [], 'current_year': None},
+        'training_times': {'completed_years': [], 'current_year': None},
         'history': [],
     }
 
@@ -109,13 +108,11 @@ def run_scraper(source, year, limit, dry_run=False):
     if source == 'speed_index':
         cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_speed_index.py'),
                '--year', str(year), '--limit', str(limit)]
-    elif source == 'newspaper':
-        cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_super_premium.py'),
-               '--year', str(year), '--source', 'newspaper', '--limit', str(limit)]
-    elif source == 'result':
-        cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_super_premium.py'),
-               '--year', str(year), '--source', 'result', '--limit', str(limit)]
+    elif source == 'training_times':
+        cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_premium_data.py'),
+               '--year', str(year), '--limit', str(limit)]
     else:
+        print(f"  Unknown source: {source}")
         return False
 
     print(f"\n{'='*60}")
@@ -145,10 +142,8 @@ def check_year_complete(source, year):
 
     if source == 'speed_index':
         existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_speed_index.csv'), year)
-    elif source == 'newspaper':
-        existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_ai_position.csv'), year)
-    elif source == 'result':
-        existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_track_index.csv'), year)
+    elif source == 'training_times':
+        existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_training_times.csv'), year)
     else:
         return False
 
@@ -176,7 +171,7 @@ def main():
     progress = load_progress()
 
     # Process each source
-    sources = ['speed_index', 'newspaper', 'result']
+    sources = ['speed_index', 'training_times']
     run_summary = []
 
     for source in sources:
