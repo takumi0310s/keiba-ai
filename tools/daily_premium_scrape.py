@@ -1,255 +1,201 @@
 #!/usr/bin/env python
-"""毎日自動実行のプレミアムデータ分散取得スクリプト
+"""毎朝AM3:00自動実行: 今週末レースのプレミアムデータ事前取得
 
-各データソースを年ごとに順次取得し、進捗をdata/scrape_progress.jsonに保存。
-次回実行時は前回の続きから自動再開。
+取得データ:
+  - 調教タイム（最終追切 4F/3F/1F + ランク + 強度）
+  - タイム指数（max, avg5, dist, course, run1-3）
+  - 厩舎コメント（スコア付き）
 
-取得対象:
-  - speed_index: 2020-2026年のタイム指数（各年500レース/日）
-  - newspaper: 2020-2026年のAI展開予測/調教評価/AI見解
-  - result: 2020-2026年の馬場指数
+キャッシュ: data/weekly_premium_cache/{date}/premium_cache.json
+予測時にキャッシュがあればスクレイピング不要で高速化
 
 Usage:
-    python tools/daily_premium_scrape.py              # 全ソース実行
-    python tools/daily_premium_scrape.py --dry-run    # 実行計画のみ表示
-    python tools/daily_premium_scrape.py --limit 100  # 各ソース100件に制限
+    python tools/daily_premium_scrape.py              # 今日+明日のレース
+    python tools/daily_premium_scrape.py --date 20260328
+    python tools/daily_premium_scrape.py --dry-run    # リクエストなしで計画表示
 """
 import os
 import sys
 import io
+import re
 import json
 import time
 import argparse
-import subprocess
-from datetime import datetime
+import requests
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
 
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
-PROGRESS_FILE = os.path.join(DATA_DIR, 'scrape_progress.json')
+CACHE_DIR = os.path.join(DATA_DIR, 'weekly_premium_cache')
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
-
-# 取得対象年（古い方から順に）
-YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
-DAILY_LIMIT = 500  # 1ソース1日あたりの最大レース数
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+DELAY = 5
 
 
-def load_progress():
-    if os.path.exists(PROGRESS_FILE):
-        with open(PROGRESS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {
-        'speed_index': {'completed_years': [], 'current_year': None},
-        'training_times': {'completed_years': [], 'current_year': None},
-        'history': [],
-    }
-
-
-def save_progress(progress):
-    with open(PROGRESS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(progress, f, indent=2, ensure_ascii=False)
-
-
-def count_existing(csv_path, year):
-    """Count how many races for a given year are already in the CSV."""
-    if not os.path.exists(csv_path):
-        return 0
+def get_race_ids_for_date(date_str):
+    """netkeibaの開催情報から当日のrace_idリストを取得"""
     try:
-        import pandas as pd
-        df = pd.read_csv(csv_path, encoding='utf-8-sig', usecols=['race_id'], dtype=str)
-        year_str = str(year)
-        return len(df[df['race_id'].str.startswith(year_str)]['race_id'].unique())
+        from scrape_training import _make_session
+        session = _make_session()
     except Exception:
-        return 0
+        session = None
+    if session is None:
+        session = requests.Session()
+        session.headers.update(HEADERS)
 
-
-def estimate_total(year):
-    """Estimate total races for a given year from jra_races_full.csv.
-
-    TARGET race_id is 10 digits: CC(2)+YY(2)+K(1)+N(1)+RR(2)+UU(2).
-    Race-level ID is the first 8 digits (without UU/umaban).
-    Convert to netkeiba format to count unique races.
-    """
+    race_ids = []
+    url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
     try:
-        import pandas as pd
-        csv_path = os.path.join(DATA_DIR, 'jra_races_full.csv')
-        df = pd.read_csv(csv_path, encoding='utf-8-sig',
-                          usecols=['year', 'race_id'], dtype=str, low_memory=False)
-        yr2 = year % 100
-        df['year_int'] = pd.to_numeric(df['year'], errors='coerce')
-        df = df[df['year_int'] == yr2]
-        # Convert to netkeiba race-level ID (strip UU/umaban)
-        # N can be hex: A=10, B=11, C=12
-        n_map = {'A': '10', 'B': '11', 'C': '12'}
-        nk_ids = set()
-        for rid in df['race_id'].dropna().unique():
-            rid = str(rid).zfill(10)
-            n = rid[5:6]
-            n_dec = n_map.get(n, n.zfill(2))
-            nk_id = f"20{rid[2:4]}{rid[0:2]}{rid[4:5].zfill(2)}{n_dec}{rid[6:8]}"
-            nk_ids.add(nk_id)
-        return len(nk_ids)
-    except Exception:
-        return 3500  # default estimate
-
-
-def get_next_year(source, progress):
-    """Determine the next year to scrape for a source."""
-    default = {'completed_years': [], 'current_year': None}
-    if source not in progress:
-        progress[source] = default
-    completed = progress[source].get('completed_years', [])
-    for year in YEARS:
-        if year not in completed:
-            return year
-    return None
-
-
-def run_scraper(source, year, limit, dry_run=False):
-    """Run the appropriate scraper for the given source and year."""
-    python = sys.executable
-
-    if source == 'speed_index':
-        cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_speed_index.py'),
-               '--year', str(year), '--limit', str(limit)]
-    elif source == 'training_times':
-        cmd = [python, os.path.join(BASE_DIR, 'tools', 'scrape_premium_data.py'),
-               '--year', str(year), '--limit', str(limit)]
-    else:
-        print(f"  Unknown source: {source}")
-        return False
-
-    print(f"\n{'='*60}")
-    print(f"  Running: {source} year={year} limit={limit}")
-    print(f"  Command: {' '.join(cmd)}")
-    print(f"{'='*60}")
-
-    if dry_run:
-        print("  [DRY RUN] Skipping execution")
-        return True
-
-    try:
-        result = subprocess.run(cmd, cwd=BASE_DIR, timeout=3600,
-                                capture_output=False)
-        return result.returncode == 0
-    except subprocess.TimeoutExpired:
-        print("  WARNING: Scraper timed out after 1 hour")
-        return True  # partial success, data is saved incrementally
+        resp = session.get(url, timeout=15)
+        resp.encoding = 'EUC-JP'
+        for m in re.finditer(r'race_id=(\d{12})', resp.text):
+            race_ids.append(m.group(1))
     except Exception as e:
-        print(f"  ERROR: {e}")
-        return False
+        print(f"  WARNING: race_list取得失敗: {e}")
+    return sorted(set(race_ids))
 
 
-def check_year_complete(source, year):
-    """Check if a year is fully scraped."""
-    total = estimate_total(year)
-
-    if source == 'speed_index':
-        existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_speed_index.csv'), year)
-    elif source == 'training_times':
-        existing = count_existing(os.path.join(DATA_DIR, 'netkeiba_training_times.csv'), year)
-    else:
-        return False
-
-    # Consider complete if we have at least 95% of races
-    # (some races may not have data, e.g. cancelled races)
-    completeness = existing / total if total > 0 else 0
-    print(f"  {source} {year}: {existing}/{total} races ({completeness:.0%})")
-    return completeness >= 0.95
+def get_weekend_race_ids(base_date_str):
+    """今日〜2日後までのレースIDを全取得"""
+    base = datetime.strptime(base_date_str, '%Y%m%d')
+    all_ids = []
+    for delta in range(3):  # today, tomorrow, day after
+        d = (base + timedelta(days=delta)).strftime('%Y%m%d')
+        ids = get_race_ids_for_date(d)
+        if ids:
+            print(f"  {d}: {len(ids)} races")
+            all_ids.extend(ids)
+        time.sleep(1)
+    return sorted(set(all_ids))
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dry-run', action='store_true', help='Show plan without executing')
-    parser.add_argument('--limit', type=int, default=DAILY_LIMIT, help='Max races per source')
+    parser = argparse.ArgumentParser(description="週末レースのプレミアムデータ事前取得")
+    parser.add_argument('--date', type=str, default='')
+    parser.add_argument('--dry-run', action='store_true')
     args = parser.parse_args()
 
+    date_str = args.date or datetime.now().strftime('%Y%m%d')
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    now = datetime.now()
     print("=" * 60)
-    print(f"  Daily Premium Scrape - {now.strftime('%Y-%m-%d %H:%M')}")
-    print(f"  Limit: {args.limit} races per source")
+    print(f"  Premium Data Pre-fetch: {date_str}")
     print("=" * 60)
 
-    progress = load_progress()
+    # Get race IDs for this weekend
+    print("\n  Fetching race list...")
+    race_ids = get_weekend_race_ids(date_str)
+    print(f"  Total: {len(race_ids)} races")
 
-    # Process each source
-    sources = ['speed_index', 'training_times']
-    run_summary = []
+    if not race_ids:
+        print("  No races found. Exiting.")
+        try:
+            from notify import send_discord
+            send_discord("Premium Pre-fetch", f"{date_str}: レースなし", color="yellow")
+        except Exception:
+            pass
+        return
 
-    for source in sources:
-        year = get_next_year(source, progress)
-        if year is None:
-            print(f"\n  {source}: All years completed!")
-            run_summary.append(f"{source}: all done")
-            continue
+    # Check cache
+    cache_path = os.path.join(CACHE_DIR, date_str)
+    cache_file = os.path.join(cache_path, 'premium_cache.json')
+    existing_cache = {}
+    if os.path.exists(cache_file):
+        with open(cache_file, 'r', encoding='utf-8') as f:
+            existing_cache = json.load(f)
+    new_ids = [rid for rid in race_ids if rid not in existing_cache]
+    print(f"  Cached: {len(existing_cache)}, New: {len(new_ids)}")
 
-        # Check if current year is already complete
-        if check_year_complete(source, year):
-            print(f"  {source} {year}: Already complete, marking done")
-            if year not in progress[source]['completed_years']:
-                progress[source]['completed_years'].append(year)
-            progress[source]['current_year'] = None
-            save_progress(progress)
-            # Move to next year
-            year = get_next_year(source, progress)
-            if year is None:
-                run_summary.append(f"{source}: all done")
-                continue
+    if not new_ids:
+        print("  All races already cached.")
+        return
 
-        progress[source]['current_year'] = year
-        save_progress(progress)
+    if args.dry_run:
+        print(f"  [DRY RUN] Would fetch {len(new_ids)} races")
+        return
 
-        # Run scraper
-        success = run_scraper(source, year, args.limit, args.dry_run)
+    # Import scrapers
+    try:
+        from scrape_training import fetch_training_times, fetch_stable_comments
+        from scrape_speed_index import scrape_speed_index, _load_session
+        si_session = _load_session()
+    except ImportError as e:
+        print(f"  Import error: {e}")
+        return
 
-        if not args.dry_run:
-            # Check if year is now complete
-            if check_year_complete(source, year):
-                if year not in progress[source]['completed_years']:
-                    progress[source]['completed_years'].append(year)
-                progress[source]['current_year'] = None
-                print(f"  {source} {year}: COMPLETED!")
+    # Scrape each race
+    os.makedirs(cache_path, exist_ok=True)
+    all_data = dict(existing_cache)
+    n_training = n_si = n_comment = n_err = 0
 
-        run_summary.append(f"{source}: year={year} {'OK' if success else 'FAIL'}")
-        save_progress(progress)
+    for i, race_id in enumerate(new_ids):
+        print(f"\r  [{i+1}/{len(new_ids)}] {race_id}", end='', flush=True)
 
-    # Record history
-    progress['history'].append({
-        'date': now.strftime('%Y-%m-%d %H:%M'),
-        'limit': args.limit,
-        'results': run_summary,
-    })
-    # Keep only last 30 entries
-    progress['history'] = progress['history'][-30:]
-    save_progress(progress)
+        race_data = {'training': {}, 'speed_index': {}, 'comments': {}}
 
-    # Final summary
-    print(f"\n{'='*60}")
-    print(f"  DAILY SCRAPE SUMMARY")
-    print(f"{'='*60}")
-    for s in run_summary:
-        print(f"  {s}")
-    print(f"\n  Progress saved to: {PROGRESS_FILE}")
+        try:
+            training = fetch_training_times(race_id)
+            if training:
+                race_data['training'] = {str(k): v for k, v in training.items()}
+                n_training += 1
+        except Exception:
+            pass
 
-    # Show overall status
-    print(f"\n  Overall Status:")
-    for source in sources:
-        sp = progress.get(source, {'completed_years': [], 'current_year': None})
-        completed = sp.get('completed_years', [])
-        current = sp.get('current_year')
-        remaining = [y for y in YEARS if y not in completed and y != current]
-        print(f"    {source}: done={completed}, current={current}, remaining={remaining}")
+        if si_session:
+            try:
+                si_rows = scrape_speed_index(si_session, race_id)
+                if si_rows:
+                    for row in si_rows:
+                        race_data['speed_index'][str(row[1])] = {
+                            'horse_name': row[2],
+                            'index_max': row[6], 'index_avg5': row[7],
+                            'index_dist': row[8], 'index_course': row[9],
+                            'index_run1': row[10], 'index_run2': row[11], 'index_run3': row[12],
+                        }
+                    n_si += 1
+            except Exception:
+                pass
 
-    print(f"{'='*60}")
+        try:
+            comments = fetch_stable_comments(race_id)
+            if comments:
+                race_data['comments'] = {str(k): v for k, v in comments.items()}
+                n_comment += 1
+        except Exception:
+            pass
+
+        all_data[race_id] = race_data
+        time.sleep(DELAY)
+
+        # Save incrementally every 10 races
+        if (i + 1) % 10 == 0:
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(all_data, f, ensure_ascii=False, indent=2, default=str)
+
+    # Final save
+    with open(cache_file, 'w', encoding='utf-8') as f:
+        json.dump(all_data, f, ensure_ascii=False, indent=2, default=str)
+
+    print(f"\n\n{'=' * 60}")
+    print(f"  COMPLETE")
+    print(f"  Training: {n_training}/{len(new_ids)}")
+    print(f"  Speed Index: {n_si}/{len(new_ids)}")
+    print(f"  Comments: {n_comment}/{len(new_ids)}")
+    print(f"  Cache: {cache_file}")
+    print(f"{'=' * 60}")
 
     try:
         from notify import send_discord
-        send_discord("Daily Scrape完了", "\n".join(run_summary),
+        send_discord("Premium Pre-fetch完了",
+                     f"{date_str}: {len(new_ids)}R取得\n"
+                     f"調教: {n_training} / 指数: {n_si} / コメント: {n_comment}",
                      color="green")
     except Exception:
         pass
