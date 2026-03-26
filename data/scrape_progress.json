@@ -7,7 +7,7 @@
       2026
     ],
     "current_year": 2022,
-    "note": "2023: 3456R complete. 2024: 1179R, 2025: 2278R, 2026: 1R. 2022 in progress."
+    "note": "2023: complete(3154R). 2024: 1179R. 2025: 2278R. 2022: in progress(397R/3456R)."
   },
   "newspaper": {
     "completed_years": [],
@@ -50,5 +50,6 @@
     "completed_years": [],
     "current_year": null,
     "note": "2025: 203R partial"
-  }
+  },
+  "last_updated": "2026-03-27T01:00"
 }
