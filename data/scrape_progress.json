@@ -1,6 +1,7 @@
 {
   "speed_index": {
     "completed_years": [
+      2020,
       2021,
       2022,
       2023,
@@ -8,8 +9,8 @@
       2025,
       2026
     ],
-    "current_year": 2020,
-    "note": "2021: complete(3159R). 2022: complete(3155R). 2023: complete(3154R). 2024: 1179R. 2025: 2278R. 2020 in progress."
+    "current_year": null,
+    "note": "ALL COMPLETE. 2020-2026: 222,913 total rows."
   },
   "newspaper": {
     "completed_years": [],
@@ -50,8 +51,8 @@
   ],
   "training_times": {
     "completed_years": [],
-    "current_year": null,
-    "note": "2025: 203R partial"
+    "current_year": 2024,
+    "note": "2025: 203R partial. 2024 in progress."
   },
-  "last_updated": "2026-03-27T10:00"
+  "last_updated": "2026-03-27T14:00"
 }
