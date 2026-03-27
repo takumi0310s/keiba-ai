@@ -50,9 +50,11 @@
     }
   ],
   "training_times": {
-    "completed_years": [],
-    "current_year": 2024,
-    "note": "2025: 203R partial. 2024 in progress."
+    "completed_years": [
+      2024
+    ],
+    "current_year": 2023,
+    "note": "2024: complete(49732 training, 17360 comments). 2025: 203R partial. 2023 in progress."
   },
-  "last_updated": "2026-03-27T14:00"
+  "last_updated": "2026-03-27T18:00"
 }
