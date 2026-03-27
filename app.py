@@ -1609,6 +1609,105 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
     padding: 10px 16px; margin-bottom: 12px; text-align: center; }
 .sys-warn { background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.25); border-radius: 10px;
     padding: 10px 16px; margin-bottom: 12px; }
+
+/* Dark theme: selectbox, date_input, text_input, number_input */
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stDateInput"] > div > div > input,
+[data-testid="stTextInput"] > div > div > input,
+[data-testid="stNumberInput"] > div > div > input,
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div,
+div[data-baseweb="popover"] > div {
+    background-color: #1a1a2e !important;
+    color: #FAFAFA !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+div[data-baseweb="select"] input,
+div[data-baseweb="input"] input {
+    color: #FAFAFA !important;
+    -webkit-text-fill-color: #FAFAFA !important;
+}
+/* Dropdown menu */
+div[data-baseweb="popover"],
+div[data-baseweb="menu"],
+ul[role="listbox"] {
+    background-color: #1a1a2e !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+ul[role="listbox"] li,
+div[data-baseweb="menu"] li {
+    background-color: #1a1a2e !important;
+    color: #FAFAFA !important;
+}
+ul[role="listbox"] li:hover,
+div[data-baseweb="menu"] li:hover {
+    background-color: #2a2a4e !important;
+}
+/* Selected option text */
+div[data-baseweb="select"] span,
+div[data-baseweb="select"] div[class*="value"] {
+    color: #FAFAFA !important;
+}
+/* Select arrow icon */
+div[data-baseweb="select"] svg {
+    fill: #FAFAFA !important;
+}
+/* Date picker calendar */
+div[data-baseweb="calendar"],
+div[data-baseweb="datepicker"] {
+    background-color: #1a1a2e !important;
+    color: #FAFAFA !important;
+}
+/* Buttons */
+button[kind="primary"],
+button[data-testid="stBaseButton-primary"],
+.stButton > button {
+    background: linear-gradient(135deg, #FFD700, #e6c200) !important;
+    color: #0E1117 !important;
+    border: none !important;
+    font-weight: 700 !important;
+}
+button[kind="primary"]:hover,
+button[data-testid="stBaseButton-primary"]:hover,
+.stButton > button:hover {
+    background: linear-gradient(135deg, #ffe44d, #FFD700) !important;
+    color: #0E1117 !important;
+}
+button[kind="secondary"],
+button[data-testid="stBaseButton-secondary"],
+.stButton > button[kind="secondary"] {
+    background-color: #1a1a2e !important;
+    color: #FAFAFA !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+}
+/* Label text for widgets */
+[data-testid="stSelectbox"] label,
+[data-testid="stDateInput"] label,
+[data-testid="stTextInput"] label,
+[data-testid="stNumberInput"] label,
+.stSelectbox label,
+.stDateInput label {
+    color: #FAFAFA !important;
+}
+/* Multiselect */
+[data-testid="stMultiSelect"] > div > div {
+    background-color: #1a1a2e !important;
+    color: #FAFAFA !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+    background-color: #2a2a4e !important;
+    color: #FAFAFA !important;
+}
+/* Radio / Checkbox */
+[data-testid="stRadio"] label span,
+[data-testid="stCheckbox"] label span {
+    color: #FAFAFA !important;
+}
+/* Expander header */
+[data-testid="stExpander"] summary {
+    color: #FAFAFA !important;
+}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
