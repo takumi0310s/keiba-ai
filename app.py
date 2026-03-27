@@ -3413,8 +3413,18 @@ def parse_shutuba(race_id, is_nar=False):
                 if cn in tt:
                     course_name = cn
                     break
+    # 発走時刻を抽出 (例: "10:05発走" or just "10:05")
+    start_time = ''
+    tm = re.search(r'(\d{1,2}:\d{2})', d01t)
+    if tm:
+        start_time = tm.group(1)
+    # 天候を抽出
+    weather = ''
+    wm = re.search(r'天候:(\S+)', d01t)
+    if wm:
+        weather = wm.group(1).rstrip('/')
     race_info = dict(distance=distance, surface=surface, condition=condition, course=course_name,
-                     grade=race_grade, race_num=race_num)
+                     grade=race_grade, race_num=race_num, start_time=start_time, weather=weather)
     rows = soup.select("tr.HorseList")
     horses, horse_ids = [], []
     for row in rows:
@@ -5147,40 +5157,15 @@ if st.button("🔍 予想する") and url_input:
     st.session_state['pred_weather'] = weather_info
     st.session_state['pred_feat_summary'] = _feat_summary
 
-    # Discord通知（1レース単位、フォーメーション+配当レンジ）
+    # Discord通知（リッチ版 - 全情報統一フォーマット）
     try:
-        from tools.notify import send_discord
-        _top6 = df.head(6)
-        _n1 = int(_top6.iloc[0]['馬番'])
-        _n2 = int(_top6.iloc[1]['馬番'])
-        _n3 = int(_top6.iloc[2]['馬番'])
-        _name1 = _top6.iloc[0]['馬名']
-        _surf = race_info.get('surface', '')
-        _dist = race_info.get('distance', '')
-        _track_cond = race_info.get('condition', '')
-        _col2 = sorted([_n2, _n3])
-        _col3 = sorted([int(_top6.iloc[i]['馬番']) for i in range(1, min(6, len(_top6)))])
-        _bet_msg = (f"三連複フォーメーション\n"
-                    f"1列目: {_n1}\n"
-                    f"2列目: {', '.join(str(n) for n in _col2)}\n"
-                    f"3列目: {', '.join(str(n) for n in _col3)}")
-        # Payout range from odds
-        _payout_line = ''
-        try:
-            _ro = realtime_odds or {}
-            if _ro:
-                _trio_bets = [(b[0], b[1], b[2]) for b in generate_trio_bets(df)]
-                _pays = []
-                for b in _trio_bets:
-                    _os = [_ro.get(int(x), 10.0) for x in b]
-                    _pays.append(max(100, int(_os[0] * _os[1] * _os[2] * 0.6 * 100)))
-                if _pays:
-                    _payout_line = f"\n💰 配当レンジ: {min(_pays):,}円〜{max(_pays):,}円"
-        except Exception:
-            pass
-        send_discord(f"🏇 {race_name}",
-                     f"{_surf}{_dist}m {_track_cond}\n{_bet_msg}\n軸: {_name1}({_n1}){_payout_line}",
-                     color="blue", channel="bets")
+        from tools.notify import send_discord, build_rich_bet_message
+        _cond_key, _cond_prof = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
+        _bets = generate_trio_bets(df) if _cond_prof['bet_type'] != 'umaren' else generate_umaren_bets(df)
+        _title, _msg, _color = build_rich_bet_message(
+            df, race_name, race_info, _cond_key, _cond_prof,
+            _bets, odds_dict=realtime_odds, horses=horses)
+        send_discord(_title, _msg, color=_color, channel="bets")
     except Exception:
         pass
 

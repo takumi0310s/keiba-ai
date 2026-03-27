@@ -103,9 +103,9 @@ def predict_and_notify(race_info, date_str):
         # Import prediction functions from daily_predict
         from daily_predict import (
             load_models, parse_shutuba, fetch_realtime_odds,
-            classify_condition, generate_trio_bets, generate_umaren_bets,
-            build_feature_df, is_race_started, fetch_result_odds,
-            CONDITION_PROFILES,
+            classify_race_condition, generate_trio_bets, generate_umaren_bets,
+            build_features, predict_race, is_race_started, fetch_result_odds,
+            CONDITION_PROFILES, get_horse_stats, fetch_jra_and_weather,
         )
         from notify import send_discord
 
@@ -137,96 +137,55 @@ def predict_and_notify(race_info, date_str):
         odds_dict = fetch_realtime_odds(race_id)
         time.sleep(1)
 
+        # Fetch JRA track & weather
+        jra_info, weather_info = {}, {}
+        try:
+            jra_info, weather_info = fetch_jra_and_weather(rinfo.get('course', ''))
+        except Exception:
+            pass
+
+        # Get horse stats
+        for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
+            if hid:
+                try:
+                    stats = get_horse_stats(hid, rinfo['distance'], rinfo['surface'], rinfo.get('course', ''))
+                    horse.update(stats)
+                except Exception:
+                    pass
+                if i < num_horses - 1:
+                    time.sleep(0.3)
+
         # Build features and predict
-        df = build_feature_df(horses, horse_ids, rinfo, model_data, odds_dict)
+        odds_available = bool(odds_dict and any(v > 0 for v in odds_dict.values()))
+        df = build_features(horses, rinfo, model_data, odds_dict, jra_info, weather_info)
         if df is None or len(df) == 0:
             print("    Feature build failed")
             return
+        df = predict_race(df, model_data, odds_available)
 
         # Sort by score
         df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
 
         # Condition
-        cond_key, cond_profile = classify_condition(rinfo, num_horses)
+        cond_key, cond_profile = classify_race_condition(rinfo, num_horses)
         bet_type = cond_profile['bet_type']
-        roi = cond_profile['roi']
-
-        # Stars
-        stars = '★★★' if roi >= 200 else ('★★' if roi >= 100 else '★')
 
         # Generate bets
         if bet_type == 'umaren':
             bets = generate_umaren_bets(df)
-            n1 = int(df.iloc[0]['馬番'])
-            n2 = int(df.iloc[1]['馬番'])
-            n3 = int(df.iloc[2]['馬番'])
-            bet_text = f"馬連 1軸2流し\n軸: {n1}\n相手: {n2}, {n3}\n投資額: 700円（400+300円）"
         else:
             bets = generate_trio_bets(df)
-            top6 = df.head(6)
-            n1 = int(top6.iloc[0]['馬番'])
-            col2 = sorted([int(top6.iloc[1]['馬番']), int(top6.iloc[2]['馬番'])])
-            col3 = sorted([int(top6.iloc[i]['馬番']) for i in range(1, min(6, len(top6)))])
-            bet_text = (f"三連複フォーメーション {len(bets)}点\n"
-                        f"1列目: {n1}\n"
-                        f"2列目: {', '.join(str(n) for n in col2)}\n"
-                        f"3列目: {', '.join(str(n) for n in col3)}\n"
-                        f"投資額: {len(bets)*100}円")
 
-        # Top horse info
-        top1 = df.iloc[0]
-        top1_name = top1.get('馬名', '?')
-        top1_score = top1.get('スコア', 0)
+        # リッチ通知（共通フォーマット）
+        from notify import build_rich_bet_message
+        # race_infoにstart_timeを追加（race listから取得した情報をマージ）
+        rinfo['start_time'] = race_info.get('start_time', rinfo.get('start_time', ''))
+        rinfo['course'] = rinfo.get('course', '') or race_info.get('course', '')
 
-        # Premium data hints
-        premium_parts = []
-        si = top1.get('タイム指数', 0)
-        if si and si > 1000:
-            premium_parts.append(f"指数: {si}")
-        rank = ''
-        if len(horses) > 0:
-            rank = horses[0].get('調教ランク', '')
-        if rank:
-            premium_parts.append(f"調教: {rank}")
-        comment_score = horses[0].get('厩舎スコア', 0) if len(horses) > 0 else 0
-        if comment_score > 0:
-            premium_parts.append("厩舎: 好調")
-        premium_line = " / ".join(premium_parts)
-
-        surface = rinfo.get('surface', '?')
-        condition = rinfo.get('condition', '?')
-        start_time = race_info.get('start_time', '?')
-
-        # Payout range estimate from tansho odds
-        payout_range = ''
-        try:
-            if bet_type != 'umaren' and len(bets) > 0:
-                payouts_est = []
-                for b in bets:
-                    o = [odds_dict.get(int(x), 10.0) for x in b]
-                    est = o[0] * o[1] * o[2] * 0.6  # trio ≈ product × 0.6
-                    payouts_est.append(max(100, int(est * 100)))
-                payout_range = f"\n💰 配当レンジ: {min(payouts_est):,}円〜{max(payouts_est):,}円"
-            elif bet_type == 'umaren' and odds_dict:
-                o1 = odds_dict.get(n1, 10.0)
-                o2 = odds_dict.get(n2, 10.0)
-                o3 = odds_dict.get(n3, 10.0)
-                est1 = max(100, int(o1 * o2 * 5))
-                est2 = max(100, int(o1 * o3 * 5))
-                payout_range = f"\n💰 配当目安: {est1:,}円 / {est2:,}円"
-        except Exception:
-            pass
-
-        msg = (f"**{race_name}** {surface}{distance}m {condition} 条件{cond_key} {stars}\n\n"
-               f"{bet_text}\n\n"
-               f"軸: {top1_name} ({n1}) スコア{top1_score:.2f}"
-               f"{payout_range}")
-        if premium_line:
-            msg += f"\n📊 {premium_line}"
-
-        color = "green" if roi >= 200 else ("blue" if roi >= 100 else "yellow")
-        send_discord(f"🏇 {race_info['course']}{race_info['race_num']}R 発走{start_time}",
-                     msg, color=color, channel="bets")
+        title, msg, color = build_rich_bet_message(
+            df, race_name, rinfo, cond_key, cond_profile,
+            bets, odds_dict=odds_dict, horses=horses, date_str=date_str)
+        send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
 
     except Exception as e:
@@ -269,22 +228,29 @@ def schedule_race(race, date_str):
 
 
 def run_test():
-    """テストモード: 両チャンネルにテスト通知"""
+    """テストモード: 両チャンネルにテスト通知（リッチ版フォーマット）"""
     print("=== TEST MODE ===")
     try:
         from notify import send_discord
+        from datetime import datetime as _dt
+        _now = _dt.now()
+        _wdmap = {0:'月',1:'火',2:'水',3:'木',4:'金',5:'土',6:'日'}
+        _date = f"{_now.month}/{_now.day}({_wdmap[_now.weekday()]})"
 
-        # Bets channel
-        ok1 = send_discord("🏇 テスト買い目",
-                           "**テストレース** 芝2000m 良 条件A ★★★\n\n"
-                           "三連複フォーメーション 7点\n"
-                           "1列目: 5\n"
-                           "2列目: 2, 8\n"
-                           "3列目: 2, 3, 8, 11, 14\n"
-                           "投資額: 700円\n\n"
-                           "軸: テストホース (5) スコア0.85\n"
-                           "💰 配当レンジ: 1,200円〜15,600円\n"
-                           "📊 指数: 1127 / 調教: A / 厩舎: 好調",
+        # Bets channel - リッチ版フォーマット
+        ok1 = send_discord(f"🏇 {_date} 中山11R 15:45発走",
+                           f"**アネモネS** 芝1600m 良 14頭\n"
+                           f"条件A ★★★ ROI 205.3% (的中44.5%)\n\n"
+                           f"三連複フォーメーション 7点\n"
+                           f"1列目: 5\n"
+                           f"2列目: 2, 8\n"
+                           f"3列目: 2, 3, 8, 11, 14\n\n"
+                           f"軸: 5 ホワイトオーキッド (スコア0.85)\n"
+                           f"2位: 2 テストホースB (スコア0.78)\n"
+                           f"3位: 8 テストホースC (スコア0.71)\n\n"
+                           f"💰 配当レンジ: 1,200円〜15,600円\n"
+                           f"投資額: 700円\n\n"
+                           f"📊 Premium ✓  指数: 1127 / 調教: A / 厩舎: 好調",
                            color="green", channel="bets")
         print(f"  Bets channel: {'OK' if ok1 else 'SKIPPED (URL未設定)'}")
 

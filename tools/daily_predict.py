@@ -416,8 +416,13 @@ def parse_shutuba(race_id):
             course_name = cn
             break
 
+    # 発走時刻
+    start_time = ''
+    tm = re.search(r'(\d{1,2}:\d{2})', d01t)
+    if tm:
+        start_time = tm.group(1)
     race_info = dict(distance=distance, surface=surface, condition=condition,
-                     course=course_name, race_num=race_num)
+                     course=course_name, race_num=race_num, start_time=start_time)
 
     rows = soup.select("tr.HorseList")
     horses, horse_ids = [], []
@@ -1485,6 +1490,16 @@ def run_daily_predict(date_str):
             else:
                 print(f"  {bet_label} {len(bets)}点: {bets_str}")
 
+            # Per-race Discord通知（リッチ版）
+            try:
+                from notify import send_discord, build_rich_bet_message
+                _title, _msg, _color = build_rich_bet_message(
+                    sorted_df, race_name, race_info, cond_key, cond_profile,
+                    bets, odds_dict=odds_dict, horses=horses, date_str=date_str)
+                send_discord(_title, _msg, color=_color, channel="bets")
+            except Exception:
+                pass
+
         except Exception as e:
             print(f"  [ERROR] 予測失敗: {e}")
             import traceback
@@ -1573,8 +1588,8 @@ if __name__ == "__main__":
                    f"条件: {cond_str}\n"
                    f"投資額: {total_inv:,}円\n\n"
                    + "\n".join(top3_lines))
-            send_discord(f"予測完了 ({n}R)", msg, color="green", channel="bets")
+            send_discord(f"予測完了 ({n}R)", msg, color="green", channel="updates")
         else:
-            send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow", channel="bets")
+            send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow", channel="updates")
     except Exception:
         pass
