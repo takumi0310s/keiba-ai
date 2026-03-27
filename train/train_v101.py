@@ -567,7 +567,7 @@ def main():
         'n_features_a': len(v101_available),
         'n_features_b': len(v101_b_available),
     }
-    with open(os.path.join(BASE_DIR, 'data', 'v101_training_results.json'), 'w') as f:
+    with open(os.path.join(BASE_DIR, 'data', 'v101_training_results.json'), 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2)
 
     return True

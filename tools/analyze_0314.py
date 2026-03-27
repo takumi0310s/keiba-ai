@@ -58,7 +58,7 @@ def fetch_finish_order(race_id):
 
 def main():
     df_pred = pd.read_csv(os.path.join(BASE_DIR, 'data/daily_predictions/20260314.csv'), encoding='utf-8-sig')
-    with open(os.path.join(BASE_DIR, 'data/daily_results/20260314_payouts.json'), 'r') as f:
+    with open(os.path.join(BASE_DIR, 'data/daily_results/20260314_payouts.json'), 'r', encoding='utf-8') as f:
         payouts_json = json.load(f)
 
     print("Fetching detailed results...")

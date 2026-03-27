@@ -521,7 +521,7 @@ def task1_calibration(df, features, payout_lookup):
             'isotonic_roi': iso_roi['overall_trio_roi'],
             'adopted': adopted,
         }
-        with open(os.path.join(ARTIFACTS_DIR, 'brier_comparison.json'), 'w') as f:
+        with open(os.path.join(ARTIFACTS_DIR, 'brier_comparison.json'), 'w', encoding='utf-8') as f:
             json.dump(brier_comp, f, indent=2)
 
         return all_preds, fold_aucs, fold_models
@@ -829,7 +829,7 @@ def task2_ev_model(df, features, payout_lookup, baseline_preds):
                 'ev_filter': ev_filter_results,
                 'adopted': adopted,
             }
-            with open(os.path.join(ARTIFACTS_DIR, 'pattern_abc_comparison.json'), 'w') as f:
+            with open(os.path.join(ARTIFACTS_DIR, 'pattern_abc_comparison.json'), 'w', encoding='utf-8') as f:
                 json.dump(pattern_comp, f, indent=2)
 
         else:
@@ -1115,7 +1115,7 @@ def task3_ranker(df, features, payout_lookup, baseline_preds):
                 'ranker_alt_roi': roi_ranker2['overall_trio_roi'],
                 'adopted': adopted,
             }
-            with open(os.path.join(ARTIFACTS_DIR, 'ranker_comparison.json'), 'w') as f:
+            with open(os.path.join(ARTIFACTS_DIR, 'ranker_comparison.json'), 'w', encoding='utf-8') as f:
                 json.dump(ranker_comp, f, indent=2)
 
         else:

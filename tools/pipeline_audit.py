@@ -625,7 +625,7 @@ def section6_results_verification():
     # 3/14の結果ファイルがあれば配当を検証
     payout_path = os.path.join(BASE_DIR, 'data/daily_results/20260314_payouts.json')
     if os.path.exists(payout_path):
-        with open(payout_path) as f:
+        with open(payout_path, encoding='utf-8') as f:
             payouts = json.load(f)
         n_trio_ok = sum(1 for p in payouts.values() if p.get('trio', 0) > 0)
         n_umaren_ok = sum(1 for p in payouts.values() if p.get('umaren', 0) > 0)
