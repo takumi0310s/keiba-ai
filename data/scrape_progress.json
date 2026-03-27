@@ -51,11 +51,12 @@
   ],
   "training_times": {
     "completed_years": [
+      2022,
       2023,
       2024
     ],
-    "current_year": 2022,
-    "note": "2023: complete(97404 training, 34001 comments). 2024: complete. 2022 in progress."
+    "current_year": 2021,
+    "note": "2022: complete. 2023: complete. 2024: complete. Total: 144624 training, 50463 comments. 2021 in progress."
   },
-  "last_updated": "2026-03-28T01:00"
+  "last_updated": "2026-03-28T05:00"
 }
