@@ -1,10 +1,10 @@
 @echo off
-REM レース5分前自動予測＆Discord通知
-REM 土日AM9:30にタスクスケジューラで自動起動
+REM Race auto-predict and Discord notify (5 min before each race)
+REM Runs Sat/Sun AM 09:30 via Task Scheduler
 
 cd /d C:\Users\sato\keiba-ai
 
-REM PCスリープ防止
+REM Prevent PC sleep
 powercfg /change standby-timeout-ac 0
 
 set LOGFILE=logs\race_auto_notify_%date:~0,4%%date:~5,2%%date:~8,2%.log
@@ -14,5 +14,5 @@ python tools\race_auto_notify.py >> %LOGFILE% 2>&1
 
 echo [%date% %time%] Race Auto-Notify End >> %LOGFILE%
 
-REM スリープ防止を解除（デフォルト30分に戻す）
+REM Restore sleep timeout (default 30 min)
 powercfg /change standby-timeout-ac 30

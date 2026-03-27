@@ -45,7 +45,7 @@ def get_todays_races(date_str):
         session.headers.update(HEADERS)
 
     races = []
-    url = f"https://race.netkeiba.com/top/race_list.html?kaisai_date={date_str}"
+    url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
     try:
         resp = session.get(url, timeout=15)
         resp.encoding = 'EUC-JP'
