@@ -128,42 +128,42 @@ def render_condition_rating_badge(cond_profile):
     wide_roi = cond_profile.get('oos_wide_roi', 0)
 
     if stars >= 3:
-        bg = 'linear-gradient(90deg,#1a3a2a,#0a2a1a)'
-        border_c = '#2ecc40'
-        star_c = '#2ecc40'
+        bg = 'linear-gradient(90deg,#121E1A,#0E1117)'
+        border_c = '#14B8A6'
+        star_c = '#14B8A6'
         star_txt = '<span style="letter-spacing:2px;">&#9733;&#9733;&#9733;</span>'
     elif stars == 2:
-        bg = 'linear-gradient(90deg,#2a2a0a,#1a2a0a)'
-        border_c = '#f0c040'
-        star_c = '#f0c040'
+        bg = 'linear-gradient(90deg,#1A1E28,#161B22)'
+        border_c = '#6C9BD2'
+        star_c = '#6C9BD2'
         star_txt = '<span style="letter-spacing:2px;">&#9733;&#9733;</span>'
     elif stars == 1:
-        bg = 'linear-gradient(90deg,#2a1a0a,#1a1a0a)'
-        border_c = '#e67e22'
-        star_c = '#e67e22'
+        bg = 'linear-gradient(90deg,#1A1E28,#161B22)'
+        border_c = '#B0976A'
+        star_c = '#B0976A'
         star_txt = '<span style="letter-spacing:2px;">&#9733;</span>'
     else:
-        bg = 'linear-gradient(90deg,#2a0a0a,#1a0a0a)'
-        border_c = '#ff4060'
-        star_c = '#ff4060'
-        star_txt = '<span style="color:#ff4060 !important;">&#9888; 非推奨</span>'
+        bg = 'linear-gradient(90deg,#1A1418,#161B22)'
+        border_c = '#E5534B'
+        star_c = '#E5534B'
+        star_txt = '<span style="color:#E5534B !important;">&#9888; 非推奨</span>'
 
     def roi_color(v):
-        if v >= 120: return '#2ecc40'
-        if v >= 100: return '#f0c040'
-        if v >= 80: return '#e67e22'
-        return '#ff4060'
+        if v >= 120: return '#14B8A6'
+        if v >= 100: return '#6C9BD2'
+        if v >= 80: return '#B0976A'
+        return '#E5534B'
 
     html = f'<div style="margin:6px 0;padding:10px 14px;background:{bg};border:1px solid {border_c};border-radius:10px;">'
     html += f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">'
     html += f'<span style="font-size:1.1em;color:{star_c} !important;">{star_txt}</span>'
     html += f'<span style="font-family:Oswald;font-size:0.85em;color:{star_c} !important;">{rating}</span>'
-    html += f'<span style="font-size:0.72em;color:#6a6a80 !important;">OOS 2023-2025 N={oos_n:,}</span>'
+    html += f'<span style="font-size:0.72em;color:#7D8590 !important;">OOS 2023-2025 N={oos_n:,}</span>'
     html += '</div>'
     html += f'<div style="display:flex;gap:16px;font-size:0.78em;font-family:Oswald;">'
-    html += f'<span style="color:#6a6a80 !important;">trio <span style="color:{roi_color(trio_roi)} !important;">{trio_roi:.1f}%</span></span>'
-    html += f'<span style="color:#6a6a80 !important;">umaren <span style="color:{roi_color(uma_roi)} !important;">{uma_roi:.1f}%</span></span>'
-    html += f'<span style="color:#6a6a80 !important;">wide <span style="color:{roi_color(wide_roi)} !important;">{wide_roi:.1f}%</span></span>'
+    html += f'<span style="color:#7D8590 !important;">trio <span style="color:{roi_color(trio_roi)} !important;">{trio_roi:.1f}%</span></span>'
+    html += f'<span style="color:#7D8590 !important;">umaren <span style="color:{roi_color(uma_roi)} !important;">{uma_roi:.1f}%</span></span>'
+    html += f'<span style="color:#7D8590 !important;">wide <span style="color:{roi_color(wide_roi)} !important;">{wide_roi:.1f}%</span></span>'
     html += '</div></div>'
     return html
 
@@ -206,30 +206,30 @@ def render_class_rating_badge(race_class):
     n = cr['n']
 
     def roi_color(v):
-        if v >= 120: return '#2ecc40'
-        if v >= 100: return '#f0c040'
-        if v >= 80: return '#e67e22'
-        return '#ff4060'
+        if v >= 120: return '#14B8A6'
+        if v >= 100: return '#6C9BD2'
+        if v >= 80: return '#B0976A'
+        return '#E5534B'
 
     if stars >= 3:
-        border_c = '#2ecc40'; star_c = '#2ecc40'
+        border_c = '#14B8A6'; star_c = '#14B8A6'
         star_txt = '&#9733;&#9733;&#9733;'
     elif stars == 2:
-        border_c = '#f0c040'; star_c = '#f0c040'
+        border_c = '#6C9BD2'; star_c = '#6C9BD2'
         star_txt = '&#9733;&#9733;'
     elif stars == 1:
-        border_c = '#e67e22'; star_c = '#e67e22'
+        border_c = '#B0976A'; star_c = '#B0976A'
         star_txt = '&#9733;'
     else:
-        border_c = '#ff4060'; star_c = '#ff4060'
+        border_c = '#E5534B'; star_c = '#E5534B'
         star_txt = '&#9888; 非推奨'
 
     html = f'<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;'
     html += f'border:1px solid {border_c};border-radius:6px;font-size:0.75em;margin-left:4px;">'
     html += f'<span style="color:{star_c} !important;">{star_txt}</span>'
-    html += f'<span style="color:#b0b8c8 !important;">{race_class}</span>'
+    html += f'<span style="color:#8B949E !important;">{race_class}</span>'
     html += f'<span style="font-family:Oswald;color:{roi_color(trio_roi)} !important;">ROI {trio_roi:.0f}%</span>'
-    html += f'<span style="color:#6a6a80 !important;">N={n}</span>'
+    html += f'<span style="color:#7D8590 !important;">N={n}</span>'
     html += '</span>'
     return html
 
@@ -815,7 +815,7 @@ def render_live_dashboard():
             cond_df = pd.DataFrame(cond_list)
             # 棒グラフ: ROI
             chart_df = cond_df.set_index('条件')[['ROI']].copy()
-            st.bar_chart(chart_df, color='#f0c040')
+            st.bar_chart(chart_df, color='#6C9BD2')
             # テーブル
             display_cond = cond_df.copy()
             display_cond['的中率'] = display_cond['的中率'].apply(lambda x: f"{x:.1f}%")
@@ -883,7 +883,7 @@ def render_live_dashboard():
         dist_df = pd.DataFrame(dist_list)
         with col_dl:
             chart_ddf = dist_df.set_index('距離区分')[['ROI']].copy()
-            st.bar_chart(chart_ddf, color='#2ecc40')
+            st.bar_chart(chart_ddf, color='#14B8A6')
         with col_dr:
             display_dist = dist_df.copy()
             display_dist['的中率'] = display_dist['的中率'].apply(lambda x: f"{x:.1f}%")
@@ -914,7 +914,7 @@ def render_live_dashboard():
 
     tab_profit, tab_roi = st.tabs(["収支推移", "ROI推移"])
     with tab_profit:
-        st.line_chart(daily_agg[['累積収支']], color='#f0c040')
+        st.line_chart(daily_agg[['累積収支']], color='#6C9BD2')
         last_profit = int(daily_agg['累積収支'].iloc[-1]) if len(daily_agg) > 0 else 0
         if last_profit >= 0:
             st.success(f"累積収支: +¥{last_profit:,}")
@@ -951,15 +951,15 @@ def render_weekly_report(analysis):
     if not analysis:
         return '<div class="ev-card"><span class="ev-lbl">分析データがありません。レース結果を登録してください。</span></div>'
     html = '<div class="ev-card">'
-    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">WEEKLY TREND</div>'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:8px;">WEEKLY TREND</div>'
     for wk, wd in analysis['weeks'].items():
         if wd['races'] == 0:
             continue
         hr = wd['hit_rate'] * 100
         roi = wd['roi']
         profit = wd['payout'] - wd['investment']
-        profit_color = '#2ecc40' if profit >= 0 else '#ff4060'
-        roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+        profit_color = '#14B8A6' if profit >= 0 else '#E5534B'
+        roi_color = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
         html += f'<div class="ev-row">'
         html += f'<span class="ev-lbl">{wk} ({wd["races"]}R)</span>'
         html += f'<span style="font-family:Oswald;font-size:0.85em;">的中{wd["hits"]}R ({hr:.0f}%)</span>'
@@ -970,19 +970,19 @@ def render_weekly_report(analysis):
         if not data:
             return ''
         h = f'<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
-        h += f'<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">{title}</div>'
+        h += f'<div style="font-family:Oswald;font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:6px;">{title}</div>'
         sorted_items = sorted(data.items(), key=lambda x: x[1]['races'], reverse=True)
         for name, d in sorted_items:
             if d['races'] == 0:
                 continue
             roi = d['payout'] / d['investment'] * 100 if d['investment'] > 0 else 0
             profit = d['payout'] - d['investment']
-            pc = '#2ecc40' if profit >= 0 else '#ff4060'
-            rc = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+            pc = '#14B8A6' if profit >= 0 else '#E5534B'
+            rc = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
             bar_w = min(d['races'] * 8, 100)
-            bar_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+            bar_color = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
             h += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:0.85em;">'
-            h += f'<span style="min-width:100px;color:#b0b8c8 !important;">{name}</span>'
+            h += f'<span style="min-width:100px;color:#8B949E !important;">{name}</span>'
             h += f'<div style="flex:1;height:14px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
             h += f'<div style="width:{bar_w}%;height:100%;background:{bar_color};border-radius:3px;"></div></div>'
             h += f'<span style="font-family:Oswald;font-size:0.82em;min-width:40px;color:{rc} !important;">{roi:.0f}%</span>'
@@ -1005,9 +1005,9 @@ def render_weekly_report(analysis):
     if worst_cats:
         worst_cats.sort(key=lambda x: x[2])
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
-        html += '<div style="font-family:Oswald;font-size:0.75em;color:#ff4060 !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN</div>'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#E5534B !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN</div>'
         for name, races, roi in worst_cats[:5]:
-            html += f'<div style="font-size:0.82em;color:#ff4060 !important;margin-bottom:2px;">&#9888; {name} ({races}R / ROI {roi:.0f}%) — 見送り推奨</div>'
+            html += f'<div style="font-size:0.82em;color:#E5534B !important;margin-bottom:2px;">&#9888; {name} ({races}R / ROI {roi:.0f}%) — 見送り推奨</div>'
         html += '</div>'
     html += '</div>'
     return html
@@ -1089,36 +1089,36 @@ def render_5year_report(bt5):
     results = bt5.get('central_results_5year', [])
 
     html = '<div class="ev-card">'
-    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:8px;">'
     html += f'5-YEAR BACKTEST (2020-2025) &mdash; {generated[:10] if generated else "N/A"}</div>'
 
     # Overall summary table
     if summary:
         n_races = summary.get('v8', {}).get('n_races', 0) or summary.get('v9', {}).get('n_races', 0)
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">Overall &mdash; {n_races} races</div>'
+        html += f'<div style="font-size:0.85em;color:#8B949E !important;margin-bottom:8px;">Overall &mdash; {n_races} races</div>'
 
         html += '<table style="width:100%;border-collapse:collapse;font-size:0.82em;margin-bottom:10px;">'
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
-        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;font-family:Oswald;">BET TYPE</th>'
+        html += '<th style="text-align:left;padding:4px 6px;color:#7D8590 !important;font-family:Oswald;">BET TYPE</th>'
         for ver in ['V8', 'V9']:
             html += f'<th colspan="2" style="text-align:center;padding:4px 6px;font-family:Oswald;">{ver}</th>'
         html += '</tr>'
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">'
         html += '<th></th>'
         for _ in ['V8', 'V9']:
-            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">HIT</th>'
-            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">ROI</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#7D8590 !important;font-size:0.9em;">HIT</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#7D8590 !important;font-size:0.9em;">ROI</th>'
         html += '</tr>'
 
         for label, key in [('Trio 7-bet', 'trio'), ('Wide 1ax-2flow', 'wide'), ('Umaren 1ax-2flow', 'umaren')]:
             html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
-            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;">{label}</td>'
+            html += f'<td style="padding:4px 6px;color:#8B949E !important;">{label}</td>'
             for ver in ['v8', 'v9']:
                 d = summary.get(ver, {})
                 hit_rate = d.get(f'{key}_hit_rate', 0)
                 roi = d.get(f'{key}_roi', 0)
-                hit_color = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
-                roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+                hit_color = '#14B8A6' if hit_rate >= 30 else ('#6C9BD2' if hit_rate >= 15 else '#E5534B')
+                roi_color = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
                 html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_color} !important;">{hit_rate:.1f}%</td>'
                 html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{roi_color} !important;">{roi:.1f}%</td>'
             html += '</tr>'
@@ -1128,17 +1128,17 @@ def render_5year_report(bt5):
     if results:
         cond_stats = _compute_condition_roi(results)
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;padding-top:10px;">'
-        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">CONDITION-BASED ROI (V9)</div>'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:8px;">CONDITION-BASED ROI (V9)</div>'
 
         html += '<table style="width:100%;border-collapse:collapse;font-size:0.8em;margin-bottom:10px;">'
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
-        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;">COND</th>'
-        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;">DESC</th>'
-        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">RACES</th>'
-        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">BET</th>'
-        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">HIT%</th>'
-        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">ROI</th>'
-        html += '<th style="text-align:center;padding:4px;color:#6a6a80 !important;">REC</th>'
+        html += '<th style="text-align:left;padding:4px 6px;color:#7D8590 !important;">COND</th>'
+        html += '<th style="text-align:left;padding:4px 6px;color:#7D8590 !important;">DESC</th>'
+        html += '<th style="text-align:center;padding:4px;color:#7D8590 !important;">RACES</th>'
+        html += '<th style="text-align:center;padding:4px;color:#7D8590 !important;">BET</th>'
+        html += '<th style="text-align:center;padding:4px;color:#7D8590 !important;">HIT%</th>'
+        html += '<th style="text-align:center;padding:4px;color:#7D8590 !important;">ROI</th>'
+        html += '<th style="text-align:center;padding:4px;color:#7D8590 !important;">REC</th>'
         html += '</tr>'
 
         cond_order = [
@@ -1179,13 +1179,13 @@ def render_5year_report(bt5):
             roi = pay / inv * 100 if inv > 0 else 0
             is_rec = roi >= 80 and best_bet != 'none'
 
-            hit_c = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
-            roi_c = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 80 else '#ff4060')
-            rec_icon = '<span style="color:#2ecc40 !important;">&#9745;</span>' if is_rec else '<span style="color:#ff4060 !important;">&#9746;</span>'
+            hit_c = '#14B8A6' if hit_rate >= 30 else ('#6C9BD2' if hit_rate >= 15 else '#E5534B')
+            roi_c = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 80 else '#E5534B')
+            rec_icon = '<span style="color:#14B8A6 !important;">&#9745;</span>' if is_rec else '<span style="color:#E5534B !important;">&#9746;</span>'
 
             html += f'<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
-            html += f'<td style="padding:4px 6px;font-family:Oswald;color:#f0c040 !important;">{ck}</td>'
-            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;font-size:0.9em;">{desc}</td>'
+            html += f'<td style="padding:4px 6px;font-family:Oswald;color:#6C9BD2 !important;">{ck}</td>'
+            html += f'<td style="padding:4px 6px;color:#8B949E !important;font-size:0.9em;">{desc}</td>'
             html += f'<td style="text-align:center;padding:4px;font-family:Oswald;">{n}</td>'
             html += f'<td style="text-align:center;padding:4px;font-family:Oswald;">{bet_lbl}</td>'
             html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_c} !important;">{hit_rate:.1f}%</td>'
@@ -1198,7 +1198,7 @@ def render_5year_report(bt5):
     # ===== 年別ROIグラフ =====
     if yearly:
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:12px 0;padding-top:10px;">'
-        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">V9 YEARLY ROI CHART</div>'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:8px;">V9 YEARLY ROI CHART</div>'
 
         for year in sorted(yearly.keys(), key=lambda x: int(x)):
             ys = yearly[year]
@@ -1211,16 +1211,16 @@ def render_5year_report(bt5):
 
             # Trio ROI bar
             trio_bar_w = min(trio_roi / 1.5, 100)
-            trio_c = '#2ecc40' if trio_roi >= 100 else ('#f0c040' if trio_roi >= 80 else '#ff4060')
+            trio_c = '#14B8A6' if trio_roi >= 100 else ('#6C9BD2' if trio_roi >= 80 else '#E5534B')
             # Wide ROI bar
             wide_bar_w = min(wide_roi / 1.5, 100)
-            wide_c = '#2ecc40' if wide_roi >= 100 else ('#f0c040' if wide_roi >= 80 else '#ff4060')
+            wide_c = '#14B8A6' if wide_roi >= 100 else ('#6C9BD2' if wide_roi >= 80 else '#E5534B')
 
             html += f'<div style="margin-bottom:8px;">'
-            html += f'<div style="font-family:Oswald;font-size:0.85em;color:#b0b8c8 !important;margin-bottom:3px;">{year} ({n}R)</div>'
+            html += f'<div style="font-family:Oswald;font-size:0.85em;color:#8B949E !important;margin-bottom:3px;">{year} ({n}R)</div>'
             # Trio bar
             html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;font-size:0.82em;">'
-            html += f'<span style="min-width:45px;color:#6a6a80 !important;">Trio</span>'
+            html += f'<span style="min-width:45px;color:#7D8590 !important;">Trio</span>'
             html += f'<div style="flex:1;height:16px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;position:relative;">'
             html += f'<div style="width:{trio_bar_w}%;height:100%;background:{trio_c};border-radius:3px;"></div>'
             # 100% line
@@ -1230,7 +1230,7 @@ def render_5year_report(bt5):
             html += '</div>'
             # Wide bar
             html += f'<div style="display:flex;align-items:center;gap:6px;font-size:0.82em;">'
-            html += f'<span style="min-width:45px;color:#6a6a80 !important;">Wide</span>'
+            html += f'<span style="min-width:45px;color:#7D8590 !important;">Wide</span>'
             html += f'<div style="flex:1;height:16px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;position:relative;">'
             html += f'<div style="width:{wide_bar_w}%;height:100%;background:{wide_c};border-radius:3px;"></div>'
             html += f'<div style="position:absolute;left:66.7%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.3);"></div>'
@@ -1253,7 +1253,7 @@ def render_backtest_report(bt_data):
     generated = bt_data.get('generated_at', '')
 
     html = '<div class="ev-card">'
-    html += '<div style="font-family:Oswald;font-size:0.8em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:8px;">'
+    html += '<div style="font-family:Oswald;font-size:0.8em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:8px;">'
     html += f'LEAK-FREE BACKTEST &mdash; {generated[:10] if generated else "N/A"}</div>'
 
     # Render each section (central / nar)
@@ -1264,36 +1264,36 @@ def render_backtest_report(bt_data):
         sections.append(('NAR', bt_data['nar_summary'], bt_data.get('nar_results', [])))
 
     if not sections:
-        html += '<div style="color:#6a6a80 !important;">No data</div></div>'
+        html += '<div style="color:#7D8590 !important;">No data</div></div>'
         return html
 
     for section_label, summary, results_list in sections:
         n_races = summary.get('v8', {}).get('n_races', 0) or summary.get('v9', {}).get('n_races', 0)
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;margin-top:10px;">{section_label} 2025/10-12 &mdash; {n_races} races</div>'
+        html += f'<div style="font-size:0.85em;color:#8B949E !important;margin-bottom:8px;margin-top:10px;">{section_label} 2025/10-12 &mdash; {n_races} races</div>'
 
         # Comparison table
         html += '<table style="width:100%;border-collapse:collapse;font-size:0.82em;margin-bottom:10px;">'
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">'
-        html += '<th style="text-align:left;padding:4px 6px;color:#6a6a80 !important;font-family:Oswald;">BET TYPE</th>'
+        html += '<th style="text-align:left;padding:4px 6px;color:#7D8590 !important;font-family:Oswald;">BET TYPE</th>'
         for ver in ['V8', 'V9']:
             html += f'<th colspan="2" style="text-align:center;padding:4px 6px;font-family:Oswald;">{ver}</th>'
         html += '</tr>'
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">'
         html += '<th></th>'
         for _ in ['V8', 'V9']:
-            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">HIT</th>'
-            html += '<th style="text-align:center;padding:2px 4px;color:#6a6a80 !important;font-size:0.9em;">ROI</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#7D8590 !important;font-size:0.9em;">HIT</th>'
+            html += '<th style="text-align:center;padding:2px 4px;color:#7D8590 !important;font-size:0.9em;">ROI</th>'
         html += '</tr>'
 
         for label, key in [('Trio 7-bet', 'trio'), ('Wide 1ax-2flow', 'wide'), ('Umaren 1ax-2flow', 'umaren')]:
             html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
-            html += f'<td style="padding:4px 6px;color:#b0b8c8 !important;">{label}</td>'
+            html += f'<td style="padding:4px 6px;color:#8B949E !important;">{label}</td>'
             for ver in ['v8', 'v9']:
                 d = summary.get(ver, {})
                 hit_rate = d.get(f'{key}_hit_rate', 0)
                 roi = d.get(f'{key}_roi', 0)
-                hit_color = '#2ecc40' if hit_rate >= 30 else ('#f0c040' if hit_rate >= 15 else '#ff4060')
-                roi_color = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+                hit_color = '#14B8A6' if hit_rate >= 30 else ('#6C9BD2' if hit_rate >= 15 else '#E5534B')
+                roi_color = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
                 html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{hit_color} !important;">{hit_rate:.1f}%</td>'
                 html += f'<td style="text-align:center;padding:4px;font-family:Oswald;color:{roi_color} !important;">{roi:.1f}%</td>'
             html += '</tr>'
@@ -1307,19 +1307,19 @@ def render_backtest_report(bt_data):
         if v9_trio > v8_trio:
             diff = v9_trio - v8_trio
             html += f'<div style="background:rgba(46,204,64,0.1);border:1px solid rgba(46,204,64,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px;">'
-            html += f'<span style="font-family:Oswald;color:#2ecc40 !important;">V9 WINS</span>'
-            html += f'<span style="color:#b0b8c8 !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
+            html += f'<span style="font-family:Oswald;color:#14B8A6 !important;">V9 WINS</span>'
+            html += f'<span style="color:#8B949E !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
         elif v8_trio > v9_trio:
             diff = v8_trio - v9_trio
             html += f'<div style="background:rgba(40,152,216,0.1);border:1px solid rgba(40,152,216,0.3);border-radius:6px;padding:6px 10px;margin-bottom:10px;">'
             html += f'<span style="font-family:Oswald;color:#2898d8 !important;">V8 WINS</span>'
-            html += f'<span style="color:#b0b8c8 !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
+            html += f'<span style="color:#8B949E !important;font-size:0.85em;"> &mdash; Trio hit rate +{diff:.1f}pp</span></div>'
 
     # Loss pattern analysis (use central results)
     central_results = bt_data.get('central_results', [])
     if central_results:
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;padding-top:10px;">'
-        html += '<div style="font-family:Oswald;font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN (V9 Trio)</div>'
+        html += '<div style="font-family:Oswald;font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:6px;">LOSS PATTERN (V9 Trio)</div>'
 
         v9_wins = [r for r in central_results if r.get('v9_trio_hit')]
         v9_losses = [r for r in central_results if not r.get('v9_trio_hit')]
@@ -1339,7 +1339,7 @@ def render_backtest_report(bt_data):
         ]
 
         for cat_name, items in categories:
-            html += f'<div style="font-size:0.78em;color:#6a6a80 !important;margin:6px 0 3px;">{cat_name}</div>'
+            html += f'<div style="font-size:0.78em;color:#7D8590 !important;margin:6px 0 3px;">{cat_name}</div>'
             for label, fn in items:
                 w = sum(1 for r in v9_wins if fn(r))
                 total = w + sum(1 for r in v9_losses if fn(r))
@@ -1347,9 +1347,9 @@ def render_backtest_report(bt_data):
                     continue
                 rate = w / total * 100
                 bar_w = min(rate * 2, 100)
-                color = '#2ecc40' if rate >= 30 else ('#f0c040' if rate >= 15 else '#ff4060')
+                color = '#14B8A6' if rate >= 30 else ('#6C9BD2' if rate >= 15 else '#E5534B')
                 html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;font-size:0.88em;">'
-                html += f'<span style="min-width:70px;color:#b0b8c8 !important;">{label}</span>'
+                html += f'<span style="min-width:70px;color:#8B949E !important;">{label}</span>'
                 html += f'<div style="flex:1;height:12px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
                 html += f'<div style="width:{bar_w}%;height:100%;background:{color};border-radius:3px;"></div></div>'
                 html += f'<span style="font-family:Oswald;font-size:0.85em;min-width:80px;color:{color} !important;">{w}/{total} ({rate:.0f}%)</span>'
@@ -1367,7 +1367,7 @@ init_db()
 CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=Noto+Sans+JP:wght@300;500;700;900&display=swap');
-[data-testid="stAppViewContainer"] { background: #10141c; }
+[data-testid="stAppViewContainer"] { background: #0E1117; }
 [data-testid="stHeader"] { background: transparent; }
 [data-testid="stToolbar"] { display: none; }
 section[data-testid="stSidebar"] { display: none; }
@@ -1375,186 +1375,186 @@ section[data-testid="stSidebar"] { display: none; }
 
 /* st.metric dark theme override */
 [data-testid="stMetric"] {
-    background: #161a24; border-radius: 10px; padding: 12px 8px;
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #161B22; border-radius: 10px; padding: 12px 8px;
+    border: 1px solid rgba(230,237,243,0.06);
 }
-[data-testid="stMetricLabel"] p { color: #6a6a80 !important; font-size: 0.8em; }
-[data-testid="stMetricValue"] { color: #e8e8f0 !important; }
+[data-testid="stMetricLabel"] p { color: #7D8590 !important; font-size: 0.8em; }
+[data-testid="stMetricValue"] { color: #E6EDF3 !important; }
 [data-testid="stMetricDelta"] svg { display: none; }
-h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
+h1, h2, h3, p, span, div, td, th { color: #E6EDF3 !important; }
 
 /* Header */
 .site-header {
     text-align: center; padding: 28px 0 18px; position: relative;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(230,237,243,0.06);
     margin-bottom: 20px;
 }
 .site-logo {
     font-family: 'Bebas Neue', sans-serif; font-size: 3em; letter-spacing: 6px;
-    background: linear-gradient(135deg, #f0c040, #fff, #f0c040);
+    background: linear-gradient(135deg, #8BB4E0, #E6EDF3, #8BB4E0);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;
 }
 .site-sub {
-    font-family: 'Oswald', sans-serif; font-size: 0.82em; color: #6a6a80 !important;
+    font-family: 'Oswald', sans-serif; font-size: 0.82em; color: #7D8590 !important;
     letter-spacing: 8px; margin-top: 2px;
 }
 
 /* Race Card */
 .race-card {
-    background: linear-gradient(135deg, #142a4a 0%, #101c30 60%, #160e2e 100%);
+    background: linear-gradient(135deg, #131A27 0%, #0F1520 60%, #121520 100%);
     border-radius: 16px; padding: 22px; margin: 16px 0;
-    border: 1px solid rgba(255,255,255,0.10); position: relative; overflow: hidden;
+    border: 1px solid rgba(230,237,243,0.08); position: relative; overflow: hidden;
 }
 .grade-badge {
     display: inline-block; padding: 3px 10px; border-radius: 6px; font-family: 'Oswald';
     font-size: 0.78em; font-weight: 700; letter-spacing: 1px; margin-right: 6px; vertical-align: middle;
 }
-.grade-g1 { background: linear-gradient(90deg, #c8a030, #f0d060); color: #000 !important; }
-.grade-g2 { background: linear-gradient(90deg, #2070c0, #40a0f0); color: #fff !important; }
-.grade-g3 { background: linear-gradient(90deg, #1a8a50, #2ecc71); color: #fff !important; }
-.grade-op { background: rgba(168,85,247,0.25); color: #c090ff !important; border: 1px solid rgba(168,85,247,0.4); }
-.grade-list { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.3); }
-.race-num { font-family: 'Oswald'; font-size: 0.85em; color: #8890a0 !important; margin-right: 6px; }
+.grade-g1 { background: linear-gradient(90deg, #8B7355, #B0976A); color: #fff !important; }
+.grade-g2 { background: linear-gradient(90deg, #2563EB, #3B82F6); color: #fff !important; }
+.grade-g3 { background: linear-gradient(90deg, #0D7A6E, #0D9488); color: #fff !important; }
+.grade-op { background: rgba(124,141,181,0.20); color: #7C8DB5 !important; border: 1px solid rgba(124,141,181,0.35); }
+.grade-list { background: rgba(88,166,255,0.12); color: #58A6FF !important; border: 1px solid rgba(88,166,255,0.25); }
+.race-num { font-family: 'Oswald'; font-size: 0.85em; color: #7D8590 !important; margin-right: 6px; }
 .race-badge {
     display: inline-block; padding: 4px 14px; border-radius: 20px;
     font-family: 'Oswald', sans-serif; font-size: 0.8em; letter-spacing: 2px; margin-bottom: 10px;
 }
-.badge-dirt { background: linear-gradient(90deg, #c0783a, #a06030); color: #fff; }
-.badge-turf { background: linear-gradient(90deg, #2ecc71, #1a9050); color: #fff; }
+.badge-dirt { background: linear-gradient(90deg, #8B7355, #6B5840); color: #E6EDF3; }
+.badge-turf { background: linear-gradient(90deg, #0D9488, #0D7A6E); color: #E6EDF3; }
 .race-name { font-weight: 900; font-size: 1.5em; margin-bottom: 6px; }
-.race-meta { display: flex; gap: 14px; flex-wrap: wrap; color: #6a6a80 !important; font-size: 0.85em; }
+.race-meta { display: flex; gap: 14px; flex-wrap: wrap; color: #7D8590 !important; font-size: 0.85em; }
 
 /* Pace Panel */
 .pace-panel {
     margin-top: 16px; padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(230,237,243,0.06);
 }
 .pace-title {
-    font-family: 'Oswald', sans-serif; font-size: 0.75em; color: #6a6a80 !important;
+    font-family: 'Oswald', sans-serif; font-size: 0.75em; color: #7D8590 !important;
     letter-spacing: 2px; margin-bottom: 10px;
 }
 .pace-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .pace-item {
     text-align: center; padding: 10px 4px; border-radius: 10px;
-    background: rgba(255,255,255,0.03); position: relative; overflow: hidden;
+    background: rgba(230,237,243,0.03); position: relative; overflow: hidden;
 }
 .pace-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.pace-best::before { background: #00e87b; }
-.pace-good::before { background: #f0c040; }
-.pace-fair::before { background: #6a6a80; }
-.pace-bad::before { background: #ff4060; }
-.pace-best .ps { color: #00e87b; }
-.pace-good .ps { color: #f0c040; }
-.pace-fair .ps { color: #b0b8c8; }
-.pace-bad .ps { color: #ff4060; }
+.pace-best::before { background: #0D9488; }
+.pace-good::before { background: #6C9BD2; }
+.pace-fair::before { background: #7D8590; }
+.pace-bad::before { background: #E5534B; }
+.pace-best .ps { color: #14B8A6; }
+.pace-good .ps { color: #6C9BD2; }
+.pace-fair .ps { color: #8B949E; }
+.pace-bad .ps { color: #E5534B; }
 .ps { font-weight: 700; font-size: 0.9em; }
 .pr { font-family: 'Oswald', sans-serif; font-size: 1.3em; font-weight: 700; }
-.preason { font-size: 0.6em; color: #6a6a80 !important; margin-top: 2px; }
+.preason { font-size: 0.6em; color: #7D8590 !important; margin-top: 2px; }
 
 /* Section Title */
 .sec-title {
     font-family: 'Oswald', sans-serif; font-size: 1.2em; letter-spacing: 3px;
     margin: 24px 0 14px; display: flex; align-items: center; gap: 8px;
 }
-.sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, #6a6a80, transparent); }
+.sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, #7D8590, transparent); }
 
 /* Horse Card */
 .hcard {
-    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
+    background: #161B22; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(230,237,243,0.06); position: relative; overflow: hidden;
 }
 .hcard::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; }
-.hcard-g { background: linear-gradient(135deg, #1e1a10 0%, #161a24 60%); border: 1px solid rgba(240,192,64,0.15); }
-.hcard-g::before { background: linear-gradient(180deg, #f0c040, #c89020); }
-.hcard-s { background: linear-gradient(135deg, #181a1e 0%, #161a24 60%); border: 1px solid rgba(176,184,200,0.12); }
-.hcard-s::before { background: linear-gradient(180deg, #b0b8c8, #808898); }
-.hcard-b { background: linear-gradient(135deg, #1c1610 0%, #161a24 60%); border: 1px solid rgba(200,120,64,0.12); }
-.hcard-b::before { background: linear-gradient(180deg, #c87840, #905020); }
+.hcard-g { background: linear-gradient(135deg, #1A1E28 0%, #161B22 60%); border: 1px solid rgba(108,155,210,0.15); }
+.hcard-g::before { background: linear-gradient(180deg, #6C9BD2, #4A7AB5); }
+.hcard-s { background: linear-gradient(135deg, #181C24 0%, #161B22 60%); border: 1px solid rgba(139,148,158,0.12); }
+.hcard-s::before { background: linear-gradient(180deg, #8B949E, #6E7681); }
+.hcard-b { background: linear-gradient(135deg, #1A1C22 0%, #161B22 60%); border: 1px solid rgba(139,115,85,0.15); }
+.hcard-b::before { background: linear-gradient(180deg, #8B7355, #6B5840); }
 .hcard-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .hrank {
     font-family: 'Bebas Neue', sans-serif; font-size: 2.6em; line-height: 1;
     min-width: 36px; text-align: center;
 }
-.hrank-g { color: #f0c040 !important; }
-.hrank-s { color: #b0b8c8 !important; }
-.hrank-b { color: #c87840 !important; }
+.hrank-g { color: #6C9BD2 !important; }
+.hrank-s { color: #8B949E !important; }
+.hrank-b { color: #8B7355 !important; }
 .hname { font-weight: 900; font-size: 1.3em; line-height: 1.2; }
-.hjockey { color: #6a6a80 !important; font-size: 0.8em; margin-top: 2px; }
+.hjockey { color: #7D8590 !important; font-size: 0.8em; margin-top: 2px; }
 .hscore {
     font-family: 'Oswald', sans-serif; font-size: 1.5em; font-weight: 700;
-    padding: 5px 12px; border-radius: 10px; background: rgba(255,255,255,0.05);
+    padding: 5px 12px; border-radius: 10px; background: rgba(230,237,243,0.04);
 }
-.hscore-g { color: #f0c040 !important; }
-.hscore-s { color: #b0b8c8 !important; }
-.hscore-b { color: #c87840 !important; }
+.hscore-g { color: #6C9BD2 !important; }
+.hscore-s { color: #8B949E !important; }
+.hscore-b { color: #8B7355 !important; }
 
 /* Stats Grid */
 .sgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.sitem { text-align: center; padding: 7px 2px; background: rgba(255,255,255,0.03); border-radius: 8px; }
-.slbl { font-size: 0.6em; color: #6a6a80 !important; letter-spacing: 1px; margin-bottom: 2px; }
+.sitem { text-align: center; padding: 7px 2px; background: rgba(230,237,243,0.03); border-radius: 8px; }
+.slbl { font-size: 0.6em; color: #7D8590 !important; letter-spacing: 1px; margin-bottom: 2px; }
 .sval { font-family: 'Oswald', sans-serif; font-size: 0.92em; font-weight: 600; }
-.sg { color: #00e87b !important; }
-.sw { color: #f0c040 !important; }
-.sr { color: #ff4060 !important; }
+.sg { color: #14B8A6 !important; }
+.sw { color: #6C9BD2 !important; }
+.sr { color: #E5534B !important; }
 
 /* Style & Pace Match */
 .stag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.72em; font-weight: 700; }
-.st-nige { background: rgba(255,64,96,0.15); color: #ff4060 !important; }
-.st-senk { background: rgba(0,232,123,0.15); color: #00e87b !important; }
-.st-sasi { background: rgba(0,212,255,0.15); color: #00d4ff !important; }
-.st-oiko { background: rgba(168,85,247,0.15); color: #a855f7 !important; }
+.st-nige { background: rgba(229,83,75,0.12); color: #E5534B !important; }
+.st-senk { background: rgba(13,148,136,0.12); color: #14B8A6 !important; }
+.st-sasi { background: rgba(88,166,255,0.12); color: #58A6FF !important; }
+.st-oiko { background: rgba(124,141,181,0.12); color: #7C8DB5 !important; }
 .pmatch { display: inline-block; font-size: 0.68em; padding: 1px 5px; border-radius: 8px; margin-left: 3px; font-weight: 700; }
-.pm-best { background: rgba(0,232,123,0.2); color: #00e87b !important; }
-.pm-good { background: rgba(240,192,64,0.2); color: #f0c040 !important; }
-.pm-fair { background: rgba(176,184,200,0.15); color: #b0b8c8 !important; }
-.pm-bad { background: rgba(255,64,96,0.2); color: #ff4060 !important; }
+.pm-best { background: rgba(13,148,136,0.15); color: #14B8A6 !important; }
+.pm-good { background: rgba(108,155,210,0.15); color: #6C9BD2 !important; }
+.pm-fair { background: rgba(139,148,158,0.12); color: #8B949E !important; }
+.pm-bad { background: rgba(229,83,75,0.15); color: #E5534B !important; }
 
 /* Weight */
 .wbadge { font-family: 'Oswald'; font-size: 0.78em; padding: 2px 5px; border-radius: 4px; }
-.w-plus { background: rgba(0,232,123,0.12); color: #00e87b !important; }
-.w-minus { background: rgba(255,64,96,0.12); color: #ff4060 !important; }
-.w-flat { background: rgba(255,255,255,0.06); color: #6a6a80 !important; }
-.w-danger { background: rgba(255,64,96,0.25); color: #ff4060 !important; }
+.w-plus { background: rgba(13,148,136,0.10); color: #14B8A6 !important; }
+.w-minus { background: rgba(229,83,75,0.10); color: #E5534B !important; }
+.w-flat { background: rgba(230,237,243,0.05); color: #7D8590 !important; }
+.w-danger { background: rgba(229,83,75,0.20); color: #E5534B !important; }
 
 /* Tag */
 .tagrow { display: flex; gap: 5px; margin-top: 9px; flex-wrap: wrap; }
-.tag { font-size: 0.68em; padding: 3px 9px; border-radius: 12px; background: rgba(255,255,255,0.06); color: #6a6a80 !important; }
-.tag-sire { border: 1px solid rgba(0,212,255,0.3); color: #00d4ff !important; }
+.tag { font-size: 0.68em; padding: 3px 9px; border-radius: 12px; background: rgba(230,237,243,0.05); color: #7D8590 !important; }
+.tag-sire { border: 1px solid rgba(88,166,255,0.25); color: #58A6FF !important; }
 
 /* Score Bar */
-.sbar-w { margin-top: 10px; height: 4px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.sbar-w { margin-top: 10px; height: 4px; background: rgba(230,237,243,0.06); border-radius: 3px; overflow: hidden; }
 .sbar { height: 100%; border-radius: 3px; }
-.sbar-g { background: linear-gradient(90deg, #f0c040, #ffe070); }
-.sbar-s { background: linear-gradient(90deg, #b0b8c8, #d0d8e8); }
-.sbar-b { background: linear-gradient(90deg, #c87840, #e0a070); }
+.sbar-g { background: linear-gradient(90deg, #4A7AB5, #6C9BD2); }
+.sbar-s { background: linear-gradient(90deg, #6E7681, #8B949E); }
+.sbar-b { background: linear-gradient(90deg, #6B5840, #8B7355); }
 
 /* Buy Section */
 .buy-card {
-    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
+    background: #161B22; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(230,237,243,0.06); position: relative; overflow: hidden;
 }
 .buy-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.buy-honmei::before { background: linear-gradient(90deg, #f0c040, #00e87b); }
+.buy-honmei::before { background: linear-gradient(90deg, #2563EB, #0D9488); }
 .buy-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .buy-type { font-family: 'Oswald'; font-size: 0.8em; letter-spacing: 2px; padding: 3px 12px; border-radius: 6px; }
-.bt-hon { background: rgba(240,192,64,0.15); color: #f0c040 !important; }
-.buy-conf { font-family: 'Oswald'; font-size: 0.82em; color: #6a6a80 !important; }
+.bt-hon { background: rgba(37,99,235,0.15); color: #58A6FF !important; }
+.buy-conf { font-family: 'Oswald'; font-size: 0.82em; color: #7D8590 !important; }
 .buy-row {
     display: flex; align-items: center; gap: 10px; padding: 9px 12px;
-    background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 6px;
+    background: rgba(230,237,243,0.03); border-radius: 8px; margin-bottom: 6px;
 }
-.buy-lbl { font-size: 0.7em; color: #6a6a80 !important; font-family: 'Oswald'; min-width: 55px; }
+.buy-lbl { font-size: 0.7em; color: #7D8590 !important; font-family: 'Oswald'; min-width: 55px; }
 .buy-horses { font-weight: 700; font-size: 1em; flex: 1; }
 .buy-note {
-    font-size: 0.73em; color: #6a6a80 !important; padding: 8px 12px;
-    background: rgba(255,255,255,0.02); border-radius: 8px;
-    border-left: 2px solid rgba(255,255,255,0.08); margin-top: 4px;
+    font-size: 0.73em; color: #7D8590 !important; padding: 8px 12px;
+    background: rgba(230,237,243,0.02); border-radius: 8px;
+    border-left: 2px solid rgba(230,237,243,0.08); margin-top: 4px;
 }
 
 /* Table */
 .htable { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
-.htable th { font-size: 0.62em; color: #6a6a80 !important; letter-spacing: 1px; padding: 6px 3px; text-align: center; font-weight: 500; }
-.htable td { background: #161a24; padding: 9px 5px; text-align: center; font-size: 0.78em; }
+.htable th { font-size: 0.62em; color: #7D8590 !important; letter-spacing: 1px; padding: 6px 3px; text-align: center; font-weight: 500; }
+.htable td { background: #161B22; padding: 9px 5px; text-align: center; font-size: 0.78em; }
 .htable tr td:first-child { border-radius: 8px 0 0 8px; }
 .htable tr td:last-child { border-radius: 0 8px 8px 0; }
 .trank { font-family: 'Oswald'; font-weight: 700; font-size: 1.05em; }
@@ -1566,48 +1566,48 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
     display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.7em;
     font-family: 'Oswald'; letter-spacing: 1px; margin-left: 8px;
 }
-.badge-v5 { background: rgba(255,215,0,0.15); color: #ffd700 !important; border: 1px solid rgba(255,215,0,0.3); }
-.badge-v3 { background: rgba(0,232,123,0.15); color: #00e87b !important; border: 1px solid rgba(0,232,123,0.3); }
-.badge-v2 { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.3); }
-.badge-v8 { background: rgba(0,232,123,0.2); color: #00e87b !important; border: 1px solid rgba(0,232,123,0.5); font-weight:700; }
-.badge-v9 { background: rgba(168,85,247,0.2); color: #a855f7 !important; border: 1px solid rgba(168,85,247,0.5); font-weight:700; }
-.badge-central { background: rgba(0,212,255,0.15); color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.4); font-weight:700; margin-left:4px; }
-.badge-nar { background: rgba(230,126,34,0.15); color: #e67e22 !important; border: 1px solid rgba(230,126,34,0.4); font-weight:700; margin-left:4px; }
-.badge-v1 { background: rgba(255,255,255,0.08); color: #6a6a80 !important; }
+.badge-v5 { background: rgba(108,155,210,0.12); color: #6C9BD2 !important; border: 1px solid rgba(108,155,210,0.25); }
+.badge-v3 { background: rgba(13,148,136,0.12); color: #14B8A6 !important; border: 1px solid rgba(13,148,136,0.25); }
+.badge-v2 { background: rgba(88,166,255,0.12); color: #58A6FF !important; border: 1px solid rgba(88,166,255,0.25); }
+.badge-v8 { background: rgba(13,148,136,0.15); color: #14B8A6 !important; border: 1px solid rgba(13,148,136,0.35); font-weight:700; }
+.badge-v9 { background: rgba(108,155,210,0.15); color: #6C9BD2 !important; border: 1px solid rgba(108,155,210,0.35); font-weight:700; }
+.badge-central { background: rgba(88,166,255,0.12); color: #58A6FF !important; border: 1px solid rgba(88,166,255,0.30); font-weight:700; margin-left:4px; }
+.badge-nar { background: rgba(139,115,85,0.15); color: #B0976A !important; border: 1px solid rgba(139,115,85,0.35); font-weight:700; margin-left:4px; }
+.badge-v1 { background: rgba(230,237,243,0.06); color: #7D8590 !important; }
 
 .disclaimer {
     margin: 20px 0; padding: 12px; border-radius: 10px;
-    background: rgba(255,64,96,0.06); border: 1px solid rgba(255,64,96,0.15);
-    font-size: 0.7em; color: #6a6a80 !important; text-align: center;
+    background: rgba(229,83,75,0.05); border: 1px solid rgba(229,83,75,0.12);
+    font-size: 0.7em; color: #7D8590 !important; text-align: center;
 }
 
 /* EV Table */
 .ev-card {
-    background: #161a24; border-radius: 14px; padding: 18px; margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #161B22; border-radius: 14px; padding: 18px; margin-bottom: 12px;
+    border: 1px solid rgba(230,237,243,0.06);
 }
 .ev-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04); }
+    border-bottom: 1px solid rgba(230,237,243,0.04); }
 .ev-row:last-child { border-bottom: none; }
-.ev-lbl { font-size: 0.85em; color: #b0b8c8 !important; }
+.ev-lbl { font-size: 0.85em; color: #8B949E !important; }
 .ev-val { font-family: 'Oswald', sans-serif; font-size: 1.1em; font-weight: 700; }
-.ev-hot { color: #2ecc40 !important; }
-.ev-warm { color: #f0c040 !important; }
-.ev-cold { color: #6a6a80 !important; }
+.ev-hot { color: #14B8A6 !important; }
+.ev-warm { color: #6C9BD2 !important; }
+.ev-cold { color: #7D8590 !important; }
 
 /* Dashboard */
 .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
 .dash-item {
     text-align: center; padding: 12px 6px; border-radius: 10px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(230,237,243,0.04);
 }
 .dash-num { font-family: 'Oswald', sans-serif; font-size: 1.6em; font-weight: 700; }
-.dash-lbl { font-size: 0.7em; color: #6a6a80 !important; margin-top: 2px; }
+.dash-lbl { font-size: 0.7em; color: #7D8590 !important; margin-top: 2px; }
 
 /* System Check */
-.sys-ok { background: rgba(46,204,64,0.08); border: 1px solid rgba(46,204,64,0.25); border-radius: 10px;
+.sys-ok { background: rgba(13,148,136,0.08); border: 1px solid rgba(13,148,136,0.20); border-radius: 10px;
     padding: 10px 16px; margin-bottom: 12px; text-align: center; }
-.sys-warn { background: rgba(255,64,96,0.08); border: 1px solid rgba(255,64,96,0.25); border-radius: 10px;
+.sys-warn { background: rgba(229,83,75,0.06); border: 1px solid rgba(229,83,75,0.18); border-radius: 10px;
     padding: 10px 16px; margin-bottom: 12px; }
 
 /* Dark theme: selectbox, date_input, text_input, number_input */
@@ -1618,67 +1618,67 @@ h1, h2, h3, p, span, div, td, th { color: #e8e8f0 !important; }
 div[data-baseweb="select"] > div,
 div[data-baseweb="input"] > div,
 div[data-baseweb="popover"] > div {
-    background-color: #1a1a2e !important;
-    color: #FAFAFA !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background-color: #161B22 !important;
+    color: #E6EDF3 !important;
+    border-color: rgba(230,237,243,0.10) !important;
 }
 div[data-baseweb="select"] input,
 div[data-baseweb="input"] input {
-    color: #FAFAFA !important;
-    -webkit-text-fill-color: #FAFAFA !important;
+    color: #E6EDF3 !important;
+    -webkit-text-fill-color: #E6EDF3 !important;
 }
 /* Dropdown menu */
 div[data-baseweb="popover"],
 div[data-baseweb="menu"],
 ul[role="listbox"] {
-    background-color: #1a1a2e !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background-color: #161B22 !important;
+    border-color: rgba(230,237,243,0.10) !important;
 }
 ul[role="listbox"] li,
 div[data-baseweb="menu"] li {
-    background-color: #1a1a2e !important;
-    color: #FAFAFA !important;
+    background-color: #161B22 !important;
+    color: #E6EDF3 !important;
 }
 ul[role="listbox"] li:hover,
 div[data-baseweb="menu"] li:hover {
-    background-color: #2a2a4e !important;
+    background-color: #1E2530 !important;
 }
 /* Selected option text */
 div[data-baseweb="select"] span,
 div[data-baseweb="select"] div[class*="value"] {
-    color: #FAFAFA !important;
+    color: #E6EDF3 !important;
 }
 /* Select arrow icon */
 div[data-baseweb="select"] svg {
-    fill: #FAFAFA !important;
+    fill: #E6EDF3 !important;
 }
 /* Date picker calendar */
 div[data-baseweb="calendar"],
 div[data-baseweb="datepicker"] {
-    background-color: #1a1a2e !important;
-    color: #FAFAFA !important;
+    background-color: #161B22 !important;
+    color: #E6EDF3 !important;
 }
 /* Buttons */
 button[kind="primary"],
 button[data-testid="stBaseButton-primary"],
 .stButton > button {
-    background: linear-gradient(135deg, #FFD700, #e6c200) !important;
-    color: #0E1117 !important;
+    background: #2563EB !important;
+    color: #E6EDF3 !important;
     border: none !important;
     font-weight: 700 !important;
 }
 button[kind="primary"]:hover,
 button[data-testid="stBaseButton-primary"]:hover,
 .stButton > button:hover {
-    background: linear-gradient(135deg, #ffe44d, #FFD700) !important;
-    color: #0E1117 !important;
+    background: #1D4ED8 !important;
+    color: #E6EDF3 !important;
 }
 button[kind="secondary"],
 button[data-testid="stBaseButton-secondary"],
 .stButton > button[kind="secondary"] {
-    background-color: #1a1a2e !important;
-    color: #FAFAFA !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
+    background-color: #161B22 !important;
+    color: #E6EDF3 !important;
+    border: 1px solid rgba(230,237,243,0.10) !important;
 }
 /* Label text for widgets */
 [data-testid="stSelectbox"] label,
@@ -1687,26 +1687,26 @@ button[data-testid="stBaseButton-secondary"],
 [data-testid="stNumberInput"] label,
 .stSelectbox label,
 .stDateInput label {
-    color: #FAFAFA !important;
+    color: #E6EDF3 !important;
 }
 /* Multiselect */
 [data-testid="stMultiSelect"] > div > div {
-    background-color: #1a1a2e !important;
-    color: #FAFAFA !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    background-color: #161B22 !important;
+    color: #E6EDF3 !important;
+    border-color: rgba(230,237,243,0.10) !important;
 }
 [data-testid="stMultiSelect"] span[data-baseweb="tag"] {
-    background-color: #2a2a4e !important;
-    color: #FAFAFA !important;
+    background-color: #1E2530 !important;
+    color: #E6EDF3 !important;
 }
 /* Radio / Checkbox */
 [data-testid="stRadio"] label span,
 [data-testid="stCheckbox"] label span {
-    color: #FAFAFA !important;
+    color: #E6EDF3 !important;
 }
 /* Expander header */
 [data-testid="stExpander"] summary {
-    color: #FAFAFA !important;
+    color: #E6EDF3 !important;
 }
 </style>
 """
@@ -2702,14 +2702,14 @@ def predict_race_pace(df, distance, surface, num_horses):
 def render_pace_prediction(pace, reason, adv):
     """展開予測パネルのHTML生成"""
     pace_labels = {'high': 'HIGH PACE', 'middle': 'MIDDLE PACE', 'slow': 'SLOW PACE'}
-    pace_colors = {'high': '#ff4060', 'middle': '#f0c040', 'slow': '#00d4ff'}
+    pace_colors = {'high': '#E5534B', 'middle': '#6C9BD2', 'slow': '#58A6FF'}
     pace_icons = {'high': '🔥', 'middle': '⚖️', 'slow': '🧊'}
     label = pace_labels.get(pace, 'MIDDLE')
-    color = pace_colors.get(pace, '#f0c040')
+    color = pace_colors.get(pace, '#6C9BD2')
     icon = pace_icons.get(pace, '')
     html = f'<div style="margin:10px 0;padding:14px;background:linear-gradient(135deg,rgba({",".join(str(int(color.lstrip("#")[i:i+2],16)) for i in (0,2,4))},0.08),transparent);border:1px solid {color}30;border-radius:12px;">'
     html += f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#8890a0 !important;">PACE PREDICTION</span>'
+    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#7D8590 !important;">PACE PREDICTION</span>'
     html += f'<span style="font-family:Oswald;font-weight:700;font-size:1.1em;color:{color} !important;letter-spacing:1px;">{icon} {label}</span></div>'
     html += f'<div style="font-size:0.8em;color:#a0a8b8 !important;margin-bottom:8px;">{reason}</div>'
     html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">'
@@ -2717,15 +2717,15 @@ def render_pace_prediction(pace, reason, adv):
     for sid in [1, 2, 3, 4]:
         v = adv.get(sid, 0)
         if v > 0.015:
-            vc, vl = '#00e87b', '◎有利'
+            vc, vl = '#14B8A6', '◎有利'
         elif v > 0:
-            vc, vl = '#f0c040', '○やや有利'
+            vc, vl = '#6C9BD2', '○やや有利'
         elif v > -0.015:
-            vc, vl = '#b0b8c8', '△普通'
+            vc, vl = '#8B949E', '△普通'
         else:
-            vc, vl = '#ff4060', '×不利'
+            vc, vl = '#E5534B', '×不利'
         html += f'<div style="text-align:center;padding:6px 2px;background:rgba(255,255,255,0.03);border-radius:6px;">'
-        html += f'<div style="font-size:0.75em;color:#8890a0 !important;">{style_names[sid]}</div>'
+        html += f'<div style="font-size:0.75em;color:#7D8590 !important;">{style_names[sid]}</div>'
         html += f'<div style="font-weight:700;color:{vc} !important;font-size:0.85em;">{vl}</div></div>'
     html += '</div></div>'
     return html
@@ -2930,34 +2930,34 @@ def render_bias_panel(bias_info, course_name):
     ind = bias_info.get('inner_desc', 'フラット')
     # 全体色
     if abs(fb) > 0.3 or abs(ib) > 0.3:
-        border_c = '#e67e22'
+        border_c = '#B0976A'
         bg = 'rgba(230,126,34,0.06)'
     else:
         border_c = '#3498db'
         bg = 'rgba(52,152,219,0.06)'
     html = f'<div style="margin:10px 0;padding:14px;background:{bg};border:1px solid {border_c}30;border-radius:12px;">'
     html += f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#8890a0 !important;">TRACK BIAS ({course_name} 本日{n}R分析)</span></div>'
+    html += f'<span style="font-family:Oswald;font-size:0.8em;letter-spacing:2px;color:#7D8590 !important;">TRACK BIAS ({course_name} 本日{n}R分析)</span></div>'
     html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
     # 前残りバイアス
     if fb > 0.3:
-        fc, fi = '#ff4060', '⬆️'
+        fc, fi = '#E5534B', '⬆️'
     elif fb < -0.3:
-        fc, fi = '#00d4ff', '⬇️'
+        fc, fi = '#58A6FF', '⬇️'
     else:
-        fc, fi = '#b0b8c8', '➡️'
+        fc, fi = '#8B949E', '➡️'
     html += f'<div style="padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;text-align:center;">'
-    html += f'<div style="font-size:0.7em;color:#8890a0 !important;">脚質傾向</div>'
+    html += f'<div style="font-size:0.7em;color:#7D8590 !important;">脚質傾向</div>'
     html += f'<div style="font-weight:700;color:{fc} !important;font-size:0.9em;">{fi} {fd}</div></div>'
     # 枠バイアス
     if ib > 0.3:
-        ic, ii = '#2ecc71', '⬅️'
+        ic, ii = '#14B8A6', '⬅️'
     elif ib < -0.3:
-        ic, ii = '#e67e22', '➡️'
+        ic, ii = '#B0976A', '➡️'
     else:
-        ic, ii = '#b0b8c8', '↔️'
+        ic, ii = '#8B949E', '↔️'
     html += f'<div style="padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;text-align:center;">'
-    html += f'<div style="font-size:0.7em;color:#8890a0 !important;">枠傾向</div>'
+    html += f'<div style="font-size:0.7em;color:#7D8590 !important;">枠傾向</div>'
     html += f'<div style="font-weight:700;color:{ic} !important;font-size:0.9em;">{ii} {ind}</div></div>'
     html += '</div></div>'
     return html
@@ -3623,7 +3623,7 @@ def render_horse_card(rank, h, max_score, rank_map):
     html += f'<div class="sitem"><div class="slbl">上がり</div><div class="sval">{h.get("上がり3F",35.5):.1f}</div></div>'
     odds = h.get('単勝オッズ', 0.0)
     if odds > 0:
-        odds_color = '#ff4060' if odds <= 3.0 else ('#f0c040' if odds <= 10.0 else ('#b0b8c8' if odds <= 30.0 else '#6a6a80'))
+        odds_color = '#E5534B' if odds <= 3.0 else ('#6C9BD2' if odds <= 10.0 else ('#8B949E' if odds <= 30.0 else '#7D8590'))
         html += f'<div class="sitem"><div class="slbl">単勝</div><div class="sval" style="color:{odds_color} !important">{odds:.1f}</div></div>'
     html += '</div>'
     # 調教評価
@@ -3635,7 +3635,7 @@ def render_horse_card(rank, h, max_score, rank_map):
             train_color = '#4ade80'  # green
             train_border = 'rgba(74,222,128,0.4)'
         elif train_rank == 'B':
-            train_color = '#f0c040'  # yellow
+            train_color = '#6C9BD2'  # yellow
             train_border = 'rgba(240,192,64,0.3)'
         else:
             train_color = '#ff6080'  # red
@@ -3661,17 +3661,17 @@ def render_horse_card(rank, h, max_score, rank_map):
         pace_label = st.session_state.get('pred_pace', 'middle')
         pace_disp = {'high': 'H', 'middle': 'M', 'slow': 'S'}.get(pace_label, 'M')
         if padv > 0.015:
-            p_color, p_border, p_text = '#00e87b', 'rgba(0,232,123,0.4)', f'展開◎ ({pace_disp}ペース向き)'
+            p_color, p_border, p_text = '#14B8A6', 'rgba(0,232,123,0.4)', f'展開◎ ({pace_disp}ペース向き)'
         elif padv > 0:
-            p_color, p_border, p_text = '#f0c040', 'rgba(240,192,64,0.3)', f'展開○ ({pace_disp}ペース)'
+            p_color, p_border, p_text = '#6C9BD2', 'rgba(240,192,64,0.3)', f'展開○ ({pace_disp}ペース)'
         elif padv > -0.015:
-            p_color, p_border, p_text = '#b0b8c8', 'rgba(176,184,200,0.3)', f'展開△ ({pace_disp}ペース)'
+            p_color, p_border, p_text = '#8B949E', 'rgba(176,184,200,0.3)', f'展開△ ({pace_disp}ペース)'
         else:
-            p_color, p_border, p_text = '#ff4060', 'rgba(255,64,96,0.3)', f'展開× ({pace_disp}ペース不利)'
+            p_color, p_border, p_text = '#E5534B', 'rgba(255,64,96,0.3)', f'展開× ({pace_disp}ペース不利)'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {p_border};color:{p_color} !important;background:rgba(0,0,0,0.2)">🔄 {p_text}</span></div>'
     # 馬場適性警告
     if h.get('馬場警告'):
-        html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#ff4060 !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
+        html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#E5534B !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
     html += '<div class="tagrow">'
     if father: html += f'<span class="tag tag-sire">父: {father}</span>'
     if fr > 0: html += f'<span class="tag">複勝率 {int(fr*100)}%</span>'
@@ -3681,7 +3681,7 @@ def render_horse_card(rank, h, max_score, rank_map):
     if bt_str:
         date_short = bt_date.replace('/', '.') if bt_date else ''
         date_display = f' ({date_short})' if date_short else ''
-        html += f'<span class="tag" style="border:1px solid rgba(240,192,64,0.3);color:#f0c040 !important">⏱ {bt_dist}m {bt_str}{date_display}</span>'
+        html += f'<span class="tag" style="border:1px solid rgba(240,192,64,0.3);color:#6C9BD2 !important">⏱ {bt_dist}m {bt_str}{date_display}</span>'
     html += '</div>'
     bar_cls = f'sbar-{c}' if c else 'sbar-b'
     html += f'<div class="sbar-w"><div class="sbar {bar_cls}" style="width:{pct}%"></div></div></div>'
@@ -3750,14 +3750,14 @@ def render_feature_summary(summary):
         color = '#4ade80'
         status = f'特徴量: {acq}/{total}取得済み &#10004;'
     elif summary.get('ok', True):
-        color = '#f0c040'
+        color = '#6C9BD2'
         status = f'特徴量: {acq}/{total}取得済み &#9888;&#65039;（{n_zero}個がゼロ）'
     else:
-        color = '#ff4060'
+        color = '#E5534B'
         status = f'&#9888;&#65039; 特徴量: {acq}/{total} 予測精度低下の可能性（{n_zero}個がゼロ）'
 
     if default_count > 0:
-        status += f' <span style="color:#6a6a80 !important">(+{default_count}個はデフォルト値で補完)</span>'
+        status += f' <span style="color:#7D8590 !important">(+{default_count}個はデフォルト値で補完)</span>'
 
     # Premium データ取得状況
     training_status = ''
@@ -3956,7 +3956,7 @@ def render_ev_section(ev_list):
     # 期待値1.0以上のサマリー
     hot_bets = [e for e in ev_with_val if e['ev'] >= 1.0]
     if hot_bets:
-        html += f'<div style="margin-top:8px;padding:10px;background:#1a3a1a;border:1px solid #2ecc40;border-radius:8px;color:#2ecc40 !important;text-align:center;font-weight:bold;">'
+        html += f'<div style="margin-top:8px;padding:10px;background:#1a3a1a;border:1px solid #0D9488;border-radius:8px;color:#14B8A6 !important;text-align:center;font-weight:bold;">'
         html += f'&#128176; 期待値1.0超の買い目: {len(hot_bets)}点</div>'
     return html
 
@@ -3965,21 +3965,21 @@ def _render_stats_block(s, label=""):
     sr = s['settled_races']
     html = ''
     if label:
-        html += f'<div style="font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">{label}</div>'
+        html += f'<div style="font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:6px;">{label}</div>'
     html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;">'
     html += f'<div class="dash-item"><div class="dash-num" style="font-size:1.3em">{s["total_races"]}</div><div class="dash-lbl">予想R</div></div>'
     if sr > 0:
-        hc = '#2ecc40' if s['hit_rate'] >= 0.15 else ('#f0c040' if s['hit_rate'] >= 0.08 else '#b0b8c8')
-        html += f'<div class="dash-item"><div class="dash-num" style="font-size:1.3em">{s["hit_count"]}<span style="font-size:0.45em;color:#6a6a80 !important">/{sr}</span></div><div class="dash-lbl">的中</div></div>'
+        hc = '#14B8A6' if s['hit_rate'] >= 0.15 else ('#6C9BD2' if s['hit_rate'] >= 0.08 else '#8B949E')
+        html += f'<div class="dash-item"><div class="dash-num" style="font-size:1.3em">{s["hit_count"]}<span style="font-size:0.45em;color:#7D8590 !important">/{sr}</span></div><div class="dash-lbl">的中</div></div>'
         html += f'<div class="dash-item"><div class="dash-num" style="font-size:1.3em;color:{hc} !important">{s["hit_rate"]*100:.1f}%</div><div class="dash-lbl">的中率</div></div>'
     else:
         html += '<div class="dash-item"><div class="dash-num" style="font-size:1.3em">-</div><div class="dash-lbl">的中</div></div>'
         html += '<div class="dash-item"><div class="dash-num" style="font-size:1.3em">-</div><div class="dash-lbl">的中率</div></div>'
     inv, pay, profit, roi = s['total_investment'], s['total_payout'], s['profit'], s['roi']
     if sr > 0:
-        pc = '#2ecc40' if profit >= 0 else '#ff4060'
+        pc = '#14B8A6' if profit >= 0 else '#E5534B'
         ps = '+' if profit >= 0 else ''
-        rc = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+        rc = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
         html += f'<div class="dash-item"><div class="dash-num" style="font-size:1em">&yen;{inv:,}</div><div class="dash-lbl">投資</div></div>'
         html += f'<div class="dash-item"><div class="dash-num" style="font-size:1em">&yen;{pay:,}</div><div class="dash-lbl">払戻</div></div>'
         html += f'<div class="dash-item"><div class="dash-num" style="font-size:1em;color:{pc} !important">&yen;{ps}{profit:,}</div><div class="dash-lbl">収支</div></div>'
@@ -3991,10 +3991,10 @@ def _render_stats_block(s, label=""):
     # 回収率バー
     if sr > 0:
         bw = min(roi, 200) / 2
-        bc = '#2ecc40' if roi >= 100 else ('#f0c040' if roi >= 70 else '#ff4060')
+        bc = '#14B8A6' if roi >= 100 else ('#6C9BD2' if roi >= 70 else '#E5534B')
         rc = bc
         html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
-        html += f'<span style="font-size:0.7em;color:#6a6a80 !important;width:36px;">回収率</span>'
+        html += f'<span style="font-size:0.7em;color:#7D8590 !important;width:36px;">回収率</span>'
         html += f'<div style="flex:1;background:rgba(255,255,255,0.05);border-radius:5px;height:20px;position:relative;overflow:hidden;">'
         html += f'<div style="width:{bw}%;height:100%;background:{bc};border-radius:5px;"></div>'
         html += f'<div style="position:absolute;left:50%;top:0;width:1px;height:100%;background:rgba(255,255,255,0.2);"></div>'
@@ -4020,7 +4020,7 @@ def render_dashboard():
     recent = stats['recent']
     if recent:
         html += '<div style="border-top:1px solid rgba(255,255,255,0.06);margin:10px 0;"></div>'
-        html += '<div style="font-size:0.75em;color:#6a6a80 !important;letter-spacing:2px;margin-bottom:6px;">RECENT RACES</div>'
+        html += '<div style="font-size:0.75em;color:#7D8590 !important;letter-spacing:2px;margin-bottom:6px;">RECENT RACES</div>'
         html += '<div style="font-size:0.8em;">'
         BET_SHORT = {'trio': '三', 'umaren': '連', 'wide': 'W'}
         for r in recent[:8]:
@@ -4031,18 +4031,18 @@ def render_dashboard():
             db_bet_type = r.get('bet_type', 'trio') or 'trio'
             bet_short = BET_SHORT.get(db_bet_type, '三')
             date_short = date[:10] if date else ''
-            tag = '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#1a3a1a;color:#2ecc40 !important;margin-right:4px;">JRA</span>'
+            tag = '<span style="font-size:0.7em;padding:1px 4px;border-radius:3px;background:#1a3a1a;color:#14B8A6 !important;margin-right:4px;">JRA</span>'
             bet_tag = f'<span style="font-size:0.65em;padding:1px 3px;border-radius:2px;background:#2a2a3a;color:#aab !important;margin-right:3px;">{bet_short}</span>'
             if hit_trio is not None:
                 if hit_trio == 1:
                     icon = '&#9989;'
-                    pt = f'<span style="color:#2ecc40 !important;font-family:Oswald;">+&yen;{payout - INVESTMENT_PER_RACE:,}</span>'
+                    pt = f'<span style="color:#14B8A6 !important;font-family:Oswald;">+&yen;{payout - INVESTMENT_PER_RACE:,}</span>'
                 else:
                     icon = '&#10060;'
-                    pt = f'<span style="color:#ff4060 !important;font-family:Oswald;">-&yen;{INVESTMENT_PER_RACE}</span>'
+                    pt = f'<span style="color:#E5534B !important;font-family:Oswald;">-&yen;{INVESTMENT_PER_RACE}</span>'
                 html += f'<div class="ev-row"><span class="ev-lbl">{tag}{bet_tag}{date_short} {name[:8]}</span><span>{pt}</span><span>{icon}</span></div>'
             else:
-                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{bet_tag}{date_short} {name[:8]}</span><span style="color:#6a6a80 !important;font-size:0.85em;">&#8987;</span></div>'
+                html += f'<div class="ev-row"><span class="ev-lbl">{tag}{bet_tag}{date_short} {name[:8]}</span><span style="color:#7D8590 !important;font-size:0.85em;">&#8987;</span></div>'
         html += '</div>'
     html += '</div>'
     return html
@@ -4124,8 +4124,8 @@ def render_track_record_race_list(races):
                     col3 = sorted(set(all_nums) - set(axis))
                     axis_txt = ', '.join(f'{n}番 {name_map.get(n, "")}' for n in axis)
                     col3_txt = ', '.join(str(n) for n in col3)
-                    struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
-                    struct_html += f'1列目(軸): <span style="color:#f0c040 !important;font-weight:bold;">{axis_txt}</span>'
+                    struct_html = f'<div style="font-size:0.82em;color:#7D8590 !important;margin:2px 0 6px;padding:0 4px;">'
+                    struct_html += f'1列目(軸): <span style="color:#6C9BD2 !important;font-weight:bold;">{axis_txt}</span>'
                     struct_html += f' / 相手: <span style="font-family:Oswald;">{col3_txt}</span></div>'
                     st.markdown(f"**買い目** ({len(bets)}点 × ¥100 = ¥{inv:,})")
                     st.markdown(struct_html, unsafe_allow_html=True)
@@ -4140,8 +4140,8 @@ def render_track_record_race_list(races):
                     for bi, b in enumerate(bets):
                         amt = umaren_amts[bi] if bi < len(umaren_amts) else 100
                         bet_details.append(f'{bet_label} {b[0]}-{b[1]}: {amt}円')
-                    struct_html = f'<div style="font-size:0.82em;color:#8890a0 !important;margin:2px 0 6px;padding:0 4px;">'
-                    struct_html += f'軸: <span style="color:#f0c040 !important;font-weight:bold;">{axis_num}番 {name_map.get(axis_num, "")}</span>'
+                    struct_html = f'<div style="font-size:0.82em;color:#7D8590 !important;margin:2px 0 6px;padding:0 4px;">'
+                    struct_html += f'軸: <span style="color:#6C9BD2 !important;font-weight:bold;">{axis_num}番 {name_map.get(axis_num, "")}</span>'
                     struct_html += f' / ' + ' / '.join(f'<span style="font-family:Oswald;">{d}</span>' for d in bet_details)
                     struct_html += '</div>'
                     st.markdown(f"**買い目** (合計 ¥700)")
@@ -4172,18 +4172,18 @@ def render_track_record_race_list(races):
                     finish_color = ''
                     if finish:
                         if finish <= 3:
-                            finish_str = f' → <span style="color:#2ecc40 !important;font-weight:bold;">{finish}着</span>'
+                            finish_str = f' → <span style="color:#14B8A6 !important;font-weight:bold;">{finish}着</span>'
                         else:
                             finish_str = f' → {finish}着'
-                    rank_colors = {1: '#ffd700', 2: '#c0c0c0', 3: '#cd7f32'}
-                    rank_c = rank_colors.get(rank, '#6a6a80')
+                    rank_colors = {1: '#6C9BD2', 2: '#8B949E', 3: '#8B7355'}
+                    rank_c = rank_colors.get(rank, '#7D8590')
                     horse_html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
                     horse_html += f'<span style="min-width:20px;color:{rank_c} !important;font-weight:bold;font-family:Oswald;">{rank}</span>'
                     horse_html += f'<span style="min-width:24px;color:#8a8aa0 !important;font-family:Oswald;">{num}番</span>'
                     horse_html += f'<span style="min-width:80px;">{name}</span>'
                     horse_html += f'<div style="flex:1;height:10px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
-                    horse_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2898d8,#00e87b);border-radius:3px;"></div></div>'
-                    horse_html += f'<span style="font-family:Oswald;font-size:0.85em;min-width:45px;color:#b0b8c8 !important;">{score:.3f}</span>'
+                    horse_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2563EB,#0D9488);border-radius:3px;"></div></div>'
+                    horse_html += f'<span style="font-family:Oswald;font-size:0.85em;min-width:45px;color:#8B949E !important;">{score:.3f}</span>'
                     horse_html += f'<span style="font-size:0.82em;">{finish_str}</span>'
                     horse_html += '</div>'
                 horse_html += '</div>'
@@ -4226,15 +4226,15 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
 
     roi = cond_profile['roi']
     hit_rate = cond_profile['hit_rate']
-    roi_c = '#2ecc40' if roi >= 100 else '#f0c040'
+    roi_c = '#14B8A6' if roi >= 100 else '#6C9BD2'
     wf_n = cond_profile.get('wf_n', cond_profile.get('leakfree_n', 0))
     is_small_sample = wf_n > 0 and wf_n < 30
 
     # WFバックテスト検証バッジ
     if wf_n >= 30:
-        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#1a3a2a;color:#2ecc40 !important;border-radius:4px;margin-left:6px;">WF検証済 N={wf_n:,}</span>'
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#121E1A;color:#14B8A6 !important;border-radius:4px;margin-left:6px;">WF検証済 N={wf_n:,}</span>'
     elif wf_n > 0:
-        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#3a2a00;color:#f0c040 !important;border-radius:4px;margin-left:6px;">サンプル少 N={wf_n}</span>'
+        lf_badge = f'<span style="font-size:0.72em;padding:2px 6px;background:#3a2a00;color:#6C9BD2 !important;border-radius:4px;margin-left:6px;">サンプル少 N={wf_n}</span>'
     else:
         lf_badge = ''
 
@@ -4245,21 +4245,21 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
         bets = generate_trio_bets(sorted_df)
         html += f'<span class="buy-type bt-hon">&#127942; 三連複 7点</span>'
         html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span>{lf_badge}</div>'
-        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
+        html += f'<div style="font-size:0.82em;color:#7D8590 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += f'<div style="padding:4px 12px;margin-bottom:4px;">'
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#f0c040 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
+        html += f'<div style="font-size:0.85em;color:#8B949E !important;margin-bottom:6px;">1列目(軸): <span style="font-family:Oswald;color:#6C9BD2 !important;">{hn(t1)}</span> {t1["馬名"][:5]}</div>'
         col2 = sorted([int(t2['馬番']), int(t3['馬番'])])
         col2_txt = ', '.join(f'<span style="font-family:Oswald;">{n}</span>' for n in col2)
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:6px;">2列目: {col2_txt}</div>'
+        html += f'<div style="font-size:0.85em;color:#8B949E !important;margin-bottom:6px;">2列目: {col2_txt}</div>'
         himo = sorted([int(top.iloc[i]['馬番']) for i in range(1, min(6, len(top)))])
         himo_txt = ', '.join(str(n) for n in himo)
-        html += f'<div style="font-size:0.85em;color:#b0b8c8 !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{himo_txt}</span></div>'
+        html += f'<div style="font-size:0.85em;color:#8B949E !important;margin-bottom:8px;">3列目: <span style="font-family:Oswald;">{himo_txt}</span></div>'
         html += '</div>'
         html += '<div style="padding:0 12px 8px;display:flex;flex-wrap:wrap;gap:6px;">'
         for b in bets:
-            html += f'<span style="font-family:Oswald;font-size:0.85em;padding:3px 8px;background:rgba(255,255,255,0.06);border-radius:4px;color:#b0b8c8 !important;">{b[0]}-{b[1]}-{b[2]}</span>'
+            html += f'<span style="font-family:Oswald;font-size:0.85em;padding:3px 8px;background:rgba(255,255,255,0.06);border-radius:4px;color:#8B949E !important;">{b[0]}-{b[1]}-{b[2]}</span>'
         html += '</div>'
-        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#7D8590 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
 
     elif bet_type in ('wide', 'umaren'):
         if bet_type == 'wide':
@@ -4280,46 +4280,46 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
         if odds1 > 0 and odds2 > 0:
             exp1 = int(odds1 * amt1)
             exp2 = int(odds2 * amt2)
-            odds1_txt = f'<span style="font-family:Oswald;color:#00d4ff !important;">{odds1:.1f}倍</span>'
-            odds2_txt = f'<span style="font-family:Oswald;color:#00d4ff !important;">{odds2:.1f}倍</span>'
-            exp1_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp1:,}</span>'
-            exp2_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#2ecc40 !important;">期待払戻&yen;{exp2:,}</span>'
+            odds1_txt = f'<span style="font-family:Oswald;color:#58A6FF !important;">{odds1:.1f}倍</span>'
+            odds2_txt = f'<span style="font-family:Oswald;color:#58A6FF !important;">{odds2:.1f}倍</span>'
+            exp1_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#14B8A6 !important;">期待払戻&yen;{exp1:,}</span>'
+            exp2_txt = f'<span style="font-family:Oswald;font-size:0.82em;color:#14B8A6 !important;">期待払戻&yen;{exp2:,}</span>'
         else:
-            odds1_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
-            odds2_txt = '<span style="font-size:0.82em;color:#6a6a80 !important;">オッズ未取得</span>'
+            odds1_txt = '<span style="font-size:0.82em;color:#7D8590 !important;">オッズ未取得</span>'
+            odds2_txt = '<span style="font-size:0.82em;color:#7D8590 !important;">オッズ未取得</span>'
             exp1_txt = ''
             exp2_txt = ''
 
         html += f'<span class="buy-type bt-hon">&#127942; {type_label}</span>'
         html += f'<span class="buy-conf" style="color:{roi_c} !important;">ROI {roi:.1f}% / HIT {hit_rate:.1f}%</span>{lf_badge}</div>'
-        html += f'<div style="font-size:0.82em;color:#6a6a80 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
+        html += f'<div style="font-size:0.82em;color:#7D8590 !important;margin:4px 0 8px;padding:0 12px;">{cond_profile["label"]} : {cond_profile["desc"]}</div>'
         html += '<div style="padding:4px 12px 8px;">'
         # Bet 1
         html += f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;">'
-        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;min-width:20px;">{hn(t1)}</span>'
-        html += f'<span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f'<span style="color:#6a6a80 !important;">―</span>'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#6C9BD2 !important;min-width:20px;">{hn(t1)}</span>'
+        html += f'<span style="color:#8B949E !important;">{t1["馬名"][:5]}</span>'
+        html += f'<span style="color:#7D8590 !important;">―</span>'
         html += f'<span style="font-family:Oswald;font-size:1.1em;">{hn(t2)}</span>'
-        html += f'<span style="color:#b0b8c8 !important;">{t2["馬名"][:5]}</span>'
+        html += f'<span style="color:#8B949E !important;">{t2["馬名"][:5]}</span>'
         html += f'<span style="margin-left:auto;">{odds1_txt}</span>'
-        html += f'<span style="font-family:Oswald;font-weight:700;color:#f0c040 !important;">{amt1}円</span>'
+        html += f'<span style="font-family:Oswald;font-weight:700;color:#6C9BD2 !important;">{amt1}円</span>'
         html += f'</div>'
         if exp1_txt:
             html += f'<div style="text-align:right;margin:-4px 10px 6px 0;">{exp1_txt}</div>'
         # Bet 2
         html += f'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;">'
-        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#f0c040 !important;min-width:20px;">{hn(t1)}</span>'
-        html += f'<span style="color:#b0b8c8 !important;">{t1["馬名"][:5]}</span>'
-        html += f'<span style="color:#6a6a80 !important;">―</span>'
+        html += f'<span style="font-family:Oswald;font-size:1.1em;color:#6C9BD2 !important;min-width:20px;">{hn(t1)}</span>'
+        html += f'<span style="color:#8B949E !important;">{t1["馬名"][:5]}</span>'
+        html += f'<span style="color:#7D8590 !important;">―</span>'
         html += f'<span style="font-family:Oswald;font-size:1.1em;">{hn(t3)}</span>'
-        html += f'<span style="color:#b0b8c8 !important;">{t3["馬名"][:5]}</span>'
+        html += f'<span style="color:#8B949E !important;">{t3["馬名"][:5]}</span>'
         html += f'<span style="margin-left:auto;">{odds2_txt}</span>'
-        html += f'<span style="font-family:Oswald;font-weight:700;color:#f0c040 !important;">{amt2}円</span>'
+        html += f'<span style="font-family:Oswald;font-weight:700;color:#6C9BD2 !important;">{amt2}円</span>'
         html += f'</div>'
         if exp2_txt:
             html += f'<div style="text-align:right;margin:-4px 10px 6px 0;">{exp2_txt}</div>'
         html += '</div>'
-        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#6a6a80 !important;">TOTAL: {amt1} + {amt2} = 700円</div>'
+        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#7D8590 !important;">TOTAL: {amt1} + {amt2} = 700円</div>'
 
     # TOP1 note
     s1_style = STYLE_NAMES.get(int(t1.get('脚質', 0)), '不明')
@@ -4335,7 +4335,7 @@ def render_table(df, rank_map):
     html = '<table class="htable"><tr><th>#</th><th>馬名</th><th>騎手</th><th>脚質</th><th>前走</th><th>単勝</th><th>間隔</th><th>体重</th><th>⏱ Best</th><th>SCORE</th></tr>'
     for _, h in sorted_df.iterrows():
         rank = int(h['AI順位'])
-        rc = '#f0c040' if rank == 1 else ('#b0b8c8' if rank == 2 else ('#c87840' if rank == 3 else '#e8e8f0'))
+        rc = '#6C9BD2' if rank == 1 else ('#8B949E' if rank == 2 else ('#8B7355' if rank == 3 else '#E6EDF3'))
         style_name = STYLE_NAMES.get(int(h.get('脚質', 0)), '?')
         style_css = STYLE_CSS.get(int(h.get('脚質', 0)), 'st-senk')
         pm = get_pace_match_html(int(h.get('脚質', 0)), rank_map)
@@ -4344,7 +4344,7 @@ def render_table(df, rank_map):
         bt_date_short = bt_date.replace('/', '.') if bt_date else ''
         bt_display = bt if bt else '-'
         if bt and bt_date_short:
-            bt_display = f'{bt}<br><span style="font-size:0.7em;color:#6a6a80">{bt_date_short}</span>'
+            bt_display = f'{bt}<br><span style="font-size:0.7em;color:#7D8590">{bt_date_short}</span>'
         html += f'<tr><td><span class="trank" style="color:{rc}">{rank}</span></td>'
         html += f'<td class="tname">{h["馬名"]}</td>'
         html += f'<td>{h["騎手名"][:3]}</td>'
@@ -4352,7 +4352,7 @@ def render_table(df, rank_map):
         html += f'<td class="{finish_cls(int(h["前走着順"]))}">{int(h["前走着順"])}着</td>'
         odds = h.get('単勝オッズ', 0.0)
         if odds > 0:
-            odds_color = '#ff4060' if odds <= 3.0 else ('#f0c040' if odds <= 10.0 else ('#b0b8c8' if odds <= 30.0 else '#6a6a80'))
+            odds_color = '#E5534B' if odds <= 3.0 else ('#6C9BD2' if odds <= 10.0 else ('#8B949E' if odds <= 30.0 else '#7D8590'))
             html += f'<td style="font-family:Oswald;color:{odds_color} !important">{odds:.1f}</td>'
         else:
             html += '<td>-</td>'
@@ -4376,7 +4376,7 @@ model_badge_placeholder = st.empty()
 if v9_avail:
     _v9c_auc = _v9_models['central'].get('auc', 0)
     _v9c_ver = _v9_models['central'].get('version', 'v9').upper()
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span> <span class="model-badge" style="background:linear-gradient(135deg,#1a3a2a,#0a2a1a);border:1px solid #2ecc40;color:#2ecc40 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span> <span class="model-badge" style="background:linear-gradient(135deg,#121E1A,#0E1117);border:1px solid #0D9488;color:#14B8A6 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
@@ -4384,12 +4384,12 @@ else:
 sys_checks = run_system_checks()
 all_ok = all(c[1] for c in sys_checks)
 if all_ok:
-    st.markdown('<div class="sys-ok"><span style="color:#2ecc40 !important;font-weight:bold;">&#9989; 全システム正常</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sys-ok"><span style="color:#14B8A6 !important;font-weight:bold;">&#9989; 全システム正常</span></div>', unsafe_allow_html=True)
 else:
     warn_html = '<div class="sys-warn">'
     for name, ok, detail in sys_checks:
         if not ok:
-            warn_html += f'<div style="color:#ff4060 !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
+            warn_html += f'<div style="color:#E5534B !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
     warn_html += '</div>'
     st.markdown(warn_html, unsafe_allow_html=True)
 
@@ -5276,7 +5276,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
 
         if info_parts:
             env_html = '<div style="background:rgba(40,152,216,0.1);border:1px solid rgba(40,152,216,0.3);border-radius:8px;padding:10px;margin:8px 0">'
-            env_html += '<b>🌤️ 馬場・天候データ</b> <span style="font-size:0.8em;color:#6a6a80">(Pattern B特徴量に反映済)</span><br>'
+            env_html += '<b>🌤️ 馬場・天候データ</b> <span style="font-size:0.8em;color:#7D8590">(Pattern B特徴量に反映済)</span><br>'
             env_html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">'
             for part in info_parts:
                 env_html += f'<span style="font-size:0.9em">{part}</span>'
@@ -5296,7 +5296,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     if st.session_state.get('pred_track_changed'):
         orig_cond = race_info.get('condition_original', '良')
         new_cond = race_info.get('condition', '良')
-        st.markdown(f'<div style="margin:8px 0;padding:12px;background:linear-gradient(90deg,#3a1a0a,#2a1a1a);border:1px solid #e67e22;border-radius:10px;text-align:center;color:#e67e22 !important;font-weight:bold;">⚠️ 馬場変化検知: {orig_cond} → {new_cond}　スコア自動補正済（前残り有利に調整）</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="margin:8px 0;padding:12px;background:linear-gradient(90deg,#1A1E28,#161B22);border:1px solid #B0976A;border-radius:10px;text-align:center;color:#B0976A !important;font-weight:bold;">⚠️ 馬場変化検知: {orig_cond} → {new_cond}　スコア自動補正済（前残り有利に調整）</div>', unsafe_allow_html=True)
     # Render TOP3
     st.markdown('<div class="sec-title">🏆 AI TOP 3<span class="sec-line"></span></div>', unsafe_allow_html=True)
     max_score = df['スコア'].max()
@@ -5350,10 +5350,10 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
             reason = f'1000m以下：非推奨（WFバックテスト ROI 85.0%, N=534）。購入非推奨。'
         else:
             reason = '5年バックテスト結果: この条件では的中率・ROIが低下。見送りまたは少額投資推奨。'
-        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#2a0a0a,#3a1a1a);border:2px solid #ff4060;border-radius:12px;">
-<div style="font-family:Oswald;font-size:1.1em;color:#ff4060 !important;margin-bottom:8px;">&#9888;&#65039; NOT RECOMMENDED</div>
-<div style="font-size:0.9em;color:#ff4060 !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
-<div style="font-size:0.82em;color:#6a6a80 !important;margin-top:8px;">{reason}</div>
+        st.markdown(f'''<div style="margin:8px 0;padding:14px;background:linear-gradient(135deg,#1A1418,#161B22);border:2px solid #E5534B;border-radius:12px;">
+<div style="font-family:Oswald;font-size:1.1em;color:#E5534B !important;margin-bottom:8px;">&#9888;&#65039; NOT RECOMMENDED</div>
+<div style="font-size:0.9em;color:#E5534B !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
+<div style="font-size:0.82em;color:#7D8590 !important;margin-top:8px;">{reason}</div>
 </div>''', unsafe_allow_html=True)
     # Expected Value Section (with trio odds integration)
     if odds_available:
@@ -5376,19 +5376,19 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
             race_ev = sum(e['ev'] for e in trio_evs) / len(trio_evs) if trio_evs else 0
             max_ev = max(e['ev'] for e in trio_evs) if trio_evs else 0
             ev_above_1 = sum(1 for e in trio_evs if e['ev'] >= 1.0)
-            ev_color = '#2ecc40' if race_ev >= 1.0 else ('#f0c040' if race_ev >= 0.7 else '#ff4060')
+            ev_color = '#14B8A6' if race_ev >= 1.0 else ('#6C9BD2' if race_ev >= 0.7 else '#E5534B')
             st.markdown(f'''<div style="margin:8px 0;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;display:flex;gap:20px;align-items:center;">
-<span style="font-size:0.85em;color:#8890a0 !important;">Race EV:</span>
+<span style="font-size:0.85em;color:#7D8590 !important;">Race EV:</span>
 <span style="font-family:Oswald;font-size:1.1em;color:{ev_color} !important;font-weight:bold;">{race_ev:.2f}</span>
-<span style="font-size:0.8em;color:#6a6a80 !important;">Max: {max_ev:.2f} | EV&gt;1.0: {ev_above_1}/{len(trio_evs)}点</span>
+<span style="font-size:0.8em;color:#7D8590 !important;">Max: {max_ev:.2f} | EV&gt;1.0: {ev_above_1}/{len(trio_evs)}点</span>
 </div>''', unsafe_allow_html=True)
         # EV>=1.0の三連複買い目をハイライト
         hot_trio = [e for e in ev_display if e['type'] == '三連複' and e['ev'] >= 1.0]
         if hot_trio:
-            hot_html = '<div style="margin:8px 0;padding:12px;background:linear-gradient(135deg,#1a3a1a,#0a2a0a);border:1px solid #2ecc40;border-radius:10px;">'
-            hot_html += '<div style="color:#2ecc40 !important;font-weight:bold;margin-bottom:6px;">🎯 高期待値の三連複買い目</div>'
+            hot_html = '<div style="margin:8px 0;padding:12px;background:linear-gradient(135deg,#121E1A,#0E1117);border:1px solid #0D9488;border-radius:10px;">'
+            hot_html += '<div style="color:#14B8A6 !important;font-weight:bold;margin-bottom:6px;">🎯 高期待値の三連複買い目</div>'
             for e in sorted(hot_trio, key=lambda x: x['ev'], reverse=True):
-                ev_tag = '<span style="color:#ff4060 !important;font-weight:bold;">🔥 HOT</span>' if e['ev'] >= 1.5 else '<span style="color:#f0c040 !important;">★</span>'
+                ev_tag = '<span style="color:#E5534B !important;font-weight:bold;">🔥 HOT</span>' if e['ev'] >= 1.5 else '<span style="color:#6C9BD2 !important;">★</span>'
                 hot_html += f'<div style="padding:4px 0;font-size:0.9em;">{ev_tag} {e["horses"]} (EV {e["ev"]:.2f} / {e["odds"]:.1f}倍)</div>'
             hot_html += '</div>'
             st.markdown(hot_html, unsafe_allow_html=True)
@@ -5402,20 +5402,20 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         r = int(row['AI順位'])
         pct = row['スコア'] / chart_max * 100 if chart_max > 0 else 0
         if r == 1:
-            bar_bg = 'linear-gradient(90deg, #c89020, #f0c040)'
-            lbl_c = '#f0c040'
+            bar_bg = 'linear-gradient(90deg, #4A7AB5, #6C9BD2)'
+            lbl_c = '#6C9BD2'
         elif r == 2:
-            bar_bg = 'linear-gradient(90deg, #808898, #b0b8c8)'
-            lbl_c = '#b0b8c8'
+            bar_bg = 'linear-gradient(90deg, #6E7681, #8B949E)'
+            lbl_c = '#8B949E'
         elif r == 3:
-            bar_bg = 'linear-gradient(90deg, #905020, #c87840)'
-            lbl_c = '#c87840'
+            bar_bg = 'linear-gradient(90deg, #6B5840, #8B7355)'
+            lbl_c = '#8B7355'
         elif r <= 6:
-            bar_bg = 'linear-gradient(90deg, #1a5080, #2898d8)'
-            lbl_c = '#60b0e0'
+            bar_bg = 'linear-gradient(90deg, #1E3A5F, #3B6EA5)'
+            lbl_c = '#58A6FF'
         else:
-            bar_bg = 'linear-gradient(90deg, #303848, #485068)'
-            lbl_c = '#8890a0'
+            bar_bg = 'linear-gradient(90deg, #21262D, #30363D)'
+            lbl_c = '#7D8590'
         chart_html += f'<div style="display:flex;align-items:center;margin-bottom:4px;gap:6px;">'
         chart_html += f'<span style="font-size:0.75em;width:60px;text-align:right;color:{lbl_c} !important;white-space:nowrap;overflow:hidden;">{row["馬名"][:5]}</span>'
         chart_html += f'<div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden;">'
@@ -5815,10 +5815,10 @@ with st.expander("🤖 モデル情報・特徴量重要度"):
                 for fname, imp in pairs:
                     bar_w = imp / max_imp * 100 if max_imp > 0 else 0
                     fi_html += f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">'
-                    fi_html += f'<span style="min-width:120px;color:#b0b8c8 !important;font-size:0.82em;">{fname}</span>'
+                    fi_html += f'<span style="min-width:120px;color:#8B949E !important;font-size:0.82em;">{fname}</span>'
                     fi_html += f'<div style="flex:1;height:12px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;">'
-                    fi_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2898d8,#00e87b);border-radius:3px;"></div></div>'
-                    fi_html += f'<span style="font-family:Oswald;font-size:0.75em;min-width:60px;color:#6a6a80 !important;">{imp:.0f}</span>'
+                    fi_html += f'<div style="width:{bar_w:.0f}%;height:100%;background:linear-gradient(90deg,#2563EB,#0D9488);border-radius:3px;"></div></div>'
+                    fi_html += f'<span style="font-family:Oswald;font-size:0.75em;min-width:60px;color:#7D8590 !important;">{imp:.0f}</span>'
                     fi_html += '</div>'
                 fi_html += '</div>'
                 st.markdown(fi_html, unsafe_allow_html=True)
@@ -6406,13 +6406,13 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                     # AI予測TOP3
                     if top3:
                         top3_html = '<div style="display:flex;gap:12px;margin-bottom:8px;">'
-                        rank_colors = {0: '#ffd700', 1: '#c0c0c0', 2: '#cd7f32'}
+                        rank_colors = {0: '#6C9BD2', 1: '#8B949E', 2: '#8B7355'}
                         for i, h in enumerate(top3):
-                            rc = rank_colors.get(i, '#6a6a80')
+                            rc = rank_colors.get(i, '#7D8590')
                             top3_html += f'<div style="text-align:center;padding:6px 12px;background:rgba(255,255,255,0.04);border-radius:8px;border-left:3px solid {rc};">'
                             top3_html += f'<div style="font-family:Oswald;font-size:1.1em;color:{rc} !important;">{i+1}位</div>'
                             top3_html += f'<div style="font-size:0.9em;">{h["num"]}番 {h["name"]}</div>'
-                            top3_html += f'<div style="font-family:Oswald;font-size:0.8em;color:#b0b8c8 !important;">{h["score"]:.3f}</div>'
+                            top3_html += f'<div style="font-family:Oswald;font-size:0.8em;color:#8B949E !important;">{h["score"]:.3f}</div>'
                             top3_html += '</div>'
                         top3_html += '</div>'
                         st.markdown(top3_html, unsafe_allow_html=True)
@@ -6445,8 +6445,8 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             for n in axis:
                                 name = next((h['name'] for h in top3 if h.get('num') == n), '')
                                 axis_names.append(f'{n}番 {name[:5]}' if name else f'{n}番')
-                            struct_html = f'<div style="font-size:0.8em;color:#8890a0 !important;margin:2px 0 4px;">'
-                            struct_html += f'軸: <span style="color:#f0c040 !important;">{", ".join(axis_names)}</span>'
+                            struct_html = f'<div style="font-size:0.8em;color:#7D8590 !important;margin:2px 0 4px;">'
+                            struct_html += f'軸: <span style="color:#6C9BD2 !important;">{", ".join(axis_names)}</span>'
                             struct_html += f' / 相手: <span style="font-family:Oswald;">{", ".join(str(n) for n in col3)}</span></div>'
                             st.markdown(struct_html, unsafe_allow_html=True)
                         elif len(bets[0]) == 2 and top3:
@@ -6457,8 +6457,8 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                             for bi, b in enumerate(bets):
                                 amt = umaren_amts[bi] if bi < len(umaren_amts) else 100
                                 bet_details.append(f'{bt_label} {b[0]}-{b[1]}: {amt}円')
-                            struct_html = f'<div style="font-size:0.8em;color:#8890a0 !important;margin:2px 0 4px;">'
-                            struct_html += f'軸: <span style="color:#f0c040 !important;">{axis_num}番 {top3[0]["name"][:5]}</span>'
+                            struct_html = f'<div style="font-size:0.8em;color:#7D8590 !important;margin:2px 0 4px;">'
+                            struct_html += f'軸: <span style="color:#6C9BD2 !important;">{axis_num}番 {top3[0]["name"][:5]}</span>'
                             struct_html += f' / ' + ' / '.join(f'<span style="font-family:Oswald;">{d}</span>' for d in bet_details)
                             struct_html += '</div>'
                             st.markdown(struct_html, unsafe_allow_html=True)
