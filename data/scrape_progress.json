@@ -13,14 +13,16 @@
     "note": "ALL COMPLETE. 2020-2026: 222,913 total rows."
   },
   "newspaper": {
-    "completed_years": [],
-    "current_year": 2025,
-    "note": "2025: 699R partial. In progress."
+    "completed_years": [
+      2025
+    ],
+    "current_year": null,
+    "note": "2025 complete. ai_position: 46366, training_eval: 47884, ai_opinion: 3335"
   },
   "result": {
     "completed_years": [],
     "current_year": 2025,
-    "note": "2025: 669R partial"
+    "note": "2025: 785R partial. In progress."
   },
   "history": [
     {
@@ -60,5 +62,5 @@
     "current_year": null,
     "note": "ALL COMPLETE. 2020-2024: 233871 training, 81599 comments."
   },
-  "last_updated": "2026-03-28T13:00"
+  "last_updated": "2026-03-28T16:00"
 }
