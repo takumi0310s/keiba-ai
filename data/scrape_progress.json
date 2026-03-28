@@ -15,7 +15,7 @@
   "newspaper": {
     "completed_years": [],
     "current_year": 2025,
-    "note": "2025: 584R partial"
+    "note": "2025: 699R partial. In progress."
   },
   "result": {
     "completed_years": [],
@@ -51,13 +51,14 @@
   ],
   "training_times": {
     "completed_years": [
+      2020,
       2021,
       2022,
       2023,
       2024
     ],
-    "current_year": 2020,
-    "note": "2021-2024 complete. Total: 192445 training, 67024 comments. 2020 in progress."
+    "current_year": null,
+    "note": "ALL COMPLETE. 2020-2024: 233871 training, 81599 comments."
   },
-  "last_updated": "2026-03-28T09:00"
+  "last_updated": "2026-03-28T13:00"
 }
