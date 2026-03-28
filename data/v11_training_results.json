@@ -25,14 +25,14 @@
   },
   "+si_2": {
     "n_features": 69,
-    "avg_auc": 0.80009,
+    "avg_auc": 0.80041,
     "fold_aucs": {
       "2020": 0.79112,
       "2021": 0.7955,
       "2022": 0.80127,
       "2023": 0.80169,
-      "2024": 0.80502,
-      "2025": 0.80592
+      "2024": 0.80702,
+      "2025": 0.80588
     },
     "train_aucs": {
       "2020": 0.79431,
@@ -40,22 +40,74 @@
       "2022": 0.79906,
       "2023": 0.80501,
       "2024": 0.80388,
-      "2025": 0.80297
+      "2025": 0.80481
     },
     "all_above_078": true,
     "max_gap": 0.00332,
     "no_overfit": true,
-    "passed_auc": "False"
+    "passed_auc": true,
+    "condition_roi": {
+      "A": {
+        "n": 3212,
+        "hits": 1455,
+        "hit_rate": 45.3,
+        "investment": 2248400,
+        "payout": 4475570,
+        "roi": 199.1
+      },
+      "B": {
+        "n": 398,
+        "hits": 179,
+        "hit_rate": 45.0,
+        "investment": 278600,
+        "payout": 511180,
+        "roi": 183.5
+      },
+      "C": {
+        "n": 2473,
+        "hits": 822,
+        "hit_rate": 33.2,
+        "investment": 1731100,
+        "payout": 4471820,
+        "roi": 258.3
+      },
+      "D": {
+        "n": 3581,
+        "hits": 1030,
+        "hit_rate": 28.8,
+        "investment": 2506700,
+        "payout": 3780200,
+        "roi": 150.8
+      },
+      "E": {
+        "n": 267,
+        "hits": 143,
+        "hit_rate": 53.6,
+        "investment": 186900,
+        "payout": 190470.0,
+        "roi": 101.9
+      },
+      "X": {
+        "n": 383,
+        "hits": 159,
+        "hit_rate": 41.5,
+        "investment": 268100,
+        "payout": 1106930,
+        "roi": 412.9
+      }
+    },
+    "all_roi_above_100": true,
+    "passed_roi": true
   },
   "+si_all": {
     "n_features": 72,
-    "avg_auc": 0.80035,
+    "avg_auc": 0.80078,
     "fold_aucs": {
       "2020": 0.79112,
       "2021": 0.79601,
       "2022": 0.80153,
       "2023": 0.80149,
-      "2024": 0.80481,
+      "2024": 0.80739,
       "2025": 0.80716
     },
     "train_aucs": {
@@ -64,7 +116,7 @@
       "2022": 0.79954,
       "2023": 0.80417,
       "2024": 0.80425,
-      "2025": 0.80323
+      "2025": 0.80517
     },
     "all_above_078": true,
     "max_gap": 0.00319,
@@ -72,66 +124,66 @@
     "passed_auc": true,
     "condition_roi": {
       "A": {
-        "n": 6457,
-        "hits": 2882,
-        "hit_rate": 44.6,
-        "investment": 4519900,
-        "payout": 4924750,
-        "roi": 109.0
+        "n": 3212,
+        "hits": 1481,
+        "hit_rate": 46.1,
+        "investment": 2248400,
+        "payout": 4916500,
+        "roi": 218.7
       },
       "B": {
-        "n": 855,
-        "hits": 380,
-        "hit_rate": 44.4,
-        "investment": 598500,
-        "payout": 530240,
-        "roi": 88.6
+        "n": 398,
+        "hits": 189,
+        "hit_rate": 47.5,
+        "investment": 278600,
+        "payout": 522500,
+        "roi": 187.5
       },
       "C": {
-        "n": 4788,
-        "hits": 1610,
-        "hit_rate": 33.6,
-        "investment": 3351600,
-        "payout": 4570840,
-        "roi": 136.4
+        "n": 2473,
+        "hits": 855,
+        "hit_rate": 34.6,
+        "investment": 1731100,
+        "payout": 4669120,
+        "roi": 269.7
       },
       "D": {
-        "n": 7280,
-        "hits": 1967,
-        "hit_rate": 27.0,
-        "investment": 5096000,
-        "payout": 3592570,
-        "roi": 70.5
+        "n": 3581,
+        "hits": 1042,
+        "hit_rate": 29.1,
+        "investment": 2506700,
+        "payout": 3687040,
+        "roi": 147.1
       },
       "E": {
-        "n": 462,
-        "hits": 242,
-        "hit_rate": 52.4,
-        "investment": 323400,
-        "payout": 55160,
-        "roi": 17.1
+        "n": 267,
+        "hits": 146,
+        "hit_rate": 54.7,
+        "investment": 186900,
+        "payout": 194600.0,
+        "roi": 104.1
       },
       "X": {
-        "n": 813,
-        "hits": 296,
-        "hit_rate": 36.4,
-        "investment": 569100,
-        "payout": 1110340,
-        "roi": 195.1
+        "n": 383,
+        "hits": 157,
+        "hit_rate": 41.0,
+        "investment": 268100,
+        "payout": 1190730,
+        "roi": 444.1
       }
     },
-    "all_roi_above_100": false,
-    "passed_roi": false
+    "all_roi_above_100": true,
+    "passed_roi": true
   },
   "+si_all+pci": {
     "n_features": 73,
-    "avg_auc": 0.80035,
+    "avg_auc": 0.80078,
     "fold_aucs": {
       "2020": 0.79112,
       "2021": 0.79601,
       "2022": 0.80153,
       "2023": 0.80149,
-      "2024": 0.80481,
+      "2024": 0.80739,
       "2025": 0.80716
     },
     "train_aucs": {
@@ -140,7 +192,7 @@
       "2022": 0.79954,
       "2023": 0.80417,
       "2024": 0.80425,
-      "2025": 0.80323
+      "2025": 0.80517
     },
     "all_above_078": true,
     "max_gap": 0.00319,
@@ -148,55 +200,55 @@
     "passed_auc": true,
     "condition_roi": {
       "A": {
-        "n": 6457,
-        "hits": 2882,
-        "hit_rate": 44.6,
-        "investment": 4519900,
-        "payout": 4924750,
-        "roi": 109.0
+        "n": 3212,
+        "hits": 1481,
+        "hit_rate": 46.1,
+        "investment": 2248400,
+        "payout": 4916500,
+        "roi": 218.7
       },
       "B": {
-        "n": 855,
-        "hits": 380,
-        "hit_rate": 44.4,
-        "investment": 598500,
-        "payout": 530240,
-        "roi": 88.6
+        "n": 398,
+        "hits": 189,
+        "hit_rate": 47.5,
+        "investment": 278600,
+        "payout": 522500,
+        "roi": 187.5
       },
       "C": {
-        "n": 4788,
-        "hits": 1610,
-        "hit_rate": 33.6,
-        "investment": 3351600,
-        "payout": 4570840,
-        "roi": 136.4
+        "n": 2473,
+        "hits": 855,
+        "hit_rate": 34.6,
+        "investment": 1731100,
+        "payout": 4669120,
+        "roi": 269.7
       },
       "D": {
-        "n": 7280,
-        "hits": 1967,
-        "hit_rate": 27.0,
-        "investment": 5096000,
-        "payout": 3592570,
-        "roi": 70.5
+        "n": 3581,
+        "hits": 1042,
+        "hit_rate": 29.1,
+        "investment": 2506700,
+        "payout": 3687040,
+        "roi": 147.1
       },
       "E": {
-        "n": 462,
-        "hits": 242,
-        "hit_rate": 52.4,
-        "investment": 323400,
-        "payout": 55160,
-        "roi": 17.1
+        "n": 267,
+        "hits": 146,
+        "hit_rate": 54.7,
+        "investment": 186900,
+        "payout": 194600.0,
+        "roi": 104.1
       },
       "X": {
-        "n": 813,
-        "hits": 296,
-        "hit_rate": 36.4,
-        "investment": 569100,
-        "payout": 1110340,
-        "roi": 195.1
+        "n": 383,
+        "hits": 157,
+        "hit_rate": 41.0,
+        "investment": 268100,
+        "payout": 1190730,
+        "roi": 444.1
       }
     },
-    "all_roi_above_100": false,
-    "passed_roi": false
+    "all_roi_above_100": true,
+    "passed_roi": true
   }
 }

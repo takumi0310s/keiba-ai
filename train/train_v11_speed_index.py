@@ -278,27 +278,46 @@ def walk_forward_with_roi(df, features, payout_lookup, label=""):
                 continue
 
             trio_bets = calc_trio_bets(ranking)
-            top3_set = set(actual_top3.values())
-            trio_hit = any(set(c) == top3_set for c in trio_bets) if len(top3_set) == 3 else False
 
             # Umaren bets (for condition E)
             umaren_bets = []
             if len(ranking) >= 3:
                 umaren_bets = [tuple(sorted([ranking[0], ranking[1]])),
                                tuple(sorted([ranking[0], ranking[2]]))]
-            top2_set = {actual_top3.get(1), actual_top3.get(2)}
-            umaren_hit = any(set(b) == top2_set for b in umaren_bets)
 
-            # Lookup actual payout
-            nk_rid = row0.get('nk_race_id', '')
+            # Lookup actual payout by race_id_str (TARGET 8-char format)
+            payout_info = payout_lookup.get(rid)
+            trio_hit = False
             trio_payout = 0
+            umaren_hit = False
             umaren_payout = 0
-            if nk_rid in payout_lookup:
-                p = payout_lookup[nk_rid]
-                if trio_hit and 'trio_payout' in p:
-                    trio_payout = p['trio_payout']
-                if umaren_hit and 'umaren_payout' in p:
-                    umaren_payout = p['umaren_payout']
+
+            if payout_info:
+                # Check trio hit against actual winning combination
+                actual_trio_str = payout_info.get('trio_nums', '')
+                if actual_trio_str and actual_trio_str != 'nan':
+                    try:
+                        actual_trio = frozenset(int(x) for x in actual_trio_str.split('-'))
+                        for bet in trio_bets:
+                            if frozenset(bet) == actual_trio:
+                                trio_hit = True
+                                trio_payout = payout_info['trio_payout']
+                                break
+                    except (ValueError, AttributeError):
+                        pass
+
+                # Check umaren hit
+                actual_umaren_str = payout_info.get('umaren_nums', '')
+                if actual_umaren_str and actual_umaren_str != 'nan':
+                    try:
+                        actual_umaren = frozenset(int(x) for x in actual_umaren_str.split('-'))
+                        for bet in umaren_bets:
+                            if frozenset(bet) == actual_umaren:
+                                umaren_hit = True
+                                umaren_payout = payout_info['umaren_payout']
+                                break
+                    except (ValueError, AttributeError):
+                        pass
 
             all_results.append({
                 'race_id': rid,
@@ -309,51 +328,58 @@ def walk_forward_with_roi(df, features, payout_lookup, label=""):
                 'trio_payout': trio_payout,
                 'umaren_hit': umaren_hit,
                 'umaren_payout': umaren_payout,
+                'has_payout': payout_info is not None,
             })
 
     return all_results, fold_aucs
 
 
 def load_payout_lookup():
-    """Load JRA payout data as lookup dict."""
+    """Load JRA payout data as lookup dict keyed by race_id_str (TARGET 8-char format).
+    Uses same key format as calc_actual_roi.py for consistency.
+    """
     payout_path = os.path.join(DATA_DIR, 'jra_payouts.csv')
     if not os.path.exists(payout_path):
         print("  WARNING: jra_payouts.csv not found")
         return {}
 
-    payouts = pd.read_csv(payout_path)
+    COURSE_NAME_TO_CODE = {
+        '札幌': '01', '函館': '02', '福島': '03', '新潟': '04', '東京': '05',
+        '中山': '06', '中京': '07', '京都': '08', '阪神': '09', '小倉': '10',
+    }
+    NICHI_TO_CHAR = {i: str(i) for i in range(1, 10)}
+    NICHI_TO_CHAR.update({10: 'A', 11: 'B', 12: 'C'})
+
+    payouts = pd.read_csv(payout_path, encoding='utf-8', dtype=str)
     lookup = {}
 
     for _, row in payouts.iterrows():
-        # Build netkeiba-style race_id from payout data
         try:
-            date = str(int(row['race_date']))
-            course = str(row['course']).strip()
-            kai = int(row['kai'])
-            nichi = int(row['nichi'])
-            race_num = int(row['race_num'])
+            date_str = str(row['race_date'])
+            course_name = str(row['course']).strip()
+            kai_int = int(row['kai'])
+            nichi_int = int(row['nichi'])
+            race_num = str(row['race_num']).zfill(2)
 
-            course_map_nk = {
-                '札幌': '01', '函館': '02', '福島': '03', '新潟': '04',
-                '東京': '05', '中山': '06', '中京': '07', '京都': '08',
-                '阪神': '09', '小倉': '10',
-            }
-            cc = course_map_nk.get(course, '')
-            if not cc:
+            cc = COURSE_NAME_TO_CODE.get(course_name)
+            if cc is None:
                 continue
 
-            year = date[:4]
-            nk_rid = f"{year}{cc}{kai:02d}{nichi:02d}{race_num:02d}"
+            year_2d = date_str[2:4]
+            nichi_char = NICHI_TO_CHAR.get(nichi_int, str(nichi_int))
 
-            trio_pay = 0
-            umaren_pay = 0
-            if pd.notna(row.get('trio_payout')):
-                trio_pay = int(row['trio_payout'])
-            if pd.notna(row.get('umaren_payout')):
-                umaren_pay = int(row['umaren_payout'])
+            # race_id_str (8 chars) = CC(2) + YY(2) + K(1) + N(1) + RR(2)
+            key = f"{cc}{year_2d}{kai_int}{nichi_char}{race_num}"
 
-            lookup[nk_rid] = {
+            trio_nums = str(row.get('trio_nums', ''))
+            trio_pay = int(row.get('trio_payout', 0)) if str(row.get('trio_payout', '0')).isdigit() else 0
+            umaren_nums = str(row.get('umaren_nums', ''))
+            umaren_pay = int(row.get('umaren_payout', 0)) if str(row.get('umaren_payout', '0')).isdigit() else 0
+
+            lookup[key] = {
+                'trio_nums': trio_nums,
                 'trio_payout': trio_pay,
+                'umaren_nums': umaren_nums,
                 'umaren_payout': umaren_pay,
             }
         except (ValueError, KeyError):
@@ -363,11 +389,16 @@ def load_payout_lookup():
     return lookup
 
 
-def calc_condition_roi(results):
-    """Calculate ROI by condition from backtest results."""
+def calc_condition_roi(results, payout_years_only=True):
+    """Calculate ROI by condition from backtest results.
+    If payout_years_only=True, only count races that had payout data available.
+    """
     cond_stats = {}
     for cond in ['A', 'B', 'C', 'D', 'E', 'X']:
         cond_races = [r for r in results if r['cond_key'] == cond]
+        if payout_years_only:
+            # Only include races where payout lookup succeeded (has_payout=True)
+            cond_races = [r for r in cond_races if r.get('has_payout', False)]
         n = len(cond_races)
         if n == 0:
             cond_stats[cond] = {'n': 0, 'roi': 0, 'hit_rate': 0}
@@ -375,10 +406,12 @@ def calc_condition_roi(results):
 
         if cond == 'E':
             hits = sum(1 for r in cond_races if r['umaren_hit'])
-            total_payout = sum(r['umaren_payout'] for r in cond_races)
+            # umaren: 2点 × 350円, payout is per 100 yen → multiply by 3.5
+            total_payout = sum(r['umaren_payout'] * 3.5 for r in cond_races)
             investment = n * 700
         else:
             hits = sum(1 for r in cond_races if r['trio_hit'])
+            # trio: 7点 × 100円, payout is per 100 yen → use as-is
             total_payout = sum(r['trio_payout'] for r in cond_races)
             investment = n * 700
 
