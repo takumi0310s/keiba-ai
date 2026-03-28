@@ -1131,14 +1131,36 @@ def build_features(horses, race_info, model_data, odds_dict=None,
 
 # ===== 予測実行 =====
 
-def predict_race(df, model_data, odds_available=False):
-    """予測を実行してスコア・順位を付与"""
+def calc_pace_advantage(distance, surface, condition, num_horses):
+    """展開有利度を計算（app.pyと同一ロジック）"""
+    scores = {1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5}
+    if surface == 'ダ':
+        scores[1] += 0.1; scores[2] += 0.15; scores[3] -= 0.05; scores[4] -= 0.15
+    else:
+        if distance <= 1400:
+            scores[1] += 0.15; scores[2] += 0.1; scores[3] -= 0.05; scores[4] -= 0.2
+        elif distance >= 2400:
+            scores[3] += 0.1; scores[4] += 0.05; scores[1] -= 0.1
+    if condition in ('重', '不良', '不'):
+        scores[1] += 0.05; scores[2] += 0.08; scores[4] -= 0.1
+    elif condition in ('稍', '稍重'):
+        scores[2] += 0.04; scores[4] -= 0.05
+    if num_horses <= 10:
+        scores[1] += 0.1; scores[2] += 0.05; scores[4] -= 0.1
+    elif num_horses >= 16:
+        scores[3] += 0.08; scores[4] += 0.05; scores[1] -= 0.05
+    return scores
+
+
+def predict_race(df, model_data, odds_available=False, race_info=None):
+    """予測を実行してスコア・順位を付与（app.pyと同一ロジック）"""
     use_features = model_data.get('features')
     if not use_features:
         print("[ERROR] モデルに特徴量リストがありません")
         return df
     use_model = model_data['model']
     X = df[use_features].values
+    n = len(df)
 
     if hasattr(use_model, 'predict_proba'):
         proba = use_model.predict_proba(X)
@@ -1146,23 +1168,59 @@ def predict_race(df, model_data, odds_available=False):
     else:
         ai_scores = use_model.predict(X)
 
-    # 補助スコア
-    pop_scores = df['人気傾向'].values if '人気傾向' in df.columns else np.full(len(df), 0.5)
-    apt_scores = np.full(len(df), 0.5)
+    # 補助スコア（app.pyと同一）
+    pop_scores = df['人気傾向'].values if '人気傾向' in df.columns else np.full(n, 0.5)
+    apt_scores = np.full(n, 0.5)
     if '距離適性' in df.columns and '馬場適性' in df.columns:
         apt_scores = (df['距離適性'].values + df['馬場適性'].values) / 2.0
 
+    # 脚質スコア（race_infoがあれば動的計算、なければデフォルト）
+    if race_info:
+        pace_scores_map = calc_pace_advantage(
+            race_info.get('distance', 1600),
+            race_info.get('surface', '芝'),
+            race_info.get('condition', '良'),
+            n
+        )
+    else:
+        pace_scores_map = {1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5}
+    if '脚質' in df.columns:
+        pace_scores = np.array([
+            np.clip(pace_scores_map.get(int(v), 0.5), 0.0, 1.0)
+            if v != 0 else 0.5
+            for v in df['脚質'].values
+        ])
+    else:
+        pace_scores = np.full(n, 0.5)
+
+    # 上がり3Fスコア
+    if '上がり3F' in df.columns:
+        agari_scores = np.clip(1.0 - (df['上がり3F'].values - 33.0) / 5.0, 0.0, 1.0)
+    else:
+        agari_scores = np.full(n, 0.5)
+
+    # コース適性スコア
+    course_scores = df['コース適性'].values if 'コース適性' in df.columns else np.full(n, 0.5)
+
+    # その他スコア（血統+複勝率）
+    blood = df['血統スコア'].values if '血統スコア' in df.columns else np.full(n, 0.5)
+    fukusho = df['複勝率'].values if '複勝率' in df.columns else np.full(n, 0.0)
+    other_scores = (blood + fukusho) / 2.0
+
+    # ===== FINAL SCORE（app.py v8/v9と同一） =====
     if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
         odds_vals = df['単勝オッズ'].replace(0, 15.0)
         odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
         final_scores = (
             ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
-            + pop_scores * 0.03 + np.full(len(df), 0.03) * 0.18  # pace etc. simplified
+            + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
+            + other_scores * 0.03 + pop_scores * 0.03
         )
     else:
         final_scores = (
             ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
-            + np.full(len(df), 0.5) * 0.18  # simplified
+            + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
+            + other_scores * 0.03
         )
 
     df['スコア'] = final_scores
@@ -1426,7 +1484,7 @@ def run_daily_predict(date_str):
 
             # 特徴量構築 & 予測
             df = build_features(horses, race_info, model_data, odds_dict, jra_info, weather_info)
-            df = predict_race(df, model_data, odds_available)
+            df = predict_race(df, model_data, odds_available, race_info=race_info)
 
             # 条件分類
             cond_key, cond_profile = classify_race_condition(race_info, num_horses)

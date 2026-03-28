@@ -161,7 +161,7 @@ def predict_and_notify(race_info, date_str):
         if df is None or len(df) == 0:
             print("    Feature build failed")
             return
-        df = predict_race(df, model_data, odds_available)
+        df = predict_race(df, model_data, odds_available, race_info=rinfo)
 
         # Sort by score
         df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
