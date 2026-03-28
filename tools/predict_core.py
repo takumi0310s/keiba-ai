@@ -1147,6 +1147,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['training_time_filled'] = df['training_time_filled'].replace(0, training_mean)
         if 'has_training' not in df.columns:
             df['has_training'] = (df['training_time_filled'] != training_mean).astype(int)
+        df['training_per_dist'] = training_mean / max(dist / 200, 1)
 
         # 調教関連 — scrape_training.py で実タイム or ランク推定を取得
         df['wood_best_4f_filled'] = df.get('wood_best_4f_filled', pd.Series([training_mean] * len(df)))
@@ -1185,10 +1186,26 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                             df.loc[df.index[idx_h], 'training_time_filled'] = RANK_TO_WOOD_4F[_rank]
                             df.loc[df.index[idx_h], 'has_training'] = 1
 
-        # ペース関連
-        df['prev_race_first3f'] = df.get('prev_race_first3f', pd.Series([0] * len(df)))
-        df['prev_race_last3f'] = df.get('prev_race_last3f', pd.Series([0] * len(df)))
-        df['prev_race_pace_diff'] = df.get('prev_race_pace_diff', pd.Series([0] * len(df)))
+        # ペース/ラップ特徴量
+        if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
+            df['prev_race_first3f'] = 35.0
+            df['prev_race_last3f'] = 35.5
+            df['prev_race_pace_diff'] = 0.5
+            df['prev_agari_relative'] = 0.0
+
+        # 脚質・ペース特徴量
+        if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
+            for _ih in range(len(df)):
+                _pass_avg = float(df.iloc[_ih].get('通過順平均', 5.0) if '通過順平均' in df.columns else 5.0)
+                _rs = 1 if _pass_avg <= 2 else (2 if _pass_avg <= 5 else (3 if _pass_avg <= 10 else 4))
+                df.loc[df.index[_ih], 'running_style'] = float(_rs)
+            _n_front = (df['running_style'] <= 2).sum()
+            _front_ratio = _n_front / max(num_horses, 1)
+            _pace = 0 if _front_ratio < 0.2 else (2 if _front_ratio > 0.4 else 1)
+            df['predicted_pace'] = float(_pace)
+            _adv_map = {(0,1):2,(0,2):1,(0,3):-1,(0,4):-2,(1,1):0,(1,2):0.5,(1,3):0.5,(1,4):0,(2,1):-2,(2,2):-1,(2,3):1,(2,4):2}
+            df['pace_advantage'] = df['running_style'].apply(lambda s: _adv_map.get((_pace, int(s)), 0.0))
+            df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
 
         df['same_dist_rate'] = 0.3
         df['same_course_rate'] = 0.3

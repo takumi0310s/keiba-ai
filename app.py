@@ -3727,7 +3727,7 @@ _LEGIT_ZERO_FEATURES = {
     'weight_cat_dist', 'surface_dist_enc', 'course_surface',
     'has_training', 'has_wood_training', 'has_sakaro_training',
     'wood_count_2w', 'total_training_count', 'prev_agari_relative',
-    'horse_career_races', 'predicted_pace', 'pop_rank',
+    'horse_career_races', 'predicted_pace', 'pace_advantage', 'pop_rank',
 }
 
 def get_feature_summary(df, use_features):
