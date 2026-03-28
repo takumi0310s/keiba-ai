@@ -22,10 +22,11 @@
   },
   "result": {
     "completed_years": [
+      2024,
       2025
     ],
-    "current_year": 2024,
-    "note": "2025 complete. 2024 in progress (LAST TASK)."
+    "current_year": null,
+    "note": "ALL DONE. track_index: 6945 rows."
   },
   "history": [
     {
@@ -65,5 +66,6 @@
     "current_year": null,
     "note": "ALL COMPLETE. 2020-2024: 233871 training, 81599 comments."
   },
-  "last_updated": "2026-03-29T01:00"
+  "last_updated": "2026-03-29T05:00",
+  "status": "ALL COMPLETE"
 }
