@@ -16,6 +16,7 @@ import sys
 import os
 import time
 import re
+import argparse
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -123,7 +124,9 @@ def jv_to_netkeiba(jv_rid, nichi_num):
 
 
 def get_race_ids(years=(24, 25)):
-    """jra_races_full.csvから指定年のユニークレースIDリストを取得"""
+    """jra_races_full.csvから指定年のユニークレースIDリストを取得
+    years: tuple of 2-digit year ints (e.g. (20, 21, 22, 23))
+    """
     csv_path = os.path.join(DATA_DIR, 'jra_races_full.csv')
     df = pd.read_csv(csv_path, encoding='utf-8', low_memory=False,
                      usecols=['year', 'month', 'day', 'kai', 'nichi',
@@ -230,14 +233,23 @@ def scrape_race_review(race_id):
 # ===== メイン =====
 
 def main():
+    parser = argparse.ArgumentParser(description='netkeiba Race Review Scraper')
+    parser.add_argument('--years', type=str, default='24,25',
+                        help='Comma-separated 2-digit years (e.g. "20,21,22,23")')
+    parser.add_argument('--limit', type=int, default=0, help='Max races to scrape (0=unlimited)')
+    args = parser.parse_args()
+
+    year_list = tuple(int(y.strip()) for y in args.years.split(','))
+
     print("=" * 60, flush=True)
     print("netkeiba Race Review Scraper (備考/短評)", flush=True)
+    print(f"Target years: {[f'20{y:02d}' for y in year_list]}", flush=True)
     print("=" * 60, flush=True)
 
     # Get race IDs
     print("\nLoading race IDs from jra_races_full.csv...", flush=True)
-    races = get_race_ids(years=(24, 25))
-    print(f"Total unique races (2024-2025): {len(races)}")
+    races = get_race_ids(years=year_list)
+    print(f"Total unique races: {len(races)}")
 
     # Load existing data for resume support
     done_ids = set()
@@ -253,6 +265,8 @@ def main():
 
     # Filter out already scraped
     remaining = [r for r in races if r['nk_race_id'] not in done_ids]
+    if args.limit > 0:
+        remaining = remaining[:args.limit]
     print(f"Remaining to scrape: {len(remaining)} races")
 
     if not remaining:
