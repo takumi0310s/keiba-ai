@@ -3697,6 +3697,29 @@ def render_horse_card(rank, h, max_score, rank_map):
         else:
             p_color, p_border, p_text = '#E5534B', 'rgba(255,64,96,0.3)', f'展開× ({pace_disp}ペース不利)'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {p_border};color:{p_color} !important;background:rgba(0,0,0,0.2)">🔄 {p_text}</span></div>'
+    # 新馬評価バッジ
+    _shinba_eval = h.get('新馬厩舎評価', '') or h.get('shinba_stable_eval', '')
+    _shinba_rank = h.get('新馬調教ランク', '') or h.get('shinba_training_rank', '')
+    _shinba_score = h.get('新馬スコア', None)
+    if _shinba_score is None:
+        _shinba_score = h.get('shinba_comment_score', None)
+    if _shinba_eval or _shinba_rank:
+        _se_parts = []
+        if _shinba_eval:
+            _se_parts.append(f'厩舎{_shinba_eval}')
+        if _shinba_rank:
+            _se_parts.append(f'調教{_shinba_rank}')
+        if _shinba_score is not None:
+            _sign = '+' if int(_shinba_score) > 0 else ''
+            _se_parts.append(f'スコア{_sign}{int(_shinba_score)}')
+        _se_text = ' / '.join(_se_parts)
+        if _shinba_eval == 'A':
+            _se_color, _se_border = '#4ade80', 'rgba(74,222,128,0.4)'
+        elif _shinba_eval == 'B':
+            _se_color, _se_border = '#6C9BD2', 'rgba(108,155,210,0.3)'
+        else:
+            _se_color, _se_border = '#8B949E', 'rgba(139,148,158,0.3)'
+        html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {_se_border};color:{_se_color} !important;background:rgba(0,0,0,0.2)">🐴 新馬 {_se_text}</span></div>'
     # 馬場適性警告
     if h.get('馬場警告'):
         html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#E5534B !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
@@ -4540,6 +4563,25 @@ if st.button("🔍 予想する") and url_input:
             horse['タイム指数'] = 0
             horse['指数5走平均'] = 0
             horse['前走指数'] = 0
+    # 新馬評価（新馬戦の場合のみ）
+    if '新馬' in str(race_name):
+        try:
+            _shinba_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'netkeiba_shinba_eval.csv')
+            if os.path.exists(_shinba_csv):
+                import pandas as _pd_shinba
+                _shinba_df = _pd_shinba.read_csv(_shinba_csv, encoding='utf-8', dtype={'race_id': str, 'umaban': str})
+                _shinba_race = _shinba_df[_shinba_df['race_id'] == str(race_id)]
+                for horse in horses:
+                    uma = str(horse.get('馬番', 0))
+                    _match = _shinba_race[_shinba_race['umaban'] == uma]
+                    if len(_match) > 0:
+                        row = _match.iloc[0]
+                        horse['新馬厩舎評価'] = str(row.get('stable_eval', ''))
+                        horse['新馬調教ランク'] = str(row.get('training_rank', ''))
+                        horse['新馬スコア'] = int(row.get('comment_score', 0))
+        except Exception:
+            pass
+
     odds_available = len(realtime_odds) > 0
     # Fetch track bias (当日前レース結果分析)
     with st.spinner("馬場バイアスを分析中..."):

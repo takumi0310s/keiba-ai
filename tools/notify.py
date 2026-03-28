@@ -214,6 +214,33 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     if premium_parts:
         lines.append(f"\n📊 Premium ✓  {' / '.join(premium_parts)}")
 
+    # 新馬評価（新馬戦の場合）
+    race_name_str = str(race_name) if race_name else ''
+    if '新馬' in race_name_str and horses:
+        shinba_lines = []
+        for h in (horses[:3] if len(horses) >= 3 else horses):
+            if not isinstance(h, dict):
+                continue
+            se = h.get('新馬厩舎評価', '') or h.get('shinba_stable_eval', '')
+            tr = h.get('新馬調教ランク', '') or h.get('shinba_training_rank', '')
+            cs = h.get('新馬スコア', None)
+            if cs is None:
+                cs = h.get('shinba_comment_score', None)
+            if se or tr:
+                name = h.get('馬名', '?')
+                parts_s = []
+                if se:
+                    parts_s.append(f"厩舎{se}")
+                if tr:
+                    parts_s.append(f"調教{tr}")
+                if cs is not None:
+                    sign = '+' if cs > 0 else ''
+                    parts_s.append(f"スコア{sign}{cs}")
+                shinba_lines.append(f"  {name}: {'/'.join(parts_s)}")
+        if shinba_lines:
+            lines.append("\n🐴 新馬評価")
+            lines.extend(shinba_lines)
+
     msg = "\n".join(lines)
     color = "green" if roi >= 200 else ("blue" if roi >= 100 else "yellow")
     return title, msg, color

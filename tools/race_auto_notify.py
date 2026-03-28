@@ -158,6 +158,24 @@ def predict_and_notify(race_info, date_str):
             if i < num_horses - 1:
                 time.sleep(0.3)
 
+        # 新馬評価（新馬戦の場合）
+        if '新馬' in str(race_name):
+            try:
+                from scrape_shinba_eval import scrape_newspaper as _scrape_shinba
+                shinba_rows = _scrape_shinba(race_id)
+                if shinba_rows and shinba_rows != 'blocked' and len(shinba_rows) > 0:
+                    for row in shinba_rows:
+                        uma = str(row['umaban'])
+                        for horse in horses:
+                            if str(horse.get('馬番', '')) == uma:
+                                horse['新馬厩舎評価'] = row['stable_eval']
+                                horse['新馬調教ランク'] = row['training_rank']
+                                horse['新馬スコア'] = row['comment_score']
+                                break
+                    rinfo['race_name'] = race_name  # predict_core用
+            except Exception:
+                pass
+
         # Build features and predict
         odds_available = bool(odds_dict and any(v > 0 for v in odds_dict.values()))
         df = build_features(horses, rinfo, model_data, race_id=race_id,

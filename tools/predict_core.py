@@ -1283,6 +1283,15 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
             df['wind_speed'] = 0
             df['precipitation'] = 0
 
+    # 新馬評価スコア（将来のモデル組込用。現在は表示のみ）
+    # race_infoに'race_name'があり「新馬」を含む場合、horsesから新馬スコアを取得
+    if race_info.get('race_name', '') and '新馬' in str(race_info.get('race_name', '')):
+        shinba_scores = []
+        for h in horses:
+            cs = h.get('新馬スコア', None) or h.get('shinba_comment_score', None)
+            shinba_scores.append(int(cs) if cs is not None else 0)
+        df['shinba_comment_score'] = shinba_scores
+
     # 必要な特徴量の確保
     use_features = model_data.get('features')
     if use_features:

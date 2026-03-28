@@ -79,6 +79,24 @@ def get_weekend_race_ids(base_date_str):
     return sorted(set(all_ids))
 
 
+def _check_shinba(race_id):
+    """レース名に「新馬」を含むか簡易チェック（shutuba.htmlのタイトルで判定）"""
+    try:
+        url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        title = soup.find('title')
+        if title and '新馬' in title.text:
+            return True
+        race_name = soup.find(class_='RaceName')
+        if race_name and '新馬' in race_name.get_text():
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="週末レースのプレミアムデータ事前取得")
     parser.add_argument('--date', type=str, default='')
@@ -133,10 +151,16 @@ def main():
         print(f"  Import error: {e}")
         return
 
+    # Import shinba eval scraper
+    try:
+        from scrape_shinba_eval import scrape_newspaper as scrape_shinba_newspaper
+    except ImportError:
+        scrape_shinba_newspaper = None
+
     # Scrape each race
     os.makedirs(cache_path, exist_ok=True)
     all_data = dict(existing_cache)
-    n_training = n_si = n_comment = n_err = 0
+    n_training = n_si = n_comment = n_shinba = n_err = 0
 
     for i, race_id in enumerate(new_ids):
         print(f"\r  [{i+1}/{len(new_ids)}] {race_id}", end='', flush=True)
@@ -174,6 +198,28 @@ def main():
         except Exception:
             pass
 
+        # 新馬評価: レース名に「新馬」を含むか確認してから取得
+        if scrape_shinba_newspaper:
+            try:
+                _is_shinba = _check_shinba(race_id)
+                if _is_shinba:
+                    shinba_rows = scrape_shinba_newspaper(race_id)
+                    if shinba_rows and shinba_rows != 'blocked' and len(shinba_rows) > 0:
+                        shinba_dict = {}
+                        for row in shinba_rows:
+                            shinba_dict[str(row['umaban'])] = {
+                                'horse_name': row['horse_name'],
+                                'stable_eval': row['stable_eval'],
+                                'training_rank': row['training_rank'],
+                                'stable_comment': row['stable_comment'],
+                                'training_review': row['training_review'],
+                                'comment_score': row['comment_score'],
+                            }
+                        race_data['shinba_eval'] = shinba_dict
+                        n_shinba += 1
+            except Exception:
+                pass
+
         all_data[race_id] = race_data
         time.sleep(DELAY)
 
@@ -191,6 +237,7 @@ def main():
     print(f"  Training: {n_training}/{len(new_ids)}")
     print(f"  Speed Index: {n_si}/{len(new_ids)}")
     print(f"  Comments: {n_comment}/{len(new_ids)}")
+    print(f"  Shinba Eval: {n_shinba}/{len(new_ids)}")
     print(f"  Cache: {cache_file}")
     print(f"{'=' * 60}")
 
@@ -198,7 +245,8 @@ def main():
         from notify import send_discord
         send_discord("Premium Pre-fetch完了",
                      f"{date_str}: {len(new_ids)}R取得\n"
-                     f"調教: {n_training} / 指数: {n_si} / コメント: {n_comment}",
+                     f"調教: {n_training} / 指数: {n_si} / コメント: {n_comment}"
+                     + (f" / 新馬: {n_shinba}" if n_shinba else ""),
                      color="green")
     except Exception:
         pass
