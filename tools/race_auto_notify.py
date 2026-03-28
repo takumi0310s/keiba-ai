@@ -100,12 +100,13 @@ def predict_and_notify(race_info, date_str):
     print(f"\n  >>> Predicting: {race_info['course']}{race_info['race_num']}R ({race_id})")
 
     try:
-        # Import prediction functions from daily_predict
-        from daily_predict import (
+        # Import prediction functions from predict_core (共通予測モジュール)
+        from predict_core import (
             load_models, parse_shutuba, fetch_realtime_odds,
             classify_race_condition, generate_trio_bets, generate_umaren_bets,
             build_features, predict_race, is_race_started, fetch_result_odds,
             CONDITION_PROFILES, get_horse_stats, fetch_jra_and_weather,
+            apply_horse_stats, set_horse_defaults,
         )
         from notify import send_discord
 
@@ -149,15 +150,18 @@ def predict_and_notify(race_info, date_str):
             if hid:
                 try:
                     stats = get_horse_stats(hid, rinfo['distance'], rinfo['surface'], rinfo.get('course', ''))
-                    horse.update(stats)
+                    apply_horse_stats(horse, stats, rinfo)
                 except Exception:
-                    pass
-                if i < num_horses - 1:
-                    time.sleep(0.3)
+                    set_horse_defaults(horse)
+            else:
+                set_horse_defaults(horse)
+            if i < num_horses - 1:
+                time.sleep(0.3)
 
         # Build features and predict
         odds_available = bool(odds_dict and any(v > 0 for v in odds_dict.values()))
-        df = build_features(horses, rinfo, model_data, odds_dict, jra_info, weather_info)
+        df = build_features(horses, rinfo, model_data, race_id=race_id,
+                            odds_dict=odds_dict, jra_track_info=jra_info, weather_info=weather_info)
         if df is None or len(df) == 0:
             print("    Feature build failed")
             return

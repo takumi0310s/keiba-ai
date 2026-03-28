@@ -9,8 +9,26 @@ import re
 import time
 import sqlite3
 import os
+import sys
 from datetime import datetime
 from itertools import combinations
+
+# predict_core: 共通予測モジュール (daily_predict / race_auto_notify と同一ロジック)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools'))
+from tools.predict_core import (
+    build_features as _core_build_features,
+    predict_race as _core_predict_race,
+    classify_race_condition as _core_classify_condition,
+    generate_trio_bets as _core_generate_trio,
+    generate_umaren_bets as _core_generate_umaren,
+    generate_wide_bets as _core_generate_wide,
+    apply_horse_stats as _core_apply_stats,
+    set_horse_defaults as _core_set_defaults,
+    calc_sire_score as _core_calc_sire_score,
+    get_horse_stats as _core_get_horse_stats,
+    parse_shutuba as _core_parse_shutuba,
+    load_feature_lookups as _core_load_feature_lookups,
+)
 
 st.set_page_config(page_title="KEIBA AI - 中央競馬専用", page_icon="🏇", layout="wide")
 
@@ -4573,531 +4591,53 @@ if st.button("🔍 予想する") and url_input:
     )
     rc_html += render_pace_panel(rank_map)
     rc_html += '</div>'
-    # Get horse stats
+    # Get horse stats (predict_core共通関数を使用)
     with st.spinner("各馬の成績を分析中..."):
         progress_bar = st.progress(0)
         for i, (horse, hid) in enumerate(zip(horses, horse_ids)):
             if hid:
                 try:
-                    stats = get_horse_stats(hid, race_info['distance'], race_info['surface'], race_info['course'])
-                    horse['前走着順'] = stats.get('last_finish', 5)
-                    horse['距離適性'] = stats.get('dist_apt', 0.5)
-                    horse['馬場適性'] = stats.get('surf_apt', 0.5)
-                    horse['人気傾向'] = stats.get('pop_score', 0.5)
-                    horse['コース適性'] = stats.get('course_apt', 0.5)
-                    horse['前走間隔'] = stats.get('interval_days', 30)
-                    horse['脚質'] = stats.get('running_style', 0)
-                    horse['上がり3F'] = stats.get('avg_agari', 35.5)
-                    horse['複勝率'] = stats.get('fukusho_rate', 0.0)
-                    horse['父'] = stats.get('father', '')
-                    horse['母の父'] = stats.get('mother_father', '')
-                    horse['血統スコア'] = calc_sire_score(stats.get('father',''), race_info['surface'], race_info['distance'])
-                    horse['持ちタイム'] = stats.get('best_time', 0.0)
-                    horse['タイム表示'] = stats.get('best_time_str', '')
-                    horse['タイム日付'] = stats.get('best_time_date', '')
-                    horse['タイム距離'] = stats.get('best_time_dist', 0)
-                    # v3用追加データ
-                    horse['通過順平均'] = stats.get('avg_pass_pos', 8.0)
-                    horse['通過順4'] = stats.get('last_pass4', 8)
-                    horse['前走オッズ'] = stats.get('last_odds', 15.0)
-                    horse['前走人気'] = stats.get('last_pop', 8)
-                    horse['所属地'] = stats.get('trainer_loc', '')
-                    # 過去5走lag特徴量
-                    horse['prev2_finish'] = stats.get('prev2_finish', 5)
-                    horse['prev3_finish'] = stats.get('prev3_finish', 5)
-                    horse['prev4_finish'] = stats.get('prev4_finish', 5)
-                    horse['prev5_finish'] = stats.get('prev5_finish', 5)
-                    horse['avg_finish_3r'] = stats.get('avg_finish_3r', 5.0)
-                    horse['avg_finish_5r'] = stats.get('avg_finish_5r', 5.0)
-                    horse['best_finish_3r'] = stats.get('best_finish_3r', 5)
-                    horse['best_finish_5r'] = stats.get('best_finish_5r', 5)
-                    horse['top3_count_3r'] = stats.get('top3_count_3r', 0)
-                    horse['top3_count_5r'] = stats.get('top3_count_5r', 0)
-                    horse['finish_trend'] = stats.get('finish_trend', 0)
-                    horse['prev2_last3f'] = stats.get('prev2_last3f', 35.5)
+                    stats = _core_get_horse_stats(hid, race_info['distance'], race_info['surface'], race_info['course'])
+                    _core_apply_stats(horse, stats, race_info)
                 except Exception:
-                    horse.update({'前走着順':5,'距離適性':0.5,'馬場適性':0.5,'人気傾向':0.5,
-                                  'コース適性':0.5,'前走間隔':30,'脚質':0,'上がり3F':35.5,
-                                  '複勝率':0.0,'父':'','母の父':'','血統スコア':0.5,'持ちタイム':0.0,
-                                  'タイム表示':'','タイム日付':'','タイム距離':0,
-                                  '通過順平均':8.0,'通過順4':8,'前走オッズ':15.0,'前走人気':8,'所属地':'',
-                                  'prev2_finish':5,'prev3_finish':5,'prev4_finish':5,'prev5_finish':5,
-                                  'avg_finish_3r':5.0,'avg_finish_5r':5.0,'best_finish_3r':5,'best_finish_5r':5,
-                                  'top3_count_3r':0,'top3_count_5r':0,'finish_trend':0,'prev2_last3f':35.5})
+                    _core_set_defaults(horse)
+                    horse.update({'持ちタイム':0.0,'タイム表示':'','タイム日付':'','タイム距離':0})
             else:
-                horse.update({'前走着順':5,'距離適性':0.5,'馬場適性':0.5,'人気傾向':0.5,
-                              'コース適性':0.5,'前走間隔':30,'脚質':0,'上がり3F':35.5,
-                              '複勝率':0.0,'父':'','母の父':'','血統スコア':0.5,'持ちタイム':0.0,
-                              'タイム表示':'','タイム日付':'','タイム距離':0,
-                              '通過順平均':8.0,'通過順4':8,'前走オッズ':15.0,'前走人気':8,'所属地':''})
+                _core_set_defaults(horse)
+                horse.update({'持ちタイム':0.0,'タイム表示':'','タイム日付':'','タイム距離':0})
             progress_bar.progress((i + 1) / num_horses)
             if i < num_horses - 1:
                 time.sleep(0.5)
         progress_bar.empty()
-    # Score calculation
-    df = pd.DataFrame(horses)
-
-    # === 共通特徴量（v2/v3共通）===
+    # Score calculation — predict_core 共通モジュールを使用
+    _model_data_for_core = {
+        'model': active_model if (active_model is not None and active_model_type != 'default') else model,
+        'features': active_features if active_features else FEATURES,
+        'version': active_version,
+        'sire_map': active_sire_map,
+        'bms_map': active_bms_map,
+        'n_top_encode': active_model_data.get('n_top_encode', 80) if isinstance(active_model_data, dict) else 80,
+        'is_live': is_live_model,
+        'ensemble_weights': active_model_data.get('ensemble_weights', {}) if isinstance(active_model_data, dict) else {},
+        'xgb_model': active_model_data.get('xgb_model') if isinstance(active_model_data, dict) else None,
+        'cb_model': active_model_data.get('cb_model') if isinstance(active_model_data, dict) else None,
+    }
+    if _model_data_for_core['model'] is None:
+        st.error("モデルが読み込めていません。keiba_model_v8.pkl が存在するか確認してください。")
+        st.stop()
+    _odds_dict_for_core = realtime_odds if odds_available else {}
+    df = _core_build_features(horses, race_info, _model_data_for_core, race_id=race_id,
+                              odds_dict=_odds_dict_for_core,
+                              jra_track_info=jra_track_info, weather_info=weather_info)
     num_horses = len(df)
-    df['頭数'] = num_horses
-    df['斤量平均差'] = df['斤量'] - df['斤量'].mean()
-    dist = race_info['distance']
-    df['距離カテゴリ'] = 0 if dist <= 1400 else (1 if dist <= 1800 else (2 if dist <= 2200 else 3))
-    df['体重カテゴリ'] = df['馬体重'].apply(lambda w: 0 if w <= 440 else (1 if w <= 480 else (2 if w <= 520 else 3)))
-    df['体重変動abs'] = df['場体重増減'].abs()
-    df['年齢性別'] = df['馬齢'] * 10 + df['性別_enc']
-    surf_enc = df['芝ダート_enc'].iloc[0] if len(df) > 0 else 0
-    df['距離馬場'] = df['距離カテゴリ'] * 10 + surf_enc
-    df['枠位置'] = df['枠番'].apply(lambda w: 0 if w <= 3 else (1 if w <= 6 else 2))
-    import datetime as dt_module
-    now = dt_module.datetime.now()
-    df['月'] = now.month
-    m = now.month
-    df['季節'] = 0 if m in [3,4,5] else (1 if m in [6,7,8] else (2 if m in [9,10,11] else 3))
-    df['枠馬場'] = df['枠位置'] * 10 + df['馬場状態_enc']
-    df['馬齢グループ'] = df['馬齢'].clip(2, 7)
-
-    # === v3専用特徴量 ===
-    use_version = active_version
-    if use_version == 'v3':
-        # 父馬_enc: sire_mapを使ってエンコード
-        df['父馬_enc'] = df['父'].apply(lambda x: sire_map.get(x, 50) if sire_map else 50)
-
-        # 母父_enc: bms_mapを使ってエンコード
-        df['母父_enc'] = df['母の父'].apply(lambda x: bms_map.get(x, 50) if bms_map else 50)
-
-        # 所属_enc: 美浦=0, 栗東=1, その他=3
-        def encode_location(loc):
-            if '美浦' in str(loc) or '美' == str(loc): return 0
-            if '栗東' in str(loc) or '栗' == str(loc): return 1
-            return 3
-        df['所属_enc'] = df['所属地'].apply(encode_location)
-
-        # 前走人気
-        df['前走人気'] = df['前走人気'].fillna(8)
-
-        # 前走オッズlog
-        df['前走オッズlog'] = np.log1p(df['前走オッズ'].clip(1, 999).fillna(15.0))
-
-        # 前走上がり3F
-        df['前走上がり'] = df['上がり3F'].fillna(35.5)
-
-        # 前走通過順1 / 前走通過順4
-        df['前走通過順1'] = df['通過順平均'].fillna(8.0)
-        df['前走通過順4'] = df['通過順4'].fillna(8)
-
-    # === v5専用特徴量 ===
-    if use_version in ('v5', 'v6', 'v8', 'v9') or use_version.startswith('v9.') or use_version.startswith('v10'):
-        n_top = active_model_data.get('n_top_encode', _loaded.get('n_top_encode', 80) if isinstance(_loaded, dict) else 80)
-        # Sire/BMS encoding (v9モデル時はそのモデルのマップを使用)
-        use_sire_map = active_sire_map if active_sire_map else sire_map
-        use_bms_map = active_bms_map if active_bms_map else bms_map
-        df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
-        df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
-
-        # Location encoding（地方対応）
-        def enc_loc(loc):
-            s = str(loc)
-            if '美浦' in s or '美' == s: return 0
-            if '栗東' in s or '栗' == s: return 1
-            if is_nar: return 2  # 地方
-            return 3
-        df['location_enc'] = df['所属地'].apply(enc_loc)
-
-        # Base mappings to English names
-        df['horse_weight'] = df['馬体重']
-        df['weight_diff'] = df['場体重増減'].fillna(0)
-        df['weight_carry'] = df['斤量']
-        df['age'] = df['馬齢']
-        df['distance'] = df['距離(m)']
-        df['course_enc'] = df['競馬場コード_enc']
-        df['turf_dirt_enc'] = df['芝ダート_enc']
-        df['condition_enc'] = df['馬場状態_enc']
-        df['sex_enc'] = df['性別_enc']
-        df['jockey_wr'] = df['騎手勝率']
-        df['prev_finish'] = df['前走着順']
-        df['bracket'] = df['枠番']
-        df['horse_num'] = df['馬番']
-        df['num_horses'] = df['頭数']
-        df['carry_diff'] = df['斤量平均差']
-        df['dist_cat'] = pd.cut(df['距離(m)'], bins=[0,1200,1400,1800,2200,9999], labels=[0,1,2,3,4]).astype(float).fillna(2)
-        df['weight_cat'] = pd.cut(df['馬体重'], bins=[0,440,480,520,9999], labels=[0,1,2,3]).astype(float).fillna(1)
-        df['age_sex'] = df['馬齢'] * 10 + df['性別_enc']
-        df['dist_surface'] = df['dist_cat'] * 10 + df['芝ダート_enc']
-        df['bracket_pos'] = pd.cut(df['枠番'], bins=[0,3,6,8], labels=[0,1,2]).astype(float).fillna(1)
-        month_now = datetime.now().month
-        df['month_val'] = month_now
-        df['season'] = 0 if month_now in [3,4,5] else (1 if month_now in [6,7,8] else (2 if month_now in [9,10,11] else 3))
-        df['bracket_cond'] = df['bracket_pos'] * 10 + df['馬場状態_enc']
-        df['age_group'] = df['馬齢'].clip(2, 7)
-
-        # Prev race data
-        df['prev_pop'] = df['前走人気'].fillna(8)
-        df['prev_odds_log'] = np.log1p(df['前走オッズ'].clip(1, 999).fillna(15.0))
-        df['prev_last3f'] = df['上がり3F'].fillna(35.5)
-        df['prev_pass1'] = df['通過順平均'].fillna(8.0)
-        df['prev_pass4'] = df['通過順4'].fillna(8)
-        df['prev_margin'] = 0
-        df['prev_prize'] = 0
-
-        # 過去5走lag特徴量（netkeibaから取得した実データ）
-        df['prev2_finish'] = df['prev2_finish'].fillna(5)
-        df['prev3_finish'] = df['prev3_finish'].fillna(5)
-        df['prev4_finish'] = df['prev4_finish'].fillna(5)
-        df['prev5_finish'] = df['prev5_finish'].fillna(5)
-        df['prev2_last3f'] = df['prev2_last3f'].fillna(35.5)
-        df['avg_finish_3r'] = df['avg_finish_3r'].fillna(5.0)
-        df['avg_finish_5r'] = df['avg_finish_5r'].fillna(5.0)
-        df['avg_last3f_3r'] = df['上がり3F'].fillna(35.5)
-        df['best_finish_3r'] = df['best_finish_3r'].fillna(5)
-        df['best_finish_5r'] = df['best_finish_5r'].fillna(5)
-        df['top3_count_3r'] = df['top3_count_3r'].fillna(0)
-        df['top3_count_5r'] = df['top3_count_5r'].fillna(0)
-        df['finish_trend'] = df['finish_trend'].fillna(0)
-        df['dist_change'] = 0
-        df['dist_change_abs'] = 0
-        df['rest_days'] = df.get('interval_days', pd.Series([30]*len(df))).fillna(30)
-        if 'interval_days' in df.columns:
-            df['rest_days'] = df['interval_days']
-        df['rest_category'] = pd.cut(df['rest_days'], bins=[-1,6,14,35,63,180,9999], labels=[0,1,2,3,4,5]).astype(float).fillna(2)
-
-        # Historical rates (use defaults - netkeibaから精密計算は困難)
-        df['same_dist_rate'] = 0.3
-        df['same_course_rate'] = 0.3
-        df['same_surface_rate'] = 0.3
-
-        # Horse cumulative stats
-        df['horse_win_rate'] = 0.1
-        df['horse_top3_rate'] = 0.3
-        df['horse_race_count'] = 5
-
-        # Jockey/Trainer
-        df['jockey_course_wr'] = df['騎手勝率']
-        df['jockey_dist_wr'] = df['騎手勝率']
-        df['jockey_top3'] = df['騎手勝率'] * 3
-        df['trainer_wr'] = 0.08
-        df['trainer_top3'] = 0.25
-
-        # Interactions
-        df['weight_dist'] = df['馬体重'] * df['距離(m)'] / 10000.0
-        df['age_season'] = df['馬齢'] * 10 + df['season']
-        df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
-        df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
-        df['weight_diff_abs'] = 0
-
-        # v8用追加特徴量
-        df['surface_enc'] = df['芝ダート_enc']
-        df['jockey_wr_calc'] = df['騎手勝率']
-        df['jockey_course_wr_calc'] = df['騎手勝率']
-        df['trainer_top3_calc'] = df['trainer_top3']
-        df['weight_cat_dist'] = df['weight_cat'] * 10 + df['dist_cat']
-        df['surface_dist_enc'] = df['芝ダート_enc'] * 10 + df['dist_cat']
-        df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
-        df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
-        df['is_nar'] = 1 if is_nar else 0
-
-    # === V9.2/V9.3特徴量をルックアップから補完 ===
-    _lookups = get_feature_lookups()
-    _training_mean = _lookups.get('training_mean', 49.0)
-    _horse_stats_lk = _lookups.get('horse_stats', {})
-    _sire_surf_lk = _lookups.get('sire_surface_wr', {})
-    _sire_dist_lk = _lookups.get('sire_dist_wr', {})
-    _bms_surf_lk = _lookups.get('bms_surface_wr', {})
-    _jockey_surf_lk = _lookups.get('jockey_surface_wr', {})
-    _frame_lk = _lookups.get('frame_course_dist_wr', {})
-    _trainer_lk = _lookups.get('trainer_top3', {})
-
-    # 調教特徴量
-    if 'training_time_filled' not in df.columns or (df['training_time_filled'] == 0).all():
-        df['training_time_filled'] = _training_mean
-        df['has_training'] = 0
-        df['training_per_dist'] = _training_mean / max(dist / 200, 1)
-    # 馬キャリア特徴量
-    _horse_name_map = _lookups.get('horse_name_to_id', {})
-    for _ih in range(len(df)):
-        _hid_str = str(horses[_ih].get('horse_id', '')) if _ih < len(horses) else ''
-        _hid_int = int(_hid_str) if _hid_str.isdigit() else 0
-        _hs = _horse_stats_lk.get(_hid_int, {})
-        # netkeiba IDでヒットしない場合、馬名でフォールバック
-        if not _hs and _ih < len(horses):
-            _hname = horses[_ih].get('horse_name', '') or str(df.iloc[_ih].get('馬名', ''))
-            _mapped_id = _horse_name_map.get(_hname, 0)
-            if _mapped_id:
-                _hs = _horse_stats_lk.get(_mapped_id, {})
-        if _hs:
-            if 'horse_career_races' not in df.columns or df.iloc[_ih].get('horse_career_races', 0) == 0:
-                df.loc[df.index[_ih], 'horse_career_races'] = _hs.get('career_races', 0)
-                df.loc[df.index[_ih], 'horse_career_wr'] = _hs.get('career_wr', 0.1)
-                df.loc[df.index[_ih], 'horse_career_top3r'] = _hs.get('career_top3r', 0.25)
-            _dc_val = int(df.iloc[_ih].get('dist_cat', 2))
-            _sv_val = int(df.iloc[_ih].get('surface_enc', df.iloc[_ih].get('芝ダート_enc', 0)))
-            df.loc[df.index[_ih], 'horse_dist_top3r'] = _hs.get('dist_top3', {}).get(_dc_val, 0.25)
-            df.loc[df.index[_ih], 'horse_surface_top3r'] = _hs.get('surf_top3', {}).get(_sv_val, 0.25)
-            # 調教データ補完
-            _lt4f = _hs.get('last_training_4f', 0)
-            if _lt4f > 0 and (df.iloc[_ih].get('training_time_filled', 0) == _training_mean or df.iloc[_ih].get('training_time_filled', 0) == 0):
-                df.loc[df.index[_ih], 'training_time_filled'] = _lt4f
-                df.loc[df.index[_ih], 'has_training'] = 1
-    # sire/bms/jockey/trainer performance
-    for _ih in range(len(df)):
-        _father = str(df.iloc[_ih].get('父', '') if '父' in df.columns else '')
-        _mother_f = str(df.iloc[_ih].get('母の父', '') if '母の父' in df.columns else '')
-        _sv = int(df.iloc[_ih].get('surface_enc', df.iloc[_ih].get('芝ダート_enc', 0)))
-        _dc = int(df.iloc[_ih].get('dist_cat', 2))
-        df.loc[df.index[_ih], 'sire_surface_wr'] = _sire_surf_lk.get((_father, _sv), 0.1)
-        df.loc[df.index[_ih], 'sire_dist_wr'] = _sire_dist_lk.get((_father, _dc), 0.1)
-        df.loc[df.index[_ih], 'bms_surface_wr'] = _bms_surf_lk.get((_mother_f, _sv), 0.1)
-        _jn = str(df.iloc[_ih].get('騎手名', ''))
-        df.loc[df.index[_ih], 'jockey_surface_wr'] = _jockey_surf_lk.get((_jn, _sv), df.iloc[_ih].get('騎手勝率', 0.08))
-        # 調教師複勝率
-        _tn = str(df.iloc[_ih].get('調教師', ''))
-        if _tn and _trainer_lk:
-            df.loc[df.index[_ih], 'trainer_top3'] = _trainer_lk.get(_tn, 0.25)
-            df.loc[df.index[_ih], 'trainer_top3_calc'] = _trainer_lk.get(_tn, 0.25)
-    # 木/坂路調教 — scrape_training.py で実タイム or ランク推定を取得
-    _training_filled_count = 0
-    _training_realtime_count = 0
-    if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
-        df['wood_best_4f_filled'] = 52.0
-        df['has_wood_training'] = 0
-        df['wood_count_2w'] = 0
-        df['sakaro_best_4f_filled'] = 53.0
-        df['sakaro_best_3f_filled'] = 39.0
-        df['has_sakaro_training'] = 0
-        df['total_training_count'] = 0
-    try:
-        from scrape_training import get_training_features, fetch_training_times
-        _training_feats = get_training_features(race_id, len(df), is_nar=is_nar)
-        _raw_training = fetch_training_times(race_id, is_nar=is_nar)
-        for _ih in range(len(df)):
-            _umaban = int(df.iloc[_ih].get('馬番', 0)) if '馬番' in df.columns else 0
-            if _umaban in _training_feats:
-                _tf = _training_feats[_umaban]
-                for _key, _val in _tf.items():
-                    df.loc[df.index[_ih], _key] = _val
-                _training_filled_count += 1
-                # Check if we got real times (not rank-based)
-                _rd = _raw_training.get(_umaban, {})
-                if _rd.get('time_4f', 0) > 0:
-                    _training_realtime_count += 1
-    except Exception:
-        # Fallback: use oikiri ranks already in horses dict
-        _RANK_TO_WOOD_4F = {'A': 51.5, 'B': 53.0, 'C': 54.5, 'D': 55.5}
-        _RANK_TO_SAKARO_4F = {'A': 53.5, 'B': 56.0, 'C': 58.0, 'D': 59.5}
-        _RANK_TO_SAKARO_3F = {'A': 37.5, 'B': 39.0, 'C': 40.5, 'D': 41.5}
-        for _ih in range(len(df)):
-            if _ih < len(horses):
-                _rank = horses[_ih].get('調教ランク', '')
-                if _rank in _RANK_TO_WOOD_4F:
-                    df.loc[df.index[_ih], 'wood_best_4f_filled'] = _RANK_TO_WOOD_4F[_rank]
-                    df.loc[df.index[_ih], 'has_wood_training'] = 1
-                    df.loc[df.index[_ih], 'wood_count_2w'] = 2 if _rank in ('A', 'B') else 1
-                    df.loc[df.index[_ih], 'sakaro_best_4f_filled'] = _RANK_TO_SAKARO_4F[_rank]
-                    df.loc[df.index[_ih], 'sakaro_best_3f_filled'] = _RANK_TO_SAKARO_3F[_rank]
-                    df.loc[df.index[_ih], 'has_sakaro_training'] = 1
-                    df.loc[df.index[_ih], 'total_training_count'] = 4 if _rank in ('A', 'B') else 2
-                    df.loc[df.index[_ih], 'training_time_filled'] = _RANK_TO_WOOD_4F[_rank]
-                    df.loc[df.index[_ih], 'has_training'] = 1
-                    _training_filled_count += 1
-    # ペース/ラップ特徴量
-    if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
-        df['prev_race_first3f'] = 35.0
-        df['prev_race_last3f'] = 35.5
-        df['prev_race_pace_diff'] = 0.5
-        df['prev_agari_relative'] = 0.0
-    # 枠有利度
-    _ce = int(df.iloc[0].get('course_enc', df.iloc[0].get('競馬場コード_enc', 0)))
-    for _ih in range(len(df)):
-        _br = float(df.iloc[_ih].get('bracket', df.iloc[_ih].get('枠番', 4)))
-        _dc = float(df.iloc[_ih].get('dist_cat', 2))
-        _bp = 0.0 if _br <= 3 else (1.0 if _br <= 6 else 2.0)
-        df.loc[df.index[_ih], 'frame_course_dist_wr'] = _frame_lk.get((_bp, float(_ce), _dc), 0.08)
-    # ペース特徴量
-    if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
-        for _ih in range(len(df)):
-            _pass_avg = float(df.iloc[_ih].get('通過順平均', 5.0) if '通過順平均' in df.columns else 5.0)
-            _rs = 1 if _pass_avg <= 2 else (2 if _pass_avg <= 5 else (3 if _pass_avg <= 10 else 4))
-            df.loc[df.index[_ih], 'running_style'] = float(_rs)
-        _n_front = (df['running_style'] <= 2).sum()
-        _front_ratio = _n_front / max(num_horses, 1)
-        _pace = 0 if _front_ratio < 0.2 else (2 if _front_ratio > 0.4 else 1)
-        df['predicted_pace'] = float(_pace)
-        _adv_map = {(0,1):2,(0,2):1,(0,3):-1,(0,4):-2,(1,1):0,(1,2):0.5,(1,3):0.5,(1,4):0,(2,1):-2,(2,2):-1,(2,3):1,(2,4):2}
-        df['pace_advantage'] = df['running_style'].apply(lambda s: _adv_map.get((_pace, int(s)), 0.0))
-        df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
-
-    # === リアルタイムオッズ特徴量 ===
-    if odds_available and '単勝オッズ' in df.columns:
-        df['odds_log'] = np.log1p(df['単勝オッズ'].replace(0, 15.0).clip(1, 999))
-        # リアルタイムオッズがある場合、前走オッズの代わりに使う
-        has_odds = df['単勝オッズ'] > 0
-        if has_odds.any():
-            if 'prev_odds_log' in df.columns:
-                df.loc[has_odds, 'prev_odds_log'] = df.loc[has_odds, 'odds_log']
-            if '前走オッズlog' in df.columns:
-                df.loc[has_odds, '前走オッズlog'] = df.loc[has_odds, 'odds_log']
-    else:
-        df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
-
-    # === Pattern B 当日追加特徴量 ===
-    if is_live_model:
-        # 馬体重増減（当日 - 前走）
-        df['weight_change'] = df['場体重増減'].fillna(0)
-        df['weight_change_abs'] = df['weight_change'].abs()
-
-        # 天候エンコード
-        weather_str = str(race_info.get('weather', '晴'))
-        weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
-        df['weather_enc'] = weather_map.get(weather_str, 0)
-
-        # 人気順位（オッズから算出）
-        if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
-            df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
-        else:
-            df['pop_rank'] = 8
-
-        # 馬場指数（JRA公式）
-        surface = race_info.get('surface', '芝')
-        if jra_track_info:
-            df['cushion_value'] = jra_track_info.get('cushion_value') or 0
-            try:
-                from scrape_jra_track import get_moisture_rate
-                mr = get_moisture_rate(jra_track_info, surface)
-                df['moisture_rate'] = mr if mr is not None else 0
-            except Exception:
-                df['moisture_rate'] = 0
-        else:
-            df['cushion_value'] = 0
-            df['moisture_rate'] = 0
-
-        # 天候データ（気象庁）
-        if weather_info:
-            df['temperature'] = weather_info.get('temperature', 0)
-            df['humidity'] = weather_info.get('humidity', 0)
-            df['wind_speed'] = weather_info.get('wind_speed', 0)
-            df['precipitation'] = weather_info.get('precipitation', 0)
-        else:
-            df['temperature'] = 0
-            df['humidity'] = 0
-            df['wind_speed'] = 0
-            df['precipitation'] = 0
-
-    # 使用する特徴量リスト（v9モデル時はそのモデルの特徴量を使用）
-    use_features = active_features if active_features else FEATURES
-    # 特徴量サマリー（フォールバック前に計算）
+    use_features = _model_data_for_core.get('features') or FEATURES
     _feat_summary = get_feature_summary(df, use_features)
-    _feat_summary['training_filled_count'] = _training_filled_count
-    _feat_summary['training_realtime_count'] = _training_realtime_count
-    _feat_summary['total_horses'] = len(df)
+    _feat_summary['total_horses'] = num_horses
     _feat_summary['comment_count'] = sum(1 for h in horses if h.get('厩舎コメント', ''))
     _feat_summary['speed_index_count'] = sum(1 for h in horses if h.get('タイム指数', 0) > 1000)
     _feat_summary['premium_ok'] = _premium_ok
-    for f in use_features:
-        if f not in df.columns:
-            df[f] = 0
-        df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
-    X = df[use_features].values
-    use_model = active_model if (active_model is not None and active_model_type != 'default') else model
-    if use_model is None:
-        st.error("モデルが読み込めていません。keiba_model_v8.pkl が存在するか確認してください。")
-        st.stop()
-    if hasattr(use_model, 'predict_proba'):
-        proba = use_model.predict_proba(X)
-        ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
-    else:
-        ai_scores = use_model.predict(X)
-    pop_scores = df['人気傾向'].values
-    apt_scores = (df['距離適性'].values + df['馬場適性'].values) / 2.0
-    # Pace scores
-    pace_scores = []
-    for _, h in df.iterrows():
-        rs = int(h.get('脚質', 0))
-        if rs == 0:
-            pace_scores.append(0.5)
-        else:
-            base = pace_scores_map.get(rs, 0.5)
-            pace_scores.append(max(0.0, min(1.0, base)))
-    pace_scores = np.array(pace_scores)
-    agari_scores = np.clip(1.0 - (df['上がり3F'].values - 33.0) / 5.0, 0.0, 1.0)
-    course_scores = df['コース適性'].values
-    other_scores = (df['血統スコア'].values + df['複勝率'].values) / 2.0
-    jockey_scores = np.clip(df['騎手勝率'].values / 0.18, 0.0, 1.0)
-    # Best time score
-    times = df['持ちタイム'].values
-    valid_times = times[times > 0]
-    if len(valid_times) >= 2:
-        t_min, t_max = valid_times.min(), valid_times.max()
-        if t_max > t_min:
-            time_scores = np.where(times > 0, 1.0 - (times - t_min) / (t_max - t_min), 0.5)
-        else:
-            time_scores = np.where(times > 0, 0.7, 0.5)
-    else:
-        time_scores = np.full(len(times), 0.5)
-    time_scores = np.clip(time_scores, 0.0, 1.0)
+    df = _core_predict_race(df, _model_data_for_core, odds_available, race_info=race_info)
 
-    # Odds scores（オッズが低いほど高スコア）
-    if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
-        odds_vals = df['単勝オッズ'].replace(0, df['単勝オッズ'][df['単勝オッズ'] > 0].median() if (df['単勝オッズ'] > 0).any() else 15.0)
-        odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
-    else:
-        odds_scores = pop_scores  # オッズ未取得時は人気傾向で代替
-
-    # ===== FINAL SCORE =====
-    if is_nar:
-        if odds_available:
-            final_scores = (
-                ai_scores * 0.27 + odds_scores * 0.10 + pop_scores * 0.03 + pace_scores * 0.18
-                + agari_scores * 0.08 + jockey_scores * 0.10 + apt_scores * 0.08
-                + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
-            )
-        else:
-            final_scores = (
-                ai_scores * 0.27 + pop_scores * 0.13 + pace_scores * 0.18
-                + agari_scores * 0.08 + jockey_scores * 0.10 + apt_scores * 0.08
-                + time_scores * 0.08 + course_scores * 0.04 + other_scores * 0.04
-            )
-    else:
-        if use_version == 'v3':
-            final_scores = (
-                ai_scores * 0.55 + pop_scores * 0.10 + apt_scores * 0.08
-                + pace_scores * 0.08 + agari_scores * 0.08 + course_scores * 0.04
-                + other_scores * 0.04 + time_scores * 0.03
-            )
-        elif use_version == 'v5':
-            final_scores = (
-                ai_scores * 0.60 + pop_scores * 0.08 + apt_scores * 0.07
-                + pace_scores * 0.07 + agari_scores * 0.07 + course_scores * 0.04
-                + other_scores * 0.04 + time_scores * 0.03
-            )
-        elif use_version == 'v6':
-            final_scores = (
-                ai_scores * 0.65 + pop_scores * 0.06 + apt_scores * 0.06
-                + pace_scores * 0.06 + agari_scores * 0.06 + course_scores * 0.04
-                + other_scores * 0.04 + time_scores * 0.03
-            )
-        elif use_version in ('v8', 'v9'):
-            # v8/v9: 過去3走特徴量込み - リアルタイムオッズ反映
-            if odds_available:
-                final_scores = (
-                    ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
-                    + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
-                    + other_scores * 0.03 + pop_scores * 0.03
-                )
-            else:
-                final_scores = (
-                    ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
-                    + pace_scores * 0.06 + agari_scores * 0.05 + course_scores * 0.04
-                    + other_scores * 0.03
-                )
-        else:
-            final_scores = (
-                ai_scores * 0.45 + pop_scores * 0.15 + apt_scores * 0.10
-                + pace_scores * 0.10 + agari_scores * 0.10 + course_scores * 0.05
-                + other_scores * 0.05
-            )
-    df['スコア'] = final_scores
-    df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
-    df = df.sort_values('AI順位')
     # ===== 展開予測補正 =====
     pace_pred, pace_reason, pace_adv = predict_race_pace(
         df, race_info['distance'], race_info['surface'], num_horses
@@ -5872,8 +5412,8 @@ with st.expander("🧪 V8 vs V9 Backtest Report"):
 
 # ===== 一括予測用モデルスコアリング =====
 def _batch_score_race(horses, race_info, is_nar):
-    """バッチ予測用: 特徴量エンジニアリング+モデル予測+スコア計算。
-    Returns: (df_sorted, cond_key, cond_profile, odds_available) or None on error."""
+    """バッチ予測用: predict_core共通モジュールを使用。
+    Returns: (df_sorted, cond_key, cond_profile, odds_available, feat_summary) or None on error."""
     try:
         b_md, b_mt = get_model_for_race(is_nar, use_live=True)
         b_model = b_md.get('model') if isinstance(b_md, dict) else model
@@ -5893,303 +5433,23 @@ def _batch_score_race(horses, race_info, is_nar):
         num_h = len(df)
         odds_avail = '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any()
 
-        # === 共通特徴量 ===
-        df['頭数'] = num_h
-        df['斤量平均差'] = df['斤量'] - df['斤量'].mean()
-        dist = race_info['distance']
-        df['距離カテゴリ'] = 0 if dist <= 1400 else (1 if dist <= 1800 else (2 if dist <= 2200 else 3))
-        df['体重カテゴリ'] = df['馬体重'].apply(lambda w: 0 if w <= 440 else (1 if w <= 480 else (2 if w <= 520 else 3)))
-        df['体重変動abs'] = df['場体重増減'].abs()
-        df['年齢性別'] = df['馬齢'] * 10 + df['性別_enc']
-        surf_enc = df['芝ダート_enc'].iloc[0] if len(df) > 0 else 0
-        df['距離馬場'] = df['距離カテゴリ'] * 10 + surf_enc
-        df['枠位置'] = df['枠番'].apply(lambda w: 0 if w <= 3 else (1 if w <= 6 else 2))
-        import datetime as dt_module
-        now_dt = dt_module.datetime.now()
-        df['月'] = now_dt.month
-        m = now_dt.month
-        df['季節'] = 0 if m in [3,4,5] else (1 if m in [6,7,8] else (2 if m in [9,10,11] else 3))
-        df['枠馬場'] = df['枠位置'] * 10 + df['馬場状態_enc']
-        df['馬齢グループ'] = df['馬齢'].clip(2, 7)
+        _batch_model_data = {
+            'model': b_model,
+            'features': b_feats,
+            'version': b_ver,
+            'sire_map': b_smap,
+            'bms_map': b_bmap,
+            'n_top_encode': n_top,
+            'is_live': b_live,
+            'ensemble_weights': b_md.get('ensemble_weights', {}) if isinstance(b_md, dict) else {},
+            'xgb_model': b_md.get('xgb_model') if isinstance(b_md, dict) else None,
+            'cb_model': b_md.get('cb_model') if isinstance(b_md, dict) else None,
+        }
 
-        # === v5/v8/v9 特徴量 ===
-        if b_ver in ('v5', 'v6', 'v8', 'v9') or b_ver.startswith('v9.') or b_ver.startswith('v10'):
-            use_smap = b_smap if b_smap else sire_map
-            use_bmap = b_bmap if b_bmap else bms_map
-            df['sire_enc'] = df['父'].apply(lambda x: use_smap.get(x, n_top) if use_smap else n_top)
-            df['bms_enc'] = df['母の父'].apply(lambda x: use_bmap.get(x, n_top) if use_bmap else n_top)
-            def enc_loc(loc):
-                s = str(loc)
-                if '美浦' in s or '美' == s: return 0
-                if '栗東' in s or '栗' == s: return 1
-                if is_nar: return 2
-                return 3
-            df['location_enc'] = df.get('所属地', pd.Series(['']*len(df))).apply(enc_loc)
-            df['horse_weight'] = df['馬体重']
-            df['weight_diff'] = df['場体重増減'].fillna(0)
-            df['weight_carry'] = df['斤量']
-            df['age'] = df['馬齢']
-            df['distance'] = df['距離(m)']
-            df['course_enc'] = df['競馬場コード_enc']
-            df['turf_dirt_enc'] = df['芝ダート_enc']
-            df['condition_enc'] = df['馬場状態_enc']
-            df['sex_enc'] = df['性別_enc']
-            df['jockey_wr'] = df['騎手勝率']
-            df['prev_finish'] = df['前走着順']
-            df['bracket'] = df['枠番']
-            df['horse_num'] = df['馬番']
-            df['num_horses'] = df['頭数']
-            df['carry_diff'] = df['斤量平均差']
-            df['dist_cat'] = pd.cut(df['距離(m)'], bins=[0,1200,1400,1800,2200,9999], labels=[0,1,2,3,4]).astype(float).fillna(2)
-            df['weight_cat'] = pd.cut(df['馬体重'], bins=[0,440,480,520,9999], labels=[0,1,2,3]).astype(float).fillna(1)
-            df['age_sex'] = df['馬齢'] * 10 + df['性別_enc']
-            df['dist_surface'] = df['dist_cat'] * 10 + df['芝ダート_enc']
-            df['bracket_pos'] = pd.cut(df['枠番'], bins=[0,3,6,8], labels=[0,1,2]).astype(float).fillna(1)
-            month_now = datetime.now().month
-            df['month_val'] = month_now
-            df['season'] = 0 if month_now in [3,4,5] else (1 if month_now in [6,7,8] else (2 if month_now in [9,10,11] else 3))
-            df['bracket_cond'] = df['bracket_pos'] * 10 + df['馬場状態_enc']
-            df['age_group'] = df['馬齢'].clip(2, 7)
-            df['prev_pop'] = df.get('前走人気', pd.Series([8]*len(df))).fillna(8)
-            df['prev_odds_log'] = np.log1p(df.get('前走オッズ', pd.Series([15.0]*len(df))).clip(1, 999).fillna(15.0))
-            df['prev_last3f'] = df.get('上がり3F', pd.Series([35.5]*len(df))).fillna(35.5)
-            df['avg_last3f_3r'] = df['prev_last3f']
-            df['prev_pass1'] = df.get('通過順平均', pd.Series([8.0]*len(df))).fillna(8.0)
-            df['prev_pass4'] = df.get('通過順4', pd.Series([8]*len(df))).fillna(8)
-            df['prev_margin'] = 0
-            df['prev_prize'] = 0
-            df['has_training'] = 0
-            for col in ['prev2_finish','prev3_finish','prev4_finish','prev5_finish']:
-                df[col] = df.get(col, pd.Series([5]*len(df))).fillna(5)
-            df['prev2_last3f'] = df.get('prev2_last3f', pd.Series([35.5]*len(df))).fillna(35.5)
-            for col in ['avg_finish_3r','avg_finish_5r']:
-                df[col] = df.get(col, pd.Series([5.0]*len(df))).fillna(5.0)
-            for col in ['best_finish_3r','best_finish_5r']:
-                df[col] = df.get(col, pd.Series([5]*len(df))).fillna(5)
-            for col in ['top3_count_3r','top3_count_5r']:
-                df[col] = df.get(col, pd.Series([0]*len(df))).fillna(0)
-            df['finish_trend'] = df.get('finish_trend', pd.Series([0]*len(df))).fillna(0)
-            df['dist_change'] = 0
-            df['dist_change_abs'] = 0
-            df['rest_days'] = df.get('前走間隔', pd.Series([30]*len(df))).fillna(30)
-            df['rest_category'] = pd.cut(df['rest_days'], bins=[-1,6,14,35,63,180,9999], labels=[0,1,2,3,4,5]).astype(float).fillna(2)
-            df['same_dist_rate'] = 0.3
-            df['same_course_rate'] = 0.3
-            df['same_surface_rate'] = 0.3
-            df['horse_win_rate'] = 0.1
-            df['horse_top3_rate'] = 0.3
-            df['horse_race_count'] = 5
-            df['jockey_course_wr'] = df['騎手勝率']
-            df['jockey_dist_wr'] = df['騎手勝率']
-            df['jockey_top3'] = df['騎手勝率'] * 3
-            df['trainer_wr'] = 0.08
-            df['trainer_top3'] = 0.25
-            df['weight_dist'] = df['馬体重'] * df['距離(m)'] / 10000.0
-            df['age_season'] = df['馬齢'] * 10 + df['season']
-            df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
-            df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
-            df['weight_diff_abs'] = 0
-            df['surface_enc'] = df['芝ダート_enc']
-            df['jockey_wr_calc'] = df['騎手勝率']
-            df['jockey_course_wr_calc'] = df['騎手勝率']
-            df['trainer_top3_calc'] = df['trainer_top3']
-            df['weight_cat_dist'] = df['weight_cat'] * 10 + df['dist_cat']
-            df['surface_dist_enc'] = df['芝ダート_enc'] * 10 + df['dist_cat']
-            df['cond_surface'] = df['馬場状態_enc'] * 10 + df['芝ダート_enc']
-            df['course_surface'] = df['競馬場コード_enc'] * 10 + df['芝ダート_enc']
-            df['is_nar'] = 1 if is_nar else 0
-
-        # === オッズ特徴量 ===
-        if odds_avail and '単勝オッズ' in df.columns:
-            df['odds_log'] = np.log1p(df['単勝オッズ'].replace(0, 15.0).clip(1, 999))
-            has_odds = df['単勝オッズ'] > 0
-            if has_odds.any():
-                if 'prev_odds_log' in df.columns:
-                    df.loc[has_odds, 'prev_odds_log'] = df.loc[has_odds, 'odds_log']
-        else:
-            df['odds_log'] = np.log1p(pd.Series([15.0] * len(df)))
-
-        # === V9.2/V9.3特徴量をルックアップから補完 ===
-        lookups = get_feature_lookups()
-        training_mean = lookups.get('training_mean', 49.0)
-        horse_stats_lk = lookups.get('horse_stats', {})
-        sire_surf_lk = lookups.get('sire_surface_wr', {})
-        sire_dist_lk = lookups.get('sire_dist_wr', {})
-        bms_surf_lk = lookups.get('bms_surface_wr', {})
-        jockey_surf_lk = lookups.get('jockey_surface_wr', {})
-        frame_lk = lookups.get('frame_course_dist_wr', {})
-        trainer_lk = lookups.get('trainer_top3', {})
-
-        # 調教特徴量
-        if 'training_time_filled' not in df.columns or (df['training_time_filled'] == 0).all():
-            df['training_time_filled'] = training_mean
-            df['has_training'] = 0
-            df['training_per_dist'] = training_mean / max(dist / 200, 1)
-        # 馬キャリア特徴量
-        horse_name_map = lookups.get('horse_name_to_id', {})
-        for idx_h in range(len(df)):
-            hid_str = str(horses[idx_h].get('horse_id', '')) if idx_h < len(horses) else ''
-            hid_int = int(hid_str) if hid_str.isdigit() else 0
-            hs = horse_stats_lk.get(hid_int, {})
-            # netkeiba IDでヒットしない場合、馬名でフォールバック
-            if not hs and idx_h < len(horses):
-                hname = horses[idx_h].get('horse_name', '') or str(df.iloc[idx_h].get('馬名', ''))
-                mapped_id = horse_name_map.get(hname, 0)
-                if mapped_id:
-                    hs = horse_stats_lk.get(mapped_id, {})
-            if hs:
-                if 'horse_career_races' not in df.columns or df.iloc[idx_h].get('horse_career_races', 0) == 0:
-                    df.loc[df.index[idx_h], 'horse_career_races'] = hs.get('career_races', 0)
-                    df.loc[df.index[idx_h], 'horse_career_wr'] = hs.get('career_wr', 0.1)
-                    df.loc[df.index[idx_h], 'horse_career_top3r'] = hs.get('career_top3r', 0.25)
-                dist_cat_val = int(df.iloc[idx_h].get('dist_cat', 2))
-                surf_val = int(df.iloc[idx_h].get('surface_enc', surf_enc))
-                df.loc[df.index[idx_h], 'horse_dist_top3r'] = hs.get('dist_top3', {}).get(dist_cat_val, 0.25)
-                df.loc[df.index[idx_h], 'horse_surface_top3r'] = hs.get('surf_top3', {}).get(surf_val, 0.25)
-                # 調教データ補完
-                lt4f = hs.get('last_training_4f', 0)
-                if lt4f > 0 and (df.iloc[idx_h].get('training_time_filled', 0) == training_mean or df.iloc[idx_h].get('training_time_filled', 0) == 0):
-                    df.loc[df.index[idx_h], 'training_time_filled'] = lt4f
-                    df.loc[df.index[idx_h], 'has_training'] = 1
-        # sire/bms/jockey/trainer performance
-        for idx_h in range(len(df)):
-            father = str(df.iloc[idx_h].get('父', '') if '父' in df.columns else '')
-            mother_f = str(df.iloc[idx_h].get('母の父', '') if '母の父' in df.columns else '')
-            sv = int(df.iloc[idx_h].get('surface_enc', surf_enc))
-            dc = int(df.iloc[idx_h].get('dist_cat', 2))
-            df.loc[df.index[idx_h], 'sire_surface_wr'] = sire_surf_lk.get((father, sv), 0.1)
-            df.loc[df.index[idx_h], 'sire_dist_wr'] = sire_dist_lk.get((father, dc), 0.1)
-            df.loc[df.index[idx_h], 'bms_surface_wr'] = bms_surf_lk.get((mother_f, sv), 0.1)
-            jn = str(df.iloc[idx_h].get('騎手名', ''))
-            df.loc[df.index[idx_h], 'jockey_surface_wr'] = jockey_surf_lk.get((jn, sv), df.iloc[idx_h].get('騎手勝率', 0.08))
-            # 調教師複勝率
-            tn = str(df.iloc[idx_h].get('調教師', ''))
-            if tn and trainer_lk:
-                df.loc[df.index[idx_h], 'trainer_top3'] = trainer_lk.get(tn, 0.25)
-                df.loc[df.index[idx_h], 'trainer_top3_calc'] = trainer_lk.get(tn, 0.25)
-        # 木/坂路調教
-        if 'wood_best_4f_filled' not in df.columns or (df.get('wood_best_4f_filled', pd.Series([0])) == 0).all():
-            df['wood_best_4f_filled'] = 52.0
-            df['has_wood_training'] = 0
-            df['wood_count_2w'] = 0
-            df['sakaro_best_4f_filled'] = 53.0
-            df['sakaro_best_3f_filled'] = 39.0
-            df['has_sakaro_training'] = 0
-            df['total_training_count'] = 0
-        # ペース/ラップ特徴量
-        if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
-            df['prev_race_first3f'] = 35.0
-            df['prev_race_last3f'] = 35.5
-            df['prev_race_pace_diff'] = 0.5
-            df['prev_agari_relative'] = 0.0
-        # 枠有利度
-        ce = int(df.iloc[0].get('course_enc', df.iloc[0].get('競馬場コード_enc', 0)))
-        for idx_h in range(len(df)):
-            br = float(df.iloc[idx_h].get('bracket', df.iloc[idx_h].get('枠番', 4)))
-            dc = float(df.iloc[idx_h].get('dist_cat', 2))
-            bp = 0.0 if br <= 3 else (1.0 if br <= 6 else 2.0)
-            df.loc[df.index[idx_h], 'frame_course_dist_wr'] = frame_lk.get((bp, float(ce), dc), 0.08)
-        # ペース特徴量
-        if 'running_style' not in df.columns or (df.get('running_style', pd.Series([0])) == 0).all():
-            for idx_h in range(len(df)):
-                pass_avg = float(df.iloc[idx_h].get('通過順平均', 5.0) if '通過順平均' in df.columns else 5.0)
-                rs = 1 if pass_avg <= 2 else (2 if pass_avg <= 5 else (3 if pass_avg <= 10 else 4))
-                df.loc[df.index[idx_h], 'running_style'] = float(rs)
-            n_front = (df['running_style'] <= 2).sum()
-            front_ratio = n_front / max(num_h, 1)
-            pace = 0 if front_ratio < 0.2 else (2 if front_ratio > 0.4 else 1)
-            df['predicted_pace'] = float(pace)
-            adv_map = {(0,1):2,(0,2):1,(0,3):-1,(0,4):-2,(1,1):0,(1,2):0.5,(1,3):0.5,(1,4):0,(2,1):-2,(2,2):-1,(2,3):1,(2,4):2}
-            df['pace_advantage'] = df['running_style'].apply(lambda s: adv_map.get((pace, int(s)), 0.0))
-            df['style_vs_pace'] = df['running_style'] * 10 + df['predicted_pace']
-
-        # === Pattern B 当日特徴量 ===
-        if b_live:
-            df['weight_change'] = df['場体重増減'].fillna(0)
-            df['weight_change_abs'] = df['weight_change'].abs()
-            weather_str = str(race_info.get('weather', '晴'))
-            weather_map = {'晴': 0, '曇': 1, '小雨': 2, '雨': 2, '雪': 3}
-            df['weather_enc'] = weather_map.get(weather_str, 0)
-            if odds_avail and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
-                df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
-            else:
-                df['pop_rank'] = 8
-            df['cushion_value'] = 0
-            df['moisture_rate'] = 0
-            df['temperature'] = 0
-            df['humidity'] = 0
-            df['wind_speed'] = 0
-            df['precipitation'] = 0
-
-        # === モデル予測（フルアンサンブル: LGB+XGB+CatBoost） ===
-        use_features = b_feats if b_feats else FEATURES
-        feat_summary = get_feature_summary(df, use_features)
-        for f in use_features:
-            if f not in df.columns:
-                df[f] = 0
-            df[f] = pd.to_numeric(df[f], errors='coerce').fillna(0)
-        X = df[use_features].values
-        use_model = b_model if (b_model is not None and b_mt != 'default') else model
-        if use_model is None:
-            return None
-        # LGB prediction
-        if hasattr(use_model, 'predict_proba'):
-            proba = use_model.predict_proba(X)
-            ai_scores = proba[:, 1] if proba.shape[1] == 2 else proba[:, :3].sum(axis=1)
-        else:
-            ai_scores = use_model.predict(X)
-        # XGB + CatBoost ensemble (if available)
-        ens_w = b_md.get('ensemble_weights', {}) if isinstance(b_md, dict) else {}
-        xgb_m = b_md.get('xgb_model') if isinstance(b_md, dict) else None
-        cb_m = b_md.get('cb_model') if isinstance(b_md, dict) else None
-        if xgb_m is not None or cb_m is not None:
-            w_lgb = ens_w.get('lgb', 0.5)
-            w_xgb = ens_w.get('xgb', 0.3)
-            w_cb = ens_w.get('cb', 0.2)
-            total_w = w_lgb + w_xgb + w_cb
-            combined = ai_scores * (w_lgb / total_w)
-            if xgb_m is not None:
-                try:
-                    import xgboost as xgb_lib
-                    xgb_pred = xgb_m.predict(xgb_lib.DMatrix(X))
-                    combined += xgb_pred * (w_xgb / total_w)
-                except Exception:
-                    combined += ai_scores * (w_xgb / total_w)
-            else:
-                combined += ai_scores * (w_xgb / total_w)
-            if cb_m is not None:
-                try:
-                    cb_pred = cb_m.predict_proba(X)[:, 1]
-                    combined += cb_pred * (w_cb / total_w)
-                except Exception:
-                    combined += ai_scores * (w_cb / total_w)
-            else:
-                combined += ai_scores * (w_cb / total_w)
-            ai_scores = combined
-
-        # === スコア計算 ===
-        pop_scores = df['人気傾向'].values if '人気傾向' in df.columns else np.full(num_h, 0.5)
-        apt_scores = ((df['距離適性'].values if '距離適性' in df.columns else np.full(num_h, 0.5)) +
-                      (df['馬場適性'].values if '馬場適性' in df.columns else np.full(num_h, 0.5))) / 2.0
-        agari_scores = np.clip(1.0 - (df['上がり3F'].values - 33.0) / 5.0, 0.0, 1.0) if '上がり3F' in df.columns else np.full(num_h, 0.5)
-        course_scores = df['コース適性'].values if 'コース適性' in df.columns else np.full(num_h, 0.5)
-        other_scores = ((df['血統スコア'].values if '血統スコア' in df.columns else np.full(num_h, 0.5)) +
-                        (df['複勝率'].values if '複勝率' in df.columns else np.full(num_h, 0.0))) / 2.0
-        if odds_avail:
-            odds_vals = df['単勝オッズ'].replace(0, 15.0)
-            odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
-            final_scores = (ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06
-                            + np.full(num_h, 0.5) * 0.06 + agari_scores * 0.05
-                            + course_scores * 0.04 + other_scores * 0.03 + pop_scores * 0.03)
-        else:
-            final_scores = (ai_scores * 0.70 + pop_scores * 0.06 + apt_scores * 0.06
-                            + np.full(num_h, 0.5) * 0.06 + agari_scores * 0.05
-                            + course_scores * 0.04 + other_scores * 0.03)
-
-        df['スコア'] = final_scores
-        df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
-        df = df.sort_values('AI順位')
-        cond_key, cond_profile = classify_race_condition(race_info, num_h, is_nar=is_nar)
+        df = _core_build_features(horses, race_info, _batch_model_data)
+        feat_summary = get_feature_summary(df, b_feats)
+        df = _core_predict_race(df, _batch_model_data, odds_avail, race_info=race_info)
+        cond_key, cond_profile = _core_classify_condition(race_info, num_h)
         return df, cond_key, cond_profile, odds_avail, feat_summary
     except Exception:
         return None
