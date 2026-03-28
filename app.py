@@ -3720,6 +3720,20 @@ def render_horse_card(rank, h, max_score, rank_map):
         else:
             _se_color, _se_border = '#8B949E', 'rgba(139,148,158,0.3)'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {_se_border};color:{_se_color} !important;background:rgba(0,0,0,0.2)">🐴 新馬 {_se_text}</span></div>'
+    # 種牡馬新馬成績（新馬戦のみ）
+    _sire_t3 = h.get('種牡馬新馬複勝率', 0)
+    if _sire_t3 > 0:
+        _sw = h.get('種牡馬新馬勝率', 0)
+        _sc = '#4ade80' if _sire_t3 >= 40 else ('#6C9BD2' if _sire_t3 >= 25 else '#8B949E')
+        _sb = f'rgba({",".join(str(int(_sc[i:i+2],16)) for i in (1,3,5))},0.3)' if _sc.startswith('#') else 'rgba(139,148,158,0.3)'
+        html += f'<div style="margin:1px 0 3px 0;"><span style="font-size:0.78em;padding:2px 8px;border-radius:4px;border:1px solid {_sb};color:{_sc} !important;background:rgba(0,0,0,0.15)">🧬 父新馬 勝率{_sw}% / 複勝率{_sire_t3}%</span></div>'
+    # 母産駒成績（新馬戦のみ）
+    _dam_t3 = h.get('母産駒複勝率', 0)
+    if _dam_t3 > 0:
+        _dw = h.get('母産駒新馬勝率', 0)
+        _dc = '#4ade80' if _dam_t3 >= 40 else ('#6C9BD2' if _dam_t3 >= 25 else '#8B949E')
+        _db = f'rgba({",".join(str(int(_dc[i:i+2],16)) for i in (1,3,5))},0.3)' if _dc.startswith('#') else 'rgba(139,148,158,0.3)'
+        html += f'<div style="margin:1px 0 3px 0;"><span style="font-size:0.78em;padding:2px 8px;border-radius:4px;border:1px solid {_db};color:{_dc} !important;background:rgba(0,0,0,0.15)">👩 母産駒 複勝率{_dam_t3}% / 新馬勝率{_dw}%</span></div>'
     # 馬場適性警告
     if h.get('馬場警告'):
         html += '<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,64,96,0.4);color:#E5534B !important;background:rgba(60,0,0,0.3)">⚠️ 馬場適性注意 — 重馬場苦手</span></div>'
@@ -4579,6 +4593,34 @@ if st.button("🔍 予想する") and url_input:
                         horse['新馬厩舎評価'] = str(row.get('stable_eval', ''))
                         horse['新馬調教ランク'] = str(row.get('training_rank', ''))
                         horse['新馬スコア'] = int(row.get('comment_score', 0))
+        except Exception:
+            pass
+        # 種牡馬新馬成績
+        try:
+            _sire_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'sire_shinba_stats.csv')
+            if os.path.exists(_sire_csv):
+                _sire_df = pd.read_csv(_sire_csv, encoding='utf-8')
+                _sire_map = dict(zip(_sire_df['sire'], _sire_df['top3_rate']))
+                _sire_wr = dict(zip(_sire_df['sire'], _sire_df['win_rate']))
+                for horse in horses:
+                    sire = horse.get('父', '')
+                    if sire in _sire_map:
+                        horse['種牡馬新馬複勝率'] = round(_sire_map[sire] * 100, 1)
+                        horse['種牡馬新馬勝率'] = round(_sire_wr[sire] * 100, 1)
+        except Exception:
+            pass
+        # 母馬産駒成績
+        try:
+            _sib_csv = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'netkeiba_siblings.csv')
+            if os.path.exists(_sib_csv):
+                _sib_df = pd.read_csv(_sib_csv, encoding='utf-8')
+                _sib_map = dict(zip(_sib_df['mother'], _sib_df['top3_rate']))
+                _sib_wr = dict(zip(_sib_df['mother'], _sib_df['shinba_win_rate']))
+                for horse in horses:
+                    mother = horse.get('母', '')
+                    if mother in _sib_map:
+                        horse['母産駒複勝率'] = round(_sib_map[mother] * 100, 1)
+                        horse['母産駒新馬勝率'] = round(_sib_wr[mother] * 100, 1)
         except Exception:
             pass
 

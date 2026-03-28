@@ -157,6 +157,9 @@ def main():
     except ImportError:
         scrape_shinba_newspaper = None
 
+    # Note: race review (備考) is scraped by daily_results.py after races finish,
+    # not by pre-fetch (horses haven't raced yet)
+
     # Scrape each race
     os.makedirs(cache_path, exist_ok=True)
     all_data = dict(existing_cache)

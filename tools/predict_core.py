@@ -1283,14 +1283,27 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
             df['wind_speed'] = 0
             df['precipitation'] = 0
 
-    # 新馬評価スコア（将来のモデル組込用。現在は表示のみ）
-    # race_infoに'race_name'があり「新馬」を含む場合、horsesから新馬スコアを取得
+    # 新馬関連特徴量（将来のモデル組込用。現在は表示のみ）
     if race_info.get('race_name', '') and '新馬' in str(race_info.get('race_name', '')):
         shinba_scores = []
+        sire_shinba_t3 = []
+        dam_t3 = []
         for h in horses:
             cs = h.get('新馬スコア', None) or h.get('shinba_comment_score', None)
             shinba_scores.append(int(cs) if cs is not None else 0)
+            sire_shinba_t3.append(float(h.get('種牡馬新馬複勝率', 0) or 0) / 100.0)
+            dam_t3.append(float(h.get('母産駒複勝率', 0) or 0) / 100.0)
         df['shinba_comment_score'] = shinba_scores
+        df['sire_shinba_top3r'] = sire_shinba_t3
+        df['dam_top3r'] = dam_t3
+
+    # 前走不利スコア（将来のモデル組込用）
+    prev_review = []
+    for h in horses:
+        rs = h.get('前走不利スコア', None) or h.get('prev_review_score', None)
+        prev_review.append(int(rs) if rs is not None else 0)
+    if any(v != 0 for v in prev_review):
+        df['prev_review_score'] = prev_review
 
     # 必要な特徴量の確保
     use_features = model_data.get('features')
