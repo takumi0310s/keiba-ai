@@ -4292,6 +4292,177 @@ def render_track_record_race_list(races):
             elif hit == 0:
                 st.error(f"不的中（投資: ¥{INVESTMENT_PER_RACE}）")
 
+# ===== 穴馬診断 =====
+
+def analyze_odds_gap(df):
+    """オッズ断層分析。人気順にオッズを並べ、隣接比率から断層を検出する。
+
+    Returns:
+        pattern: str - 断層パターン ('1-2断層'/'2-3断層'/'下位断層'/'二重断層'/None)
+        gaps: list of dict - 検出された断層
+        axis_hint: str - 軸馬ヒント
+    """
+    if '単勝オッズ' not in df.columns:
+        return None, [], ''
+    odds_df = df[df['単勝オッズ'] > 0].sort_values('単勝オッズ').reset_index(drop=True)
+    if len(odds_df) < 3:
+        return None, [], ''
+
+    gaps = []
+    for i in range(len(odds_df) - 1):
+        o1 = odds_df.iloc[i]['単勝オッズ']
+        o2 = odds_df.iloc[i + 1]['単勝オッズ']
+        if o1 > 0:
+            ratio = o2 / o1
+            if ratio >= 2.0:
+                gaps.append({
+                    'pos': i + 1,
+                    'horse_above': f"{odds_df.iloc[i]['馬名']}({int(odds_df.iloc[i]['馬番'])}番)",
+                    'horse_below': f"{odds_df.iloc[i+1]['馬名']}({int(odds_df.iloc[i+1]['馬番'])}番)",
+                    'odds_above': o1,
+                    'odds_below': o2,
+                    'ratio': ratio,
+                    'num_above': int(odds_df.iloc[i]['馬番']),
+                    'num_below': int(odds_df.iloc[i + 1]['馬番']),
+                })
+
+    if not gaps:
+        return None, [], ''
+
+    positions = [g['pos'] for g in gaps]
+    if len(gaps) >= 2:
+        pattern = '二重断層'
+        axis_hint = f"断層上位の{gaps[0]['horse_above']}が軸候補。断層間の馬を相手に"
+    elif 1 in positions:
+        pattern = '1-2断層'
+        axis_hint = f"1番人気{gaps[0]['horse_above']}が抜けた存在。2番手以下の比較が鍵"
+    elif 2 in positions:
+        pattern = '2-3断層'
+        axis_hint = f"上位2頭({gaps[0]['horse_above']}まで)が抜け。3番手以下から穴馬を探す"
+    else:
+        pattern = '下位断層'
+        axis_hint = f"上位は混戦。{gaps[0]['pos']}番人気以降にオッズ断層あり"
+
+    return pattern, gaps, axis_hint
+
+
+def scan_dark_horse_signals(df, race_info):
+    """穴馬シグナルをスキャンし、該当馬にバッジを付与する。
+
+    Returns:
+        list of dict: [{horse_name, horse_num, signals, odds, ai_rank}]
+    """
+    signals_by_horse = {}
+
+    for _, h in df.iterrows():
+        horse_name = h.get('馬名', '?')
+        horse_num = int(h.get('馬番', 0))
+        odds = h.get('単勝オッズ', 0)
+        ai_rank = int(h.get('AI順位', 99))
+        sigs = []
+
+        # 1. 大幅距離短縮（前走比-400m以上）
+        dist_change = h.get('dist_change', 0)
+        if isinstance(dist_change, (int, float)) and dist_change <= -400:
+            sigs.append(f'距離短縮{int(dist_change)}m')
+
+        # 2. 休み明け（90日以上）
+        rest_days = h.get('前走間隔', h.get('rest_days', 30))
+        if isinstance(rest_days, (int, float)) and rest_days >= 90:
+            months = int(rest_days / 30)
+            sigs.append(f'休み明け{months}ヶ月')
+
+        # 3. 得意コース回帰（コース適性0.65以上）
+        course_apt = h.get('コース適性', 0.5)
+        if isinstance(course_apt, (int, float)) and course_apt >= 0.65:
+            sigs.append('得意コース')
+
+        # 4. 得意距離（距離適性0.65以上）
+        dist_apt = h.get('距離適性', 0.5)
+        if isinstance(dist_apt, (int, float)) and dist_apt >= 0.65:
+            sigs.append('得意距離')
+
+        # 5. 前走大敗からの巻き返し候補（前走10着以下だがAI上位）
+        prev_finish = h.get('前走着順', 5)
+        if isinstance(prev_finish, (int, float)) and prev_finish >= 10 and ai_rank <= 6:
+            sigs.append(f'前走{int(prev_finish)}着→AI{ai_rank}位')
+
+        # 6. 上がり3F優秀（34.5秒以下）
+        last3f = h.get('上がり3F', 36.0)
+        if isinstance(last3f, (int, float)) and 0 < last3f <= 34.5:
+            sigs.append(f'上がり{last3f:.1f}秒')
+
+        # 穴馬条件: オッズ10倍以上 or AI順位4位以下で何かシグナルあり
+        if sigs and (odds >= 10.0 or ai_rank >= 4):
+            signals_by_horse[horse_num] = {
+                'horse_name': horse_name,
+                'horse_num': horse_num,
+                'signals': sigs,
+                'odds': odds,
+                'ai_rank': ai_rank,
+            }
+
+    return sorted(signals_by_horse.values(), key=lambda x: x['ai_rank'])
+
+
+def render_dark_horse_section(df, race_info):
+    """穴馬診断セクションのHTMLを生成する。"""
+    odds_pattern, gaps, axis_hint = analyze_odds_gap(df)
+    signals = scan_dark_horse_signals(df, race_info)
+
+    if not odds_pattern and not signals:
+        return ''
+
+    html = '<div style="margin:12px 0;padding:16px;background:linear-gradient(135deg,#1A1520,#161B22);border:1px solid #8B5CF6;border-radius:12px;">'
+    html += '<div style="font-family:Oswald;font-size:1.15em;color:#A78BFA !important;margin-bottom:12px;letter-spacing:0.5px;">DARK HORSE SCAN</div>'
+
+    # オッズ断層分析
+    if odds_pattern and gaps:
+        p_colors = {'1-2断層': '#F59E0B', '2-3断層': '#F59E0B', '下位断層': '#6C9BD2', '二重断層': '#EF4444'}
+        p_color = p_colors.get(odds_pattern, '#A78BFA')
+        html += '<div style="margin-bottom:10px;padding:10px;background:rgba(139,92,246,0.08);border-radius:8px;">'
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+        html += f'<span style="font-size:0.9em;color:#C4B5FD !important;">オッズ断層</span>'
+        html += f'<span style="font-family:Oswald;padding:2px 10px;border-radius:4px;background:{p_color};color:#000 !important;font-size:0.82em;font-weight:bold;">{odds_pattern}</span>'
+        html += '</div>'
+        for g in gaps[:3]:
+            html += f'<div style="font-size:0.82em;color:#D1D5DB !important;margin:3px 0;">'
+            html += f'{g["pos"]}↔{g["pos"]+1}番人気間: '
+            html += f'<span style="color:#F9FAFB !important;">{g["horse_above"]}</span> '
+            html += f'<span style="color:#6B7280 !important;">{g["odds_above"]:.1f}倍</span>'
+            html += f' → '
+            html += f'<span style="color:#F9FAFB !important;">{g["horse_below"]}</span> '
+            html += f'<span style="color:#6B7280 !important;">{g["odds_below"]:.1f}倍</span>'
+            html += f' <span style="font-family:Oswald;color:{p_color} !important;">(×{g["ratio"]:.1f})</span>'
+            html += '</div>'
+        html += f'<div style="font-size:0.78em;color:#9CA3AF !important;margin-top:6px;">{axis_hint}</div>'
+        html += '</div>'
+
+    # 穴馬シグナル
+    if signals:
+        html += '<div style="margin-top:8px;">'
+        html += '<div style="font-size:0.9em;color:#C4B5FD !important;margin-bottom:8px;">穴馬シグナル</div>'
+        for s in signals:
+            odds_str = f'{s["odds"]:.1f}倍' if s['odds'] > 0 else '-'
+            html += '<div style="display:flex;align-items:center;gap:8px;margin:4px 0;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px;">'
+            html += f'<span style="font-family:Oswald;font-size:0.85em;color:#A78BFA !important;min-width:24px;">AI{s["ai_rank"]}</span>'
+            html += f'<span style="font-size:0.88em;color:#F9FAFB !important;min-width:80px;">{s["horse_name"][:6]}({s["horse_num"]})</span>'
+            html += f'<span style="font-size:0.78em;color:#6B7280 !important;min-width:50px;">{odds_str}</span>'
+            for sig in s['signals']:
+                bc = '#8B5CF6'
+                if '距離短縮' in sig: bc = '#F59E0B'
+                elif '休み明け' in sig: bc = '#14B8A6'
+                elif '得意' in sig: bc = '#22C55E'
+                elif '前走' in sig: bc = '#EF4444'
+                elif '上がり' in sig: bc = '#3B82F6'
+                html += f'<span style="font-size:0.72em;padding:1px 6px;border-radius:3px;border:1px solid {bc};color:{bc} !important;white-space:nowrap;">{sig}</span>'
+            html += '</div>'
+        html += '</div>'
+
+    html += '</div>'
+    return html
+
+
 def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None, pair_odds=None, variable_investment=None):
     """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示。
     pair_odds: {(n1,n2): odds} ワイドまたは馬連のペアオッズ
@@ -5008,6 +5179,13 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     st.markdown(_conf_html, unsafe_allow_html=True)
     if confidence < 40:
         st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E5534B;border-radius:8px;text-align:center;color:#E5534B !important;font-weight:bold;">⚠️ 見送り推奨 — 信頼度{confidence}（混戦/データ不足）</div>', unsafe_allow_html=True)
+
+    # 穴馬診断セクション
+    if odds_available:
+        dark_horse_html = render_dark_horse_section(df, race_info)
+        if dark_horse_html:
+            st.markdown('<div class="sec-title">🔮 穴馬診断<span class="sec-line"></span></div>', unsafe_allow_html=True)
+            st.markdown(dark_horse_html, unsafe_allow_html=True)
 
     # ワイド/馬連オッズ取得（オッズ連動投資額振り分け用）
     pair_odds = {}
