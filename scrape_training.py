@@ -257,6 +257,17 @@ def fetch_training_times(race_id, is_nar=False):
         # Parse detail rows for Pattern B (alternating row pairs)
         _parse_premium_oikiri(soup, result)
 
+        # Rank-based estimation for horses with rank but no 4F time
+        # (e.g. 連闘, very light training with only 1F)
+        _RANK_4F = {'A': 51.5, 'B': 53.0, 'C': 54.5, 'D': 55.5}
+        _RANK_3F = {'A': 37.5, 'B': 39.0, 'C': 40.5, 'D': 41.5}
+        for uma in result:
+            if result[uma]['time_4f'] == 0 and result[uma].get('rank', '') in _RANK_4F:
+                rank = result[uma]['rank']
+                result[uma]['time_4f'] = _RANK_4F[rank]
+                if result[uma]['time_3f'] == 0:
+                    result[uma]['time_3f'] = _RANK_3F[rank]
+
         _CACHE[race_id] = result
 
     except Exception:
