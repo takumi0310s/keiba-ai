@@ -2616,6 +2616,95 @@ def fetch_track_condition(race_id, is_nar=False):
     return result
 
 
+def fetch_netkeiba_ai_prediction(race_id, is_nar=False):
+    """netkeibaのAI予測ページから展開予想・隊列位置を取得。
+    Returns: {
+        'pace': 'H'/'M'/'S' or None,
+        'opinion': str or '',
+        'positions': {umaban: {'left_pct': float, 'top_pct': float, 'color': str}}
+    }
+    """
+    result = {'pace': None, 'opinion': '', 'positions': {}}
+    try:
+        if is_nar:
+            return result  # NARは非対応
+        url = f"https://race.netkeiba.com/race/yosou.html?race_id={race_id}"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp.encoding = "EUC-JP"
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # AI展開予想テキスト
+        ai_box = soup.find("div", class_="AiComment") or soup.find("div", class_="AI_Box")
+        if ai_box:
+            result['opinion'] = ai_box.get_text(strip=True)[:200]
+        # ペース予想
+        pace_tag = soup.find("span", class_="Pace") or soup.find("div", class_="PaceIcon")
+        if pace_tag:
+            pt = pace_tag.get_text(strip=True)
+            if 'H' in pt or 'ハイ' in pt:
+                result['pace'] = 'H'
+            elif 'S' in pt or 'スロー' in pt:
+                result['pace'] = 'S'
+            else:
+                result['pace'] = 'M'
+        # 隊列位置（馬アイコンのCSS位置から）
+        position_area = soup.find("div", class_="RaceMap") or soup.find("div", class_="CourseMap")
+        if position_area:
+            for horse in position_area.find_all(["div", "span"], class_=re.compile(r'Horse|Color')):
+                style = horse.get("style", "")
+                left_m = re.search(r'left:\s*([\d.]+)%', style)
+                top_m = re.search(r'top:\s*([\d.]+)%', style)
+                # 馬番を探す
+                num_el = horse.find("span", class_="Num") or horse.find("span")
+                if num_el:
+                    try:
+                        umaban = int(num_el.get_text(strip=True))
+                        result['positions'][umaban] = {
+                            'left_pct': float(left_m.group(1)) if left_m else 50,
+                            'top_pct': float(top_m.group(1)) if top_m else 50,
+                            'color': '',
+                        }
+                    except (ValueError, TypeError):
+                        pass
+    except Exception:
+        pass
+    # CSV fallback
+    if not result['pace']:
+        try:
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'netkeiba_ai_opinion.csv')
+            if os.path.exists(csv_path):
+                import csv
+                with open(csv_path, 'r', encoding='utf-8-sig') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row.get('race_id', '').strip() == str(race_id):
+                            result['pace'] = row.get('pace', '')
+                            result['opinion'] = row.get('opinion_text', '')[:200]
+                            break
+        except Exception:
+            pass
+    if not result['positions']:
+        try:
+            csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'netkeiba_ai_position.csv')
+            if os.path.exists(csv_path):
+                import csv
+                with open(csv_path, 'r', encoding='utf-8-sig') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row.get('race_id', '').strip() == str(race_id):
+                            try:
+                                um = int(row['umaban'])
+                                result['positions'][um] = {
+                                    'left_pct': float(row.get('position_left_pct', 50)),
+                                    'top_pct': float(row.get('position_top_pct', 50)),
+                                    'color': row.get('color_class', ''),
+                                }
+                            except (ValueError, TypeError):
+                                pass
+        except Exception:
+            pass
+    return result
+
+
 def adjust_scores_for_track(df, condition, original_condition, surface, rank_map):
     """馬場悪化時にスコアを補正する。
     - 馬場悪化: 逃げ・先行有利度UP、追込有利度DOWN
@@ -3729,6 +3818,18 @@ def render_horse_card(rank, h, max_score, rank_map):
         else:
             p_color, p_border, p_text = '#E5534B', 'rgba(255,64,96,0.3)', f'展開× ({pace_disp}ペース不利)'
         html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {p_border};color:{p_color} !important;background:rgba(0,0,0,0.2)">🔄 {p_text}</span></div>'
+    # AI隊列位置バッジ
+    _ai_pos = h.get('AI隊列位置', -1)
+    if _ai_pos >= 0:
+        if _ai_pos <= 20:
+            _pos_label, _pos_color = '先頭集団', '#E5534B'
+        elif _ai_pos <= 45:
+            _pos_label, _pos_color = '好位', '#14B8A6'
+        elif _ai_pos <= 65:
+            _pos_label, _pos_color = '中団', '#6C9BD2'
+        else:
+            _pos_label, _pos_color = '後方', '#8B949E'
+        html += f'<div style="margin:1px 0 3px 0;"><span style="font-size:0.78em;padding:2px 8px;border-radius:4px;border:1px solid rgba({",".join(str(int(_pos_color[i:i+2],16)) for i in (1,3,5))},0.3);color:{_pos_color} !important;background:rgba(0,0,0,0.15)">🏁 AI隊列: {_pos_label}</span></div>'
     # 新馬評価バッジ
     _shinba_eval = h.get('新馬厩舎評価', '') or h.get('shinba_stable_eval', '')
     _shinba_rank = h.get('新馬調教ランク', '') or h.get('shinba_training_rank', '')
@@ -4975,6 +5076,15 @@ if st.button("🔍 予想する") and url_input:
                 f'💧 {original_condition}',
                 f'💧 {live_condition} ⚠️馬場変化'
             )
+    # netkeiba AI予測データ取得
+    nk_ai = fetch_netkeiba_ai_prediction(race_id, is_nar=is_nar)
+    st.session_state['pred_nk_ai'] = nk_ai
+    # 各馬にAI隊列位置を付与
+    for idx in df.index:
+        um = int(df.loc[idx, '馬番'])
+        pos_data = nk_ai.get('positions', {}).get(um, {})
+        df.loc[idx, 'AI隊列位置'] = pos_data.get('left_pct', -1)
+
     # EV計算（各馬）
     ev_map = _core_calc_horse_ev(df)
     for idx in df.index:
@@ -5188,6 +5298,24 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     st.markdown(_conf_html, unsafe_allow_html=True)
     if confidence < 40:
         st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E5534B;border-radius:8px;text-align:center;color:#E5534B !important;font-weight:bold;">⚠️ 見送り推奨 — 信頼度{confidence}（混戦/データ不足）</div>', unsafe_allow_html=True)
+
+    # netkeiba AI展開予想パネル
+    _nk_ai = st.session_state.get('pred_nk_ai', {})
+    _nk_pace = _nk_ai.get('pace')
+    _nk_opinion = _nk_ai.get('opinion', '')
+    if _nk_pace or _nk_opinion:
+        _pace_map = {'H': ('ハイペース', '#E5534B'), 'M': ('ミドルペース', '#6C9BD2'), 'S': ('スローペース', '#14B8A6')}
+        _pl, _pc = _pace_map.get(_nk_pace, ('不明', '#7D8590'))
+        _ai_panel = '<div style="margin:8px 0;padding:12px 14px;background:linear-gradient(90deg,#1A1428,#161B22);border:1px solid #7C3AED;border-radius:10px;">'
+        _ai_panel += f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
+        _ai_panel += f'<span style="font-size:0.85em;color:#A78BFA !important;font-weight:bold;">netkeiba AI展開予想</span>'
+        if _nk_pace:
+            _ai_panel += f'<span style="font-family:Oswald;font-size:0.9em;padding:2px 8px;border-radius:4px;background:rgba(124,58,237,0.2);border:1px solid {_pc};color:{_pc} !important;">{_nk_pace} {_pl}</span>'
+        _ai_panel += '</div>'
+        if _nk_opinion:
+            _ai_panel += f'<div style="font-size:0.78em;color:#8B949E !important;line-height:1.5;">{_nk_opinion[:150]}{"..." if len(_nk_opinion) > 150 else ""}</div>'
+        _ai_panel += '</div>'
+        st.markdown(_ai_panel, unsafe_allow_html=True)
 
     # 穴馬診断セクション（Cloud環境ではスキップ）
     if odds_available and not IS_CLOUD:
