@@ -38,3 +38,4 @@ backtest_results_5year.json
 data/simulation_results_jra.csv
 data/chihou_full_enriched.csv
 data/chihou_races_full.csv
+data/v121_training_log.txt
