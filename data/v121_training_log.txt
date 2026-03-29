@@ -1,0 +1,221 @@
+============================================================
+  v12.1 Re-training (+prev_review_score, +shinba_eval_score)
+============================================================
+
+[1/6] Loading data...
+Loading data...
+  Raw: 531619 rows, 52 cols
+  Columns: ['year', 'month', 'day', 'kai', 'course', 'nichi', 'race_num', 'race_name', 'class_code', 'surface']...
+  Valid: 527280 rows, 38002 races
+  Year range: 2015-2025
+  Father sample: ['マンハッタンカフェ', 'マンハッタンカフェ', 'ダンスインザダーク', 'ダンスインザダーク', 'スウェプトオーヴァーボード']
+  BMS sample: ['キャロルハウス', 'キャロルハウス', 'トニービン', 'トニービン', 'サンデーサイレンス']
+  Loaded: 527280 rows
+ 
+--- Pattern 2: v12.1 (+prev_review_score, +shinba_eval_score) ---
+
+--- Individual feature contribution ---
+ア', 'キングカメハメハ']
+  Top 5 BMS: ['サンデーサイレンス', 'キングカメハメハ', 'ディープインパクト', 'アグネスタキオン', 'クロフネ']
+  Encoded: sires=100, bms=100
+
+[2/6] Merging training data...
+Loading training times...
+  955580 training records
+  Wood: 296654 valid, Sakaro: 658735 valid
+Merging training time features...
+  Wood training matched: 95370/527280 (18.1%)
+  Merging sakaro training features...
+  Sakaro name→horse_id mapped: 654220/658735 (99.3%)
+  Sakaro training matched: 153874/527280 (29.2%)
+
+[3/6] Computing historical stats...
+Computing jockey stats (expanding window)...
+Computing trainer stats (expanding window)...
+Computing horse career features...
+Computing sire performance features...
+Computing lag features...
+  Lag features computed for 58921 horses
+Computing distance aptitude features...
+Computing frame advantage features...
+
+[4/6] Merging v12 features...
+  Speed Index: 247913/527280 matched (47.0%)
+  Training 1F: 276941/527280 matched (52.5%)
+  Computing sire_shinba_top3r (expanding window, leak-free)...
+  Sire shinba (expanding): 0/527280 computed (0.0%)
+  Computing dam_top3r (expanding window, leak-free)...
+  Dam stats (expanding): 508203/527280 computed (96.4%)
+  PCI: 527280/527280 computed (100.0%)
+
+[5/6] Merging v12.1 new features...
+  Merging prev_review_score...
+  Review scores matched: 65695/527280 (12.5%)
+  Prev review filled: 56398/527280 (10.7%)
+  Merging shinba_eval_score...
+  Shinba eval matched: 6269/527280 (1.2%)
+
+  Final dataset: 527280 rows, years 2015-2025
+
+  V12 features: 74
+  V12.1 features: 76 (+2)
+
+[6/6] Walk-forward backtesting...
+
+--- Pattern 1: v12 Baseline ---
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[296]	valid_0's auc: 0.793433
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[432]	valid_0's auc: 0.800415
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[363]	valid_0's auc: 0.806087
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[347]	valid_0's auc: 0.803797
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.810322
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[442]	valid_0's auc: 0.807348
+
+============================================================
+  WF Results: v12 Baseline
+============================================================
+  2020: LGB=0.7934 XGB=0.7940 Train=0.8373 Gap=0.0438 ✓✓
+  2021: LGB=0.8004 XGB=0.8022 Train=0.8454 Gap=0.0450 ✓✓
+  2022: LGB=0.8061 XGB=0.8068 Train=0.8351 Gap=0.0290 ✓✓
+  2023: LGB=0.8038 XGB=0.8053 Train=0.8306 Gap=0.0268 ✓✓
+  2024: LGB=0.8103 XGB=0.8112 Train=0.8393 Gap=0.0289 ✓✓
+  2025: LGB=0.8073 XGB=0.8082 Train=0.8338 Gap=0.0264 ✓✓
+  --- Mean LGB AUC: 0.8036 ---
+
+--- Pattern 2: v12.1 (+prev_review_score, +shinba_eval_score) ---
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[296]	valid_0's auc: 0.793433
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[499]	valid_0's auc: 0.801432
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[368]	valid_0's auc: 0.805542
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[510]	valid_0's auc: 0.804649
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[464]	valid_0's auc: 0.810012
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[453]	valid_0's auc: 0.808376
+
+============================================================
+  WF Results: v12.1
+============================================================
+  2020: LGB=0.7934 XGB=0.7939 Train=0.8373 Gap=0.0438 ✓✓
+  2021: LGB=0.8014 XGB=0.8023 Train=0.8528 Gap=0.0514 ✓✗
+  2022: LGB=0.8055 XGB=0.8070 Train=0.8351 Gap=0.0295 ✓✓
+  2023: LGB=0.8046 XGB=0.8056 Train=0.8440 Gap=0.0394 ✓✓
+  2024: LGB=0.8100 XGB=0.8114 Train=0.8377 Gap=0.0277 ✓✓
+  2025: LGB=0.8084 XGB=0.8086 Train=0.8348 Gap=0.0264 ✓✓
+  --- Mean LGB AUC: 0.8039 ---
+
+--- Individual feature contribution ---
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[296]	valid_0's auc: 0.793433
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[499]	valid_0's auc: 0.801432
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[368]	valid_0's auc: 0.805542
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[510]	valid_0's auc: 0.804649
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[464]	valid_0's auc: 0.810012
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[367]	valid_0's auc: 0.807288
+  prev_review_score                  : AUC 0.8037 (+0.00016)
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[296]	valid_0's auc: 0.793433
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[432]	valid_0's auc: 0.800415
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[363]	valid_0's auc: 0.806087
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[347]	valid_0's auc: 0.803797
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.810322
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.807741
+  shinba_eval_score                  : AUC 0.8036 (+0.00007)
+
+  Top 25 features by importance:
+   1. prev_prize                              101851.2
+   2. training_time_filled                     91151.6
+   3. prev_finish                              68777.1
+   4. avg_finish_3r                            60460.5
+   5. training_per_dist                        51257.9
+   6. best_finish_3r                           38550.6
+   7. jockey_wr_calc                           35338.4
+   8. horse_surface_top3r                      26635.7
+   9. jockey_course_wr_calc                    23835.9
+  10. jockey_surface_wr                        22230.3
+  11. num_horses_val                           20878.1
+  12. trainer_top3_calc                        20360.0
+  13. prev_pass4                               16812.7
+  14. surface_dist_enc                         16088.3
+  15. age_season                               13429.1
+  16. horse_career_top3r                       13179.2
+  17. horse_career_wr                          12615.1
+  18. carry_diff                               11805.1
+  19. course_enc                               11733.9
+  20. sire_surface_wr                          11552.3
+  21. horse_career_races                       10442.3
+  22. surface_enc                              10235.6
+  23. distance                                  8742.0
+  24. prev_last3f                               8667.2
+  25. age_sex                                   7771.3
+
+============================================================
+  SUMMARY
+============================================================
+  V12 Baseline AUC: 0.8036 (74 features)
+  V12.1 AUC:        0.8039 (76 features)
+  Improvement:      +0.00034
+
+  All years > 0.78: ✓
+  No overfitting:   ✗
+  AUC > 0.8037:     ✓
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.810322
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.807741
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[464]	valid_0's auc: 0.810012
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[367]	valid_0's auc: 0.807288
+
+  VERDICT: ✗ NOT ADOPTED
+
+  Results saved: C:\Users\sato\keiba-ai\data\v121_training_results.json
+
+  Elapsed: 59.4 min

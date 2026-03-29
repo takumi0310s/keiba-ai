@@ -23,9 +23,17 @@ import xgboost as xgb
 from datetime import datetime
 from sklearn.metrics import roc_auc_score
 
-# Fix cp932 encoding on Windows
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+# Fix encoding on Windows - use unbuffered file output
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+_LOG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          'data', 'v121_training_log.txt')
+_log_fh = open(_LOG_FILE, 'w', encoding='utf-8', buffering=1)
+
+_orig_print = print
+def print(*args, **kwargs):
+    kwargs.setdefault('flush', True)
+    _orig_print(*args, **kwargs)
+    _orig_print(*args, file=_log_fh, flush=True)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'train'))
