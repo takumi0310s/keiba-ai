@@ -4795,13 +4795,7 @@ if st.button("🔍 予想する") and url_input:
 
     # Discord通知（リッチ版 - 全情報統一フォーマット）
     try:
-        from tools.notify import send_discord, build_rich_bet_message
-        _cond_key, _cond_prof = classify_race_condition(race_info, len(df), is_nar=is_nar_pred)
-        _bets = generate_trio_bets(df) if _cond_prof['bet_type'] != 'umaren' else generate_umaren_bets(df)
-        _title, _msg, _color = build_rich_bet_message(
-            df, race_name, race_info, _cond_key, _cond_prof,
-            _bets, odds_dict=realtime_odds, horses=horses)
-        send_discord(_title, _msg, color=_color, channel="bets")
+        pass  # Discord通知はrace_auto_notify.pyに一本化（重複防止）
     except Exception:
         pass
 

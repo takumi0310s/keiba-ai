@@ -260,15 +260,7 @@ def run_daily_predict(date_str):
             else:
                 print(f"  {bet_label} {len(bets)}点: {bets_str}")
 
-            # Per-race Discord通知
-            try:
-                from notify import send_discord, build_rich_bet_message
-                _title, _msg, _color = build_rich_bet_message(
-                    sorted_df, race_name, race_info, cond_key, cond_profile,
-                    bets, odds_dict=odds_dict, horses=horses, date_str=date_str)
-                send_discord(_title, _msg, color=_color, channel="bets")
-            except Exception:
-                pass
+            # Discord通知はrace_auto_notify.pyに一本化（重複防止）
 
         except Exception as e:
             print(f"  [ERROR] 予測失敗: {e}")
