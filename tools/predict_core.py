@@ -1554,3 +1554,130 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
     df['AI順位'] = df['スコア'].rank(ascending=False).astype(int)
     df = df.sort_values('AI順位')
     return df
+
+
+def calc_horse_ev(df_sorted, odds_dict=None):
+    """各馬のEV（期待値）を計算。EV = 複勝圏確率 × 想定三連複配当倍率。
+    odds_dict: {馬番: 単勝オッズ} (任意)
+    Returns: {馬番: ev_value}
+    """
+    ev_map = {}
+    if len(df_sorted) < 3:
+        return ev_map
+    scores = df_sorted['スコア'].values
+    score_sum = scores.sum()
+    if score_sum <= 0:
+        return ev_map
+    # 各馬の複勝圏確率をスコア比率から推定（×3で3着以内確率、上限0.85）
+    probs = scores / score_sum
+    top3_probs = np.clip(probs * 3.0, 0.0, 0.85)
+
+    for idx, (_, row) in enumerate(df_sorted.iterrows()):
+        umaban = int(row['馬番'])
+        p = top3_probs[idx]
+        odds = row.get('単勝オッズ', 0)
+        if odds_dict:
+            odds = odds_dict.get(umaban, odds)
+        if odds <= 0:
+            odds = 10.0  # デフォルト
+        # 三連複の想定配当倍率 ≈ 単勝オッズの2〜3倍（経験則）
+        # EV = 複勝圏確率 × (単勝オッズ × 2.5) / 投資倍率
+        # 簡易EV: 確率が高く、オッズも高い馬が高EV
+        trio_multiplier = odds * 2.0  # 三連複は単勝の約2倍のリターン
+        ev = p * trio_multiplier
+        ev_map[umaban] = round(ev, 2)
+    return ev_map
+
+
+def calc_race_confidence(df_sorted, feat_summary=None, cond_profile=None):
+    """レースの信頼度スコアを0-100で算出。
+    - TOP3スコア差（大きいほど信頼度高い）
+    - 特徴量取得率
+    - 条件ROI実績
+    Returns: (confidence_score, reasons_list)
+    """
+    reasons = []
+    score = 50  # ベース
+
+    if len(df_sorted) < 3:
+        return 20, ['出走頭数不足']
+
+    scores = df_sorted['スコア'].values
+    top1, top2, top3 = scores[0], scores[1], scores[2]
+
+    # 1. TOP1-TOP2のスコア差（0〜+25点）
+    gap_12 = top1 - top2
+    gap_bonus = min(gap_12 / 0.05 * 25, 25)  # 0.05差で+25点
+    score += gap_bonus
+    if gap_12 >= 0.03:
+        reasons.append(f'軸馬明確 (差{gap_12:.3f})')
+    elif gap_12 < 0.01:
+        reasons.append(f'混戦 (差{gap_12:.3f})')
+        score -= 10
+
+    # 2. TOP1-TOP3のスコア差（0〜+15点）
+    gap_13 = top1 - top3
+    if gap_13 >= 0.05:
+        score += 15
+        reasons.append('上位3頭に明確差')
+    elif gap_13 < 0.02:
+        score -= 5
+
+    # 3. 特徴量取得率（0〜+15点）
+    if feat_summary:
+        total = feat_summary.get('total', 1)
+        acquired = feat_summary.get('acquired', 0)
+        feat_rate = acquired / max(total, 1)
+        feat_bonus = feat_rate * 15
+        score += feat_bonus
+        if feat_rate < 0.7:
+            reasons.append(f'特徴量不足 ({acquired}/{total})')
+            score -= 10
+        elif feat_rate >= 0.9:
+            reasons.append(f'特徴量充実 ({acquired}/{total})')
+
+    # 4. 条件ROI実績（0〜+15点）
+    if cond_profile:
+        roi = cond_profile.get('roi', 100)
+        if roi >= 200:
+            score += 15
+            reasons.append(f'高ROI条件 ({roi:.0f}%)')
+        elif roi >= 150:
+            score += 10
+        elif roi >= 100:
+            score += 5
+        else:
+            score -= 5
+            reasons.append(f'低ROI条件 ({roi:.0f}%)')
+
+        if not cond_profile.get('recommended', True):
+            score -= 20
+            reasons.append('購入非推奨条件')
+
+    return max(0, min(100, int(score))), reasons
+
+
+def calc_variable_investment(confidence, cond_key, base_investment=700):
+    """信頼度ベースで投資額を可変にする。
+    - 信頼度高い → 最大1,000円
+    - 信頼度低い → 最小400円
+    - 条件D/Eは控えめに
+    Returns: investment_amount (int, 100円単位)
+    """
+    if confidence >= 80:
+        amount = 1000
+    elif confidence >= 65:
+        amount = 800
+    elif confidence >= 50:
+        amount = 700
+    elif confidence >= 35:
+        amount = 500
+    else:
+        amount = 400
+
+    # 条件D/Eは保守的ROIが100%以下なので控えめ
+    if cond_key in ('D', 'E'):
+        amount = min(amount, 700)
+
+    # 100円単位に丸め
+    return int(round(amount / 100) * 100)

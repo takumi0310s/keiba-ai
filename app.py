@@ -28,6 +28,9 @@ from tools.predict_core import (
     get_horse_stats as _core_get_horse_stats,
     parse_shutuba as _core_parse_shutuba,
     load_feature_lookups as _core_load_feature_lookups,
+    calc_horse_ev as _core_calc_horse_ev,
+    calc_race_confidence as _core_calc_race_confidence,
+    calc_variable_investment as _core_calc_variable_investment,
 )
 
 st.set_page_config(page_title="KEIBA AI - 中央競馬専用", page_icon="🏇", layout="wide")
@@ -3665,6 +3668,16 @@ def render_horse_card(rank, h, max_score, rank_map):
     if odds > 0:
         odds_color = '#E5534B' if odds <= 3.0 else ('#6C9BD2' if odds <= 10.0 else ('#8B949E' if odds <= 30.0 else '#7D8590'))
         html += f'<div class="sitem"><div class="slbl">単勝</div><div class="sval" style="color:{odds_color} !important">{odds:.1f}</div></div>'
+    # EV（期待値）バッジ
+    horse_ev = h.get('EV', 0)
+    if horse_ev > 0:
+        if horse_ev >= 1.5:
+            ev_color, ev_icon = '#E5534B', '🔥'
+        elif horse_ev >= 1.0:
+            ev_color, ev_icon = '#14B8A6', '★'
+        else:
+            ev_color, ev_icon = '#7D8590', ''
+        html += f'<div class="sitem"><div class="slbl">EV</div><div class="sval" style="color:{ev_color} !important;font-weight:{"bold" if horse_ev >= 1.0 else "normal"}">{ev_icon}{horse_ev:.2f}</div></div>'
     html += '</div>'
     # 調教評価
     train_label = h.get('調教ラベル', '')
@@ -4279,9 +4292,10 @@ def render_track_record_race_list(races):
             elif hit == 0:
                 st.error(f"不的中（投資: ¥{INVESTMENT_PER_RACE}）")
 
-def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None, pair_odds=None):
+def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None, pair_odds=None, variable_investment=None):
     """条件別バックテスト結果に基づき、最適な1種類の買い目のみ表示。
     pair_odds: {(n1,n2): odds} ワイドまたは馬連のペアオッズ
+    variable_investment: 信頼度ベース投資額（None時はデフォルト700円）
     """
     if cond_profile is None:
         is_nar = False
@@ -4336,7 +4350,14 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
         for b in bets:
             html += f'<span style="font-family:Oswald;font-size:0.85em;padding:3px 8px;background:rgba(255,255,255,0.06);border-radius:4px;color:#8B949E !important;">{b[0]}-{b[1]}-{b[2]}</span>'
         html += '</div>'
-        html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#7D8590 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
+        _inv = variable_investment or 700
+        _per_bet = int(_inv / max(len(bets), 1) / 100) * 100
+        _per_bet = max(_per_bet, 100)
+        _total_inv = _per_bet * len(bets)
+        if _inv != 700:
+            html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#7D8590 !important;">{len(bets)}点 &times; {_per_bet}円 = <span style="color:#14B8A6 !important;font-weight:bold;">{_total_inv:,}円</span> (信頼度調整)</div>'
+        else:
+            html += f'<div style="padding:4px 12px 12px;font-family:Oswald;font-size:0.85em;color:#7D8590 !important;">{len(bets)}点 &times; 100円 = 700円</div>'
 
     elif bet_type in ('wide', 'umaren'):
         if bet_type == 'wide':
@@ -4346,11 +4367,13 @@ def render_buy_section(df, race_info, rank_map, cond_key=None, cond_profile=None
             bets = generate_umaren_bets(sorted_df)
             type_label = '馬連 1軸2流し'
 
-        # 予測順位連動投資額振り分け: TOP2に400円、TOP3に300円
+        # 予測順位連動投資額振り分け: TOP2に多め、TOP3に少なめ
+        _inv_uma = variable_investment or 700
         n1 = int(t1['馬番']); n2 = int(t2['馬番']); n3 = int(t3['馬番'])
         key1 = tuple(sorted([n1, n2]))
         key2 = tuple(sorted([n1, n3]))
-        amt1, amt2 = 400, 300  # TOP2=400円, TOP3=300円（上位予測の相手ほど高額）
+        amt1 = int(_inv_uma * 4 / 7 / 100) * 100  # 約57%
+        amt2 = _inv_uma - amt1  # 残り
         odds1 = (pair_odds or {}).get(key1, 0)
         odds2 = (pair_odds or {}).get(key2, 0)
 
@@ -4772,6 +4795,20 @@ if st.button("🔍 予想する") and url_input:
                 f'💧 {original_condition}',
                 f'💧 {live_condition} ⚠️馬場変化'
             )
+    # EV計算（各馬）
+    ev_map = _core_calc_horse_ev(df)
+    for idx in df.index:
+        umaban = int(df.loc[idx, '馬番'])
+        df.loc[idx, 'EV'] = ev_map.get(umaban, 0)
+
+    # 信頼度スコア計算
+    _cond_key_tmp, _cond_prof_tmp = classify_race_condition(race_info, len(df), is_nar=is_nar)
+    confidence, confidence_reasons = _core_calc_race_confidence(df, _feat_summary, _cond_prof_tmp)
+    variable_investment = _core_calc_variable_investment(confidence, _cond_key_tmp)
+    st.session_state['pred_confidence'] = confidence
+    st.session_state['pred_confidence_reasons'] = confidence_reasons
+    st.session_state['pred_variable_investment'] = variable_investment
+
     # Save prediction to SQLite
     save_prediction(race_id, race_name, race_info, df, is_nar=is_nar)
     # 予測結果をsession_stateに保存
@@ -4948,6 +4985,30 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         if class_badge:
             st.markdown(class_badge, unsafe_allow_html=True)
 
+    # 信頼度スコア・投資額可変パネル
+    confidence = st.session_state.get('pred_confidence', 50)
+    confidence_reasons = st.session_state.get('pred_confidence_reasons', [])
+    variable_investment = st.session_state.get('pred_variable_investment', 700)
+    if confidence >= 70:
+        conf_color, conf_border, conf_label = '#14B8A6', '#0D9488', '高信頼'
+    elif confidence >= 45:
+        conf_color, conf_border, conf_label = '#6C9BD2', '#4A7AB5', '標準'
+    else:
+        conf_color, conf_border, conf_label = '#E5534B', '#C94040', '低信頼'
+    conf_reasons_html = ' / '.join(confidence_reasons[:3]) if confidence_reasons else ''
+    _conf_html = f'<div style="margin:8px 0;padding:10px 14px;background:linear-gradient(90deg,#121E1A,#0E1117);border:1px solid {conf_border};border-radius:10px;">'
+    _conf_html += f'<div style="display:flex;align-items:center;gap:12px;">'
+    _conf_html += f'<span style="font-family:Oswald;font-size:1.3em;color:{conf_color} !important;font-weight:bold;">{confidence}</span>'
+    _conf_html += f'<span style="font-size:0.85em;color:{conf_color} !important;">{conf_label}</span>'
+    _conf_html += f'<span style="font-size:0.78em;color:#7D8590 !important;margin-left:auto;">投資額: <span style="font-family:Oswald;color:{conf_color} !important;font-weight:bold;">&yen;{variable_investment:,}</span></span>'
+    _conf_html += '</div>'
+    if conf_reasons_html:
+        _conf_html += f'<div style="font-size:0.75em;color:#7D8590 !important;margin-top:4px;">{conf_reasons_html}</div>'
+    _conf_html += '</div>'
+    st.markdown(_conf_html, unsafe_allow_html=True)
+    if confidence < 40:
+        st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E5534B;border-radius:8px;text-align:center;color:#E5534B !important;font-weight:bold;">⚠️ 見送り推奨 — 信頼度{confidence}（混戦/データ不足）</div>', unsafe_allow_html=True)
+
     # ワイド/馬連オッズ取得（オッズ連動投資額振り分け用）
     pair_odds = {}
     bet_type = cond_profile['bet_type']
@@ -4956,7 +5017,7 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
 
     if is_recommended:
         st.markdown('<div class="sec-title">🎯 AI推奨 買い目<span class="sec-line"></span></div>', unsafe_allow_html=True)
-        buy_html = render_buy_section(df, race_info, rank_map, cond_key=cond_key, cond_profile=cond_profile, pair_odds=pair_odds)
+        buy_html = render_buy_section(df, race_info, rank_map, cond_key=cond_key, cond_profile=cond_profile, pair_odds=pair_odds, variable_investment=variable_investment)
         if buy_html:
             st.markdown(buy_html, unsafe_allow_html=True)
     else:
