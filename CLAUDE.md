@@ -120,6 +120,9 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 9. bet_type記録バグ修正（条件別正確な記録）
 10. モデルロード絶対パス修正（Streamlit Cloud対応）
 11. 条件D 1000m以下を購入非推奨に変更（ROI 85%, N=534）
+12. predict_core.py: speed index premium cacheフォールバック追加（3特徴量が全滅していた）
+13. predict_core.py: 距離カテゴリbin不一致修正（学習5bin vs 予測4bin→5binに統一）
+14. Discord重複通知修正（3重→race_auto_notify.pyのみに統合）
 
 ### インフラ整備
 1. Streamlit Cloud デプロイ
@@ -266,12 +269,13 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 | 73 | sire_shinba_top3r | 種牡馬新馬戦複勝率(expanding, alpha=20) |
 | 74 | pci | ペースチェンジ指数(後半3F/前半3F) |
 
-#### V12で不採用とした特徴量
+#### V12/V12.1で不採用とした特徴量
 | 特徴量 | 理由 |
 |--------|------|
 | dam_top3r | 母産駒複勝率。初回テスト+0.023はデータリーク（全年データで計算）。expanding window修正後は-0.0006で除外 |
-| stable_comment_score | 厩舎コメントスコア。WFカバレッジ30%で不十分 |
-| prev_review_score | 前走不利スコア。2024-2025のみでWF不可 |
+| stable_comment_score | 厩舎コメントスコア。WFカバレッジ30%で不十分（追加取得中） |
+| prev_review_score | 前走不利スコア。v12.1テスト: +0.00016(微プラス)。2021年gap=0.0514>0.05で過学習判定により不採用 |
+| shinba_eval_score | 新馬評価スコア。v12.1テスト: +0.00007(ほぼゼロ)。2024-2025のみで汎化困難 |
 
 ### Pattern Bの追加8特徴量
 | 特徴量 | ソース | 説明 |
@@ -619,6 +623,7 @@ keiba-ai/
 │   ├── train_v92_central.py        # V9.2基盤関数群（全特徴量エンジニアリング）
 │   ├── train_v92_leakfree.py       # FEATURES_PATTERN_A, LEAK_FEATURES_A定義
 │   ├── train_v12_comprehensive.py   # **V12学習+WFバックテスト（現行）**
+│   ├── train_v121_comprehensive.py  # V12.1テスト（不採用: prev_review+shinba_eval）
 │   ├── train_v93_leakfree.py       # Pattern A学習（V9.3、旧版）
 │   ├── train_v93_pattern_b.py      # Pattern B学習（V9.3、旧版）
 │   ├── train_v10_ensemble.py       # LGB+XGB+MLP (参考、不採用)
@@ -648,6 +653,7 @@ keiba-ai/
 │   ├── scrape_race_review.py                  # レース短評(備考)スクレイパー
 │   ├── sire_shinba_stats.py                   # 種牡馬新馬成績計算
 │   ├── compute_sibling_stats.py               # 母産駒成績計算
+│   ├── bulk_scrape_comments.py                # 厩舎コメント一括取得
 │   └── predict_core.py                        # 共通予測ロジック
 │
 ├── tests/                          # === テスト ===
@@ -663,7 +669,7 @@ keiba-ai/
 │   ├── netkeiba_speed_index.csv    # タイム指数(249,971行, 2020-2025)
 │   ├── netkeiba_training_times.csv # 調教タイム(233,871行, 2020-2025)
 │   ├── netkeiba_stable_comments.csv# 厩舎コメント(81,599行, 2020-2025)
-│   ├── netkeiba_race_review.csv    # レース短評/備考(89,831行, 2024-2025)
+│   ├── netkeiba_race_review.csv    # レース短評/備考(264,973行, 2020-2025)
 │   ├── netkeiba_shinba_eval.csv    # 新馬評価(7,998行, 2024-2025)
 │   ├── sire_shinba_stats.csv       # 種牡馬新馬成績(449種牡馬)
 │   ├── netkeiba_siblings.csv       # 母産駒成績(17,441母馬)
@@ -890,7 +896,8 @@ Cookie設定: `.env` の `NETKEIBA_COOKIE` に保存。
 |--------|---------|------|------|
 | タイム指数 | `data/netkeiba_speed_index.csv` | ~92K | 2023-2025（部分） |
 | 調教タイム | `data/netkeiba_training_times.csv` | ~2.5K | 2025（部分） |
-| 厩舎コメント | `data/netkeiba_stable_comments.csv` | ~856 | 2025（部分） |
+| 厩舎コメント | `data/netkeiba_stable_comments.csv` | ~99K | 2020-2025（33-40%、追加取得中） |
+| レース短評 | `data/netkeiba_race_review.csv` | ~265K | 2020-2025（全年カバー） |
 
 ---
 
@@ -945,13 +952,43 @@ v12総合再学習で10特徴量を同時投入テスト。7個採用、3個不�
 | `stable_comment_score` | comment.html 厩舎スコア | N/A | ✗ WFカバレッジ30%不足 |
 | `prev_review_score` | db.netkeiba 備考 | N/A | ✗ 2024-2025のみでWF不可 |
 
+### v12.1再学習テスト（2026-03-29、不採用）
+
+race_review 2020-2025全年データ取得完了後(264,973行)、2特徴量を追加テスト。
+
+| 特徴量 | 個別寄与 | v12.1(両方) | 判定 |
+|--------|---------|------------|------|
+| `prev_review_score` | +0.00016 | — | 微プラスだが採用基準未達 |
+| `shinba_eval_score` | +0.00007 | — | ほぼゼロ |
+| 両方合算 | — | AUC 0.8039 (+0.00034) | **不採用: 2021年gap=0.0514>0.05** |
+
+年別結果:
+| 年 | v12 | v12.1 | gap |
+|----|-----|-------|-----|
+| 2020 | 0.7934 | 0.7934 | 0.0438 |
+| 2021 | 0.8004 | 0.8014 | **0.0514** ✗ |
+| 2022 | 0.8061 | 0.8055 | 0.0295 |
+| 2023 | 0.8038 | 0.8046 | 0.0394 |
+| 2024 | 0.8103 | 0.8100 | 0.0277 |
+| 2025 | 0.8073 | 0.8084 | 0.0264 |
+
+不採用理由: AUC改善は微小(+0.00034)、2021年で過学習閾値超過。v12(74特徴量)を維持。
+
+### predict_core.pyバグ修正（2026-03-29）
+
+| バグ | 詳細 | 修正 |
+|------|------|------|
+| Speed index全滅 | build_features()がCSVのみ参照、premium cacheの実データ未使用 | premium cache JSONフォールバック追加 |
+| 距離bin不一致 | 学習: pd.cut 5bin(0-4), 予測: 4bin(0-3) | 5binに統一 |
+
 ### 今後の追加データ候補（v13用）
 | データ | ファイル | 行数 | 用途 |
 |--------|---------|------|------|
-| レース短評(備考) | netkeiba_race_review.csv | 89,831 | 前走不利→巻き返し検出。蓄積が2024-2025のみ |
+| レース短評(備考) | netkeiba_race_review.csv | 264,973 | 前走不利→巻き返し検出。v12.1で不採用(gap超過) |
 | 新馬評価 | netkeiba_shinba_eval.csv | 7,998 | 新馬戦の厩舎評価・調教ランク。表示用 |
 | 種牡馬新馬成績(静的) | sire_shinba_stats.csv | 449 | 新馬戦UIバッジ表示用(モデルはexpanding版使用) |
 | 母産駒成績(静的) | netkeiba_siblings.csv | 17,441 | 新馬戦UIバッジ表示用(モデル組込はリーク注意) |
+| 厩舎コメント | netkeiba_stable_comments.csv | ~98K(取得中→目標60%+) | カバレッジ不足で不採用。追加取得中 |
 
 ---
 
