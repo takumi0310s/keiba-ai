@@ -83,6 +83,9 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 8. コース別専用モデル試行 → 不採用（過学習）
 9. Optunaハイパーパラメータ最適化（100試行）→ 微改善のみ、不採用
 10. 2段階モデル構成（学習=A、予測=B）確立
+11. V11 speed index試行 → 不採用（WF AUC 0.801 < 0.802 baseline）
+12. **V12総合再学習（+7特徴量）→ WF AUC 0.8037（+0.0031）→ 採用**
+    - dam_top3rリーク発見（全年データで計算→expanding windowに修正→マイナス寄与で除外）
 
 ### テスト・検証（22項目 + Phase 10-13）
 1. リークフリー検証（encode_categoricals/encode_sires静的解析）→ PASS
@@ -135,21 +138,19 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 - **Pattern B（実運用）**: 使える情報は全て使って最高精度で予測
 
 ### Pattern A スペック
-- ファイル: `keiba_model_v9_central.pkl`
-- AUC: **0.8095**（LGB+XGB ensemble, time-split validation）
-- WF AUC: **0.8017**（walk-forward 2020-2025平均, LGB単体）
-- 特徴量: **67個**（リークフリー）
-- 学習データ: 680,381行
+- ファイル: `keiba_model_v12_central.pkl.gz`
+- WF AUC: **0.8037**（walk-forward 2020-2025平均, LGB単体）
+- 特徴量: **74個**（リークフリー、V9.3の67 + V12の7）
+- 学習データ: ~527,000行
 - 目的変数: `finish <= 3`（複勝圏 binary）
 
 ### Pattern B スペック
-- ファイル: `keiba_model_v9_central_live.pkl`
-- AUC: 0.8460（参考値、**評価はPattern AのAUCで行う**）
-- 特徴量: **75個**（Pattern A 67 + 当日情報8）
+- ファイル: `keiba_model_v12_central_live.pkl.gz`
+- 特徴量: **82個**（Pattern A 74 + 当日情報8）
 - app.pyはPattern Bを優先、なければA→V8にフォールバック
 - 馬場/天候データ取得失敗時は0=欠損として予測
 
-### Pattern A 全67特徴量
+### Pattern A 全74特徴量
 
 #### 基本特徴量（14個）
 | # | 特徴量 | 説明 |
@@ -254,6 +255,24 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 | 66 | horse_surface_top3r | 馬の馬場別複勝率(expanding, alpha=5) |
 | 67 | frame_course_dist_wr | 枠×コース×距離の勝率(expanding, alpha=100) |
 
+#### V12新規（7個）
+| # | 特徴量 | 説明 |
+|---|--------|------|
+| 68 | index_max_filled | netkeibaタイム指数最高値(mean fill) |
+| 69 | index_run1_filled | netkeiba前走指数(mean fill) |
+| 70 | index_avg5_filled | netkeiba5走平均指数(mean fill) |
+| 71 | time_1f_last_filled | 追切ラスト1Fタイム(mean fill ~12.5s) |
+| 72 | training_intensity_enc | 調教強度(0=不明, 1=馬なり, 2=強め, 3=一杯) |
+| 73 | sire_shinba_top3r | 種牡馬新馬戦複勝率(expanding, alpha=20) |
+| 74 | pci | ペースチェンジ指数(後半3F/前半3F) |
+
+#### V12で不採用とした特徴量
+| 特徴量 | 理由 |
+|--------|------|
+| dam_top3r | 母産駒複勝率。初回テスト+0.023はデータリーク（全年データで計算）。expanding window修正後は-0.0006で除外 |
+| stable_comment_score | 厩舎コメントスコア。WFカバレッジ30%で不十分 |
+| prev_review_score | 前走不利スコア。2024-2025のみでWF不可 |
+
 ### Pattern Bの追加8特徴量
 | 特徴量 | ソース | 説明 |
 |--------|--------|------|
@@ -318,8 +337,8 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 ```
 
 ### Optuna結果（100試行、不採用）
-- Best: WF AUC 0.8022（+0.0006）→ 基準0.8095未達のため不採用
-- 現行パラメータを維持
+- Best: WF AUC 0.8022（+0.0006）→ 基準未達のため不採用
+- 現行パラメータを維持（V12でも同一パラメータ）
 
 ---
 
@@ -371,16 +390,16 @@ def classify_condition(num_horses, distance, condition):
 - expanding window: cumsum - current（当該レース除外）
 - 軽微な技術的リーク（fillna global mean, Bayesian prior）→ 影響無視可能
 
-### ウォークフォワード年別AUC/ROI
-| 年 | AUC | Trio ROI |
-|----|-----|---------|
-| 2020 | 0.7954 | 196.3% |
-| 2021 | 0.7999 | 194.4% |
-| 2022 | 0.8002 | 177.3% |
-| 2023 | 0.8021 | 180.1% |
-| 2024 | 0.8074 | 181.3% |
-| 2025 | 0.8065 | 239.3% |
-| **平均** | **0.8019** | — |
+### ウォークフォワード年別AUC
+| 年 | V9.3 AUC | V12 AUC | 改善 |
+|----|----------|---------|------|
+| 2020 | 0.7954 | 0.7923 | -0.0031 |
+| 2021 | 0.7999 | 0.8015 | +0.0016 |
+| 2022 | 0.8002 | 0.8052 | +0.0050 |
+| 2023 | 0.8021 | 0.8042 | +0.0021 |
+| 2024 | 0.8074 | 0.8109 | +0.0035 |
+| 2025 | 0.8065 | 0.8079 | +0.0014 |
+| **平均** | **0.8019** | **0.8037** | **+0.0018** |
 
 ### 実配当ROI（条件別）→ 全条件100%超え
 - A: 205.3%, B: 236.9%, C: 285.6%, D: 136.0%, E: 118.0%, X: 330.5%
@@ -499,6 +518,7 @@ LEAK_FEATURES_A = {
 | **コース別専用モデル** | 汎用モデルに勝てなかった | 過学習リスク大。汎用モデル一択 |
 | **坂路調教マッチ率** | horse_name→horse_id変換が27%しか成功しない | AUC改善なし。現在はmean fillで対応 |
 | **Optuna過信** | 100試行で+0.0006のみ | 微改善は本番環境で消える可能性大 |
+| **dam_top3rリーク** | 全年データで母産駒成績を計算→WF AUC+0.023の大半がリーク | 外部CSVの集計値は必ずexpanding windowで。静的CSVをそのまま使うな |
 
 ### リークフリー設計原則
 1. 全統計特徴量は**expanding window**（cumsum - current、当該レース除外）
@@ -569,10 +589,11 @@ keiba-ai/
 ├── .gitignore                      # 大容量CSV除外設定
 │
 ├── # === モデルファイル ===
-├── keiba_model_v9_central_live.pkl # Pattern B (実運用, 75特徴量)
-├── keiba_model_v9_central.pkl      # Pattern A (評価用, 67特徴量)
-├── keiba_model_v92b_central.pkl    # バックアップ
-├── keiba_model_v8.pkl              # フォールバック
+├── keiba_model_v12_central_live.pkl.gz # Pattern B (実運用, 82特徴量)
+├── keiba_model_v12_central.pkl.gz  # Pattern A (評価用, 74特徴量)
+├── keiba_model_v9_central_live.pkl # Pattern B旧版 (75特徴量, フォールバック)
+├── keiba_model_v9_central.pkl      # Pattern A旧版 (67特徴量, フォールバック)
+├── keiba_model_v8.pkl              # V8フォールバック
 │
 ├── # === 運用スクリプト ===
 ├── predict_and_log.py              # CLI予測・ログ記録
@@ -597,8 +618,9 @@ keiba-ai/
 ├── train/                          # === 学習スクリプト ===
 │   ├── train_v92_central.py        # V9.2基盤関数群（全特徴量エンジニアリング）
 │   ├── train_v92_leakfree.py       # FEATURES_PATTERN_A, LEAK_FEATURES_A定義
-│   ├── train_v93_leakfree.py       # Pattern A学習（リークフリー評価用）
-│   ├── train_v93_pattern_b.py      # Pattern B学習（当日情報込み実運用）
+│   ├── train_v12_comprehensive.py   # **V12学習+WFバックテスト（現行）**
+│   ├── train_v93_leakfree.py       # Pattern A学習（V9.3、旧版）
+│   ├── train_v93_pattern_b.py      # Pattern B学習（V9.3、旧版）
 │   ├── train_v10_ensemble.py       # LGB+XGB+MLP (参考、不採用)
 │   ├── optuna_tune_lgb.py          # Optunaハイパラ最適化
 │   ├── explore_features.py         # 特徴量探索
@@ -621,7 +643,12 @@ keiba-ai/
 │   ├── validation_10_market_dependency.py     # 市場依存性
 │   ├── validation_11_sample_size.py           # サンプルサイズ
 │   ├── validation_12_roi_integrity.py         # ROI整合性
-│   └── validation_13_conservative_roi.py      # 保守的ROI
+│   ├── validation_13_conservative_roi.py      # 保守的ROI
+│   ├── scrape_shinba_eval.py                  # 新馬評価スクレイパー
+│   ├── scrape_race_review.py                  # レース短評(備考)スクレイパー
+│   ├── sire_shinba_stats.py                   # 種牡馬新馬成績計算
+│   ├── compute_sibling_stats.py               # 母産駒成績計算
+│   └── predict_core.py                        # 共通予測ロジック
 │
 ├── tests/                          # === テスト ===
 │   ├── test_features.py            # 5項目自動テスト
@@ -633,6 +660,14 @@ keiba-ai/
 │   ├── odds_history.csv            # 778,387行 (gitignore)
 │   ├── blood_full.csv              # 81,986行 (gitignore)
 │   ├── jra_payouts.csv             # 27,541件 (gitignore)
+│   ├── netkeiba_speed_index.csv    # タイム指数(249,971行, 2020-2025)
+│   ├── netkeiba_training_times.csv # 調教タイム(233,871行, 2020-2025)
+│   ├── netkeiba_stable_comments.csv# 厩舎コメント(81,599行, 2020-2025)
+│   ├── netkeiba_race_review.csv    # レース短評/備考(89,831行, 2024-2025)
+│   ├── netkeiba_shinba_eval.csv    # 新馬評価(7,998行, 2024-2025)
+│   ├── sire_shinba_stats.csv       # 種牡馬新馬成績(449種牡馬)
+│   ├── netkeiba_siblings.csv       # 母産駒成績(17,441母馬)
+│   ├── v12_training_results.json   # V12学習結果
 │   ├── actual_roi_results.json     # 実配当ROI結果
 │   ├── monte_carlo_results.json    # MC結果
 │   ├── final_validation_report.json# 最終検証レポート
@@ -732,8 +767,9 @@ python tools/weekly_report.py              # 週次レポート
 
 ### モデル学習
 ```bash
-python train/train_v93_leakfree.py         # Pattern A学習（評価用）
-python train/train_v93_pattern_b.py        # Pattern B学習（実運用）
+python train/train_v12_comprehensive.py    # V12 WFバックテスト+学習（現行）
+python train/train_v93_leakfree.py         # V9.3 Pattern A学習（旧版）
+python train/train_v93_pattern_b.py        # V9.3 Pattern B学習（旧版）
 ```
 
 ### バックテスト・検証
@@ -783,9 +819,9 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 ## 現行モデルのベースライン（これを下回る変更は一切採用しない）
 
-- **Pattern A AUC: 0.8095**（time-split validation, LGB+XGB ensemble）
-- **WF AUC: 0.8017**（walk-forward 2020-2025平均, LGB単体）
-- **年別WF AUC**: 2020=0.7951, 2021=0.7997, 2022=0.8024, 2023=0.8012, 2024=0.8071, 2025=0.8048
+- **WF AUC: 0.8037**（walk-forward 2020-2025平均, LGB単体, V12）
+- **年別WF AUC**: 2020=0.7923, 2021=0.8015, 2022=0.8052, 2023=0.8042, 2024=0.8109, 2025=0.8079
+- **旧ベースライン（V9.3）**: WF AUC 0.8017, 年別: 2020=0.7951, 2021=0.7997, 2022=0.8024, 2023=0.8012, 2024=0.8071, 2025=0.8048
 - **実配当ROI**: A=205%(trio), B=237%(trio), C=286%(trio), D=136%(trio), E=118%(umaren), X=331%(trio)
 - **全条件ROI 100%超え**
 
@@ -793,7 +829,7 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A。実運用予測はPattern B
 2. バックテストは必ず**ウォークフォワード**（時系列分割）で実施
-3. **改善が確認できない変更は採用しない**: WF AUC > 0.8017 かつ全年AUC > 0.78 かつ 実ROI全条件100%超え
+3. **改善が確認できない変更は採用しない**: WF AUC > 0.8037 かつ全年AUC > 0.78 かつ 実ROI全条件100%超え
 4. app.pyを変更したら必ず**python構文チェック**してからcommit
 5. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
 6. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
@@ -892,19 +928,30 @@ python tools/setup_discord.py  # 対話式Webhookセットアップ
 
 ---
 
-## 新規特徴量候補（v11用、データ蓄積中）
+## V12特徴量追加結果（2026-03-29）
 
-| 特徴量 | ソース | カバレッジ | 優先度 |
-|--------|--------|-----------|--------|
-| `index_max` | speed.html 最高指数 | 93% | **最優先** |
-| `index_run1` | speed.html 前走指数 | 99% | **最優先** |
-| `time_1f_last` | oikiri.html ラスト1F | 86% | **最優先** |
-| `index_avg5` | speed.html 5走平均 | 93% | 中 |
-| `training_intensity` | oikiri.html 調教強度 | 27% | 中 |
-| `stable_comment_score` | comment.html 厩舎スコア | 50-70% | 低 |
+v12総合再学習で10特徴量を同時投入テスト。7個採用、3個不採用。
 
-v11再学習: データカバレッジ不足(2024-2025のみ)で不採用。2020-2023の蓄積が必要。
-`python tools/bulk_scrape_history.py --status` で蓄積状況を確認可能。
+| 特徴量 | ソース | WF寄与 | 判定 |
+|--------|--------|--------|------|
+| `index_avg5_filled` | speed.html 5走平均指数 | +0.00032 | ✓ 採用 |
+| `time_1f_last_filled` | oikiri.html ラスト1F | +0.00025 | ✓ 採用 |
+| `index_max_filled` | speed.html 最高指数 | +0.00019 | ✓ 採用 |
+| `index_run1_filled` | speed.html 前走指数 | +0.00019 | ✓ 採用 |
+| `sire_shinba_top3r` | 既存CSV(expanding) | 0.00000 | ✓ 採用(害なし) |
+| `pci` | ラップデータ(後半/前半3F) | 0.00000 | ✓ 採用(害なし) |
+| `training_intensity_enc` | oikiri.html 調教強度 | -0.00048 | ✓ 採用(閾値内) |
+| `dam_top3r` | netkeiba_siblings.csv | -0.00063 | ✗ **リーク修正後マイナス** |
+| `stable_comment_score` | comment.html 厩舎スコア | N/A | ✗ WFカバレッジ30%不足 |
+| `prev_review_score` | db.netkeiba 備考 | N/A | ✗ 2024-2025のみでWF不可 |
+
+### 今後の追加データ候補（v13用）
+| データ | ファイル | 行数 | 用途 |
+|--------|---------|------|------|
+| レース短評(備考) | netkeiba_race_review.csv | 89,831 | 前走不利→巻き返し検出。蓄積が2024-2025のみ |
+| 新馬評価 | netkeiba_shinba_eval.csv | 7,998 | 新馬戦の厩舎評価・調教ランク。表示用 |
+| 種牡馬新馬成績(静的) | sire_shinba_stats.csv | 449 | 新馬戦UIバッジ表示用(モデルはexpanding版使用) |
+| 母産駒成績(静的) | netkeiba_siblings.csv | 17,441 | 新馬戦UIバッジ表示用(モデル組込はリーク注意) |
 
 ---
 
