@@ -1,0 +1,115 @@
+{
+  "analysis_date": "2026-03-29",
+  "total_races": 209,
+  "dates": [
+    20260314,
+    20260315,
+    20260321,
+    20260328
+  ],
+  "winning_bet_distribution": {
+    "1点目": 16,
+    "2点目": 2,
+    "3点目": 5,
+    "4点目": 6,
+    "5点目": 8,
+    "6点目": 5,
+    "7点目": 4
+  },
+  "bet_count_analysis": {
+    "3点": {
+      "hits": 23,
+      "investment": 62700,
+      "payout": 39690,
+      "ROI": 63.3,
+      "profit": -23010
+    },
+    "4点": {
+      "hits": 29,
+      "investment": 83600,
+      "payout": 59300,
+      "ROI": 70.9,
+      "profit": -24300
+    },
+    "5点": {
+      "hits": 37,
+      "investment": 104500,
+      "payout": 66910,
+      "ROI": 64.0,
+      "profit": -37590
+    },
+    "6点": {
+      "hits": 42,
+      "investment": 125400,
+      "payout": 100280,
+      "ROI": 80.0,
+      "profit": -25120
+    },
+    "7点": {
+      "hits": 46,
+      "investment": 146300,
+      "payout": 104890,
+      "ROI": 71.7,
+      "profit": -41410
+    }
+  },
+  "strategy_simulation": {
+    "固定700円(現行)": {
+      "races": 209,
+      "investment": 146300,
+      "payout": 132910,
+      "ROI": 90.8,
+      "profit": -13390
+    },
+    "条件D半額350円": {
+      "races": 209,
+      "investment": 120750,
+      "payout": 102600,
+      "ROI": 85.0,
+      "profit": -18150
+    },
+    "条件A/D半額350円": {
+      "races": 209,
+      "investment": 96600,
+      "payout": 86560,
+      "ROI": 89.6,
+      "profit": -10040
+    },
+    "阪神除外": {
+      "races": 141,
+      "investment": 98700,
+      "payout": 111310,
+      "ROI": 112.8,
+      "profit": 12610
+    },
+    "条件D除外": {
+      "races": 136,
+      "investment": 95200,
+      "payout": 72290,
+      "ROI": 75.9,
+      "profit": -22910
+    },
+    "A/D除外(C/X集中)": {
+      "races": 61,
+      "investment": 42700,
+      "payout": 39540,
+      "ROI": 92.6,
+      "profit": -3160
+    },
+    "午後のみ(7-12R)": {
+      "races": 75,
+      "investment": 52500,
+      "payout": 52350,
+      "ROI": 99.7,
+      "profit": -150
+    }
+  },
+  "key_findings": [
+    "現行7点固定: ROI 90.8% (209レース)",
+    "5点に削減: 的中数維持しつつ投資額削減でROI改善の可能性",
+    "条件D除外: ROI悪化（条件Dは実は118.6%でプラス）",
+    "阪神除外: ROI改善（阪神45.4%が全体を引き下げ）",
+    "サンプルサイズ209では統計的有意差の判定は困難",
+    "4日間のデータでは分散が大きく結論は暫定的"
+  ]
+}
