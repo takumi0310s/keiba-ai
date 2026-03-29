@@ -1283,27 +1283,85 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
             df['wind_speed'] = 0
             df['precipitation'] = 0
 
-    # 新馬関連特徴量（将来のモデル組込用。現在は表示のみ）
+    # ===== V12新特徴量 =====
+
+    # 1-3. Speed index (index_max, index_run1, index_avg5)
+    if race_id:
+        try:
+            _si_csv = os.path.join(BASE_DIR, 'data', 'netkeiba_speed_index.csv')
+            if os.path.exists(_si_csv):
+                _si = pd.read_csv(_si_csv, encoding='utf-8', dtype={'race_id': str, 'umaban': str})
+                _si_race = _si[_si['race_id'] == str(race_id)]
+                for idx_h in range(len(df)):
+                    _uma = str(int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0))))
+                    _match = _si_race[_si_race['umaban'] == _uma]
+                    if len(_match) > 0:
+                        _row = _match.iloc[0]
+                        df.loc[df.index[idx_h], 'index_max_filled'] = pd.to_numeric(_row.get('index_max', 0), errors='coerce') or 0
+                        df.loc[df.index[idx_h], 'index_avg5_filled'] = pd.to_numeric(_row.get('index_avg5', 0), errors='coerce') or 0
+                        df.loc[df.index[idx_h], 'index_run1_filled'] = pd.to_numeric(_row.get('index_run1', 0), errors='coerce') or 0
+        except Exception:
+            pass
+    for _col in ['index_max_filled', 'index_run1_filled', 'index_avg5_filled']:
+        if _col not in df.columns:
+            df[_col] = 0
+        df[_col] = pd.to_numeric(df[_col], errors='coerce').fillna(0)
+
+    # 4-5. Training 1F and intensity
+    if race_id:
+        try:
+            _tt_csv = os.path.join(BASE_DIR, 'data', 'netkeiba_training_times.csv')
+            if os.path.exists(_tt_csv):
+                _tt = pd.read_csv(_tt_csv, encoding='utf-8', dtype={'race_id': str, 'umaban': str})
+                _tt_race = _tt[_tt['race_id'] == str(race_id)]
+                _int_map = {'一杯': 3, '強め': 2, '馬なり': 1}
+                for idx_h in range(len(df)):
+                    _uma = str(int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0))))
+                    _match = _tt_race[_tt_race['umaban'] == _uma]
+                    if len(_match) > 0:
+                        _row = _match.iloc[0]
+                        _1f = pd.to_numeric(_row.get('time_1f', 0), errors='coerce')
+                        if _1f and _1f > 0:
+                            df.loc[df.index[idx_h], 'time_1f_last_filled'] = _1f
+                        _inten = str(_row.get('intensity', '')).strip()
+                        df.loc[df.index[idx_h], 'training_intensity_enc'] = _int_map.get(_inten, 0)
+        except Exception:
+            pass
+    for _col in ['time_1f_last_filled', 'training_intensity_enc']:
+        if _col not in df.columns:
+            df[_col] = 12.5 if 'time_1f' in _col else 0
+        df[_col] = pd.to_numeric(df[_col], errors='coerce').fillna(12.5 if 'time_1f' in _col else 0)
+
+    # 6. Sire shinba top3r (from static CSV)
+    try:
+        _ss_csv = os.path.join(BASE_DIR, 'data', 'sire_shinba_stats.csv')
+        if os.path.exists(_ss_csv):
+            _ss = pd.read_csv(_ss_csv, encoding='utf-8')
+            _ss_map = dict(zip(_ss['sire'], _ss['top3_rate']))
+            _ss_mean = _ss['top3_rate'].mean()
+            for idx_h in range(len(df)):
+                _father = horses[idx_h].get('父', '') if idx_h < len(horses) else ''
+                df.loc[df.index[idx_h], 'sire_shinba_top3r'] = _ss_map.get(_father, _ss_mean)
+    except Exception:
+        pass
+    if 'sire_shinba_top3r' not in df.columns:
+        df['sire_shinba_top3r'] = 0.22
+
+    # 7. PCI (Pace Change Index)
+    if 'prev_race_first3f' in df.columns and 'prev_race_last3f' in df.columns:
+        _f3f = df['prev_race_first3f'].replace(0, np.nan)
+        _l3f = df['prev_race_last3f'].replace(0, np.nan)
+        df['pci'] = (_l3f / _f3f).fillna(1.0)
+    else:
+        df['pci'] = 1.0
+
+    # 新馬評価（表示用、モデル特徴量外）
     if race_info.get('race_name', '') and '新馬' in str(race_info.get('race_name', '')):
         shinba_scores = []
-        sire_shinba_t3 = []
-        dam_t3 = []
         for h in horses:
             cs = h.get('新馬スコア', None) or h.get('shinba_comment_score', None)
             shinba_scores.append(int(cs) if cs is not None else 0)
-            sire_shinba_t3.append(float(h.get('種牡馬新馬複勝率', 0) or 0) / 100.0)
-            dam_t3.append(float(h.get('母産駒複勝率', 0) or 0) / 100.0)
         df['shinba_comment_score'] = shinba_scores
-        df['sire_shinba_top3r'] = sire_shinba_t3
-        df['dam_top3r'] = dam_t3
-
-    # 前走不利スコア（将来のモデル組込用）
-    prev_review = []
-    for h in horses:
-        rs = h.get('前走不利スコア', None) or h.get('prev_review_score', None)
-        prev_review.append(int(rs) if rs is not None else 0)
-    if any(v != 0 for v in prev_review):
-        df['prev_review_score'] = prev_review
 
     # 必要な特徴量の確保
     use_features = model_data.get('features')

@@ -547,8 +547,126 @@ def main():
         json.dump(result_data, f, ensure_ascii=False, indent=2, default=str)
     print(f"\n  Results saved: {result_path}")
 
+    # ===== 本番モデル学習（adoptedの場合のみ） =====
+    if adopted:
+        print(f"\n{'='*60}")
+        print(f"  TRAINING PRODUCTION MODEL (v12)")
+        print(f"{'='*60}")
+        train_production_model(df, best_features, sire_map, bms_map, best_wf)
+
     elapsed = (time.time() - start_time) / 60
     print(f"  Elapsed: {elapsed:.1f} min")
+
+
+def train_production_model(df, features, sire_map, bms_map, wf_results):
+    """フルデータで本番モデルを学習・保存"""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    OUTPUT_DIR = BASE_DIR
+
+    # 直近2年をvalidation、それ以前をtrain
+    max_year = int(df['year'].max())
+    valid_mask = df['year'] >= (max_year - 1)
+    train_mask = ~valid_mask
+
+    X_train = df.loc[train_mask, features].values
+    y_train = df.loc[train_mask, 'target'].values
+    X_valid = df.loc[valid_mask, features].values
+    y_valid = df.loc[valid_mask, 'target'].values
+
+    print(f"  Train: {train_mask.sum()}, Valid: {valid_mask.sum()}")
+    print(f"  Features: {len(features)}")
+
+    # LGB
+    dtrain = lgb.Dataset(X_train, label=y_train)
+    dvalid = lgb.Dataset(X_valid, label=y_valid, reference=dtrain)
+    lgb_model = lgb.train(
+        LGB_PARAMS, dtrain, num_boost_round=1000,
+        valid_sets=[dvalid],
+        callbacks=[lgb.early_stopping(50), lgb.log_evaluation(100)]
+    )
+    from sklearn.metrics import roc_auc_score
+    lgb_auc = roc_auc_score(y_valid, lgb_model.predict(X_valid))
+    print(f"  LGB AUC: {lgb_auc:.4f}")
+
+    # XGB
+    dxtr = xgb.DMatrix(X_train, label=y_train)
+    dxte = xgb.DMatrix(X_valid, label=y_valid)
+    xgb_model = xgb.train(
+        XGB_PARAMS, dxtr, num_boost_round=1000,
+        evals=[(dxte, 'valid')],
+        early_stopping_rounds=50, verbose_eval=100
+    )
+    xgb_auc = roc_auc_score(y_valid, xgb_model.predict(dxte))
+    print(f"  XGB AUC: {xgb_auc:.4f}")
+
+    # Ensemble weights
+    total = lgb_auc + xgb_auc
+    w_lgb = lgb_auc / total
+    w_xgb = xgb_auc / total
+    ens_pred = w_lgb * lgb_model.predict(X_valid) + w_xgb * xgb_model.predict(dxte)
+    ens_auc = roc_auc_score(y_valid, ens_pred)
+    print(f"  Ensemble AUC: {ens_auc:.4f} (LGB {w_lgb:.3f} + XGB {w_xgb:.3f})")
+
+    # WF AUC summary
+    wf_auc = np.mean([r['lgb_auc'] for r in wf_results])
+
+    # ===== Pattern A (leak-free) =====
+    pattern_a_features = [f for f in features if f not in LEAK_FEATURES_A]
+    pkl_a = {
+        'model': lgb_model,
+        'features': pattern_a_features,
+        'version': 'v12_leakfree',
+        'auc': lgb_auc,
+        'ensemble_auc': ens_auc,
+        'wf_auc': wf_auc,
+        'leak_free': True,
+        'leak_pattern': 'A',
+        'leak_removed': sorted(LEAK_FEATURES_A),
+        'sire_map': sire_map,
+        'bms_map': bms_map,
+        'n_top_encode': N_TOP_SIRE,
+        'trained_at': now,
+        'n_train': int(train_mask.sum()),
+        'n_valid': int(valid_mask.sum()),
+        'model_type': 'central',
+        'xgb_model': xgb_model,
+        'mlp_model': None,
+        'mlp_scaler': None,
+        'ensemble_weights': {'lgb': w_lgb, 'xgb': w_xgb, 'mlp': 0},
+        'course_map': dict(COURSE_MAP),
+        'v12_new_features': V12_NEW_FEATURES,
+    }
+
+    a_path = os.path.join(OUTPUT_DIR, 'keiba_model_v12_central.pkl.gz')
+    with gzip.open(a_path, 'wb') as f:
+        pickle.dump(pkl_a, f)
+    print(f"  Pattern A saved: {a_path}")
+
+    # ===== Pattern B (live) =====
+    pkl_b = dict(pkl_a)
+    pkl_b['features'] = features  # All features including leak ones
+    pkl_b['version'] = 'v12_live'
+    pkl_b['leak_free'] = False
+    pkl_b['leak_pattern'] = 'B'
+    pkl_b['is_live'] = True
+
+    b_path = os.path.join(OUTPUT_DIR, 'keiba_model_v12_central_live.pkl.gz')
+    with gzip.open(b_path, 'wb') as f:
+        pickle.dump(pkl_b, f)
+    print(f"  Pattern B saved: {b_path}")
+
+    # V8 backup
+    v8_path = os.path.join(OUTPUT_DIR, 'keiba_model_v8.pkl')
+    v8_pkl = dict(pkl_a)
+    v8_pkl['version'] = 'v12_backup'
+    with open(v8_path, 'wb') as f:
+        pickle.dump(v8_pkl, f)
+    print(f"  V8 backup saved: {v8_path}")
+
+    print(f"\n  *** v12 Production model saved! ***")
+    print(f"  Pattern A: {len(pattern_a_features)} features, AUC {lgb_auc:.4f}")
+    print(f"  Pattern B: {len(features)} features")
+    print(f"  WF AUC: {wf_auc:.4f}")
 
 
 if __name__ == '__main__':
