@@ -1,0 +1,85 @@
+{
+  "baseline_auc": 0.800616838256012,
+  "all8_auc": 0.8036130425112891,
+  "selected_auc": 0.8036798618261319,
+  "best_pattern": "+selected",
+  "best_auc": 0.8036798618261319,
+  "adopted": true,
+  "new_features": [
+    "index_max_filled",
+    "index_run1_filled",
+    "index_avg5_filled",
+    "time_1f_last_filled",
+    "training_intensity_enc",
+    "sire_shinba_top3r",
+    "dam_top3r",
+    "pci"
+  ],
+  "selected_features": [
+    "index_max_filled",
+    "index_run1_filled",
+    "index_avg5_filled",
+    "time_1f_last_filled",
+    "training_intensity_enc",
+    "sire_shinba_top3r",
+    "pci"
+  ],
+  "removed_features": [
+    "dam_top3r"
+  ],
+  "feature_contributions": {
+    "index_max_filled": 0.00019386403321586254,
+    "index_run1_filled": 0.00018790395073575716,
+    "index_avg5_filled": 0.000317755848822987,
+    "time_1f_last_filled": 0.0002497883711687354,
+    "training_intensity_enc": -0.0004841814379962228,
+    "sire_shinba_top3r": 0.0,
+    "dam_top3r": -0.0006324729977317256,
+    "pci": 0.0
+  },
+  "yearly_results": [
+    {
+      "year": 2020,
+      "lgb_auc": 0.792312345726578,
+      "xgb_auc": 0.7941334553393694,
+      "train_auc": 0.8340806581507383,
+      "gap": 0.04176831242416024
+    },
+    {
+      "year": 2021,
+      "lgb_auc": 0.8015238826069698,
+      "xgb_auc": 0.8026838110755278,
+      "train_auc": 0.845884940976518,
+      "gap": 0.04436105836954818
+    },
+    {
+      "year": 2022,
+      "lgb_auc": 0.8052251736872247,
+      "xgb_auc": 0.8069788410902924,
+      "train_auc": 0.8315002918647307,
+      "gap": 0.02627511817750605
+    },
+    {
+      "year": 2023,
+      "lgb_auc": 0.8042294532348297,
+      "xgb_auc": 0.8053613962168645,
+      "train_auc": 0.8425310035057163,
+      "gap": 0.03830155027088655
+    },
+    {
+      "year": 2024,
+      "lgb_auc": 0.8108769129176071,
+      "xgb_auc": 0.8111762047275884,
+      "train_auc": 0.8390088792124687,
+      "gap": 0.028131966294861588
+    },
+    {
+      "year": 2025,
+      "lgb_auc": 0.8079114027835826,
+      "xgb_auc": 0.807671574654368,
+      "train_auc": 0.8386639666504142,
+      "gap": 0.03075256386683156
+    }
+  ],
+  "timestamp": "2026-03-29T09:14:45.724274"
+}
