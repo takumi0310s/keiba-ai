@@ -116,6 +116,9 @@ def fetch_training_times(race_id, is_nar=False):
             _CACHE[race_id] = result
             return result
 
+        _INT_MAP = {'一杯': '一杯', '強め': '強め', '馬也': '馬なり', '馬ナリ': '馬なり',
+                    'G前': '強め', '直一杯': '一杯', '仕掛': '強め'}
+
         rows = table.find_all("tr")
         for row in rows:
             td_umaban = row.select_one("td.Umaban")
@@ -126,7 +129,7 @@ def fetch_training_times(race_id, is_nar=False):
             except (ValueError, TypeError):
                 continue
 
-            # Get evaluation rank (free)
+            # Get evaluation rank
             rank = ""
             evaluation = ""
             td_critic = row.select_one("td.Training_Critic")
@@ -138,25 +141,78 @@ def fetch_training_times(race_id, is_nar=False):
                         rank_text = cls.replace("Rank_", "")
                         if rank_text in ('A', 'B', 'C', 'D'):
                             rank = rank_text
-                        elif any(x in rank_text for x in ['好調教', '抜群', '絶好']):
-                            rank = 'A'
-                        elif any(x in rank_text for x in ['上々', '乗込入念', '良化']):
-                            rank = 'B'
-                        elif any(x in rank_text for x in ['まずまず', '平凡', '乗込']):
-                            rank = 'C'
-                        else:
-                            rank = 'C'
                         break
                 if rank:
                     break
 
-            result[umaban] = {
+            entry = {
                 'course': '', 'time_4f': 0.0, 'time_3f': 0.0, 'time_1f': 0.0,
                 'intensity': '', 'rank': rank, 'evaluation': evaluation,
                 'date': '', 'is_sakaro': False, 'is_wood': False, 'laps': [],
             }
 
-        # Parse premium content from OikiriTable rows + TrainingTimeDataList
+            # Pattern A: single row with 10+ cells (馬情報+調教詳細が同一行)
+            cells = row.find_all("td")
+            if len(cells) >= 10:
+                # TrainingLoad (intensity)
+                td_load = row.select_one("td.TrainingLoad")
+                if td_load:
+                    load_text = td_load.get_text(strip=True)
+                    for key, val in _INT_MAP.items():
+                        if key in load_text:
+                            entry['intensity'] = val
+                            break
+
+                # Course from cells (typically cell after Horse_Info)
+                for td in cells:
+                    ct = td.get_text(strip=True)
+                    if '坂' in ct and len(ct) <= 6:
+                        entry['course'] = '坂路'
+                        entry['is_sakaro'] = True
+                        break
+                    elif ('Ｗ' in ct or 'CW' in ct or 'ＣＷ' in ct) and len(ct) <= 10:
+                        entry['course'] = 'CW'
+                        entry['is_wood'] = True
+                        break
+                    elif ('ＤＰ' in ct or 'ポリ' in ct) and len(ct) <= 10:
+                        entry['course'] = 'ポリトラック'
+                        entry['is_wood'] = True
+                        break
+
+                # Date
+                td_day = row.select_one("td.Training_Day")
+                if td_day:
+                    entry['date'] = td_day.get_text(strip=True)
+
+            result[umaban] = entry
+
+        # Parse times from TrainingTimeDataList
+        # Pattern A: 1 row per horse, TimeLists in order matches umaban order
+        time_lists = soup.find_all("ul", class_="TrainingTimeDataList")
+        uma_order = sorted(result.keys())  # umaban in order
+        for ti, uma in enumerate(uma_order):
+            if ti >= len(time_lists):
+                break
+            if result[uma]['time_4f'] > 0:
+                continue  # Already filled
+            ul = time_lists[ti]
+            lis = ul.find_all("li")
+            times = []
+            for li in lis:
+                text = li.get_text(strip=True)
+                m = re.match(r'(\d+\.?\d*)\(', text)
+                times.append(float(m.group(1)) if m else 0.0)
+            if len(times) >= 5:
+                if times[0] > 0:
+                    if 35 < times[2] < 70: result[uma]['time_4f'] = times[2]
+                    if 25 < times[3] < 50: result[uma]['time_3f'] = times[3]
+                    if 10 < times[4] < 20: result[uma]['time_1f'] = times[4]
+                else:
+                    if 35 < times[1] < 70: result[uma]['time_4f'] = times[1]
+                    if 25 < times[2] < 50: result[uma]['time_3f'] = times[2]
+                    if 10 < times[4] < 20: result[uma]['time_1f'] = times[4]
+
+        # Parse detail rows for Pattern B (alternating row pairs)
         _parse_premium_oikiri(soup, result)
 
         _CACHE[race_id] = result
