@@ -82,57 +82,33 @@ def scrape_data_analysis(session, race_id):
 
     results = []
 
-    # Parse all data tables
-    tables = soup.find_all('table', class_=lambda c: c and 'DataTable' in str(c))
-    if not tables:
-        # Try finding tables by other patterns
-        tables = soup.find_all('table')
-
-    for table in tables:
-        caption = table.find('caption')
-        table_name = caption.get_text(strip=True) if caption else ''
-
-        # Find header row
-        header_row = table.find('tr')
-        if not header_row:
-            continue
-        headers = [th.get_text(strip=True) for th in header_row.find_all(['th', 'td'])]
-        if not headers or len(headers) < 2:
-            continue
-
-        # Parse data rows
-        for tr in table.find_all('tr')[1:]:
+    # Parse pickup data tables (RaceCommon_Table)
+    # Each table has 1 row with 2 cells: [category, value]
+    for table in soup.find_all('table', class_='RaceCommon_Table'):
+        for tr in table.find_all('tr'):
             cells = [td.get_text(strip=True) for td in tr.find_all(['td', 'th'])]
-            if not cells or len(cells) < 2:
-                continue
-            row = {
-                'race_id': race_id,
-                'table_name': table_name,
-            }
-            for i, h in enumerate(headers):
-                if i < len(cells):
-                    row[h] = cells[i]
-            results.append(row)
-
-    # Also parse any div-based data sections
-    data_sections = soup.find_all('div', class_=lambda c: c and 'DataList' in str(c))
-    for section in data_sections:
-        section_title = ''
-        title_el = section.find(['h3', 'h4', 'span'], class_=lambda c: c and 'Title' in str(c))
-        if title_el:
-            section_title = title_el.get_text(strip=True)
-
-        # Parse dl (definition list) format
-        for dl in section.find_all('dl'):
-            dt = dl.find('dt')
-            dd = dl.find('dd')
-            if dt and dd:
+            if len(cells) >= 2:
                 results.append({
                     'race_id': race_id,
-                    'table_name': section_title,
-                    'category': dt.get_text(strip=True),
-                    'value': dd.get_text(strip=True),
+                    'category': cells[0],
+                    'value': cells[1],
                 })
+
+    # Also parse race metadata from RaceData divs
+    race_data1 = soup.find('div', class_='RaceData01')
+    race_data2 = soup.find('div', class_='RaceData02')
+    if race_data1:
+        results.append({
+            'race_id': race_id,
+            'category': 'race_info',
+            'value': race_data1.get_text(strip=True),
+        })
+    if race_data2:
+        results.append({
+            'race_id': race_id,
+            'category': 'race_detail',
+            'value': race_data2.get_text(strip=True),
+        })
 
     return results
 
