@@ -1315,13 +1315,32 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df.loc[df[_col] == 0, _col] = _default
 
     # 4-5. Training 1F and intensity
+    # Source 1: premium cache or scrape_training (already fetched upstream)
+    _int_map = {'一杯': 3, '強め': 2, '馬なり': 1}
     if race_id:
         try:
+            from scrape_training import fetch_training_times
+            _tt_data = fetch_training_times(race_id)
+            if _tt_data:
+                for idx_h in range(len(df)):
+                    _uma = int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0)))
+                    if _uma in _tt_data:
+                        _td = _tt_data[_uma]
+                        _1f = _td.get('time_1f', 0)
+                        if _1f and _1f > 0:
+                            df.loc[df.index[idx_h], 'time_1f_last_filled'] = float(_1f)
+                        _inten = str(_td.get('intensity', '')).strip()
+                        if _inten:
+                            df.loc[df.index[idx_h], 'training_intensity_enc'] = _int_map.get(_inten, 0)
+        except Exception:
+            pass
+    # Source 2: fallback to CSV if not filled
+    if 'time_1f_last_filled' not in df.columns or (df.get('time_1f_last_filled', pd.Series([0])) == 0).all():
+        try:
             _tt_csv = os.path.join(BASE_DIR, 'data', 'netkeiba_training_times.csv')
-            if os.path.exists(_tt_csv):
+            if os.path.exists(_tt_csv) and race_id:
                 _tt = pd.read_csv(_tt_csv, encoding='utf-8', dtype={'race_id': str, 'umaban': str})
                 _tt_race = _tt[_tt['race_id'] == str(race_id)]
-                _int_map = {'一杯': 3, '強め': 2, '馬なり': 1}
                 for idx_h in range(len(df)):
                     _uma = str(int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0))))
                     _match = _tt_race[_tt_race['umaban'] == _uma]
