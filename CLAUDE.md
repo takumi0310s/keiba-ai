@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-03-26
+Last updated: 2026-03-30
 
 ---
 
@@ -39,7 +39,8 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 ### 運用ツール
 - `tools/daily_predict.py` — 毎朝8:00自動実行、当日全レース予測
 - `tools/daily_results.py` — 毎晩20:00自動実行、結果照合・ROI計算
-- `tools/weekly_report.py` — 毎週月曜9:00、週次パフォーマンスレポート
+- `tools/weekly_report.py` — 毎週月曜9:00、週次パフォーマンスレポート（条件別・特徴量率・乖離率・累積ROI警告付き）
+- `tools/refresh_cookie.py` — netkeibaのCookie自動更新（Playwright自動ログイン）
 - `predict_and_log.py` — CLI手動予測・ログ記録
 - `check_results.py` — CLI結果照合（--summaryで成績サマリー）
 - `verify_real_roi.py` — netkeiba実配当ROI検証
@@ -123,6 +124,11 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 12. predict_core.py: speed index premium cacheフォールバック追加（3特徴量が全滅していた）
 13. predict_core.py: 距離カテゴリbin不一致修正（学習5bin vs 予測4bin→5binに統一）
 14. Discord重複通知修正（3重→race_auto_notify.pyのみに統合）
+15. v12モデルロード: バージョンチェック修正（v12が特徴量18個しか生成しないバグ）
+16. num_horses_val特徴量: 出走頭数が反映されないバグ修正
+17. 調教スクレイパー: single-row HTML対応（intensity 83→466/497=94%）
+18. 調教スクレイパー: short CW時間パース + 栗Ｅ/美Ｅコース対応（4F取得 90%→96%）
+19. EV表示・レース信頼度スコア・変動投資額機能追加
 
 ### インフラ整備
 1. Streamlit Cloud デプロイ
@@ -131,6 +137,8 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 4. .gitignore設定（大容量CSV除外）
 5. project_status.py CLI構築
 6. バッチファイル作成（daily_predict.bat, daily_results.bat, weekly_report.bat）
+7. Cookie自動更新ツール（tools/refresh_cookie.py, Playwright自動ログイン）
+8. 週次レポート拡張（条件別成績・特徴量取得率・BT乖離率・累積ROI警告）
 
 ---
 
@@ -634,7 +642,8 @@ keiba-ai/
 ├── tools/                          # === 運用・検証ツール ===
 │   ├── daily_predict.py            # 毎朝自動予測
 │   ├── daily_results.py            # 毎晩結果照合
-│   ├── weekly_report.py            # 週次レポート
+│   ├── weekly_report.py            # 週次レポート（条件別・特徴量率・乖離率・累積ROI警告）
+│   ├── refresh_cookie.py           # netkeiba Cookie自動更新（Playwright）
 │   ├── extract_jvdata.py           # TARGET JV → CSV抽出
 │   ├── validation_1_standardization_leak.py   # リーク検証
 │   ├── validation_2_target_variable.py        # 目的変数比較
@@ -666,10 +675,10 @@ keiba-ai/
 │   ├── odds_history.csv            # 778,387行 (gitignore)
 │   ├── blood_full.csv              # 81,986行 (gitignore)
 │   ├── jra_payouts.csv             # 27,541件 (gitignore)
-│   ├── netkeiba_speed_index.csv    # タイム指数(249,971行, 2020-2025)
-│   ├── netkeiba_training_times.csv # 調教タイム(233,871行, 2020-2025)
-│   ├── netkeiba_stable_comments.csv# 厩舎コメント(81,599行, 2020-2025)
-│   ├── netkeiba_race_review.csv    # レース短評/備考(264,973行, 2020-2025)
+│   ├── netkeiba_speed_index.csv    # タイム指数(142,680行, 2020-2025)
+│   ├── netkeiba_training_times.csv # 調教タイム(2,552行, 2025部分)
+│   ├── netkeiba_stable_comments.csv# 厩舎コメント(857行, 2025部分)
+│   ├── netkeiba_race_review.csv    # レース短評/備考(277,467行, 2020-2025)
 │   ├── netkeiba_shinba_eval.csv    # 新馬評価(7,998行, 2024-2025)
 │   ├── sire_shinba_stats.csv       # 種牡馬新馬成績(449種牡馬)
 │   ├── netkeiba_siblings.csv       # 母産駒成績(17,441母馬)
@@ -802,6 +811,9 @@ python tools/extract_jvdata.py             # TARGET JV → CSV抽出
 python scrape_jra_payouts.py               # JRA公式配当データ
 python scrape_jra_track.py                 # JRA馬場情報
 python scrape_weather.py                   # 気象庁天候データ
+python tools/refresh_cookie.py             # Cookie自動更新（対話式）
+python tools/refresh_cookie.py --check     # Cookie有効性チェック
+python tools/refresh_cookie.py --auto      # 期限切れ時のみ自動更新
 ```
 
 ### 検証スイート（13項目）
@@ -863,6 +875,8 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 ### 概要
 netkeibaスーパープレミアム会員のCookie認証でプレミアムデータを取得。
 Cookie設定: `.env` の `NETKEIBA_COOKIE` に保存。
+Cookie期限切れ時は `python tools/refresh_cookie.py` で自動更新可能（Playwright）。
+認証情報を保存済みなら `python tools/refresh_cookie.py --auto` で期限切れ時のみ自動実行。
 
 ### 取得データ一覧
 
@@ -894,10 +908,11 @@ Cookie設定: `.env` の `NETKEIBA_COOKIE` に保存。
 
 | データ | ファイル | 行数 | 年度 |
 |--------|---------|------|------|
-| タイム指数 | `data/netkeiba_speed_index.csv` | ~92K | 2023-2025（部分） |
-| 調教タイム | `data/netkeiba_training_times.csv` | ~2.5K | 2025（部分） |
-| 厩舎コメント | `data/netkeiba_stable_comments.csv` | ~99K | 2020-2025（33-40%、追加取得中） |
-| レース短評 | `data/netkeiba_race_review.csv` | ~265K | 2020-2025（全年カバー） |
+| タイム指数 | `data/netkeiba_speed_index.csv` | ~143K | 2020-2025 |
+| 調教タイム | `data/netkeiba_training_times.csv` | ~2.6K | 2025（部分） |
+| 厩舎コメント | `data/netkeiba_stable_comments.csv` | ~857 | 2025（部分） |
+| レース短評 | `data/netkeiba_race_review.csv` | ~277K | 2020-2025（全年カバー） |
+| 新馬評価 | `data/netkeiba_shinba_eval.csv` | ~8K | 2024-2025 |
 
 ---
 
@@ -984,7 +999,7 @@ race_review 2020-2025全年データ取得完了後(264,973行)、2特徴量を�
 ### 今後の追加データ候補（v13用）
 | データ | ファイル | 行数 | 用途 |
 |--------|---------|------|------|
-| レース短評(備考) | netkeiba_race_review.csv | 264,973 | 前走不利→巻き返し検出。v12.1で不採用(gap超過) |
+| レース短評(備考) | netkeiba_race_review.csv | 277,467 | 前走不利→巻き返し検出。v12.1で不採用(gap超過) |
 | 新馬評価 | netkeiba_shinba_eval.csv | 7,998 | 新馬戦の厩舎評価・調教ランク。表示用 |
 | 種牡馬新馬成績(静的) | sire_shinba_stats.csv | 449 | 新馬戦UIバッジ表示用(モデルはexpanding版使用) |
 | 母産駒成績(静的) | netkeiba_siblings.csv | 17,441 | 新馬戦UIバッジ表示用(モデル組込はリーク注意) |
@@ -1001,6 +1016,24 @@ race_review 2020-2025全年データ取得完了後(264,973行)、2特徴量を�
 | 3 | **実配当ROI検証** | **Trio 225.8%** [CI: 198.5-264.6%] P(>100%)=100% |
 | 4 | OOS・ライブ検証 | 2025準OOS: 246.3% [201-301%] 判定VALID |
 | 5 | 市場耐性・資金管理 | 耐性HIGH、調教が最重要(-88%)、破産0.16% |
+
+---
+
+## 実戦成績（2026-03-22〜29, 4日間, 209レース）
+
+| 条件 | N | 的中 | 的中率 | 投資 | 払戻 | ROI |
+|------|---|------|--------|------|------|-----|
+| A | 63 | 25 | 39.7% | 44,100 | 38,830 | 88.0% |
+| B | 6 | 4 | 66.7% | 4,200 | 1,960 | 46.7% |
+| C | 56 | 17 | 30.4% | 39,200 | 29,090 | 74.2% |
+| D | 69 | 18 | 26.1% | 48,300 | 57,290 | 118.6% |
+| E | 7 | 3 | 42.9% | 4,900 | 5,600 | 114.3% |
+| X | 8 | 3 | 37.5% | 5,600 | 0 | 0.0% |
+| **全体** | **209** | **70** | **33.5%** | **146,300** | **132,770** | **90.8%** |
+
+- 全体ROI 90.8% — 保守的見積り142.6%を下回る（サンプル小、要継続監視）
+- 条件D 118.6%は保守的見積り95.2%を上回る
+- 条件X N=8で統計的に不十分
 
 ---
 

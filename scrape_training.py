@@ -178,6 +178,11 @@ def fetch_training_times(race_id, is_nar=False):
                         entry['course'] = 'ポリトラック'
                         entry['is_wood'] = True
                         break
+                    elif re.match(r'^[美栗]?[ＥＢＡＤＣEBADCニ]$', ct):
+                        # 栗Ｅ, 美Ｅ, 栗Ｂ etc. — training track courses (CW-like)
+                        entry['course'] = 'CW'
+                        entry['is_wood'] = True
+                        break
 
                 # Date
                 td_day = row.select_one("td.Training_Day")
@@ -204,13 +209,50 @@ def fetch_training_times(race_id, is_nar=False):
                 times.append(float(m.group(1)) if m else 0.0)
             if len(times) >= 5:
                 if times[0] > 0:
+                    # Full CW: 6F-5F-4F-3F-1F
                     if 35 < times[2] < 70: result[uma]['time_4f'] = times[2]
                     if 25 < times[3] < 50: result[uma]['time_3f'] = times[3]
                     if 10 < times[4] < 20: result[uma]['time_1f'] = times[4]
-                else:
+                elif times[1] > 0:
+                    # 坂路 or 5F CW: -4F-3F-2F-1F
                     if 35 < times[1] < 70: result[uma]['time_4f'] = times[1]
                     if 25 < times[2] < 50: result[uma]['time_3f'] = times[2]
                     if 10 < times[4] < 20: result[uma]['time_1f'] = times[4]
+                elif times[2] > 0:
+                    # Short CW (4F only): --4F-3F-1F
+                    if 35 < times[2] < 70: result[uma]['time_4f'] = times[2]
+                    if 25 < times[3] < 50: result[uma]['time_3f'] = times[3]
+                    if 10 < times[4] < 20: result[uma]['time_1f'] = times[4]
+
+        # Fallback: parse times from TrainingTimeData cell text
+        table2 = soup.find("table", class_=re.compile(r"OikiriTable"))
+        if table2:
+            for row in table2.find_all("tr"):
+                td_uma = row.select_one("td.Umaban")
+                if not td_uma:
+                    continue
+                try:
+                    uma = int(td_uma.get_text(strip=True))
+                except (ValueError, TypeError):
+                    continue
+                if uma not in result or result[uma].get('time_4f', 0) > 0:
+                    continue
+                td_time = row.select_one("td.TrainingTimeData")
+                if not td_time:
+                    continue
+                time_text = td_time.get_text(strip=True)
+                # Extract all decimal numbers from time text
+                nums = re.findall(r'(\d{2}\.\d)', time_text)
+                if nums:
+                    vals = [float(x) for x in nums]
+                    # Find 4F candidate (35-70 range)
+                    for v in vals:
+                        if 35 < v < 70 and result[uma]['time_4f'] == 0:
+                            result[uma]['time_4f'] = v
+                        elif 25 < v < 50 and result[uma]['time_3f'] == 0 and result[uma]['time_4f'] > 0 and v < result[uma]['time_4f']:
+                            result[uma]['time_3f'] = v
+                        elif 10 < v < 20 and result[uma]['time_1f'] == 0:
+                            result[uma]['time_1f'] = v
 
         # Parse detail rows for Pattern B (alternating row pairs)
         _parse_premium_oikiri(soup, result)
@@ -277,6 +319,9 @@ def _parse_premium_oikiri(soup, result):
             elif re.search(r'[美栗][ＷW]', detail_text):
                 result[current_umaban]['course'] = 'CW'
                 result[current_umaban]['is_wood'] = True
+            elif re.search(r'[美栗][ＥＢＡＤＣEBADCニ]', detail_text):
+                result[current_umaban]['course'] = 'CW'
+                result[current_umaban]['is_wood'] = True
 
             # Extract intensity from TrainingLoad cell
             td_load = detail_row.select_one("td.TrainingLoad")
@@ -325,19 +370,27 @@ def _parse_premium_oikiri(soup, result):
 
                 if len(times) >= 5:
                     if times[0] > 0:
-                        # CW: times[2]=4F, times[3]=3F, times[4]=1F
+                        # Full CW: 6F-5F-4F-3F-1F
                         if 35 < times[2] < 70:
                             result[current_umaban]['time_4f'] = times[2]
                         if 25 < times[3] < 50:
                             result[current_umaban]['time_3f'] = times[3]
                         if 10 < times[4] < 20:
                             result[current_umaban]['time_1f'] = times[4]
-                    else:
-                        # 坂路: times[1]=4F, times[2]=3F, times[4]=1F
+                    elif times[1] > 0:
+                        # 坂路 or 5F CW: -4F-3F-2F-1F
                         if 35 < times[1] < 70:
                             result[current_umaban]['time_4f'] = times[1]
                         if 25 < times[2] < 50:
                             result[current_umaban]['time_3f'] = times[2]
+                        if 10 < times[4] < 20:
+                            result[current_umaban]['time_1f'] = times[4]
+                    elif times[2] > 0:
+                        # Short CW (4F only): --4F-3F-1F
+                        if 35 < times[2] < 70:
+                            result[current_umaban]['time_4f'] = times[2]
+                        if 25 < times[3] < 50:
+                            result[current_umaban]['time_3f'] = times[3]
                         if 10 < times[4] < 20:
                             result[current_umaban]['time_1f'] = times[4]
 
