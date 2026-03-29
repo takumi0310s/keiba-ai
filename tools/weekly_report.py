@@ -43,6 +43,76 @@ CONDITION_PROFILES = {
 CONSERVATIVE_ROI_OVERALL = 142.6
 
 
+def check_backtest_divergence(cumul_df):
+    """累積ROIとバックテスト保守的見積りの統計的乖離を検定する。
+
+    各レースの収益をベルヌーイ試行として、累積ROIの信頼区間を計算。
+    バックテスト保守的ROIが2σ外にある場合に警告を出す。
+
+    Returns:
+        dict: {overall: {live_roi, bt_roi, z_score, significant, n},
+               by_condition: {cond: {live_roi, bt_roi, z_score, significant, n}}}
+    """
+    result = {'overall': None, 'by_condition': {}}
+    if len(cumul_df) == 0:
+        return result
+
+    def _z_test(df_sub, expected_roi):
+        """ROIのz検定。H0: 実ROI = expected_roi"""
+        n = len(df_sub)
+        if n < 10:
+            return {'n': n, 'live_roi': 0, 'bt_roi': expected_roi,
+                    'z_score': 0, 'significant': False, 'msg': 'N<10'}
+
+        # 各レースの利益率を計算
+        investment = df_sub.get('investment', pd.Series([INVESTMENT_PER_RACE] * n))
+        if 'trio_payout' in df_sub.columns:
+            payout = df_sub['trio_payout'].fillna(0)
+        elif 'payout' in df_sub.columns:
+            payout = df_sub['payout'].fillna(0)
+        else:
+            payout = pd.Series([0] * n)
+
+        inv_total = investment.sum()
+        pay_total = payout.sum()
+        if inv_total == 0:
+            return {'n': n, 'live_roi': 0, 'bt_roi': expected_roi,
+                    'z_score': 0, 'significant': False, 'msg': 'no investment'}
+
+        live_roi = pay_total / inv_total * 100
+        # 各レースのROI（利益率）
+        race_returns = (payout / investment * 100).values
+        std = np.std(race_returns, ddof=1)
+        if std == 0:
+            return {'n': n, 'live_roi': round(live_roi, 1), 'bt_roi': expected_roi,
+                    'z_score': 0, 'significant': False, 'msg': 'zero variance'}
+
+        se = std / np.sqrt(n)
+        z = (live_roi - expected_roi) / se
+        return {
+            'n': n,
+            'live_roi': round(live_roi, 1),
+            'bt_roi': expected_roi,
+            'z_score': round(z, 2),
+            'significant': abs(z) > 2.0,
+            'direction': 'above' if z > 0 else 'below',
+            'msg': f'z={z:.2f} {"⚠ SIGNIFICANT" if abs(z) > 2.0 else "within 2σ"}',
+        }
+
+    # Overall
+    result['overall'] = _z_test(cumul_df, CONSERVATIVE_ROI_OVERALL)
+
+    # By condition
+    if 'condition' in cumul_df.columns:
+        for cond in sorted(cumul_df['condition'].unique()):
+            sub = cumul_df[cumul_df['condition'] == cond]
+            profile = CONDITION_PROFILES.get(cond, {})
+            c_roi = profile.get('conservative_roi', 100)
+            result['by_condition'][cond] = _z_test(sub, c_roi)
+
+    return result
+
+
 def check_model_auc():
     """モデルのAUCを確認（V12対応）"""
     result = {'pattern_a': None, 'pattern_b': None, 'version': 'unknown'}
@@ -327,6 +397,22 @@ def run_weekly_report(end_date_str):
                 cumul_cond_stats[cond] = {'count': cs['count'], 'roi': cs['roi']}
                 print(f"  {cond:>4} {cs['count']:>5} {cs['roi']:>9.1f}% {c_roi:>9.1f}% {verdict:>6}")
 
+    # ===== バックテスト乖離モニタリング =====
+    divergence_result = check_backtest_divergence(cumul_df) if len(cumul_df) > 0 else {'overall': None, 'by_condition': {}}
+    if divergence_result['overall'] and divergence_result['overall']['n'] >= 10:
+        ov = divergence_result['overall']
+        print(f"\n--- バックテスト乖離検定 (2σ) ---")
+        print(f"  全体: 実ROI {ov['live_roi']:.1f}% vs 保守的BT {ov['bt_roi']:.1f}%  {ov['msg']}")
+        if ov['significant'] and ov['direction'] == 'below':
+            warnings.append(f"⚠ 累積ROI {ov['live_roi']:.1f}%がBT保守見積り{ov['bt_roi']:.1f}%を統計的有意に下回る (z={ov['z_score']:.2f})")
+
+        for cond, cv in sorted(divergence_result['by_condition'].items()):
+            if cv['n'] >= 10:
+                sig_mark = ' ⚠' if cv['significant'] else ''
+                print(f"  条件{cond}: 実ROI {cv['live_roi']:.1f}% vs BT {cv['bt_roi']:.1f}%  z={cv['z_score']:.2f}{sig_mark}")
+                if cv['significant'] and cv['direction'] == 'below':
+                    warnings.append(f"⚠ 条件{cond} ROI {cv['live_roi']:.1f}%がBT {cv['bt_roi']:.1f}%を有意に下回る (z={cv['z_score']:.2f})")
+
     # ===== 日別集計 =====
     daily_stats = {}
     if 'date' in settled.columns:
@@ -395,6 +481,7 @@ def run_weekly_report(end_date_str):
             'overall': cumul_stats,
             'by_condition': cumul_cond_stats,
         },
+        'divergence': divergence_result,
         'feature_rates': feature_rates,
         'model': {
             'version': model_info['version'],
@@ -474,6 +561,18 @@ def run_weekly_report(end_date_str):
             rate = feature_rates.get(key, 0)
             status = 'OK' if rate >= 80 else ('WARN' if rate >= 50 else 'LOW')
             md += f"| {label} | {rate:.1f}% | {status} |\n"
+        md += "\n"
+
+    if divergence_result['overall'] and divergence_result['overall']['n'] >= 10:
+        md += f"## Backtest Divergence Monitor\n\n"
+        ov = divergence_result['overall']
+        md += f"| Scope | Live ROI | BT ROI | z-score | Status |\n|---|---|---|---|---|\n"
+        ov_status = 'ALERT' if ov['significant'] and ov['direction'] == 'below' else 'OK'
+        md += f"| Overall | {ov['live_roi']:.1f}% | {ov['bt_roi']:.1f}% | {ov['z_score']:.2f} | {ov_status} |\n"
+        for cond, cv in sorted(divergence_result['by_condition'].items()):
+            if cv['n'] >= 10:
+                c_status = 'ALERT' if cv['significant'] and cv['direction'] == 'below' else 'OK'
+                md += f"| Cond {cond} (N={cv['n']}) | {cv['live_roi']:.1f}% | {cv['bt_roi']:.1f}% | {cv['z_score']:.2f} | {c_status} |\n"
         md += "\n"
 
     md += f"## Model Health\n\n"

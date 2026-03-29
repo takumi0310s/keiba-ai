@@ -35,6 +35,13 @@ from tools.predict_core import (
 
 st.set_page_config(page_title="KEIBA AI - 中央競馬専用", page_icon="🏇", layout="wide")
 
+# ===== Cloud環境検出 =====
+# Streamlit Cloud: .envなし & HOSTNAME=streamlit or /mount/src パスの場合
+IS_CLOUD = (
+    not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
+    or os.path.exists('/mount/src')
+)
+
 # ===== SQLite DB =====
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
 
@@ -4667,6 +4674,8 @@ else:
 # ===== サイドバーナビゲーション =====
 with st.sidebar:
     st.markdown("### KEIBA AI")
+    if IS_CLOUD:
+        st.caption("☁ Cloud Mode (閲覧専用)")
     _nav_page = st.radio("ページ選択", ["🔍 予測", "📊 ダッシュボード"],
                           key="nav_page", label_visibility="collapsed")
 
@@ -4837,7 +4846,7 @@ if st.button("🔍 予想する") and url_input:
     # Fetch JRA track condition & weather (Pattern B用)
     jra_track_info = {}
     weather_info = {}
-    if is_live_model:
+    if is_live_model and not IS_CLOUD:
         with st.spinner("馬場情報・天候データを取得中..."):
             try:
                 from scrape_jra_track import fetch_jra_track_info, get_moisture_rate
@@ -5180,8 +5189,8 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     if confidence < 40:
         st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E5534B;border-radius:8px;text-align:center;color:#E5534B !important;font-weight:bold;">⚠️ 見送り推奨 — 信頼度{confidence}（混戦/データ不足）</div>', unsafe_allow_html=True)
 
-    # 穴馬診断セクション
-    if odds_available:
+    # 穴馬診断セクション（Cloud環境ではスキップ）
+    if odds_available and not IS_CLOUD:
         dark_horse_html = render_dark_horse_section(df, race_info)
         if dark_horse_html:
             st.markdown('<div class="sec-title">🔮 穴馬診断<span class="sec-line"></span></div>', unsafe_allow_html=True)
@@ -5209,8 +5218,8 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
 <div style="font-size:0.9em;color:#E5534B !important;">{cond_profile["label"]}: {cond_profile["desc"]}</div>
 <div style="font-size:0.82em;color:#7D8590 !important;margin-top:8px;">{reason}</div>
 </div>''', unsafe_allow_html=True)
-    # Expected Value Section (with trio odds integration)
-    if odds_available:
+    # Expected Value Section (Cloud環境ではスキップ — trio_odds取得が重い)
+    if odds_available and not IS_CLOUD:
         st.markdown('<div class="sec-title">💰 期待値分析<span class="sec-line"></span></div>', unsafe_allow_html=True)
         ev_list = calc_expected_values(df, realtime_odds)
         # 三連複オッズを取得してEVを更新
@@ -6046,8 +6055,10 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
                     if b_fs:
                         st.markdown(render_feature_summary(b_fs), unsafe_allow_html=True)
 
-# Results update section
-with st.expander("📝 レース結果を登録（的中率集計用）"):
+# Results update section (Cloud環境では非表示)
+if IS_CLOUD:
+    st.caption("☁ Cloud Mode — 結果登録・バッチ予測はローカル環境で実行してください")
+with st.expander("📝 レース結果を登録（的中率集計用）", disabled=IS_CLOUD):
     result_url = st.text_input(
         "netkeibaの結果ページURLを貼り付け",
         placeholder="https://race.netkeiba.com/race/result.html?race_id=... または https://db.netkeiba.com/race/XXXX/",
