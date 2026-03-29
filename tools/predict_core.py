@@ -973,7 +973,8 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     df['頭数'] = num_horses
     df['斤量平均差'] = df['斤量'] - df['斤量'].mean()
     dist = race_info['distance']
-    df['距離カテゴリ'] = 0 if dist <= 1400 else (1 if dist <= 1800 else (2 if dist <= 2200 else 3))
+    # Match training pd.cut bins=[0,1200,1400,1800,2200,9999] labels=[0,1,2,3,4]
+    df['距離カテゴリ'] = 0 if dist <= 1200 else (1 if dist <= 1400 else (2 if dist <= 1800 else (3 if dist <= 2200 else 4)))
     df['体重カテゴリ'] = df['馬体重'].apply(lambda w: 0 if w <= 440 else (1 if w <= 480 else (2 if w <= 520 else 3)))
     df['体重変動abs'] = df['場体重増減'].abs()
     df['年齢性別'] = df['馬齢'] * 10 + df['性別_enc']
@@ -1289,7 +1290,9 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     # ===== V12新特徴量 =====
 
     # 1-3. Speed index (index_max, index_run1, index_avg5)
+    _si_found = 0
     if race_id:
+        # Source 1: CSV (historical data)
         try:
             _si_csv = os.path.join(BASE_DIR, 'data', 'netkeiba_speed_index.csv')
             if os.path.exists(_si_csv):
@@ -1303,8 +1306,32 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                         df.loc[df.index[idx_h], 'index_max_filled'] = pd.to_numeric(_row.get('index_max', 0), errors='coerce') or 0
                         df.loc[df.index[idx_h], 'index_avg5_filled'] = pd.to_numeric(_row.get('index_avg5', 0), errors='coerce') or 0
                         df.loc[df.index[idx_h], 'index_run1_filled'] = pd.to_numeric(_row.get('index_run1', 0), errors='coerce') or 0
+                        _si_found += 1
         except Exception:
             pass
+        # Source 2: Premium cache (weekly_premium_cache/{date}/premium_cache.json)
+        if _si_found == 0:
+            try:
+                import json as _json_si
+                import glob as _glob_si
+                _cache_dirs = sorted(_glob_si.glob(os.path.join(BASE_DIR, 'data', 'weekly_premium_cache', '*', 'premium_cache.json')))
+                for _cache_path in reversed(_cache_dirs):
+                    with open(_cache_path, 'r', encoding='utf-8') as _f:
+                        _cache = _json_si.load(_f)
+                    _race_cache = _cache.get(str(race_id), {})
+                    _si_data = _race_cache.get('speed_index', {})
+                    if _si_data:
+                        for idx_h in range(len(df)):
+                            _uma = str(int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0))))
+                            if _uma in _si_data:
+                                _sd = _si_data[_uma]
+                                df.loc[df.index[idx_h], 'index_max_filled'] = float(_sd.get('index_max', 0))
+                                df.loc[df.index[idx_h], 'index_avg5_filled'] = float(_sd.get('index_avg5', 0))
+                                df.loc[df.index[idx_h], 'index_run1_filled'] = float(_sd.get('index_run1', 0))
+                                _si_found += 1
+                        break
+            except Exception:
+                pass
     # Speed index: mean fill with training data average (not 0)
     _si_defaults = {'index_max_filled': 1045.0, 'index_run1_filled': 1040.0, 'index_avg5_filled': 1035.0}
     for _col, _default in _si_defaults.items():
