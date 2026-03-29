@@ -988,7 +988,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # v5+ 英語名特徴量
-    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10')):
+    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12')):
         df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
         df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
@@ -1004,6 +1004,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['horse_weight'] = df['馬体重']
         df['weight_diff'] = df['場体重増減'].fillna(0)
         df['weight_carry'] = df['斤量']
+        df['num_horses_val'] = df['頭数']
         df['age'] = df['馬齢']
         df['distance'] = df['距離(m)']
         df['course_enc'] = df['競馬場コード_enc']
@@ -1304,10 +1305,14 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                         df.loc[df.index[idx_h], 'index_run1_filled'] = pd.to_numeric(_row.get('index_run1', 0), errors='coerce') or 0
         except Exception:
             pass
-    for _col in ['index_max_filled', 'index_run1_filled', 'index_avg5_filled']:
+    # Speed index: mean fill with training data average (not 0)
+    _si_defaults = {'index_max_filled': 1045.0, 'index_run1_filled': 1040.0, 'index_avg5_filled': 1035.0}
+    for _col, _default in _si_defaults.items():
         if _col not in df.columns:
-            df[_col] = 0
-        df[_col] = pd.to_numeric(df[_col], errors='coerce').fillna(0)
+            df[_col] = _default
+        df[_col] = pd.to_numeric(df[_col], errors='coerce').fillna(_default)
+        # Replace 0 with default (0 means no match, not actual 0)
+        df.loc[df[_col] == 0, _col] = _default
 
     # 4-5. Training 1F and intensity
     if race_id:
