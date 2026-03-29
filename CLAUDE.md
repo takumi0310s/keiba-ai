@@ -576,7 +576,7 @@ LEAK_FEATURES_A = {
 - [ ] LINE通知実装（予測完了・的中通知）
 - [ ] GitHub Actionsによる自動化（現在はWindows タスクスケジューラで代替）
 - [ ] 条件D/Eの保守的ROI改善（現状100%以下）
-- [ ] 実運用でのROI追跡・アラート（月次100%未満で自動停止）
+- [x] 実運用でのROI追跡・アラート（tools/roi_monitor.py、daily_results.py後に自動実行、Discord警告通知）
 
 ### 中優先度
 - [ ] Pattern Bの天候・馬場情報取得失敗時の代替データソース

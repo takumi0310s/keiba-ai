@@ -558,6 +558,18 @@ if __name__ == "__main__":
     run_daily_results(date_str, source=args.source)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
 
+    # ROI監視チェック
+    try:
+        from tools.roi_monitor import run_monitor
+        run_monitor(dry_run=False)
+    except Exception:
+        try:
+            # tools/ディレクトリから実行された場合
+            from roi_monitor import run_monitor
+            run_monitor(dry_run=False)
+        except Exception:
+            pass
+
     # Discord通知（リッチ版）
     try:
         from notify import send_discord
