@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import pickle
 import json
-import requests
-from bs4 import BeautifulSoup
 import re
 import time
 import sqlite3
@@ -12,26 +10,6 @@ import os
 import sys
 from datetime import datetime
 from itertools import combinations
-
-# predict_core: 共通予測モジュール (daily_predict / race_auto_notify と同一ロジック)
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools'))
-from tools.predict_core import (
-    build_features as _core_build_features,
-    predict_race as _core_predict_race,
-    classify_race_condition as _core_classify_condition,
-    generate_trio_bets as _core_generate_trio,
-    generate_umaren_bets as _core_generate_umaren,
-    generate_wide_bets as _core_generate_wide,
-    apply_horse_stats as _core_apply_stats,
-    set_horse_defaults as _core_set_defaults,
-    calc_sire_score as _core_calc_sire_score,
-    get_horse_stats as _core_get_horse_stats,
-    parse_shutuba as _core_parse_shutuba,
-    load_feature_lookups as _core_load_feature_lookups,
-    calc_horse_ev as _core_calc_horse_ev,
-    calc_race_confidence as _core_calc_race_confidence,
-    calc_variable_investment as _core_calc_variable_investment,
-)
 
 st.set_page_config(page_title="KEIBA AI - 中央競馬専用", page_icon="🏇", layout="wide")
 
@@ -41,6 +19,33 @@ IS_CLOUD = (
     not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
     or os.path.exists('/mount/src')
 )
+
+# ===== ローカル専用インポート（Cloud時はスキップ） =====
+if not IS_CLOUD:
+    import requests
+    from bs4 import BeautifulSoup
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tools'))
+    from tools.predict_core import (
+        build_features as _core_build_features,
+        predict_race as _core_predict_race,
+        classify_race_condition as _core_classify_condition,
+        generate_trio_bets as _core_generate_trio,
+        generate_umaren_bets as _core_generate_umaren,
+        generate_wide_bets as _core_generate_wide,
+        apply_horse_stats as _core_apply_stats,
+        set_horse_defaults as _core_set_defaults,
+        calc_sire_score as _core_calc_sire_score,
+        get_horse_stats as _core_get_horse_stats,
+        parse_shutuba as _core_parse_shutuba,
+        load_feature_lookups as _core_load_feature_lookups,
+        calc_horse_ev as _core_calc_horse_ev,
+        calc_race_confidence as _core_calc_race_confidence,
+        calc_variable_investment as _core_calc_variable_investment,
+    )
+else:
+    # Cloud: requestsとbs4はTRACK RECORDなどの表示で不要
+    requests = None
+    BeautifulSoup = None
 
 # ===== SQLite DB =====
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keiba_predictions.db")
@@ -1806,26 +1811,38 @@ def load_jockey_wr():
     except:
         return {}
 
-_loaded = load_model()
-if isinstance(_loaded, dict):
-    model = _loaded['model']
-    model_features = _loaded.get('features', None)
-    model_version = _loaded.get('version', 'v1')
-    sire_map = _loaded.get('sire_map', {})
-    bms_map = _loaded.get('bms_map', {})
-    model_auc = _loaded.get('auc', 0.0)
-    model_leak_free = _loaded.get('leak_free', False)
+if not IS_CLOUD:
+    _loaded = load_model()
+    if isinstance(_loaded, dict):
+        model = _loaded['model']
+        model_features = _loaded.get('features', None)
+        model_version = _loaded.get('version', 'v1')
+        sire_map = _loaded.get('sire_map', {})
+        bms_map = _loaded.get('bms_map', {})
+        model_auc = _loaded.get('auc', 0.0)
+        model_leak_free = _loaded.get('leak_free', False)
+    else:
+        model = _loaded
+        model_features = None
+        model_version = 'v1'
+        sire_map = {}
+        bms_map = {}
+        model_auc = 0.0
+        model_leak_free = False
+
+    # v9中央/地方モデル
+    _v9_models = load_v9_models()
 else:
-    model = _loaded
+    # Cloud: モデルロードをスキップ
+    model = None
     model_features = None
-    model_version = 'v1'
+    model_version = 'cloud'
     sire_map = {}
     bms_map = {}
     model_auc = 0.0
     model_leak_free = False
-
-# v9中央/地方モデル
-_v9_models = load_v9_models()
+    _loaded = None
+    _v9_models = {'central': None, 'central_live': None}
 
 # 特徴量ルックアップテーブル（遅延読み込み）
 _feat_lookups = None
@@ -1867,20 +1884,21 @@ def get_model_for_race(is_nar=False, use_live=True):
 
 jockey_wr = load_jockey_wr()
 
-# ===== 騎手データ自動更新（7日経過で自動実行） =====
+# ===== 騎手データ自動更新（7日経過で自動実行、ローカルのみ） =====
 def auto_update_jockey_wr():
     """前回更新から7日以上経過していたら騎手データを自動更新"""
+    if IS_CLOUD:
+        return None
     try:
         from update_jockey_wr import needs_update, update_jockey_wr as do_update
         if needs_update(days=7):
             do_update()
-            # 更新後に再読み込み
             return load_jockey_wr()
     except Exception:
         pass
     return None
 
-if 'jockey_wr_checked' not in st.session_state:
+if 'jockey_wr_checked' not in st.session_state and not IS_CLOUD:
     st.session_state['jockey_wr_checked'] = True
     updated = auto_update_jockey_wr()
     if updated:
@@ -4760,28 +4778,36 @@ else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
 # ===== 起動時自動チェック =====
-sys_checks = run_system_checks()
-all_ok = all(c[1] for c in sys_checks)
-if all_ok:
-    st.markdown('<div class="sys-ok"><span style="color:#14B8A6 !important;font-weight:bold;">&#9989; 全システム正常</span></div>', unsafe_allow_html=True)
-else:
-    warn_html = '<div class="sys-warn">'
-    for name, ok, detail in sys_checks:
-        if not ok:
-            warn_html += f'<div style="color:#E5534B !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
-    warn_html += '</div>'
-    st.markdown(warn_html, unsafe_allow_html=True)
+if not IS_CLOUD:
+    sys_checks = run_system_checks()
+    all_ok = all(c[1] for c in sys_checks)
+    if all_ok:
+        st.markdown('<div class="sys-ok"><span style="color:#14B8A6 !important;font-weight:bold;">&#9989; 全システム正常</span></div>', unsafe_allow_html=True)
+    else:
+        warn_html = '<div class="sys-warn">'
+        for name, ok, detail in sys_checks:
+            if not ok:
+                warn_html += f'<div style="color:#E5534B !important;font-weight:bold;">&#9888;&#65039; {name}に問題あり — {detail}</div>'
+        warn_html += '</div>'
+        st.markdown(warn_html, unsafe_allow_html=True)
 
 # ===== サイドバーナビゲーション =====
 with st.sidebar:
     st.markdown("### KEIBA AI")
     if IS_CLOUD:
-        st.caption("☁ Cloud Mode (閲覧専用)")
-    _nav_page = st.radio("ページ選択", ["🔍 予測", "📊 ダッシュボード"],
-                          key="nav_page", label_visibility="collapsed")
+        st.caption("Cloud Mode (閲覧専用)")
+        _nav_page = st.radio("ページ選択", ["📊 ダッシュボード"],
+                              key="nav_page", label_visibility="collapsed")
+    else:
+        _nav_page = st.radio("ページ選択", ["🔍 予測", "📊 ダッシュボード"],
+                              key="nav_page", label_visibility="collapsed")
 
 if _nav_page == "📊 ダッシュボード":
     render_live_dashboard()
+    st.stop()
+
+if IS_CLOUD:
+    st.info("Cloud Mode: 予測機能はローカル環境でご利用ください。ダッシュボードでTRACK RECORDと条件別成績を確認できます。")
     st.stop()
 
 url_input = st.text_input("netkeibaの出馬表URLを入力（中央競馬専用）")

@@ -10,6 +10,8 @@ daily_results.pyの後に自動実行する想定。
 3. 条件別ROIが保守的見積りを下回る（N>=20） → 条件別警告
 4. 直近30レースのROIが80%未満 → 短期ドローダウン警告
 5. 連敗数が20を超える → 連敗警告
+6. 累積ROIがBT保守的見積りを20%以上下回る → BT乖離アラート
+7. 条件別ROIがBT保守的見積りを20%以上下回る（N>=20） → 条件別BT乖離
 
 Usage:
     python tools/roi_monitor.py              # チェック実行
@@ -151,6 +153,36 @@ def run_monitor(dry_run=False):
             'level': 'WARNING',
             'message': f'連敗 {streak}R >= {MAX_LOSING_STREAK}R',
         })
+
+    # 5. BT乖離チェック: 累積ROIがBT保守的見積りを20%以上下回る
+    BT_DIVERGENCE_THRESHOLD = 0.20  # 20%
+    if n >= 30 and roi > 0:
+        divergence_pct = (CONSERVATIVE_ROI_OVERALL - roi) / CONSERVATIVE_ROI_OVERALL
+        info.append(f"BT乖離: {divergence_pct:+.1%} (保守的{CONSERVATIVE_ROI_OVERALL}% vs 実績{roi:.1f}%)")
+        if divergence_pct >= BT_DIVERGENCE_THRESHOLD:
+            alerts.append({
+                'level': 'DANGER' if divergence_pct >= 0.30 else 'WARNING',
+                'message': f'累積ROI {roi:.1f}%がBT保守的見積り{CONSERVATIVE_ROI_OVERALL}%を'
+                           f'{divergence_pct:.0%}下回る ({n}R)',
+            })
+
+    # 6. 条件別BT乖離チェック
+    if 'condition' in df.columns:
+        for cond in sorted(df['condition'].unique()):
+            sub = df[df['condition'] == cond]
+            cn, ch, ci, cp = calc_roi(sub)
+            if cn < CONDITION_MIN_N:
+                continue
+            c_roi = (cp / ci * 100) if ci > 0 else 0
+            c_target = CONDITION_CONSERVATIVE_ROI.get(cond, 100)
+            if c_target > 0 and c_roi > 0:
+                c_div = (c_target - c_roi) / c_target
+                if c_div >= BT_DIVERGENCE_THRESHOLD:
+                    alerts.append({
+                        'level': 'WARNING',
+                        'message': f'条件{cond}: ROI {c_roi:.1f}%がBT保守{c_target}%を'
+                                   f'{c_div:.0%}下回る (N={cn})',
+                    })
 
     # 出力
     print(f"{'=' * 60}")

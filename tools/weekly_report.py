@@ -461,6 +461,34 @@ def run_weekly_report(end_date_str):
         print(f"  Pattern B AUC: {model_info['pattern_b']:.4f} (参考値)")
 
     # ===== 警告サマリー =====
+    # ===== BT乖離20%チェック (Discord警告) =====
+    bt_divergence_alerts = []
+    if cumul_stats and cumul_stats['count'] >= 30:
+        overall_roi = cumul_stats['roi']
+        if CONSERVATIVE_ROI_OVERALL > 0:
+            div_pct = (CONSERVATIVE_ROI_OVERALL - overall_roi) / CONSERVATIVE_ROI_OVERALL
+            if div_pct >= 0.20:
+                bt_divergence_alerts.append(
+                    f"累積ROI {overall_roi:.1f}%がBT保守的見積り{CONSERVATIVE_ROI_OVERALL}%を"
+                    f"{div_pct:.0%}下回る (N={cumul_stats['count']})")
+        # 条件別
+        if 'condition' in cumul_df.columns:
+            for cond in sorted(cumul_df['condition'].unique()):
+                sub = cumul_df[cumul_df['condition'] == cond]
+                cs = _calc_stats(sub)
+                if cs['count'] < 20:
+                    continue
+                profile = CONDITION_PROFILES.get(cond, {})
+                c_target = profile.get('conservative_roi', 0)
+                if c_target > 0:
+                    c_div = (c_target - cs['roi']) / c_target
+                    if c_div >= 0.20:
+                        bt_divergence_alerts.append(
+                            f"条件{cond}: ROI {cs['roi']:.1f}%がBT保守{c_target}%を"
+                            f"{c_div:.0%}下回る (N={cs['count']})")
+    if bt_divergence_alerts:
+        warnings.extend(bt_divergence_alerts)
+
     if warnings:
         print(f"\n{'!' * 60}")
         print(f"  警告 ({len(warnings)}件)")
@@ -469,6 +497,16 @@ def run_weekly_report(end_date_str):
             print(f"  - {w}")
     else:
         print(f"\n  全項目正常")
+
+    # BT乖離アラートがある場合はDiscord通知
+    if bt_divergence_alerts:
+        try:
+            from notify import send_discord
+            alert_lines = [f"BT乖離アラート ({len(bt_divergence_alerts)}件)", ""]
+            alert_lines.extend(bt_divergence_alerts)
+            send_discord("BT乖離警告", "\n".join(alert_lines), color="red")
+        except Exception:
+            pass
 
     # ===== JSON保存 =====
     report = {
