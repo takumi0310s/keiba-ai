@@ -228,20 +228,40 @@ def extract_sed_prev_features(sed_df, target_race_id=None, target_umaban=None):
 # 学習用マージ関数
 # =====================================================
 
+def _build_nk_race_id_from_jv(df):
+    """JVデータからnetkeiba形式race_id(12桁)を構築
+
+    JV race_id: course(2) + year(2) + kai(1) + nichi(1) + race_num(2) + umaban(2) = 10桁
+    netkeiba:   '20' + year(2) + course(2) + kai(2) + nichi(2) + race_num(2) = 12桁
+    """
+    jv_rid = df['race_id'].astype(str).str.zfill(10)
+    course_code = jv_rid.str[:2]
+    year_2d = jv_rid.str[2:4]
+    kai = df['kai'].astype(int).apply(lambda x: f'{x:02d}')
+    nichi = df['nichi'].astype(int).apply(lambda x: f'{x:02d}')
+    race_num = jv_rid.str[6:8]
+    return '20' + year_2d + course_code + kai + nichi + race_num
+
+
 def merge_jrdb_train_features(df):
     """学習データにJRDB特徴量をマージ
 
-    jra_race_id(10桁) + umaban でjrdb_kyi.csv / jrdb_sed.csvと結合。
-    前走SED特徴量はprev_race_idを使って結合。
+    nk_race_id(12桁) + umaban でjrdb_kyi.csv / jrdb_sed.csvと結合。
+    JV race_idはcourse+year+kai+nichi+race_num+umabanの10桁で
+    JRDBとフォーマットが異なるため、netkeiba形式に統一して結合する。
 
     Args:
         df: 学習データ（jra_races_full.csvベース）
-            必須列: race_id, umaban
+            必須列: race_id, umaban, kai, nichi
 
     Returns:
         df: JRDB特徴量を追加したDataFrame
     """
     print("  Merging JRDB features (train)...")
+
+    # JVデータのnk_race_id構築
+    df['_nk_rid'] = _build_nk_race_id_from_jv(df)
+    df['_uma'] = df['umaban'].astype(int)
 
     # --- KYI（前日データ） ---
     kyi_path = os.path.join(DATA_DIR, 'jrdb_kyi.csv')
@@ -249,21 +269,17 @@ def merge_jrdb_train_features(df):
         kyi_raw = pd.read_csv(kyi_path, encoding='utf-8-sig', dtype=str)
         kyi_feats = extract_kyi_features(kyi_raw)
         if len(kyi_feats) > 0:
-            # race_id(10桁) + 馬番で結合
-            df['_rid'] = df['race_id'].astype(str).str.zfill(10)
-            df['_uma'] = df['umaban'].astype(int)
-            kyi_feats['_rid'] = kyi_feats['jra_race_id'].astype(str).str.zfill(10)
+            kyi_feats['_nk_rid'] = kyi_feats['nk_race_id'].astype(str).str.zfill(12)
             kyi_feats['_uma'] = kyi_feats['馬番'].astype(int)
 
-            kyi_cols = ['_rid', '_uma'] + [c for c in kyi_feats.columns
-                                           if c.startswith('jrdb_')]
-            kyi_dedup = kyi_feats[kyi_cols].drop_duplicates(subset=['_rid', '_uma'], keep='last')
+            kyi_cols = ['_nk_rid', '_uma'] + [c for c in kyi_feats.columns
+                                               if c.startswith('jrdb_')]
+            kyi_dedup = kyi_feats[kyi_cols].drop_duplicates(subset=['_nk_rid', '_uma'], keep='last')
 
             before = len(df)
-            df = df.merge(kyi_dedup, on=['_rid', '_uma'], how='left')
+            df = df.merge(kyi_dedup, on=['_nk_rid', '_uma'], how='left')
             matched = df[[c for c in df.columns if c.startswith('jrdb_')]].notna().any(axis=1).sum()
             print(f"    KYI: {matched}/{before} matched ({matched/before*100:.1f}%)")
-            df.drop(columns=['_rid', '_uma'], inplace=True, errors='ignore')
         else:
             print("    KYI: empty features")
     else:
@@ -292,6 +308,9 @@ def merge_jrdb_train_features(df):
             df[feat] = pd.to_numeric(df[feat], errors='coerce').fillna(default)
         else:
             df[feat] = default
+
+    # 一時列の削除
+    df.drop(columns=['_nk_rid', '_uma'], inplace=True, errors='ignore')
 
     # 有効率表示
     jrdb_cols = [c for c in df.columns if c.startswith('jrdb_')]
@@ -329,20 +348,21 @@ def _merge_sed_as_prev(df, sed_feats, sed_raw):
     prev_cols = [c for c in sed_merged.columns if c.startswith('jrdb_prev_')]
     sed_merged[prev_cols] = sed_merged.groupby('_blood_id')[prev_cols].shift(1)
 
-    # race_id + 馬番で元dfにマージ
-    sed_merged['_rid'] = sed_merged['jra_race_id'].astype(str) if 'jra_race_id' in sed_merged.columns else ''
+    # nk_race_id + 馬番で元dfにマージ
+    sed_merged['_nk_rid'] = sed_merged['nk_race_id'].astype(str).str.zfill(12) if 'nk_race_id' in sed_merged.columns else ''
     sed_merged['_uma'] = pd.to_numeric(sed_merged['馬番'], errors='coerce')
 
-    if '_rid' not in df.columns:
-        df['_rid'] = df['race_id'].astype(str).str.zfill(10)
+    # df側のnk_race_idは既に_build_nk_race_id_from_jvで構築済み
+    if '_nk_rid' not in df.columns:
+        df['_nk_rid'] = _build_nk_race_id_from_jv(df)
     if '_uma' not in df.columns:
         df['_uma'] = df['umaban'].astype(int)
 
-    merge_cols = ['_rid', '_uma'] + prev_cols
-    sed_dedup = sed_merged[merge_cols].drop_duplicates(subset=['_rid', '_uma'], keep='last')
+    merge_cols = ['_nk_rid', '_uma'] + prev_cols
+    sed_dedup = sed_merged[merge_cols].drop_duplicates(subset=['_nk_rid', '_uma'], keep='last')
 
     before_cols = set(df.columns)
-    df_merged = df.merge(sed_dedup, on=['_rid', '_uma'], how='left', suffixes=('', '_sed'))
+    df_merged = df.merge(sed_dedup, on=['_nk_rid', '_uma'], how='left', suffixes=('', '_sed'))
 
     # マージ結果を元dfに反映
     for c in prev_cols:
@@ -356,8 +376,6 @@ def _merge_sed_as_prev(df, sed_feats, sed_raw):
 
     matched = df[prev_cols[0]].notna().sum() if prev_cols else 0
     print(f"    SED prev: {matched}/{len(df)} matched ({matched/len(df)*100:.1f}%)")
-
-    df.drop(columns=['_rid', '_uma'], inplace=True, errors='ignore')
 
 
 # =====================================================

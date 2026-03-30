@@ -64,7 +64,7 @@ JRDB_COURSE_MAP = {
 }
 
 # =====================================================
-# KYI (前日データ) パーサー定義 — 1024バイト/レコード
+# KYI (前日データ) パーサー定義 - 1024バイト/レコード
 # =====================================================
 KYI_FIELDS = [
     # (名前, 開始位置(1-indexed), バイト数, 型)
@@ -147,7 +147,7 @@ KYI_FIELDS = [
 ]
 
 # =====================================================
-# TYB (直前データ) パーサー定義 — 128バイト/レコード
+# TYB (直前データ) パーサー定義 - 128バイト/レコード
 # =====================================================
 TYB_FIELDS = [
     # --- レースキー ---
@@ -183,7 +183,7 @@ TYB_FIELDS = [
 ]
 
 # =====================================================
-# SED (成績データ) パーサー定義 — 376バイト/レコード
+# SED (成績データ) パーサー定義 - 376バイト/レコード
 # =====================================================
 SED_FIELDS = [
     # --- レースキー ---
@@ -380,7 +380,7 @@ def _parse_lzh_stored(lzh_bytes):
             # 無圧縮
             result[filename] = file_data
         else:
-            # 圧縮形式は対応外 — 7-Zipが必要
+            # 圧縮形式は対応外 - 7-Zipが必要
             print(f"  [WARN] {filename}: {method} compression not supported in pure Python")
             return {}
 
@@ -544,7 +544,7 @@ def download_jrdb_file(file_type, date_str, force=False):
             print("[ERROR] 認証失敗。JRDB_ID/JRDB_PASSWORDを確認してください")
             return None
         if resp.status_code == 404:
-            print(f"  [SKIP] {file_type}{date_str} — データなし(404)")
+            print(f"  [SKIP] {file_type}{date_str} - データなし(404)")
             return None
         resp.raise_for_status()
     except requests.RequestException as e:
