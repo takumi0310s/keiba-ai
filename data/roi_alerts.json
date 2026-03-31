@@ -1,0 +1,98 @@
+[
+  {
+    "timestamp": "2026-03-30 01:41:14",
+    "total_races": 419,
+    "roi": 73.8,
+    "losing_streak": 6,
+    "alerts": [
+      {
+        "level": "DANGER",
+        "message": "累積ROI 73.8% < 100% (419R). 運用停止を検討してください。"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 71.0% < 保守的ROI 143.7% (N=135)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 69.1% < 保守的ROI 199.9% (N=121)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件D: ROI 88.6% < 保守的ROI 95.2% (N=143)"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-03-31 00:26:54",
+    "total_races": 419,
+    "roi": 73.8,
+    "losing_streak": 6,
+    "alerts": [
+      {
+        "level": "DANGER",
+        "message": "累積ROI 73.8% < 100% (419R). 運用停止を検討してください。"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 71.0% < 保守的ROI 143.7% (N=135)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 69.1% < 保守的ROI 199.9% (N=121)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件D: ROI 88.6% < 保守的ROI 95.2% (N=143)"
+      },
+      {
+        "level": "DANGER",
+        "message": "累積ROI 73.8%がBT保守的見積り142.6%を48%下回る (419R)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 71.0%がBT保守143.7%を51%下回る (N=135)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 69.1%がBT保守199.9%を65%下回る (N=121)"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-03-31 00:27:00",
+    "total_races": 419,
+    "roi": 73.8,
+    "losing_streak": 6,
+    "alerts": [
+      {
+        "level": "DANGER",
+        "message": "累積ROI 73.8% < 100% (419R). 運用停止を検討してください。"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 71.0% < 保守的ROI 143.7% (N=135)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 69.1% < 保守的ROI 199.9% (N=121)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件D: ROI 88.6% < 保守的ROI 95.2% (N=143)"
+      },
+      {
+        "level": "DANGER",
+        "message": "累積ROI 73.8%がBT保守的見積り142.6%を48%下回る (419R)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 71.0%がBT保守143.7%を51%下回る (N=135)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 69.1%がBT保守199.9%を65%下回る (N=121)"
+      }
+    ]
+  }
+]

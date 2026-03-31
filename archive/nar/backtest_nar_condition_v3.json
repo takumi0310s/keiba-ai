@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-03-09 01:33:54",
+  "version": "nar_v3",
+  "lgb_auc": 0.5835715485582549,
+  "xgb_auc": 0.5846873226056837,
+  "ensemble_auc": 0.5867972288835599,
+  "training_data": {
+    "kdscope_enriched": 12290,
+    "netkeiba": 1803,
+    "odds_coverage": "69.6%"
+  },
+  "condition_results": {
+    "A": {
+      "bet_type": "wide",
+      "hit_rate": 13.043478260869565,
+      "roi": 18.405797101449277,
+      "stars": 0,
+      "recommended": false,
+      "n": 69
+    },
+    "B": {
+      "bet_type": "wide",
+      "hit_rate": 16.867469879518072,
+      "roi": 63.433734939759034,
+      "stars": 0,
+      "recommended": false,
+      "n": 83
+    },
+    "C": {
+      "bet_type": "trio",
+      "hit_rate": 50.0,
+      "roi": 192.85714285714286,
+      "stars": 3,
+      "recommended": true,
+      "n": 2
+    },
+    "D": {
+      "bet_type": "trio",
+      "hit_rate": 0,
+      "roi": 0,
+      "stars": 0,
+      "recommended": false,
+      "n": 0
+    },
+    "E": {
+      "bet_type": "wide",
+      "hit_rate": 56.666666666666664,
+      "roi": 108.5,
+      "stars": 3,
+      "recommended": true,
+      "n": 30
+    },
+    "X": {
+      "bet_type": "trio",
+      "hit_rate": 0,
+      "roi": 0,
+      "stars": 0,
+      "recommended": false,
+      "n": 0
+    }
+  }
+}

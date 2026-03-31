@@ -1416,6 +1416,14 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
             shinba_scores.append(int(cs) if cs is not None else 0)
         df['shinba_comment_score'] = shinba_scores
 
+
+    # ===== JRDB特徴量統合 (v13) =====
+    try:
+        from tools.jrdb_features import merge_jrdb_predict_features
+        df = merge_jrdb_predict_features(df, race_id)
+    except Exception as e:
+        print(f"[JRDB] 特徴量取得スキップ: {e}")
+
     # 必要な特徴量の確保
     use_features = model_data.get('features')
     if use_features:

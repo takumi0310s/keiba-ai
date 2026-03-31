@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-03-09 02:57:42",
+  "v2a_baseline": {
+    "lgb": 0.8264144144144145,
+    "xgb": 0.8148828828828829,
+    "ensemble": 0.8242522522522522
+  },
+  "v3": {
+    "lgb": 0.7805765765765765,
+    "xgb": 0.7781981981981981,
+    "ensemble": 0.7804324324324324
+  },
+  "improved": false,
+  "improvement": -0.04381981981981975,
+  "new_features": [
+    "horse_dist_top3r",
+    "horse_surface_top3r",
+    "jockey_course_wr",
+    "frame_course_dist_wr",
+    "horse_career_races",
+    "horse_career_wr",
+    "horse_career_top3r"
+  ]
+}

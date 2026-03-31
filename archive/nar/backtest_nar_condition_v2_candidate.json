@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-03-09 00:10:06",
+  "version": "nar_v2_candidate",
+  "auc": 0.6788468468468469,
+  "note": "Did not beat V1 AUC 0.789",
+  "condition_results": {
+    "A": {
+      "bet_type": "trio",
+      "hit_rate": 57.971014492753625,
+      "n": 69
+    },
+    "B": {
+      "bet_type": "trio",
+      "hit_rate": 37.34939759036144,
+      "n": 83
+    },
+    "C": {
+      "bet_type": "trio",
+      "hit_rate": 50.0,
+      "n": 2
+    },
+    "D": {
+      "bet_type": "trio",
+      "hit_rate": 0,
+      "n": 0
+    },
+    "E": {
+      "bet_type": "umaren",
+      "hit_rate": 50.0,
+      "n": 30
+    },
+    "X": {
+      "bet_type": "trio",
+      "hit_rate": 0,
+      "n": 0
+    }
+  }
+}

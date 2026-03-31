@@ -1,0 +1,56 @@
+{
+  "speed_index": {
+    "completed_years": [
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+    ],
+    "current_year": 2021,
+    "note": "2022: complete(3155R). 2023: complete(3154R). 2024: 1179R. 2025: 2278R. 2021 in progress."
+  },
+  "newspaper": {
+    "completed_years": [],
+    "current_year": 2025,
+    "note": "2025: 584R partial"
+  },
+  "result": {
+    "completed_years": [],
+    "current_year": 2025,
+    "note": "2025: 669R partial"
+  },
+  "history": [
+    {
+      "date": "2026-03-26 13:00",
+      "limit": 500,
+      "results": [
+        "speed_index: year=2020 OK",
+        "newspaper: year=2020 OK",
+        "result: year=2020 OK"
+      ]
+    },
+    {
+      "date": "2026-03-26 14:49",
+      "limit": 500,
+      "results": [
+        "speed_index: year=2020 OK",
+        "training_times: year=2020 OK"
+      ]
+    },
+    {
+      "date": "2026-03-26 14:52",
+      "limit": 500,
+      "results": [
+        "speed_index: year=2020 OK",
+        "training_times: year=2020 OK"
+      ]
+    }
+  ],
+  "training_times": {
+    "completed_years": [],
+    "current_year": null,
+    "note": "2025: 203R partial"
+  },
+  "last_updated": "2026-03-27T06:00"
+}

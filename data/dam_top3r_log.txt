@@ -1,0 +1,127 @@
+============================================================
+  dam_top3r 再検証
+============================================================
+
+[1/4] Loading & encoding...
+Loading data...
+  Raw: 531619 rows, 52 cols
+  Columns: ['year', 'month', 'day', 'kai', 'course', 'nichi', 'race_num', 'race_name', 'class_code', 'surface']...
+  Valid: 527280 rows, 38002 races
+  Year range: 2015-2025
+  Father sample: ['マンハッタンカフェ', 'マンハッタンカフェ', 'ダンスインザダーク', 'ダンスインザダーク', 'スウェプトオーヴァーボード']
+  BMS sample: ['キャロルハウス', 'キャロルハウス', 'トニービン', 'トニービン', 'サンデーサイレンス']
+  Loaded: 527280 rows
+  Top 5 sires: ['ディープインパクト', 'ハーツクライ', 'ダイワメジャー', 'ロードカナロア', 'キングカメハメハ']
+  Top 5 BMS: ['サンデーサイレンス', 'キングカメハメハ', 'ディープインパクト', 'アグネスタキオン', 'クロフネ']
+
+[2/4] Building all features...
+Loading training times...
+  955580 training records
+  Wood: 296654 valid, Sakaro: 658735 valid
+Merging training time features...
+  Wood training matched: 95370/527280 (18.1%)
+  Merging sakaro training features...
+  Sakaro name→horse_id mapped: 654220/658735 (99.3%)
+  Sakaro training matched: 153874/527280 (29.2%)
+Computing jockey stats (expanding window)...
+Computing trainer stats (expanding window)...
+Computing horse career features...
+Computing sire performance features...
+Computing lag features...
+  Lag features computed for 58921 horses
+Computing distance aptitude features...
+Computing frame advantage features...
+
+[3/4] v12 features + dam_top3r...
+  Speed Index: 141506/527280 matched (26.8%)
+  Training 1F: 2526/527280 matched (0.5%)
+  Computing sire_shinba_top3r (expanding window, leak-free)...
+  Sire shinba (expanding): 0/527280 computed (0.0%)
+  Computing dam_top3r (expanding window, leak-free)...
+  Dam stats (expanding): 508203/527280 computed (96.4%)
+  PCI: 527280/527280 computed (100.0%)
+  Final: 527280 rows
+
+  74 features (current v12): 74
+  75 features (+dam_top3r):  75
+
+[4/4] Walk-forward comparison...
+
+--- v12 Current (74 features) ---
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[272]	valid_0's auc: 0.792312
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[414]	valid_0's auc: 0.797619
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[288]	valid_0's auc: 0.802613
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[477]	valid_0's auc: 0.802653
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[492]	valid_0's auc: 0.807444
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[417]	valid_0's auc: 0.806835
+  2020: LGB=0.7923 XGB=0.7944 Gap=0.0418 ✓
+  2021: LGB=0.7976 XGB=0.7989 Gap=0.0461 ✓
+  2022: LGB=0.8026 XGB=0.8031 Gap=0.0239 ✓
+  2023: LGB=0.8027 XGB=0.8046 Gap=0.0378 ✓
+  2024: LGB=0.8074 XGB=0.8079 Gap=0.0307 ✓
+  2025: LGB=0.8068 XGB=0.8077 Gap=0.0238 ✓
+  Mean: 0.8016
+
+--- +dam_top3r (75 features) ---
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[372]	valid_0's auc: 0.793798
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[301]	valid_0's auc: 0.797628
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[300]	valid_0's auc: 0.802593
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[487]	valid_0's auc: 0.802795
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[433]	valid_0's auc: 0.807027
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[540]	valid_0's auc: 0.807658
+  2020: LGB=0.7938 XGB=0.7943 Gap=0.0535 ✓
+  2021: LGB=0.7976 XGB=0.7990 Gap=0.0339 ✓
+  2022: LGB=0.8026 XGB=0.8034 Gap=0.0254 ✓
+  2023: LGB=0.8028 XGB=0.8038 Gap=0.0385 ✓
+  2024: LGB=0.8070 XGB=0.8081 Gap=0.0272 ✓
+  2025: LGB=0.8077 XGB=0.8081 Gap=0.0315 ✓
+  Mean: 0.8019
+
+============================================================
+  RESULTS
+============================================================
+  v12 current (74):  0.8016
+  +dam_top3r  (75):  0.8019
+  Difference:        +0.0003
+  Threshold:         0.8037
+
+  AUC > 0.8037:    ✗
+  All years > 0.78: ✓
+  No overfitting:   ✗
+  VERDICT: ✗ KEEP CURRENT (dam_top3r not adopted)
+
+  Year-by-year comparison:
+  2020: 0.7923 → 0.7938 (+0.0015)
+  2021: 0.7976 → 0.7976 (+0.0000)
+  2022: 0.8026 → 0.8026 (-0.0000)
+  2023: 0.8027 → 0.8028 (+0.0001)
+  2024: 0.8074 → 0.8070 (-0.0004)
+  2025: 0.8068 → 0.8077 (+0.0008)
+
+  Saved: C:\Users\takum\keiba-ai\data\dam_top3r_reverify.json
+  Elapsed: 795s
+

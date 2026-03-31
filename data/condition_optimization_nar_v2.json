@@ -1,0 +1,2737 @@
+{
+  "generated_at": "2026-03-09 13:50:05",
+  "all_conditions": [
+    {
+      "name": "D800_C13_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 13,
+        "heads": "H_tiny"
+      },
+      "n": 101,
+      "bets": {
+        "trio": {
+          "hits": 97,
+          "hit_rate": 96.0,
+          "investment": 70700,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 63,
+          "hit_rate": 62.4,
+          "investment": 20200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 98,
+          "hit_rate": 97.0,
+          "investment": 20200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 97.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 87.4,
+      "wf_min_hit": 82.4,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "D900_C11_H_tiny",
+      "filters": {
+        "dist": "D900",
+        "course": 11,
+        "heads": "H_tiny"
+      },
+      "n": 157,
+      "bets": {
+        "trio": {
+          "hits": 150,
+          "hit_rate": 95.5,
+          "investment": 109900,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 100,
+          "hit_rate": 63.7,
+          "investment": 31400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 150,
+          "hit_rate": 95.5,
+          "investment": 31400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 95.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 93.3,
+      "wf_min_hit": 90.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D900_H_tiny",
+      "filters": {
+        "dist": "D900",
+        "heads": "H_tiny"
+      },
+      "n": 192,
+      "bets": {
+        "trio": {
+          "hits": 182,
+          "hit_rate": 94.8,
+          "investment": 134400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 121,
+          "hit_rate": 63.0,
+          "investment": 38400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 182,
+          "hit_rate": 94.8,
+          "investment": 38400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.8,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 93.6,
+      "wf_min_hit": 90.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D800_C10_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 10,
+        "heads": "H_tiny"
+      },
+      "n": 89,
+      "bets": {
+        "trio": {
+          "hits": 84,
+          "hit_rate": 94.4,
+          "investment": 62300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 50,
+          "hit_rate": 56.2,
+          "investment": 17800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 84,
+          "hit_rate": 94.4,
+          "investment": 17800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.4,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 96.0,
+      "wf_min_hit": 92.1,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D1200_H_tiny",
+      "filters": {
+        "dist": "D1200",
+        "heads": "H_tiny"
+      },
+      "n": 51,
+      "bets": {
+        "trio": {
+          "hits": 48,
+          "hit_rate": 94.1,
+          "investment": 35700,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 58.8,
+          "investment": 10200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 48,
+          "hit_rate": 94.1,
+          "investment": 10200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.1,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_C10_H_tiny",
+      "filters": {
+        "dist": "D1200",
+        "course": 10,
+        "heads": "H_tiny"
+      },
+      "n": 51,
+      "bets": {
+        "trio": {
+          "hits": 48,
+          "hit_rate": 94.1,
+          "investment": 35700,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 30,
+          "hit_rate": 58.8,
+          "investment": 10200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 48,
+          "hit_rate": 94.1,
+          "investment": 10200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.1,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1400_C13_H_tiny",
+      "filters": {
+        "dist": "D1400",
+        "course": 13,
+        "heads": "H_tiny"
+      },
+      "n": 132,
+      "bets": {
+        "trio": {
+          "hits": 123,
+          "hit_rate": 93.2,
+          "investment": 92400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 89,
+          "hit_rate": 67.4,
+          "investment": 26400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 124,
+          "hit_rate": 93.9,
+          "investment": 26400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.9,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 94.3,
+      "wf_min_hit": 88.6,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "ALL_H_tiny",
+      "filters": {
+        "heads": "H_tiny"
+      },
+      "n": 792,
+      "bets": {
+        "trio": {
+          "hits": 742,
+          "hit_rate": 93.7,
+          "investment": 554400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 497,
+          "hit_rate": 62.8,
+          "investment": 158400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 744,
+          "hit_rate": 93.9,
+          "investment": 158400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.9,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 90.9,
+      "wf_min_hit": 90.6,
+      "wf_stability": 1.0
+    },
+    {
+      "name": "D800_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "heads": "H_tiny"
+      },
+      "n": 329,
+      "bets": {
+        "trio": {
+          "hits": 307,
+          "hit_rate": 93.3,
+          "investment": 230300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 198,
+          "hit_rate": 60.2,
+          "investment": 65800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 308,
+          "hit_rate": 93.6,
+          "investment": 65800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 88.1,
+      "wf_min_hit": 86.7,
+      "wf_stability": 0.98
+    },
+    {
+      "name": "D1400_H_tiny",
+      "filters": {
+        "dist": "D1400",
+        "heads": "H_tiny"
+      },
+      "n": 212,
+      "bets": {
+        "trio": {
+          "hits": 197,
+          "hit_rate": 92.9,
+          "investment": 148400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 143,
+          "hit_rate": 67.5,
+          "investment": 42400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 198,
+          "hit_rate": 93.4,
+          "investment": 42400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.4,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 95.4,
+      "wf_min_hit": 90.9,
+      "wf_stability": 0.95
+    },
+    {
+      "name": "D1400_C11_H_small",
+      "filters": {
+        "dist": "D1400",
+        "course": 11,
+        "heads": "H_small"
+      },
+      "n": 69,
+      "bets": {
+        "trio": {
+          "hits": 63,
+          "hit_rate": 91.3,
+          "investment": 48300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 35,
+          "hit_rate": 50.7,
+          "investment": 13800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 64,
+          "hit_rate": 92.8,
+          "investment": 13800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 92.8,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1400_C11",
+      "filters": {
+        "dist": "D1400",
+        "course": 11
+      },
+      "n": 149,
+      "bets": {
+        "trio": {
+          "hits": 137,
+          "hit_rate": 91.9,
+          "investment": 104300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 89,
+          "hit_rate": 59.7,
+          "investment": 29800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 138,
+          "hit_rate": 92.6,
+          "investment": 29800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 92.6,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1400_C11_H_tiny",
+      "filters": {
+        "dist": "D1400",
+        "course": 11,
+        "heads": "H_tiny"
+      },
+      "n": 80,
+      "bets": {
+        "trio": {
+          "hits": 74,
+          "hit_rate": 92.5,
+          "investment": 56000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 54,
+          "hit_rate": 67.5,
+          "investment": 16000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 74,
+          "hit_rate": 92.5,
+          "investment": 16000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 92.5,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D900_C10_H_tiny",
+      "filters": {
+        "dist": "D900",
+        "course": 10,
+        "heads": "H_tiny"
+      },
+      "n": 35,
+      "bets": {
+        "trio": {
+          "hits": 32,
+          "hit_rate": 91.4,
+          "investment": 24500,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 21,
+          "hit_rate": 60.0,
+          "investment": 7000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 32,
+          "hit_rate": 91.4,
+          "investment": 7000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 91.4,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_C11_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 11,
+        "heads": "H_tiny"
+      },
+      "n": 139,
+      "bets": {
+        "trio": {
+          "hits": 126,
+          "hit_rate": 90.6,
+          "investment": 97300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 85,
+          "hit_rate": 61.2,
+          "investment": 27800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 126,
+          "hit_rate": 90.6,
+          "investment": 27800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 90.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 82.4,
+      "wf_min_hit": 80.0,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D900_C11",
+      "filters": {
+        "dist": "D900",
+        "course": 11
+      },
+      "n": 220,
+      "bets": {
+        "trio": {
+          "hits": 199,
+          "hit_rate": 90.5,
+          "investment": 154000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 123,
+          "hit_rate": 55.9,
+          "investment": 44000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 199,
+          "hit_rate": 90.5,
+          "investment": 44000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 90.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 89.0,
+      "wf_min_hit": 84.3,
+      "wf_stability": 0.95
+    },
+    {
+      "name": "D1400",
+      "filters": {
+        "dist": "D1400"
+      },
+      "n": 372,
+      "bets": {
+        "trio": {
+          "hits": 327,
+          "hit_rate": 87.9,
+          "investment": 260400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 216,
+          "hit_rate": 58.1,
+          "investment": 74400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 331,
+          "hit_rate": 89.0,
+          "investment": 74400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 89.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 83.0,
+      "wf_min_hit": 80.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D1400_C13",
+      "filters": {
+        "dist": "D1400",
+        "course": 13
+      },
+      "n": 223,
+      "bets": {
+        "trio": {
+          "hits": 190,
+          "hit_rate": 85.2,
+          "investment": 156100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 127,
+          "hit_rate": 57.0,
+          "investment": 44600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 193,
+          "hit_rate": 86.5,
+          "investment": 44600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 86.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 82.6,
+      "wf_min_hit": 79.2,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D900",
+      "filters": {
+        "dist": "D900"
+      },
+      "n": 340,
+      "bets": {
+        "trio": {
+          "hits": 289,
+          "hit_rate": 85.0,
+          "investment": 238000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 179,
+          "hit_rate": 52.6,
+          "investment": 68000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 291,
+          "hit_rate": 85.6,
+          "investment": 68000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 85.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 78.0,
+      "wf_min_hit": 73.0,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "D1400_H_small",
+      "filters": {
+        "dist": "D1400",
+        "heads": "H_small"
+      },
+      "n": 159,
+      "bets": {
+        "trio": {
+          "hits": 129,
+          "hit_rate": 81.1,
+          "investment": 111300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 73,
+          "hit_rate": 45.9,
+          "investment": 31800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 132,
+          "hit_rate": 83.0,
+          "investment": 31800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 83.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 54.2,
+      "wf_min_hit": 50.0,
+      "wf_stability": 0.92
+    },
+    {
+      "name": "D800_C13",
+      "filters": {
+        "dist": "D800",
+        "course": 13
+      },
+      "n": 219,
+      "bets": {
+        "trio": {
+          "hits": 179,
+          "hit_rate": 81.7,
+          "investment": 153300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 107,
+          "hit_rate": 48.9,
+          "investment": 43800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 180,
+          "hit_rate": 82.2,
+          "investment": 43800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 82.2,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 76.6,
+      "wf_min_hit": 74.2,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D1500",
+      "filters": {
+        "dist": "D1500"
+      },
+      "n": 58,
+      "bets": {
+        "trio": {
+          "hits": 44,
+          "hit_rate": 75.9,
+          "investment": 40600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 32,
+          "hit_rate": 55.2,
+          "investment": 11600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 47,
+          "hit_rate": 81.0,
+          "investment": 11600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 81.0,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1500_C10",
+      "filters": {
+        "dist": "D1500",
+        "course": 10
+      },
+      "n": 58,
+      "bets": {
+        "trio": {
+          "hits": 44,
+          "hit_rate": 75.9,
+          "investment": 40600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 32,
+          "hit_rate": 55.2,
+          "investment": 11600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 47,
+          "hit_rate": 81.0,
+          "investment": 11600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 81.0,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_C11",
+      "filters": {
+        "dist": "D800",
+        "course": 11
+      },
+      "n": 324,
+      "bets": {
+        "trio": {
+          "hits": 260,
+          "hit_rate": 80.2,
+          "investment": 226800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 155,
+          "hit_rate": 47.8,
+          "investment": 64800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 260,
+          "hit_rate": 80.2,
+          "investment": 64800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 80.2,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 68.9,
+      "wf_min_hit": 67.3,
+      "wf_stability": 0.98
+    },
+    {
+      "name": "D900_C11_H_small",
+      "filters": {
+        "dist": "D900",
+        "course": 11,
+        "heads": "H_small"
+      },
+      "n": 63,
+      "bets": {
+        "trio": {
+          "hits": 49,
+          "hit_rate": 77.8,
+          "investment": 44100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 23,
+          "hit_rate": 36.5,
+          "investment": 12600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 49,
+          "hit_rate": 77.8,
+          "investment": 12600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 77.8,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 71.4,
+      "wf_min_hit": 66.7,
+      "wf_stability": 0.93
+    },
+    {
+      "name": "D900_H_small",
+      "filters": {
+        "dist": "D900",
+        "heads": "H_small"
+      },
+      "n": 133,
+      "bets": {
+        "trio": {
+          "hits": 100,
+          "hit_rate": 75.2,
+          "investment": 93100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 54,
+          "hit_rate": 40.6,
+          "investment": 26600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 102,
+          "hit_rate": 76.7,
+          "investment": 26600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 76.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 58.4,
+      "wf_min_hit": 56.7,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D900_C10",
+      "filters": {
+        "dist": "D900",
+        "course": 10
+      },
+      "n": 120,
+      "bets": {
+        "trio": {
+          "hits": 90,
+          "hit_rate": 75.0,
+          "investment": 84000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 56,
+          "hit_rate": 46.7,
+          "investment": 24000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 92,
+          "hit_rate": 76.7,
+          "investment": 24000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 76.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 45.0,
+      "wf_min_hit": 25.0,
+      "wf_stability": 0.56
+    },
+    {
+      "name": "D1600_H_small",
+      "filters": {
+        "dist": "D1600",
+        "heads": "H_small"
+      },
+      "n": 30,
+      "bets": {
+        "trio": {
+          "hits": 23,
+          "hit_rate": 76.7,
+          "investment": 21000,
+          "payout": 36550,
+          "roi": 174.0
+        },
+        "umaren": {
+          "hits": 14,
+          "hit_rate": 46.7,
+          "investment": 6000,
+          "payout": 9150,
+          "roi": 152.5
+        },
+        "wide": {
+          "hits": 23,
+          "hit_rate": 76.7,
+          "investment": 6000,
+          "payout": 10060,
+          "roi": 167.7
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 76.7,
+      "best_roi": 174.0
+    },
+    {
+      "name": "D1600_C10_H_small",
+      "filters": {
+        "dist": "D1600",
+        "course": 10,
+        "heads": "H_small"
+      },
+      "n": 30,
+      "bets": {
+        "trio": {
+          "hits": 23,
+          "hit_rate": 76.7,
+          "investment": 21000,
+          "payout": 36550,
+          "roi": 174.0
+        },
+        "umaren": {
+          "hits": 14,
+          "hit_rate": 46.7,
+          "investment": 6000,
+          "payout": 9150,
+          "roi": 152.5
+        },
+        "wide": {
+          "hits": 23,
+          "hit_rate": 76.7,
+          "investment": 6000,
+          "payout": 10060,
+          "roi": 167.7
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 76.7,
+      "best_roi": 174.0
+    },
+    {
+      "name": "D900_C10_H_small",
+      "filters": {
+        "dist": "D900",
+        "course": 10,
+        "heads": "H_small"
+      },
+      "n": 70,
+      "bets": {
+        "trio": {
+          "hits": 51,
+          "hit_rate": 72.9,
+          "investment": 49000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 31,
+          "hit_rate": 44.3,
+          "investment": 14000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 53,
+          "hit_rate": 75.7,
+          "investment": 14000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 75.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 38.2,
+      "wf_min_hit": 22.2,
+      "wf_stability": 0.58
+    },
+    {
+      "name": "D1400_C13_H_small",
+      "filters": {
+        "dist": "D1400",
+        "course": 13,
+        "heads": "H_small"
+      },
+      "n": 90,
+      "bets": {
+        "trio": {
+          "hits": 66,
+          "hit_rate": 73.3,
+          "investment": 63000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 38,
+          "hit_rate": 42.2,
+          "investment": 18000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 68,
+          "hit_rate": 75.6,
+          "investment": 18000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 75.6,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800",
+      "filters": {
+        "dist": "D800"
+      },
+      "n": 1226,
+      "bets": {
+        "trio": {
+          "hits": 892,
+          "hit_rate": 72.8,
+          "investment": 858200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 490,
+          "hit_rate": 40.0,
+          "investment": 245200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 900,
+          "hit_rate": 73.4,
+          "investment": 245200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 73.4,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200",
+      "filters": {
+        "dist": "D1200"
+      },
+      "n": 284,
+      "bets": {
+        "trio": {
+          "hits": 197,
+          "hit_rate": 69.4,
+          "investment": 198800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 126,
+          "hit_rate": 44.4,
+          "investment": 56800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 206,
+          "hit_rate": 72.5,
+          "investment": 56800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 72.5,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_C10",
+      "filters": {
+        "dist": "D1200",
+        "course": 10
+      },
+      "n": 284,
+      "bets": {
+        "trio": {
+          "hits": 197,
+          "hit_rate": 69.4,
+          "investment": 198800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 126,
+          "hit_rate": 44.4,
+          "investment": 56800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 206,
+          "hit_rate": 72.5,
+          "investment": 56800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 72.5,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_C11_H_small",
+      "filters": {
+        "dist": "D800",
+        "course": 11,
+        "heads": "H_small"
+      },
+      "n": 185,
+      "bets": {
+        "trio": {
+          "hits": 134,
+          "hit_rate": 72.4,
+          "investment": 129500,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 70,
+          "hit_rate": 37.8,
+          "investment": 37000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 134,
+          "hit_rate": 72.4,
+          "investment": 37000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 72.4,
+      "best_roi": 0.0
+    },
+    {
+      "name": "ALL_H_small",
+      "filters": {
+        "heads": "H_small"
+      },
+      "n": 1373,
+      "bets": {
+        "trio": {
+          "hits": 950,
+          "hit_rate": 69.2,
+          "investment": 961100,
+          "payout": 36550,
+          "roi": 3.8
+        },
+        "umaren": {
+          "hits": 504,
+          "hit_rate": 36.7,
+          "investment": 274600,
+          "payout": 9150,
+          "roi": 3.3
+        },
+        "wide": {
+          "hits": 963,
+          "hit_rate": 70.1,
+          "investment": 274600,
+          "payout": 10060,
+          "roi": 3.7
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 70.1,
+      "best_roi": 3.7
+    },
+    {
+      "name": "D800_C13_H_small",
+      "filters": {
+        "dist": "D800",
+        "course": 13,
+        "heads": "H_small"
+      },
+      "n": 118,
+      "bets": {
+        "trio": {
+          "hits": 82,
+          "hit_rate": 69.5,
+          "investment": 82600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 44,
+          "hit_rate": 37.3,
+          "investment": 23600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 82,
+          "hit_rate": 69.5,
+          "investment": 23600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 69.5,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_H_small",
+      "filters": {
+        "dist": "D1200",
+        "heads": "H_small"
+      },
+      "n": 152,
+      "bets": {
+        "trio": {
+          "hits": 103,
+          "hit_rate": 67.8,
+          "investment": 106400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 62,
+          "hit_rate": 40.8,
+          "investment": 30400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 105,
+          "hit_rate": 69.1,
+          "investment": 30400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 69.1,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_C10_H_small",
+      "filters": {
+        "dist": "D1200",
+        "course": 10,
+        "heads": "H_small"
+      },
+      "n": 152,
+      "bets": {
+        "trio": {
+          "hits": 103,
+          "hit_rate": 67.8,
+          "investment": 106400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 62,
+          "hit_rate": 40.8,
+          "investment": 30400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 105,
+          "hit_rate": 69.1,
+          "investment": 30400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 69.1,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_C10",
+      "filters": {
+        "dist": "D800",
+        "course": 10
+      },
+      "n": 683,
+      "bets": {
+        "trio": {
+          "hits": 453,
+          "hit_rate": 66.3,
+          "investment": 478100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 228,
+          "hit_rate": 33.4,
+          "investment": 136600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 460,
+          "hit_rate": 67.3,
+          "investment": 136600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 67.3,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_H_small",
+      "filters": {
+        "dist": "D800",
+        "heads": "H_small"
+      },
+      "n": 874,
+      "bets": {
+        "trio": {
+          "hits": 573,
+          "hit_rate": 65.6,
+          "investment": 611800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 287,
+          "hit_rate": 32.8,
+          "investment": 174800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 579,
+          "hit_rate": 66.2,
+          "investment": 174800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 66.2,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_H_mid",
+      "filters": {
+        "dist": "D1200",
+        "heads": "H_mid"
+      },
+      "n": 77,
+      "bets": {
+        "trio": {
+          "hits": 43,
+          "hit_rate": 55.8,
+          "investment": 53900,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 33,
+          "hit_rate": 42.9,
+          "investment": 15400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 50,
+          "hit_rate": 64.9,
+          "investment": 15400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 64.9,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1200_C10_H_mid",
+      "filters": {
+        "dist": "D1200",
+        "course": 10,
+        "heads": "H_mid"
+      },
+      "n": 77,
+      "bets": {
+        "trio": {
+          "hits": 43,
+          "hit_rate": 55.8,
+          "investment": 53900,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 33,
+          "hit_rate": 42.9,
+          "investment": 15400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 50,
+          "hit_rate": 64.9,
+          "investment": 15400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 64.9,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D800_C10_H_small",
+      "filters": {
+        "dist": "D800",
+        "course": 10,
+        "heads": "H_small"
+      },
+      "n": 571,
+      "bets": {
+        "trio": {
+          "hits": 357,
+          "hit_rate": 62.5,
+          "investment": 399700,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 173,
+          "hit_rate": 30.3,
+          "investment": 114200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 363,
+          "hit_rate": 63.6,
+          "investment": 114200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 63.6,
+      "best_roi": 0.0
+    },
+    {
+      "name": "D1600",
+      "filters": {
+        "dist": "D1600"
+      },
+      "n": 184,
+      "bets": {
+        "trio": {
+          "hits": 96,
+          "hit_rate": 52.2,
+          "investment": 128800,
+          "payout": 551730,
+          "roi": 428.4
+        },
+        "umaren": {
+          "hits": 61,
+          "hit_rate": 33.2,
+          "investment": 36800,
+          "payout": 121830,
+          "roi": 331.1
+        },
+        "wide": {
+          "hits": 114,
+          "hit_rate": 62.0,
+          "investment": 36800,
+          "payout": 102070,
+          "roi": 277.4
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 62.0,
+      "best_roi": 277.4
+    },
+    {
+      "name": "D1600_C10",
+      "filters": {
+        "dist": "D1600",
+        "course": 10
+      },
+      "n": 179,
+      "bets": {
+        "trio": {
+          "hits": 94,
+          "hit_rate": 52.5,
+          "investment": 125300,
+          "payout": 548340,
+          "roi": 437.6
+        },
+        "umaren": {
+          "hits": 58,
+          "hit_rate": 32.4,
+          "investment": 35800,
+          "payout": 106900,
+          "roi": 298.6
+        },
+        "wide": {
+          "hits": 111,
+          "hit_rate": 62.0,
+          "investment": 35800,
+          "payout": 98040,
+          "roi": 273.9
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 62.0,
+      "best_roi": 273.9
+    },
+    {
+      "name": "ALL_H_large",
+      "filters": {
+        "heads": "H_large"
+      },
+      "n": 72,
+      "bets": {
+        "trio": {
+          "hits": 34,
+          "hit_rate": 47.2,
+          "investment": 50400,
+          "payout": 339950,
+          "roi": 674.5
+        },
+        "umaren": {
+          "hits": 24,
+          "hit_rate": 33.3,
+          "investment": 14400,
+          "payout": 72110,
+          "roi": 500.8
+        },
+        "wide": {
+          "hits": 44,
+          "hit_rate": 61.1,
+          "investment": 14400,
+          "payout": 56770,
+          "roi": 394.2
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 61.1,
+      "best_roi": 394.2
+    },
+    {
+      "name": "ALL_H_mid",
+      "filters": {
+        "heads": "H_mid"
+      },
+      "n": 227,
+      "bets": {
+        "trio": {
+          "hits": 119,
+          "hit_rate": 52.4,
+          "investment": 158900,
+          "payout": 175230,
+          "roi": 110.3
+        },
+        "umaren": {
+          "hits": 79,
+          "hit_rate": 34.8,
+          "investment": 45400,
+          "payout": 40570,
+          "roi": 89.4
+        },
+        "wide": {
+          "hits": 138,
+          "hit_rate": 60.8,
+          "investment": 45400,
+          "payout": 35240,
+          "roi": 77.6
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 60.8,
+      "best_roi": 77.6
+    },
+    {
+      "name": "D1600_H_large",
+      "filters": {
+        "dist": "D1600",
+        "heads": "H_large"
+      },
+      "n": 68,
+      "bets": {
+        "trio": {
+          "hits": 31,
+          "hit_rate": 45.6,
+          "investment": 47600,
+          "payout": 339950,
+          "roi": 714.2
+        },
+        "umaren": {
+          "hits": 23,
+          "hit_rate": 33.8,
+          "investment": 13600,
+          "payout": 72110,
+          "roi": 530.2
+        },
+        "wide": {
+          "hits": 41,
+          "hit_rate": 60.3,
+          "investment": 13600,
+          "payout": 56770,
+          "roi": 417.4
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 60.3,
+      "best_roi": 417.4
+    },
+    {
+      "name": "D1600_C10_H_large",
+      "filters": {
+        "dist": "D1600",
+        "course": 10,
+        "heads": "H_large"
+      },
+      "n": 64,
+      "bets": {
+        "trio": {
+          "hits": 29,
+          "hit_rate": 45.3,
+          "investment": 44800,
+          "payout": 336560,
+          "roi": 751.2
+        },
+        "umaren": {
+          "hits": 20,
+          "hit_rate": 31.2,
+          "investment": 12800,
+          "payout": 57180,
+          "roi": 446.7
+        },
+        "wide": {
+          "hits": 38,
+          "hit_rate": 59.4,
+          "investment": 12800,
+          "payout": 52740,
+          "roi": 412.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 59.4,
+      "best_roi": 412.0
+    },
+    {
+      "name": "D1600_C10_H_mid",
+      "filters": {
+        "dist": "D1600",
+        "course": 10,
+        "heads": "H_mid"
+      },
+      "n": 85,
+      "bets": {
+        "trio": {
+          "hits": 42,
+          "hit_rate": 49.4,
+          "investment": 59500,
+          "payout": 175230,
+          "roi": 294.5
+        },
+        "umaren": {
+          "hits": 24,
+          "hit_rate": 28.2,
+          "investment": 17000,
+          "payout": 40570,
+          "roi": 238.6
+        },
+        "wide": {
+          "hits": 50,
+          "hit_rate": 58.8,
+          "investment": 17000,
+          "payout": 35240,
+          "roi": 207.3
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 58.8,
+      "best_roi": 207.3
+    },
+    {
+      "name": "D1600_H_mid",
+      "filters": {
+        "dist": "D1600",
+        "heads": "H_mid"
+      },
+      "n": 86,
+      "bets": {
+        "trio": {
+          "hits": 42,
+          "hit_rate": 48.8,
+          "investment": 60200,
+          "payout": 175230,
+          "roi": 291.1
+        },
+        "umaren": {
+          "hits": 24,
+          "hit_rate": 27.9,
+          "investment": 17200,
+          "payout": 40570,
+          "roi": 235.9
+        },
+        "wide": {
+          "hits": 50,
+          "hit_rate": 58.1,
+          "investment": 17200,
+          "payout": 35240,
+          "roi": 204.9
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 58.1,
+      "best_roi": 204.9
+    }
+  ],
+  "stable_conditions": [
+    {
+      "name": "D800_C10_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 10,
+        "heads": "H_tiny"
+      },
+      "n": 89,
+      "bets": {
+        "trio": {
+          "hits": 84,
+          "hit_rate": 94.4,
+          "investment": 62300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 50,
+          "hit_rate": 56.2,
+          "investment": 17800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 84,
+          "hit_rate": 94.4,
+          "investment": 17800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.4,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 96.0,
+      "wf_min_hit": 92.1,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D1400_H_tiny",
+      "filters": {
+        "dist": "D1400",
+        "heads": "H_tiny"
+      },
+      "n": 212,
+      "bets": {
+        "trio": {
+          "hits": 197,
+          "hit_rate": 92.9,
+          "investment": 148400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 143,
+          "hit_rate": 67.5,
+          "investment": 42400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 198,
+          "hit_rate": 93.4,
+          "investment": 42400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.4,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 95.4,
+      "wf_min_hit": 90.9,
+      "wf_stability": 0.95
+    },
+    {
+      "name": "D1400_C13_H_tiny",
+      "filters": {
+        "dist": "D1400",
+        "course": 13,
+        "heads": "H_tiny"
+      },
+      "n": 132,
+      "bets": {
+        "trio": {
+          "hits": 123,
+          "hit_rate": 93.2,
+          "investment": 92400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 89,
+          "hit_rate": 67.4,
+          "investment": 26400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 124,
+          "hit_rate": 93.9,
+          "investment": 26400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.9,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 94.3,
+      "wf_min_hit": 88.6,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "D900_H_tiny",
+      "filters": {
+        "dist": "D900",
+        "heads": "H_tiny"
+      },
+      "n": 192,
+      "bets": {
+        "trio": {
+          "hits": 182,
+          "hit_rate": 94.8,
+          "investment": 134400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 121,
+          "hit_rate": 63.0,
+          "investment": 38400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 182,
+          "hit_rate": 94.8,
+          "investment": 38400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 94.8,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 93.6,
+      "wf_min_hit": 90.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D900_C11_H_tiny",
+      "filters": {
+        "dist": "D900",
+        "course": 11,
+        "heads": "H_tiny"
+      },
+      "n": 157,
+      "bets": {
+        "trio": {
+          "hits": 150,
+          "hit_rate": 95.5,
+          "investment": 109900,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 100,
+          "hit_rate": 63.7,
+          "investment": 31400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 150,
+          "hit_rate": 95.5,
+          "investment": 31400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 95.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 93.3,
+      "wf_min_hit": 90.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "ALL_H_tiny",
+      "filters": {
+        "heads": "H_tiny"
+      },
+      "n": 792,
+      "bets": {
+        "trio": {
+          "hits": 742,
+          "hit_rate": 93.7,
+          "investment": 554400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 497,
+          "hit_rate": 62.8,
+          "investment": 158400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 744,
+          "hit_rate": 93.9,
+          "investment": 158400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.9,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 90.9,
+      "wf_min_hit": 90.6,
+      "wf_stability": 1.0
+    },
+    {
+      "name": "D900_C11",
+      "filters": {
+        "dist": "D900",
+        "course": 11
+      },
+      "n": 220,
+      "bets": {
+        "trio": {
+          "hits": 199,
+          "hit_rate": 90.5,
+          "investment": 154000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 123,
+          "hit_rate": 55.9,
+          "investment": 44000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 199,
+          "hit_rate": 90.5,
+          "investment": 44000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 90.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 89.0,
+      "wf_min_hit": 84.3,
+      "wf_stability": 0.95
+    },
+    {
+      "name": "D800_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "heads": "H_tiny"
+      },
+      "n": 329,
+      "bets": {
+        "trio": {
+          "hits": 307,
+          "hit_rate": 93.3,
+          "investment": 230300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 198,
+          "hit_rate": 60.2,
+          "investment": 65800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 308,
+          "hit_rate": 93.6,
+          "investment": 65800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 93.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 88.1,
+      "wf_min_hit": 86.7,
+      "wf_stability": 0.98
+    },
+    {
+      "name": "D800_C13_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 13,
+        "heads": "H_tiny"
+      },
+      "n": 101,
+      "bets": {
+        "trio": {
+          "hits": 97,
+          "hit_rate": 96.0,
+          "investment": 70700,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 63,
+          "hit_rate": 62.4,
+          "investment": 20200,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 98,
+          "hit_rate": 97.0,
+          "investment": 20200,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 97.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 87.4,
+      "wf_min_hit": 82.4,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "D1400",
+      "filters": {
+        "dist": "D1400"
+      },
+      "n": 372,
+      "bets": {
+        "trio": {
+          "hits": 327,
+          "hit_rate": 87.9,
+          "investment": 260400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 216,
+          "hit_rate": 58.1,
+          "investment": 74400,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 331,
+          "hit_rate": 89.0,
+          "investment": 74400,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 89.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 83.0,
+      "wf_min_hit": 80.0,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D1400_C13",
+      "filters": {
+        "dist": "D1400",
+        "course": 13
+      },
+      "n": 223,
+      "bets": {
+        "trio": {
+          "hits": 190,
+          "hit_rate": 85.2,
+          "investment": 156100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 127,
+          "hit_rate": 57.0,
+          "investment": 44600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 193,
+          "hit_rate": 86.5,
+          "investment": 44600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 86.5,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 82.6,
+      "wf_min_hit": 79.2,
+      "wf_stability": 0.96
+    },
+    {
+      "name": "D800_C11_H_tiny",
+      "filters": {
+        "dist": "D800",
+        "course": 11,
+        "heads": "H_tiny"
+      },
+      "n": 139,
+      "bets": {
+        "trio": {
+          "hits": 126,
+          "hit_rate": 90.6,
+          "investment": 97300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 85,
+          "hit_rate": 61.2,
+          "investment": 27800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 126,
+          "hit_rate": 90.6,
+          "investment": 27800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 90.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 82.4,
+      "wf_min_hit": 80.0,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D900",
+      "filters": {
+        "dist": "D900"
+      },
+      "n": 340,
+      "bets": {
+        "trio": {
+          "hits": 289,
+          "hit_rate": 85.0,
+          "investment": 238000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 179,
+          "hit_rate": 52.6,
+          "investment": 68000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 291,
+          "hit_rate": 85.6,
+          "investment": 68000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 85.6,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 78.0,
+      "wf_min_hit": 73.0,
+      "wf_stability": 0.94
+    },
+    {
+      "name": "D800_C13",
+      "filters": {
+        "dist": "D800",
+        "course": 13
+      },
+      "n": 219,
+      "bets": {
+        "trio": {
+          "hits": 179,
+          "hit_rate": 81.7,
+          "investment": 153300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 107,
+          "hit_rate": 48.9,
+          "investment": 43800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 180,
+          "hit_rate": 82.2,
+          "investment": 43800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 82.2,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 76.6,
+      "wf_min_hit": 74.2,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D900_C11_H_small",
+      "filters": {
+        "dist": "D900",
+        "course": 11,
+        "heads": "H_small"
+      },
+      "n": 63,
+      "bets": {
+        "trio": {
+          "hits": 49,
+          "hit_rate": 77.8,
+          "investment": 44100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 23,
+          "hit_rate": 36.5,
+          "investment": 12600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 49,
+          "hit_rate": 77.8,
+          "investment": 12600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 77.8,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 71.4,
+      "wf_min_hit": 66.7,
+      "wf_stability": 0.93
+    },
+    {
+      "name": "D800_C11",
+      "filters": {
+        "dist": "D800",
+        "course": 11
+      },
+      "n": 324,
+      "bets": {
+        "trio": {
+          "hits": 260,
+          "hit_rate": 80.2,
+          "investment": 226800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 155,
+          "hit_rate": 47.8,
+          "investment": 64800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 260,
+          "hit_rate": 80.2,
+          "investment": 64800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "trio",
+      "best_hit_rate": 80.2,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 68.9,
+      "wf_min_hit": 67.3,
+      "wf_stability": 0.98
+    },
+    {
+      "name": "D900_H_small",
+      "filters": {
+        "dist": "D900",
+        "heads": "H_small"
+      },
+      "n": 133,
+      "bets": {
+        "trio": {
+          "hits": 100,
+          "hit_rate": 75.2,
+          "investment": 93100,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 54,
+          "hit_rate": 40.6,
+          "investment": 26600,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 102,
+          "hit_rate": 76.7,
+          "investment": 26600,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 76.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 58.4,
+      "wf_min_hit": 56.7,
+      "wf_stability": 0.97
+    },
+    {
+      "name": "D1400_H_small",
+      "filters": {
+        "dist": "D1400",
+        "heads": "H_small"
+      },
+      "n": 159,
+      "bets": {
+        "trio": {
+          "hits": 129,
+          "hit_rate": 81.1,
+          "investment": 111300,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 73,
+          "hit_rate": 45.9,
+          "investment": 31800,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 132,
+          "hit_rate": 83.0,
+          "investment": 31800,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 83.0,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 54.2,
+      "wf_min_hit": 50.0,
+      "wf_stability": 0.92
+    },
+    {
+      "name": "D900_C10",
+      "filters": {
+        "dist": "D900",
+        "course": 10
+      },
+      "n": 120,
+      "bets": {
+        "trio": {
+          "hits": 90,
+          "hit_rate": 75.0,
+          "investment": 84000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 56,
+          "hit_rate": 46.7,
+          "investment": 24000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 92,
+          "hit_rate": 76.7,
+          "investment": 24000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 76.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 45.0,
+      "wf_min_hit": 25.0,
+      "wf_stability": 0.56
+    },
+    {
+      "name": "D900_C10_H_small",
+      "filters": {
+        "dist": "D900",
+        "course": 10,
+        "heads": "H_small"
+      },
+      "n": 70,
+      "bets": {
+        "trio": {
+          "hits": 51,
+          "hit_rate": 72.9,
+          "investment": 49000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "umaren": {
+          "hits": 31,
+          "hit_rate": 44.3,
+          "investment": 14000,
+          "payout": 0,
+          "roi": 0.0
+        },
+        "wide": {
+          "hits": 53,
+          "hit_rate": 75.7,
+          "investment": 14000,
+          "payout": 0,
+          "roi": 0.0
+        }
+      },
+      "best_bet": "wide",
+      "best_hit_rate": 75.7,
+      "best_roi": 0.0,
+      "wf_folds": 2,
+      "wf_avg_hit": 38.2,
+      "wf_min_hit": 22.2,
+      "wf_stability": 0.58
+    }
+  ],
+  "final_profiles": {
+    "A": {
+      "label": "NAR A",
+      "desc": "0-800m / 1-4head / C10",
+      "bet_type": "trio",
+      "bet_label": "trio 7pt",
+      "investment": 700,
+      "roi": 0.0,
+      "hit_rate": 94.4,
+      "recommended": true,
+      "wf_n": 59,
+      "n_backtest": 89,
+      "wf_avg_hit": 96.0,
+      "wf_stability": 0.96,
+      "filters": {
+        "dist": "D800",
+        "course": 10,
+        "heads": "H_tiny"
+      }
+    },
+    "B": {
+      "label": "NAR B",
+      "desc": "801-1000m / 1-4head",
+      "bet_type": "trio",
+      "bet_label": "trio 7pt",
+      "investment": 700,
+      "roi": 0.0,
+      "hit_rate": 94.8,
+      "recommended": true,
+      "wf_n": 128,
+      "n_backtest": 192,
+      "wf_avg_hit": 93.6,
+      "wf_stability": 0.96,
+      "filters": {
+        "dist": "D900",
+        "heads": "H_tiny"
+      }
+    },
+    "C": {
+      "label": "NAR C",
+      "desc": "1201-1400m / 1-4head",
+      "bet_type": "wide",
+      "bet_label": "wide 2pt",
+      "investment": 700,
+      "roi": 0.0,
+      "hit_rate": 93.4,
+      "recommended": true,
+      "wf_n": 141,
+      "n_backtest": 212,
+      "wf_avg_hit": 95.4,
+      "wf_stability": 0.95,
+      "filters": {
+        "dist": "D1400",
+        "heads": "H_tiny"
+      }
+    },
+    "D": {
+      "label": "NAR D",
+      "desc": "1-4head",
+      "bet_type": "wide",
+      "bet_label": "wide 2pt",
+      "investment": 700,
+      "roi": 0.0,
+      "hit_rate": 93.9,
+      "recommended": true,
+      "wf_n": 528,
+      "n_backtest": 792,
+      "wf_avg_hit": 90.9,
+      "wf_stability": 1.0,
+      "filters": {
+        "heads": "H_tiny"
+      }
+    },
+    "E": {
+      "label": "NAR E",
+      "desc": "1600m+ / 8-10head (V2a)",
+      "bet_type": "wide",
+      "bet_label": "wide",
+      "investment": 700,
+      "roi": 238.1,
+      "hit_rate": 59.3,
+      "recommended": true,
+      "n_backtest": 86,
+      "wf_n": 0,
+      "filters": {
+        "dist": "D1600",
+        "heads": "H_mid"
+      },
+      "note": "V2a model, small sample"
+    },
+    "F": {
+      "label": "NAR F",
+      "desc": "1600m+ / 11-99head (V2a)",
+      "bet_type": "wide",
+      "bet_label": "wide",
+      "investment": 700,
+      "roi": 306.8,
+      "hit_rate": 51.5,
+      "recommended": true,
+      "n_backtest": 68,
+      "wf_n": 0,
+      "filters": {
+        "dist": "D1600",
+        "heads": "H_large"
+      },
+      "note": "V2a model, small sample"
+    }
+  }
+}
