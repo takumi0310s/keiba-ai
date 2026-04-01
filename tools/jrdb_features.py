@@ -206,9 +206,25 @@ def extract_sed_prev_features(sed_df, target_race_id=None, target_umaban=None):
     if sed_df is None or len(sed_df) == 0:
         return pd.DataFrame()
 
+    # English→Japanese column mapping (handle re-exported CSVs)
+    _sed_col_map = {
+        'race_id': 'jra_race_id', 'umaban': '馬番',
+        'idm': 'IDM', 'baba_sa': '馬場差', 'furi': '不利',
+        'deokure': '出遅', 'ten_idx': 'テン指数', 'agari_idx': '上がり指数',
+        'pace_idx': 'ペース指数', 'josho_code': '上昇度コード',
+        'blood_num': '血統登録番号', 'yyyymmdd': '年月日',
+    }
+    for eng, jpn in _sed_col_map.items():
+        if eng in sed_df.columns and jpn not in sed_df.columns:
+            sed_df = sed_df.rename(columns={eng: jpn})
+
+    # Ensure required columns exist
+    rid_col = 'jra_race_id' if 'jra_race_id' in sed_df.columns else 'race_id'
+    nk_col = 'nk_race_id' if 'nk_race_id' in sed_df.columns else rid_col
+
     result = pd.DataFrame()
-    result['jra_race_id'] = sed_df['jra_race_id']
-    result['nk_race_id'] = sed_df['nk_race_id']
+    result['jra_race_id'] = sed_df[rid_col]
+    result['nk_race_id'] = sed_df[nk_col]
     result['馬番'] = pd.to_numeric(sed_df['馬番'], errors='coerce')
 
     # 確定指数を前走特徴量として使用（prev_としてリネーム）
@@ -289,6 +305,17 @@ def merge_jrdb_train_features(df):
     sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
     if os.path.exists(sed_path):
         sed_raw = pd.read_csv(sed_path, encoding='utf-8-sig', dtype=str)
+        # Handle English column names from re-exported CSV
+        _sed_raw_map = {
+            'race_id': 'jra_race_id', 'umaban': '馬番',
+            'blood_num': '血統登録番号', 'yyyymmdd': '年月日',
+        }
+        for eng, jpn in _sed_raw_map.items():
+            if eng in sed_raw.columns and jpn not in sed_raw.columns:
+                sed_raw = sed_raw.rename(columns={eng: jpn})
+        # race_id(12桁nk形式)をnk_race_idとしても保持
+        if 'nk_race_id' not in sed_raw.columns and 'jra_race_id' in sed_raw.columns:
+            sed_raw['nk_race_id'] = sed_raw['jra_race_id']
         sed_feats = extract_sed_prev_features(sed_raw)
         if len(sed_feats) > 0:
             # 前走データとして結合するため、blood_registration_idでの結合が理想
