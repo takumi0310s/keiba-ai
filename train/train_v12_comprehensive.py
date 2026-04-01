@@ -360,10 +360,10 @@ def print_wf_results(results, label=''):
     aucs = []
     for r in results:
         aucs.append(r['lgb_auc'])
-        ok = '✓' if r['lgb_auc'] > 0.78 else '✗'
-        gap_ok = '✓' if r['gap'] < 0.05 else '✗'
+        ok = 'OK' if r['lgb_auc'] > 0.78 else 'NG'
+        gap_ok = 'OK' if r['gap'] < 0.05 else 'NG'
         print(f"  {r['year']}: LGB={r['lgb_auc']:.4f} XGB={r['xgb_auc']:.4f} "
-              f"Train={r['train_auc']:.4f} Gap={r['gap']:.4f} {ok}{gap_ok}")
+              f"Train={r['train_auc']:.4f} Gap={r['gap']:.4f} {ok} {gap_ok}")
     mean_auc = np.mean(aucs)
     print(f"  --- Mean LGB AUC: {mean_auc:.4f} ---")
     return mean_auc

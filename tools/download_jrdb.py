@@ -43,7 +43,7 @@ YEARLY_TYPES = ['Sed', 'Tyb', 'Kyi', 'Bac', 'Hjc', 'Cyb', 'Skb', 'Kab', 'Ukc', '
 INDIVIDUAL_TYPES = ['Paci']
 
 ALL_TYPES = YEARLY_TYPES + INDIVIDUAL_TYPES
-YEARS = list(range(2020, 2027))  # 2020-2026
+YEARS = list(range(2015, 2027))  # 2015-2026
 
 import warnings
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')

@@ -45,6 +45,14 @@ data/jrdb_kyi.csv
 data/jrdb_tyb.csv
 data/jrdb_sed.csv
 data/jrdb_sr.csv
+data/jrdb_paci.csv
+data/jrdb_skb.csv
+data/jrdb_ze.csv
+data/jrdb_zk.csv
+data/jrdb_cyb.csv
+data/jrdb_bac.csv
+data/jrdb_kab.csv
+data/jrdb_ou.csv
 data/jrdb_raw/
 data/jrdb/raw/
 data/jrdb/extracted/

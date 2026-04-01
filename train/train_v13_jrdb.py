@@ -217,7 +217,7 @@ def evaluate_feature_groups(df, base_features, feature_groups, years=range(2020,
         results[group_name] = auc
 
         delta = auc - auc_base
-        print(f"  Delta: {delta:+.4f} {'✓' if delta > 0 else '✗'}")
+        print(f"  Delta: {delta:+.4f} {'OK' if delta > 0 else 'NG'}")
 
     return results
 
@@ -252,7 +252,7 @@ def individual_contribution(df, base_features, new_features, test_years=[2024, 2
     print(f"\n  Ranked by contribution:")
     for feat, c in ranked:
         sign = '+' if c > 0 else ''
-        mark = '✓' if c > -0.0005 else '✗'
+        mark = 'OK' if c > -0.0005 else 'NG'
         print(f"    {mark} {feat:35s}: {sign}{c:.5f}")
 
     return contributions
@@ -333,7 +333,7 @@ def main():
     print(f"\n  Selected: {len(selected)} features")
     print(f"  Removed: {len(removed)} features")
     for f in removed:
-        print(f"    ✗ {f}: {contributions[f]:+.5f}")
+        print(f"    NG {f}: {contributions[f]:+.5f}")
 
     # ===== Phase 3: 最終WFバックテスト =====
     FEATURES_V13 = FEATURES_V12 + selected
@@ -350,7 +350,7 @@ def main():
     imp_ranked = compute_feature_importance(wf_v13, FEATURES_V13)
     print(f"\n  Top 30 features by importance:")
     for i, (f, v) in enumerate(imp_ranked[:30]):
-        marker = " ★JRDB" if f.startswith('jrdb_') else (" ★V12" if f in V12_ADOPTED else "")
+        marker = " *JRDB" if f.startswith('jrdb_') else (" *V12" if f in V12_ADOPTED else "")
         print(f"  {i+1:2d}. {f:35s} {v:12.1f}{marker}")
 
     # ===== 採用判定 =====
@@ -365,12 +365,12 @@ def main():
     no_overfit = all(r['gap'] < 0.05 for r in wf_v13)
     auc_improved = auc_v13 > 0.8037
 
-    print(f"\n  AUC > 0.8037:     {'✓' if auc_improved else '✗'}")
-    print(f"  All years > 0.78: {'✓' if all_years_ok else '✗'}")
-    print(f"  No overfitting:   {'✓' if no_overfit else '✗'}")
+    print(f"\n  AUC > 0.8037:     {'OK' if auc_improved else 'NG'}")
+    print(f"  All years > 0.78: {'OK' if all_years_ok else 'NG'}")
+    print(f"  No overfitting:   {'OK' if no_overfit else 'NG'}")
 
     adopted = auc_improved and all_years_ok and no_overfit
-    print(f"\n  VERDICT: {'✓ ADOPTED as v13' if adopted else '✗ NOT ADOPTED'}")
+    print(f"\n  VERDICT: {'OK ADOPTED as v13' if adopted else 'NG NOT ADOPTED'}")
 
     # 結果保存
     result_data = {
