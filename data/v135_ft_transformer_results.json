@@ -1,0 +1,59 @@
+{
+  "baseline_auc": 0.8610,
+  "ft_only_mean": 0.8609,
+  "ft_only_yearly": [
+    {"year": 2020, "ft_auc": 0.8399, "gap": 0.0153},
+    {"year": 2021, "ft_auc": 0.8600, "gap": 0.0014},
+    {"year": 2022, "ft_auc": 0.8637, "gap": -0.001},
+    {"year": 2023, "ft_auc": 0.8660, "gap": 0.001},
+    {"year": 2024, "ft_auc": 0.8679, "gap": 0.0001},
+    {"year": 2025, "ft_auc": 0.8677, "gap": 0.0007}
+  ],
+  "ensemble_yearly": [
+    {
+      "year": 2020, "lgb_auc": 0.8512, "xgb_auc": 0.8526, "ft_auc": 0.8350,
+      "lgbxgb_auc": 0.8527, "lgb_ft_auc": 0.8465, "ensemble_auc": 0.8497,
+      "gap": 0.0489
+    },
+    {
+      "year": 2021, "lgb_auc": 0.8630, "xgb_auc": 0.8641, "ft_auc": 0.8617,
+      "lgbxgb_auc": 0.8647, "lgb_ft_auc": 0.8649, "ensemble_auc": 0.8658,
+      "gap": 0.0423
+    },
+    {
+      "year": 2022, "lgb_auc": 0.8657, "xgb_auc": 0.8674, "ft_auc": 0.8645,
+      "lgbxgb_auc": 0.8675, "lgb_ft_auc": 0.8672, "ensemble_auc": 0.8681,
+      "gap": 0.0219
+    },
+    {
+      "year": 2023, "lgb_auc": 0.8677, "xgb_auc": 0.8681, "ft_auc": 0.8668,
+      "lgbxgb_auc": 0.8687, "lgb_ft_auc": 0.8691, "ensemble_auc": 0.8696,
+      "gap": 0.0257
+    },
+    {
+      "year": 2024, "lgb_auc": 0.8692, "xgb_auc": 0.8702, "ft_auc": 0.8687,
+      "lgbxgb_auc": 0.8706, "lgb_ft_auc": 0.8706, "ensemble_auc": 0.8712,
+      "gap": 0.031
+    },
+    {
+      "year": 2025, "lgb_auc": 0.8681, "xgb_auc": 0.8695, "ft_auc": 0.8688,
+      "lgbxgb_auc": 0.8696, "lgb_ft_auc": 0.8705, "ensemble_auc": 0.8710,
+      "gap": 0.0207
+    }
+  ],
+  "ensemble_means": {
+    "lgb": 0.864141,
+    "ft": 0.860920,
+    "lgbxgb": 0.865627,
+    "lgb_ft": 0.864793,
+    "lgbxgb_ft": 0.865915
+  },
+  "best_ensemble": "LGB+XGB+FT",
+  "best_auc": 0.865915,
+  "delta_vs_baseline": 0.004915,
+  "adopted": true,
+  "features_count": 124,
+  "device": "cuda",
+  "note": "Phase 2 results from first run. Re-running with IntraRace fix.",
+  "timestamp": "2026-04-02T03:30:00"
+}
