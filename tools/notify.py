@@ -214,6 +214,38 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     if premium_parts:
         lines.append(f"\n📊 Premium ✓  {' / '.join(premium_parts)}")
 
+    # JRDB指数（TOP3馬のIDM・パドック指数・オッズ指数）
+    jrdb_lines = []
+    if horses and len(horses) > 0:
+        for i in range(min(3, len(df))):
+            row = df.iloc[i]
+            uma = int(row.get('馬番', 0))
+            # horses dictからJRDB指数を取得
+            h_jrdb = None
+            for h in horses:
+                if isinstance(h, dict) and int(h.get('馬番', 0)) == uma:
+                    h_jrdb = h
+                    break
+            if h_jrdb is None:
+                continue
+            idm = h_jrdb.get('JRDB_IDM', 0)
+            paddock = h_jrdb.get('JRDB_パドック指数', 0)
+            odds_idx = h_jrdb.get('JRDB_オッズ指数', 0)
+            # デフォルト値(50.0)以外なら表示
+            parts_j = []
+            if idm and float(idm) != 50.0:
+                parts_j.append(f"IDM:{idm:.0f}")
+            if paddock and float(paddock) != 50.0:
+                parts_j.append(f"パド:{paddock:.0f}")
+            if odds_idx and float(odds_idx) != 50.0:
+                parts_j.append(f"ｵｯﾂﾞ:{odds_idx:.0f}")
+            if parts_j:
+                name = row.get('馬名', '?')
+                jrdb_lines.append(f"  {uma} {name}: {' / '.join(parts_j)}")
+    if jrdb_lines:
+        lines.append("\n🎯 JRDB指数")
+        lines.extend(jrdb_lines)
+
     # 新馬評価（新馬戦の場合）
     race_name_str = str(race_name) if race_name else ''
     if '新馬' in race_name_str and horses:

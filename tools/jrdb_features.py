@@ -111,6 +111,8 @@ JRDB_DEFAULTS = {
     'jrdb_prev_agari_idx': 50.0,
     'jrdb_prev_pace_idx': 50.0,
     'jrdb_prev_rise_code': 3,
+    'jrdb_upset_rank': 0,
+    'jrdb_ls_rank': 0,
 }
 
 
@@ -166,6 +168,12 @@ def extract_kyi_features(kyi_df):
     result['jrdb_stable_eval'] = pd.to_numeric(kyi_df['厩舎評価コード'], errors='coerce')
     result['jrdb_running_style'] = pd.to_numeric(kyi_df['脚質'], errors='coerce')
     result['jrdb_dist_apt'] = pd.to_numeric(kyi_df['距離適性'], errors='coerce')
+
+    # 順位系（DARK HORSE SCAN用）
+    if '激走順位' in kyi_df.columns:
+        result['jrdb_upset_rank'] = pd.to_numeric(kyi_df['激走順位'], errors='coerce')
+    if 'LS指数順位' in kyi_df.columns:
+        result['jrdb_ls_rank'] = pd.to_numeric(kyi_df['LS指数順位'], errors='coerce')
 
     return result
 

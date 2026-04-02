@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 MINUTES_BEFORE = 5
+JRDB_MINUTES_BEFORE = 20  # TYB取得タイミング（発走20分前）
 
 
 def get_todays_races(date_str):
@@ -94,10 +95,39 @@ def get_todays_races(date_str):
     return sorted(unique, key=lambda r: r.get('start_time', ''))
 
 
+def fetch_jrdb_tyb(date_str):
+    """JRDB TYB(直前データ)をダウンロード・パース・CSV追記。
+    パドック指数・オッズ指数・馬体コード・気配コード等を取得。
+    """
+    try:
+        from scrape_jrdb import fetch_and_parse, save_csv
+        jrdb_date = date_str[2:]  # YYYYMMDD → YYMMDD
+        print(f"  [JRDB] TYB取得中... ({jrdb_date})")
+        df = fetch_and_parse('TYB', jrdb_date)
+        if df is not None and len(df) > 0:
+            save_csv(df, 'TYB', append=True)
+            print(f"  [JRDB] TYB: {len(df)} records saved")
+            return len(df)
+        else:
+            print(f"  [JRDB] TYB: データなし")
+            return 0
+    except Exception as e:
+        print(f"  [JRDB] TYB取得失敗: {e}")
+        return -1
+
+
+_tyb_fetched_dates = set()  # 同一日の二重取得防止
+
+
 def predict_and_notify(race_info, date_str):
     """1レースの予測→Discord通知→DB保存"""
     race_id = race_info['race_id']
     print(f"\n  >>> Predicting: {race_info['course']}{race_info['race_num']}R ({race_id})")
+
+    # TYB取得（発走前に1回だけ、同一日内で共有）
+    if date_str not in _tyb_fetched_dates:
+        _tyb_fetched_dates.add(date_str)
+        fetch_jrdb_tyb(date_str)
 
     try:
         # Import prediction functions from predict_core (共通予測モジュール)
@@ -183,10 +213,30 @@ def predict_and_notify(race_info, date_str):
         if df is None or len(df) == 0:
             print("    Feature build failed")
             return
+
+        # JRDB特徴量マージ（KYI前日データ + TYB直前データ）
+        try:
+            from jrdb_features import merge_jrdb_predict_features
+            df = merge_jrdb_predict_features(df, race_id)
+        except Exception as e:
+            print(f"    [JRDB] feature merge skipped: {e}")
+
         df = predict_race(df, model_data, odds_available, race_info=rinfo)
 
         # Sort by score
         df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
+
+        # JRDB指数をhorses dictにも転記（Discord通知用）
+        for _, row in df.iterrows():
+            uma = int(row.get('馬番', 0))
+            for horse in horses:
+                if int(horse.get('馬番', 0)) == uma:
+                    horse['JRDB_IDM'] = row.get('jrdb_idm', 0)
+                    horse['JRDB_パドック指数'] = row.get('jrdb_paddock_idx', 0)
+                    horse['JRDB_オッズ指数'] = row.get('jrdb_odds_idx', 0)
+                    horse['JRDB_激走指数'] = row.get('jrdb_upset_idx', 0)
+                    horse['JRDB_総合指数'] = row.get('jrdb_composite_idx', 0)
+                    break
 
         # Condition
         cond_key, cond_profile = classify_race_condition(rinfo, num_horses)

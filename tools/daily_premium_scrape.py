@@ -5,6 +5,7 @@
   - 調教タイム（最終追切 4F/3F/1F + ランク + 強度）
   - タイム指数（max, avg5, dist, course, run1-3）
   - 厩舎コメント（スコア付き）
+  - JRDB前日データ（KYI/CYB/ZED/JOA/KAB → IDM・調教指数・激走指数等）
 
 キャッシュ: data/weekly_premium_cache/{date}/premium_cache.json
 予測時にキャッシュがあればスクレイピング不要で高速化
@@ -97,6 +98,51 @@ def _check_shinba(race_id):
     return False
 
 
+def fetch_jrdb_pre_race(date_str, dry_run=False):
+    """JRDB前日データ（KYI/CYB/ZED/JOA/KAB）をダウンロード・パース・CSV追記。
+
+    Args:
+        date_str: YYYYMMDD形式の日付
+        dry_run: Trueならダウンロードしない
+
+    Returns:
+        dict: {type: row_count} 取得結果サマリー
+    """
+    try:
+        from scrape_jrdb import fetch_and_parse, save_csv
+    except ImportError:
+        print("  [WARN] scrape_jrdb import failed, skipping JRDB")
+        return {}
+
+    # YYYYMMDD → YYMMDD（JRDBファイル名形式）
+    jrdb_date = date_str[2:]  # '20260405' → '260405'
+    types = ['KYI', 'CYB', 'ZED', 'JOA', 'KAB']
+    results = {}
+
+    print(f"\n  --- JRDB前日データ取得 ({jrdb_date}) ---")
+
+    if dry_run:
+        print(f"  [DRY RUN] Would fetch: {', '.join(types)}")
+        return {}
+
+    for ft in types:
+        try:
+            df = fetch_and_parse(ft, jrdb_date)
+            if df is not None and len(df) > 0:
+                save_csv(df, ft, append=True)
+                results[ft] = len(df)
+                print(f"  {ft}: {len(df)} records saved")
+            else:
+                print(f"  {ft}: データなし")
+                results[ft] = 0
+        except Exception as e:
+            print(f"  {ft}: ERROR - {e}")
+            results[ft] = -1
+        time.sleep(2)
+
+    return results
+
+
 def main():
     parser = argparse.ArgumentParser(description="週末レースのプレミアムデータ事前取得")
     parser.add_argument('--date', type=str, default='')
@@ -123,6 +169,19 @@ def main():
         except Exception:
             pass
         return
+
+    # --- JRDB前日データ取得（KYI/CYB/ZED/JOA/KAB） ---
+    # JRDBはレース単位ではなく開催日単位なので、各対象日で1回ずつ取得
+    jrdb_results = {}
+    base = datetime.strptime(date_str, '%Y%m%d')
+    jrdb_dates_done = set()
+    for delta in range(3):
+        d = (base + timedelta(days=delta)).strftime('%Y%m%d')
+        if d not in jrdb_dates_done:
+            jrdb_dates_done.add(d)
+            r = fetch_jrdb_pre_race(d, dry_run=args.dry_run)
+            for k, v in r.items():
+                jrdb_results[k] = jrdb_results.get(k, 0) + max(v, 0)
 
     # Check cache
     cache_path = os.path.join(CACHE_DIR, date_str)
@@ -241,15 +300,24 @@ def main():
     print(f"  Speed Index: {n_si}/{len(new_ids)}")
     print(f"  Comments: {n_comment}/{len(new_ids)}")
     print(f"  Shinba Eval: {n_shinba}/{len(new_ids)}")
+    if jrdb_results:
+        jrdb_str = ', '.join(f"{k}:{v}" for k, v in jrdb_results.items() if v > 0)
+        print(f"  JRDB: {jrdb_str or 'なし'}")
     print(f"  Cache: {cache_file}")
     print(f"{'=' * 60}")
 
     try:
         from notify import send_discord
+        jrdb_msg = ""
+        if jrdb_results:
+            jrdb_parts = [f"{k}:{v}" for k, v in jrdb_results.items() if v > 0]
+            if jrdb_parts:
+                jrdb_msg = f"\nJRDB: {', '.join(jrdb_parts)}"
         send_discord("Premium Pre-fetch完了",
                      f"{date_str}: {len(new_ids)}R取得\n"
                      f"調教: {n_training} / 指数: {n_si} / コメント: {n_comment}"
-                     + (f" / 新馬: {n_shinba}" if n_shinba else ""),
+                     + (f" / 新馬: {n_shinba}" if n_shinba else "")
+                     + jrdb_msg,
                      color="green")
     except Exception:
         pass

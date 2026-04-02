@@ -3793,6 +3793,25 @@ def render_horse_card(rank, h, max_score, rank_map):
             ev_color, ev_icon = '#7D8590', ''
         html += f'<div class="sitem"><div class="slbl">EV</div><div class="sval" style="color:{ev_color} !important;font-weight:{"bold" if horse_ev >= 1.0 else "normal"}">{ev_icon}{horse_ev:.2f}</div></div>'
     html += '</div>'
+    # JRDB IDM・パドック指数バッジ
+    _jrdb_idm = h.get('JRDB_IDM', 0) or h.get('jrdb_idm', 0)
+    _jrdb_paddock = h.get('JRDB_パドック指数', 0) or h.get('jrdb_paddock_idx', 0)
+    _jrdb_parts = []
+    if _jrdb_idm and float(_jrdb_idm) != 50.0 and float(_jrdb_idm) > 0:
+        _jrdb_parts.append(f'IDM {float(_jrdb_idm):.0f}')
+    if _jrdb_paddock and float(_jrdb_paddock) != 50.0 and float(_jrdb_paddock) > 0:
+        _jrdb_parts.append(f'パドック {float(_jrdb_paddock):.0f}')
+    if _jrdb_parts:
+        _jrdb_val = float(_jrdb_idm) if _jrdb_idm else 50.0
+        if _jrdb_val >= 65:
+            _jc, _jb = '#4ade80', 'rgba(74,222,128,0.4)'
+        elif _jrdb_val >= 55:
+            _jc, _jb = '#60b0ff', 'rgba(96,176,255,0.3)'
+        elif _jrdb_val >= 45:
+            _jc, _jb = '#8B949E', 'rgba(139,148,158,0.3)'
+        else:
+            _jc, _jb = '#E5534B', 'rgba(229,83,75,0.3)'
+        html += f'<div style="margin:2px 0 4px 0;"><span style="font-size:0.82em;padding:2px 8px;border-radius:4px;border:1px solid {_jb};color:{_jc} !important;background:rgba(0,0,0,0.2)">🎯 {" / ".join(_jrdb_parts)}</span></div>'
     # 調教評価
     train_label = h.get('調教ラベル', '')
     train_eval = h.get('調教評価', '')
@@ -4518,6 +4537,16 @@ def scan_dark_horse_signals(df, race_info):
         if isinstance(last3f, (int, float)) and 0 < last3f <= 34.5:
             sigs.append(f'上がり{last3f:.1f}秒')
 
+        # 7. JRDB激走指数（40以上で激走候補）
+        upset_idx = h.get('JRDB_激走指数', 0) or h.get('jrdb_upset_idx', 0)
+        if isinstance(upset_idx, (int, float)) and upset_idx >= 40:
+            sigs.append(f'激走{int(upset_idx)}')
+
+        # 8. JRDB LS指数上位（LS指数順位3位以内 = 末脚上位）
+        ls_rank = h.get('JRDB_LS指数順位', 0) or h.get('jrdb_ls_rank', 0)
+        if isinstance(ls_rank, (int, float)) and 0 < ls_rank <= 3:
+            sigs.append(f'LS指数{int(ls_rank)}位')
+
         # 穴馬条件: オッズ10倍以上 or AI順位4位以下で何かシグナルあり
         if sigs and (odds >= 10.0 or ai_rank >= 4):
             signals_by_horse[horse_num] = {
@@ -4581,6 +4610,8 @@ def render_dark_horse_section(df, race_info):
                 elif '得意' in sig: bc = '#22C55E'
                 elif '前走' in sig: bc = '#EF4444'
                 elif '上がり' in sig: bc = '#3B82F6'
+                elif '激走' in sig: bc = '#EC4899'
+                elif 'LS指数' in sig: bc = '#A78BFA'
                 html += f'<span style="font-size:0.72em;padding:1px 6px;border-radius:3px;border:1px solid {bc};color:{bc} !important;white-space:nowrap;">{sig}</span>'
             html += '</div>'
         html += '</div>'

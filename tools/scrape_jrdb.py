@@ -52,6 +52,10 @@ JRDB_URLS = {
     'KYI': f'{JRDB_BASE_URL}/Kyi/KYI{{date}}.lzh',
     'SED': f'{JRDB_BASE_URL}/Sed/SED{{date}}.lzh',
     'TYB': f'{JRDB_BASE_URL}/Tyb/TYB{{date}}.lzh',
+    'CYB': f'{JRDB_BASE_URL}/Cyb/CYB{{date}}.lzh',
+    'ZED': f'{JRDB_BASE_URL}/Paci/ZED{{date}}.lzh',
+    'JOA': f'{JRDB_BASE_URL}/Jo/JOA{{date}}.lzh',
+    'KAB': f'{JRDB_BASE_URL}/Kab/KAB{{date}}.lzh',
 }
 
 # =====================================================
@@ -249,6 +253,91 @@ SED_FIELDS = [
     ('レースペース流れ',366,  2, 'int'),
     ('馬ペース流れ',    368,  2, 'int'),
     ('4角コース取り',   370,  1, 'int'),
+]
+
+
+# =====================================================
+# CYB (調教分析データ) パーサー定義 - 馬単位
+# =====================================================
+CYB_FIELDS = [
+    ('場コード',          1,  2, 'str'),
+    ('年',                3,  2, 'str'),
+    ('回',                5,  1, 'str'),
+    ('日',                6,  1, 'hex'),
+    ('R',                 7,  2, 'str'),
+    ('馬番',              9,  2, 'int'),
+    ('調教タイプ',       11,  1, 'str'),
+    ('調教コースタイプ', 12,  1, 'str'),
+    ('調教馬場',         13,  1, 'str'),
+    ('追切指標',         14,  1, 'str'),
+    ('仕上指標',         15,  1, 'str'),
+    ('変化指標',         16,  1, 'str'),
+    ('調教コメント',     17, 40, 'str'),
+    ('コメント年',       57,  3, 'str'),
+    ('コメント回日',     60,  3, 'str'),
+    ('調教評価',         63,  1, 'str'),
+    ('調教コース',       64,  2, 'str'),
+]
+
+# =====================================================
+# JOA (情報データ) パーサー定義 - レース単位
+# =====================================================
+JOA_FIELDS = [
+    ('場コード',          1,  2, 'str'),
+    ('年',                3,  2, 'str'),
+    ('回',                5,  1, 'str'),
+    ('日',                6,  1, 'hex'),
+    ('R',                 7,  2, 'str'),
+    # レース情報
+    ('トラック情報',      9, 16, 'str'),
+    ('距離',             25,  4, 'int'),
+    ('芝ダ障害コード',   29,  1, 'int'),
+    ('右左',             30,  1, 'int'),
+    ('内外',             31,  1, 'int'),
+    ('種別',             32,  2, 'int'),
+    ('条件',             34,  2, 'int'),
+    ('記号',             36,  3, 'str'),
+    ('重量',             39,  1, 'int'),
+    ('グレード',         40,  1, 'str'),
+    ('レース名',         41, 50, 'str'),
+    ('回数',             91,  8, 'str'),
+    ('頭数',             99,  2, 'int'),
+    ('コース',          101,  1, 'str'),
+]
+
+# =====================================================
+# KAB (開催データ) パーサー定義 - 開催単位
+# =====================================================
+KAB_FIELDS = [
+    ('場コード',          1,  2, 'str'),
+    ('年',                3,  2, 'str'),
+    ('回',                5,  1, 'str'),
+    ('日',                6,  1, 'hex'),
+    ('年月日',            7,  8, 'str'),
+    ('開催区分',         15,  1, 'int'),
+    ('曜日',             16,  2, 'str'),
+    ('場名',             18,  4, 'str'),
+    ('天候コード',       22,  1, 'int'),
+    ('芝馬場状態コード内',23,  1, 'int'),
+    ('芝馬場状態コード中',24,  1, 'int'),
+    ('芝馬場状態コード外',25,  1, 'int'),
+    ('芝馬場差',         28,  3, 'str'),
+    ('直線馬場差最内',   31,  2, 'str'),
+    ('直線馬場差内',     33,  2, 'str'),
+    ('直線馬場差中',     35,  2, 'str'),
+    ('直線馬場差外',     37,  2, 'str'),
+    ('直線馬場差大外',   39,  2, 'str'),
+    ('ダ馬場状態コード内',41,  1, 'int'),
+    ('ダ馬場状態コード中',42,  1, 'int'),
+    ('ダ馬場状態コード外',43,  1, 'int'),
+    ('ダ馬場差',         44,  3, 'str'),
+    ('データ区分',       47,  1, 'str'),
+    ('連続何日目',       48,  2, 'int'),
+    ('芝種類',           50,  1, 'str'),
+    ('草丈',             51,  4, 'str'),
+    ('転圧',             55,  1, 'str'),
+    ('凍結防止剤',       56,  1, 'str'),
+    ('中間降水量',       57,  5, 'str'),
 ]
 
 
@@ -598,6 +687,41 @@ def parse_sed(data_bytes):
     return df
 
 
+def parse_cyb(data_bytes):
+    """CYB(調教分析データ)をパースしてDataFrameを返す"""
+    df = parse_fixed_length(data_bytes, CYB_FIELDS)
+    df['jra_race_id'] = df.apply(jrdb_to_jra_race_id, axis=1)
+    df['nk_race_id'] = df.apply(jrdb_to_netkeiba_race_id, axis=1)
+    if '調教コメント' in df.columns:
+        df['調教コメント'] = df['調教コメント'].str.strip()
+    return df
+
+
+def parse_zed(data_bytes):
+    """ZED(前走データ)をパース。SED形式を流用。"""
+    return parse_sed(data_bytes)
+
+
+def parse_joa(data_bytes):
+    """JOA(情報データ)をパースしてDataFrameを返す"""
+    df = parse_fixed_length(data_bytes, JOA_FIELDS)
+    df['jra_race_id'] = df.apply(jrdb_to_jra_race_id, axis=1)
+    df['nk_race_id'] = df.apply(jrdb_to_netkeiba_race_id, axis=1)
+    if 'レース名' in df.columns:
+        df['レース名'] = df['レース名'].str.strip()
+    return df
+
+
+def parse_kab(data_bytes):
+    """KAB(開催データ)をパースしてDataFrameを返す"""
+    df = parse_fixed_length(data_bytes, KAB_FIELDS)
+    df['jra_race_id_prefix'] = df.apply(
+        lambda r: f"{str(r.get('場コード','')).zfill(2)}{str(r.get('年','')).zfill(2)}", axis=1)
+    if '場名' in df.columns:
+        df['場名'] = df['場名'].str.strip()
+    return df
+
+
 # =====================================================
 # 日付範囲のレースデータ取得
 # =====================================================
@@ -623,7 +747,10 @@ def fetch_and_parse(file_type, date_str):
     if not files:
         return None
 
-    parser = {'KYI': parse_kyi, 'TYB': parse_tyb, 'SED': parse_sed}[file_type]
+    parser = {
+        'KYI': parse_kyi, 'TYB': parse_tyb, 'SED': parse_sed,
+        'CYB': parse_cyb, 'ZED': parse_zed, 'JOA': parse_joa, 'KAB': parse_kab,
+    }[file_type]
 
     dfs = []
     for fname, data in files.items():
@@ -688,6 +815,10 @@ CSV_PATHS = {
     'KYI': os.path.join(DATA_DIR, 'jrdb_kyi.csv'),
     'TYB': os.path.join(DATA_DIR, 'jrdb_tyb.csv'),
     'SED': os.path.join(DATA_DIR, 'jrdb_sed.csv'),
+    'CYB': os.path.join(DATA_DIR, 'jrdb_cyb.csv'),
+    'ZED': os.path.join(DATA_DIR, 'jrdb_zed.csv'),
+    'JOA': os.path.join(DATA_DIR, 'jrdb_joa.csv'),
+    'KAB': os.path.join(DATA_DIR, 'jrdb_kab.csv'),
 }
 
 
@@ -725,7 +856,8 @@ def main():
     parser.add_argument('--date', type=str, help='取得日 (YYYYMMDD)')
     parser.add_argument('--range', nargs=2, type=str, metavar=('START', 'END'),
                         help='取得期間 (YYYYMMDD YYYYMMDD)')
-    parser.add_argument('--type', type=str, choices=['KYI', 'TYB', 'SED', 'ALL'],
+    parser.add_argument('--type', type=str,
+                        choices=['KYI', 'TYB', 'SED', 'CYB', 'ZED', 'JOA', 'KAB', 'ALL'],
                         default='ALL', help='取得データ種別')
     parser.add_argument('--force', action='store_true', help='キャッシュ無視で再取得')
     parser.add_argument('--weeks', type=int, default=1, help='直近N週分を取得（デフォルト1）')
@@ -744,7 +876,7 @@ def main():
         end = datetime.now()
         start = end - timedelta(weeks=args.weeks)
 
-    types = ['KYI', 'TYB', 'SED'] if args.type == 'ALL' else [args.type]
+    types = ['KYI', 'TYB', 'SED', 'CYB', 'ZED', 'JOA', 'KAB'] if args.type == 'ALL' else [args.type]
 
     print(f"JRDB データ取得")
     print(f"  期間: {start.strftime('%Y-%m-%d')} ～ {end.strftime('%Y-%m-%d')}")
