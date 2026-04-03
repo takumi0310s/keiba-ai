@@ -1,0 +1,26 @@
+{
+  "val_auc": 0.891671929858282,
+  "tr_auc": 0.9042223913958679,
+  "gap": 0.012550461537585877,
+  "prod_val_auc": 0.8922672035839395,
+  "prod_tr_auc": 0.9073013603338695,
+  "n_train": 188343,
+  "n_val": 47497,
+  "n_features": 124,
+  "ensemble_weights": {
+    "lgb": 0.25,
+    "xgb": 0.3,
+    "ft": 0.15,
+    "ir": 0.3
+  },
+  "ir_config": {
+    "n_features": 124,
+    "d_model": 64,
+    "n_heads": 4,
+    "n_layers": 2,
+    "d_ff_mult": 2,
+    "dropout": 0.1
+  },
+  "device": "cuda",
+  "timestamp": "2026-04-04T01:44:04.227935"
+}

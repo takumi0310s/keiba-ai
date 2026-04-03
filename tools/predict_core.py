@@ -115,6 +115,33 @@ if _TORCH_AVAILABLE:
             logit = self.head(cls_out).squeeze(-1)
             return logit
 
+    class IntraRaceAttention(nn.Module):
+        """同レース内の全馬を同時に見て相対評価."""
+        def __init__(self, n_features, d_model=64, n_heads=4, n_layers=2,
+                     d_ff_mult=2, dropout=0.1):
+            super().__init__()
+            self.proj = nn.Linear(n_features, d_model)
+            self.layers = nn.ModuleList([
+                _TransformerBlock(d_model, n_heads, d_model * d_ff_mult, dropout)
+                for _ in range(n_layers)
+            ])
+            self.norm = nn.LayerNorm(d_model)
+            self.head = nn.Sequential(
+                nn.Linear(d_model, d_model // 2),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(d_model // 2, 1),
+            )
+
+        def forward(self, x, mask=None):
+            # x: (batch_races, max_horses, n_features)
+            h = self.proj(x)
+            for layer in self.layers:
+                h = layer(h, mask)
+            h = self.norm(h)
+            logits = self.head(h).squeeze(-1)  # (batch_races, max_horses)
+            return logits
+
 # === パス設定 ===
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -364,6 +391,11 @@ def load_models():
             result['ft_model_config'] = data.get('ft_model_config')
             result['ft_scaler_mean'] = data.get('ft_scaler_mean')
             result['ft_scaler_scale'] = data.get('ft_scaler_scale')
+            # IntraRace Attention parts
+            result['ir_model_state'] = data.get('ir_model_state')
+            result['ir_model_config'] = data.get('ir_model_config')
+            result['ir_scaler_mean'] = data.get('ir_scaler_mean')
+            result['ir_scaler_scale'] = data.get('ir_scaler_scale')
             print(f"[MODEL] {label} ロード完了 ({os.path.basename(loaded_path)})")
             return result
 
@@ -1764,11 +1796,68 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
                 print(f"[WARN] FT-Transformer推論失敗 (LGB+XGBにフォールバック): {e}")
                 ft_pred = None
 
-        # If FT unavailable, redistribute its weight to LGB+XGB
+        # If FT unavailable, redistribute its weight
         if ft_pred is None:
             w_ft = 0.0
 
-        total_w = w_lgb + w_xgb + w_cb + w_ft
+        # IntraRace Attention inference
+        ir_pred = None
+        w_ir = ens_w.get('ir', 0.0)
+        ir_state = model_data.get('ir_model_state')
+        ir_config = model_data.get('ir_model_config')
+        ir_scaler_mean = model_data.get('ir_scaler_mean')
+        ir_scaler_scale = model_data.get('ir_scaler_scale')
+
+        if ir_state is not None and ir_scaler_mean is not None and _TORCH_AVAILABLE and w_ir > 0:
+            try:
+                n_ir_features = len(ir_scaler_mean)
+                X_ir = X[:, :n_ir_features].astype(np.float32)
+
+                # Scale
+                ir_mean = np.array(ir_scaler_mean, dtype=np.float32)
+                ir_scale = np.array(ir_scaler_scale, dtype=np.float32)
+                ir_scale[ir_scale == 0] = 1.0
+                X_ir_scaled = (X_ir - ir_mean) / ir_scale
+
+                # Pad to race batch: (1, max_horses, n_features)
+                MAX_HORSES = 28
+                n_horses = len(X_ir_scaled)
+                x_padded = np.zeros((1, MAX_HORSES, n_ir_features), dtype=np.float32)
+                mask_padded = np.zeros((1, MAX_HORSES), dtype=np.float32)
+                n_fill = min(n_horses, MAX_HORSES)
+                x_padded[0, :n_fill] = X_ir_scaled[:n_fill]
+                mask_padded[0, :n_fill] = 1.0
+
+                cfg_ir = dict(ir_config) if ir_config else {}
+                cfg_ir['n_features'] = n_ir_features
+                ir_model = IntraRaceAttention(
+                    n_features=cfg_ir['n_features'],
+                    d_model=cfg_ir.get('d_model', 64),
+                    n_heads=cfg_ir.get('n_heads', 4),
+                    n_layers=cfg_ir.get('n_layers', 2),
+                    dropout=cfg_ir.get('dropout', 0.1),
+                )
+                ir_model.load_state_dict(ir_state)
+                ir_model.eval()
+
+                device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+                ir_model.to(device)
+                x_t = torch.tensor(x_padded, dtype=torch.float32).to(device)
+                m_t = torch.tensor(mask_padded, dtype=torch.float32).to(device)
+
+                with torch.no_grad():
+                    logits = ir_model(x_t, m_t)
+                    probs = torch.sigmoid(logits).cpu().numpy()
+                ir_pred = probs[0, :n_fill]
+                print(f"[IR] IntraRace Attention推論完了 (n_horses={n_fill})")
+            except Exception as e:
+                print(f"[WARN] IntraRace Attention推論失敗: {e}")
+                ir_pred = None
+                w_ir = 0.0
+        else:
+            w_ir = 0.0
+
+        total_w = w_lgb + w_xgb + w_cb + w_ft + w_ir
         if total_w <= 0:
             total_w = 1.0
         combined = ai_scores * (w_lgb / total_w)
@@ -1794,6 +1883,9 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
 
         if ft_pred is not None:
             combined += ft_pred * (w_ft / total_w)
+
+        if ir_pred is not None:
+            combined += ir_pred * (w_ir / total_w)
 
         ai_scores = combined
 
