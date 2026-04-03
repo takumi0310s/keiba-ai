@@ -1728,8 +1728,14 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
         print("[ERROR] モデルに特徴量リストがありません")
         return df
     use_model = model_data['model']
-    X = df[use_features].values
+    X_full = df[use_features].values
     n = len(df)
+
+    # LGB/XGBは学習時の特徴量数に合わせる（124列）
+    # pkl.gzのfeaturesリスト(129)にはPattern B TYB特徴量(5)が含まれるが
+    # LGB/XGBは先頭124列で学習されている
+    n_lgb_features = use_model.num_feature() if hasattr(use_model, 'num_feature') else X_full.shape[1]
+    X = X_full[:, :n_lgb_features]
 
     if hasattr(use_model, 'predict_proba'):
         proba = use_model.predict_proba(X)
