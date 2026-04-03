@@ -6248,7 +6248,7 @@ with st.expander("🏇 複数レース一括予測（開催日全レース）"):
 # Results update section (Cloud環境では非表示)
 if IS_CLOUD:
     st.caption("☁ Cloud Mode — 結果登録・バッチ予測はローカル環境で実行してください")
-with st.expander("📝 レース結果を登録（的中率集計用）", disabled=IS_CLOUD):
+with st.expander("📝 レース結果を登録（的中率集計用）"):
     result_url = st.text_input(
         "netkeibaの結果ページURLを貼り付け",
         placeholder="https://race.netkeiba.com/race/result.html?race_id=... または https://db.netkeiba.com/race/XXXX/",
