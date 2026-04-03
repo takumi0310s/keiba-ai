@@ -1749,16 +1749,13 @@ st.markdown(CSS, unsafe_allow_html=True)
 @st.cache_resource(ttl=3600)
 def load_model():
     import os, gzip
-    # v12 → v9_central → v8 → ... の順で検索
+    # v13.5b → v13.5 → v13.4 → v12 → v9 → v8 の順で検索
     for fname in [
+        "keiba_model_v135_central.pkl.gz",
+        "keiba_model_v134_central.pkl.gz",
         "keiba_model_v12_central.pkl.gz",
         "keiba_model_v9_central.pkl.gz", "keiba_model_v9_central.pkl",
         "keiba_model_v8.pkl.gz", "keiba_model_v8.pkl",
-        "keiba_model_v6.pkl.gz", "keiba_model_v6.pkl",
-        "keiba_model_v5.pkl.gz", "keiba_model_v5.pkl",
-        "keiba_model_v3.pkl.gz", "keiba_model_v3.pkl",
-        "keiba_model_v2.pkl.gz", "keiba_model_v2.pkl",
-        "keiba_model.pkl.gz",
     ]:
         if os.path.exists(fname):
             try:
@@ -1785,7 +1782,11 @@ def load_v9_models():
     import os, gzip as _gzip
     base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'central_live': None}
-    for key, fname in [('central', 'keiba_model_v12_central'),
+    for key, fname in [('central', 'keiba_model_v135_central'),
+                       ('central_live', 'keiba_model_v135_central_live'),
+                       ('central', 'keiba_model_v134_central'),
+                       ('central_live', 'keiba_model_v134_central_live'),
+                       ('central', 'keiba_model_v12_central'),
                        ('central_live', 'keiba_model_v12_central_live'),
                        ('central', 'keiba_model_v9_central'),
                        ('central_live', 'keiba_model_v9_central_live')]:
@@ -3109,24 +3110,26 @@ def run_system_checks():
     checks = []
     # 1. モデルファイル確認
     model_files = [
+        "keiba_model_v135_central.pkl.gz", "keiba_model_v135_central_live.pkl.gz",
+        "keiba_model_v134_central.pkl.gz", "keiba_model_v134_central_live.pkl.gz",
         "keiba_model_v12_central.pkl.gz", "keiba_model_v12_central_live.pkl.gz",
         "keiba_model_v9_central.pkl.gz", "keiba_model_v9_central.pkl",
         "keiba_model_v8.pkl.gz", "keiba_model_v8.pkl",
     ]
     found = any(os.path.exists(f) for f in model_files)
+    v135c = os.path.exists("keiba_model_v135_central.pkl.gz")
+    v135l = os.path.exists("keiba_model_v135_central_live.pkl.gz")
     v12c = os.path.exists("keiba_model_v12_central.pkl.gz")
     v12l = os.path.exists("keiba_model_v12_central_live.pkl.gz")
-    v9c = os.path.exists("keiba_model_v9_central.pkl.gz") or os.path.exists("keiba_model_v9_central.pkl")
-    v9l = os.path.exists("keiba_model_v9_central_live.pkl.gz") or os.path.exists("keiba_model_v9_central_live.pkl")
     ver_text = ''
-    if v12c:
+    if v135c:
+        ver_text += ' / v13.5b Pattern A検出'
+    if v135l:
+        ver_text += ' / v13.5b Pattern B検出'
+    if not v135c and v12c:
         ver_text += ' / V12 Pattern A検出'
-    if v12l:
+    if not v135l and v12l:
         ver_text += ' / V12 Pattern B検出'
-    if not v12c and v9c:
-        ver_text += ' / V9 Pattern A検出'
-    if not v12l and v9l:
-        ver_text += ' / V9 Pattern B検出'
     checks.append(('モデルファイル', found, f'モデル検出{ver_text}' if found else 'モデルファイルが見つかりません'))
     # 2. 特徴量チェック
     try:
@@ -4802,9 +4805,11 @@ leak_text = ' LEAK-FREE' if model_leak_free else ''
 v9_avail = _v9_models.get('central') is not None
 model_badge_placeholder = st.empty()
 if v9_avail:
-    _v9c_auc = _v9_models['central'].get('auc', 0)
-    _v9c_ver = _v9_models['central'].get('version', 'v9').upper()
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver} AUC {_v9c_auc:.4f}</span> <span class="model-badge badge-nar">NAR専用 A,B,E推奨</span> <span class="model-badge badge-v9">AUTO SELECT</span> <span class="model-badge" style="background:linear-gradient(135deg,#121E1A,#0E1117);border:1px solid #0D9488;color:#14B8A6 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
+    _v9c_wf_auc = _v9_models['central'].get('wf_auc', _v9_models['central'].get('auc', 0))
+    _v9c_ver_raw = _v9_models['central'].get('version', 'v9')
+    # Display-friendly version: v135b_leakfree → v13.5b
+    _v9c_ver_display = _v9c_ver_raw.replace('v135b_leakfree', 'v13.5b').replace('v135b_live', 'v13.5b').replace('v135_leakfree', 'v13.5').replace('v134_leakfree', 'v13.4').upper()
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver_display} WF AUC {_v9c_wf_auc:.4f}</span> <span class="model-badge badge-v9">4-MODEL ENSEMBLE</span> <span class="model-badge" style="background:linear-gradient(135deg,#121E1A,#0E1117);border:1px solid #0D9488;color:#14B8A6 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 

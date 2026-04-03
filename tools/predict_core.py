@@ -217,7 +217,8 @@ def generate_umaren_bets(df_sorted):
 
 def _load_pkl(fpath):
     """pkl or pkl.gz をロードする"""
-    for p in [fpath + '.gz', fpath]:
+    candidates = [fpath] if fpath.endswith('.gz') else [fpath + '.gz', fpath]
+    for p in candidates:
         if os.path.exists(p):
             try:
                 opener = gzip.open if p.endswith('.gz') else open
@@ -234,8 +235,12 @@ def load_models():
               'version': 'v9', 'n_top_encode': 80, 'is_live': False}
 
     candidates = [
-        (os.path.join(BASE_DIR, 'keiba_model_v12_central_live.pkl'), True, 'V12 Pattern B (当日情報込み)'),
-        (os.path.join(BASE_DIR, 'keiba_model_v12_central.pkl'), False, 'V12 Pattern A (リークフリー)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v135_central_live.pkl.gz'), True, 'v13.5b Pattern B (当日情報込み)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v135_central.pkl.gz'), False, 'v13.5b Pattern A (リークフリー)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v134_central_live.pkl.gz'), True, 'v13.4 Pattern B (当日情報込み)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v134_central.pkl.gz'), False, 'v13.4 Pattern A (リークフリー)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v12_central_live.pkl.gz'), True, 'V12 Pattern B (当日情報込み)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v12_central.pkl.gz'), False, 'V12 Pattern A (リークフリー)'),
         (os.path.join(BASE_DIR, 'keiba_model_v9_central_live.pkl'), True, 'V9 Pattern B (当日情報込み)'),
         (os.path.join(BASE_DIR, 'keiba_model_v9_central.pkl'), False, 'V9 Pattern A (リークフリー)'),
         (os.path.join(BASE_DIR, 'keiba_model_v8.pkl'), False, 'V8フォールバック'),
@@ -989,7 +994,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # v5+ 英語名特徴量
-    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12')):
+    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12', 'v13')):
         df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
         df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
