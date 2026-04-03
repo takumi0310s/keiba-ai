@@ -1,0 +1,154 @@
+{
+  "generated_at": "2026-04-03T01:44:24.306216",
+  "test_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "device": "cuda",
+  "n_features": 124,
+  "total_races_v134": 10314,
+  "total_races_v135b": 10314,
+  "fold_aucs": {
+    "v134": {
+      "2020": 0.8527,
+      "2021": 0.8647,
+      "2022": 0.8675,
+      "2023": 0.8687,
+      "2024": 0.8706,
+      "2025": 0.8696
+    },
+    "v135b": {
+      "2020": 0.8515,
+      "2021": 0.8806,
+      "2022": 0.883,
+      "2023": 0.8845,
+      "2024": 0.8853,
+      "2025": 0.8851
+    }
+  },
+  "mean_auc": {
+    "v134": 0.8656,
+    "v135b": 0.8783
+  },
+  "conditions_v134": {
+    "A": {
+      "n": 3212,
+      "trio_roi": 308.0,
+      "trio_hits": 1888,
+      "trio_hit_rate": 58.8,
+      "umaren_roi": 226.6,
+      "umaren_hits": 1435,
+      "umaren_hit_rate": 44.7
+    },
+    "B": {
+      "n": 398,
+      "trio_roi": 259.4,
+      "trio_hits": 214,
+      "trio_hit_rate": 53.8,
+      "umaren_roi": 209.7,
+      "umaren_hits": 161,
+      "umaren_hit_rate": 40.5
+    },
+    "C": {
+      "n": 2473,
+      "trio_roi": 521.5,
+      "trio_hits": 1180,
+      "trio_hit_rate": 47.7,
+      "umaren_roi": 332.2,
+      "umaren_hits": 954,
+      "umaren_hit_rate": 38.6
+    },
+    "D": {
+      "n": 3581,
+      "trio_roi": 314.7,
+      "trio_hits": 1639,
+      "trio_hit_rate": 45.8,
+      "umaren_roi": 270.5,
+      "umaren_hits": 1360,
+      "umaren_hit_rate": 38.0
+    },
+    "E": {
+      "n": 267,
+      "trio_roi": 121.3,
+      "trio_hits": 235,
+      "trio_hit_rate": 88.0,
+      "umaren_roi": 141.4,
+      "umaren_hits": 178,
+      "umaren_hit_rate": 66.7
+    },
+    "X": {
+      "n": 383,
+      "trio_roi": 498.9,
+      "trio_hits": 193,
+      "trio_hit_rate": 50.4,
+      "umaren_roi": 334.0,
+      "umaren_hits": 154,
+      "umaren_hit_rate": 40.2
+    }
+  },
+  "conditions_v135b": {
+    "A": {
+      "n": 3212,
+      "trio_roi": 355.4,
+      "trio_hits": 2031,
+      "trio_hit_rate": 63.2,
+      "umaren_roi": 285.9,
+      "umaren_hits": 1592,
+      "umaren_hit_rate": 49.6
+    },
+    "B": {
+      "n": 398,
+      "trio_roi": 346.8,
+      "trio_hits": 244,
+      "trio_hit_rate": 61.3,
+      "umaren_roi": 290.7,
+      "umaren_hits": 185,
+      "umaren_hit_rate": 46.5
+    },
+    "C": {
+      "n": 2473,
+      "trio_roi": 623.0,
+      "trio_hits": 1277,
+      "trio_hit_rate": 51.6,
+      "umaren_roi": 415.8,
+      "umaren_hits": 1044,
+      "umaren_hit_rate": 42.2
+    },
+    "D": {
+      "n": 3581,
+      "trio_roi": 360.8,
+      "trio_hits": 1727,
+      "trio_hit_rate": 48.2,
+      "umaren_roi": 293.1,
+      "umaren_hits": 1414,
+      "umaren_hit_rate": 39.5
+    },
+    "E": {
+      "n": 267,
+      "trio_roi": 142.2,
+      "trio_hits": 250,
+      "trio_hit_rate": 93.6,
+      "umaren_roi": 195.7,
+      "umaren_hits": 194,
+      "umaren_hit_rate": 72.7
+    },
+    "X": {
+      "n": 383,
+      "trio_roi": 701.2,
+      "trio_hits": 207,
+      "trio_hit_rate": 54.0,
+      "umaren_roi": 367.9,
+      "umaren_hits": 161,
+      "umaren_hit_rate": 42.0
+    }
+  },
+  "overall_trio_roi": {
+    "v134": 361.9,
+    "v135b": 428.4
+  },
+  "all_conditions_pass": true
+}
