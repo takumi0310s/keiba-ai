@@ -10,6 +10,12 @@ Usage:
 import sys
 import os
 import re
+import io
+
+# Windows cp932対策
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith('cp'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from tools.predict_core import (
@@ -61,11 +67,11 @@ def main():
     # 出馬表取得
     print("[3/5] 出馬表取得...")
     try:
-        race_info, horses = parse_shutuba(race_id)
+        race_name, horses, horse_ids, race_info = parse_shutuba(race_id)
     except Exception as e:
         print(f"[ERROR] 出馬表取得失敗: {e}")
         sys.exit(1)
-    print(f"  レース: {race_info.get('race_name', '?')} / {race_info.get('course', '?')} "
+    print(f"  レース: {race_name} / {race_info.get('course', '?')} "
           f"{race_info.get('distance', '?')}m / 頭数: {len(horses)}")
 
     # 馬情報補完
