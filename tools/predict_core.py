@@ -16,6 +16,105 @@ import os
 from datetime import datetime
 from itertools import combinations
 
+# === FT-Transformer (optional, requires torch) ===
+_TORCH_AVAILABLE = False
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    _TORCH_AVAILABLE = True
+except ImportError:
+    pass
+
+if _TORCH_AVAILABLE:
+    class _NumericalEmbedding(nn.Module):
+        """各数値特徴量を個別の線形層でd_token次元のembeddingに変換"""
+        def __init__(self, n_features, d_token):
+            super().__init__()
+            self.weights = nn.Parameter(torch.randn(n_features, d_token))
+            self.biases = nn.Parameter(torch.zeros(n_features, d_token))
+
+        def forward(self, x):
+            return x.unsqueeze(-1) * self.weights.unsqueeze(0) + self.biases.unsqueeze(0)
+
+    class _MultiHeadSelfAttention(nn.Module):
+        def __init__(self, d_model, n_heads, dropout=0.1):
+            super().__init__()
+            assert d_model % n_heads == 0
+            self.d_k = d_model // n_heads
+            self.n_heads = n_heads
+            self.W_q = nn.Linear(d_model, d_model)
+            self.W_k = nn.Linear(d_model, d_model)
+            self.W_v = nn.Linear(d_model, d_model)
+            self.W_o = nn.Linear(d_model, d_model)
+            self.dropout = nn.Dropout(dropout)
+
+        def forward(self, x, mask=None):
+            B, N, D = x.shape
+            q = self.W_q(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
+            k = self.W_k(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
+            v = self.W_v(x).view(B, N, self.n_heads, self.d_k).transpose(1, 2)
+            attn = torch.matmul(q, k.transpose(-2, -1)) / (self.d_k ** 0.5)
+            if mask is not None:
+                attn = attn.masked_fill(mask.unsqueeze(1).unsqueeze(2) == 0, -1e9)
+            attn = F.softmax(attn, dim=-1)
+            attn = self.dropout(attn)
+            out = torch.matmul(attn, v)
+            out = out.transpose(1, 2).contiguous().view(B, N, D)
+            return self.W_o(out)
+
+    class _TransformerBlock(nn.Module):
+        def __init__(self, d_model, n_heads, d_ff, dropout=0.1):
+            super().__init__()
+            self.attn = _MultiHeadSelfAttention(d_model, n_heads, dropout)
+            self.norm1 = nn.LayerNorm(d_model)
+            self.norm2 = nn.LayerNorm(d_model)
+            self.ff = nn.Sequential(
+                nn.Linear(d_model, d_ff),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(d_ff, d_model),
+                nn.Dropout(dropout),
+            )
+
+        def forward(self, x, mask=None):
+            x = x + self.attn(self.norm1(x), mask)
+            x = x + self.ff(self.norm2(x))
+            return x
+
+    class FTTransformer(nn.Module):
+        """Feature Tokenizer + Transformer for tabular data."""
+        def __init__(self, n_features, d_token=64, n_heads=4, n_layers=3,
+                     d_ff_mult=2, dropout=0.1):
+            super().__init__()
+            self.n_features = n_features
+            self.d_token = d_token
+            self.feature_embedding = _NumericalEmbedding(n_features, d_token)
+            self.cls_token = nn.Parameter(torch.randn(1, 1, d_token))
+            d_ff = d_token * d_ff_mult
+            self.layers = nn.ModuleList([
+                _TransformerBlock(d_token, n_heads, d_ff, dropout)
+                for _ in range(n_layers)
+            ])
+            self.norm = nn.LayerNorm(d_token)
+            self.head = nn.Sequential(
+                nn.Linear(d_token, d_token),
+                nn.GELU(),
+                nn.Dropout(dropout),
+                nn.Linear(d_token, 1),
+            )
+
+        def forward(self, x):
+            B = x.shape[0]
+            feat_emb = self.feature_embedding(x)
+            cls = self.cls_token.expand(B, -1, -1)
+            tokens = torch.cat([cls, feat_emb], dim=1)
+            for layer in self.layers:
+                tokens = layer(tokens)
+            cls_out = self.norm(tokens[:, 0])
+            logit = self.head(cls_out).squeeze(-1)
+            return logit
+
 # === パス設定 ===
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -260,6 +359,11 @@ def load_models():
             result['ensemble_weights'] = data.get('ensemble_weights', {})
             result['xgb_model'] = data.get('xgb_model')
             result['cb_model'] = data.get('cb_model')
+            # FT-Transformer parts
+            result['ft_model_state'] = data.get('ft_model_state')
+            result['ft_model_config'] = data.get('ft_model_config')
+            result['ft_scaler_mean'] = data.get('ft_scaler_mean')
+            result['ft_scaler_scale'] = data.get('ft_scaler_scale')
             print(f"[MODEL] {label} ロード完了 ({os.path.basename(loaded_path)})")
             return result
 
@@ -519,6 +623,10 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         # UI用追加フィールド
         'best_time': 0.0, 'best_time_str': '', 'best_time_date': '', 'best_time_dist': 0,
         'margin_text': '', 'weight_diff': 0, 'prev_jockey': '',
+        # Weight history for weight_ma5/weight_trend/weight_peak_diff
+        'weight_history': [],
+        # Lap data for prev_race_first3f/last3f/pace_diff
+        'prev_race_first3f': 0, 'prev_race_last3f': 0, 'prev_race_pace_diff': 0,
     }
     try:
         url = f"https://db.netkeiba.com/horse/result/{horse_id}/"
@@ -619,6 +727,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         race_dates = []
         odds_list = []
         pass4_list = []
+        weight_list = []
         best_time_sec = 999.9
         best_time_date = ""
         best_time_dist = 0
@@ -674,6 +783,19 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                         odds_list.append(odds_val)
                 except:
                     pass
+
+            # Weight extraction (column 23 or 24, format: "480(+4)" or just "480")
+            try:
+                for _wt_idx in range(20, min(len(tds), 28)):
+                    _wt_text = tds[_wt_idx].get_text(strip=True)
+                    _wt_match = re.match(r'(\d{3,})', _wt_text)
+                    if _wt_match:
+                        _wt_val = int(_wt_match.group(1))
+                        if 350 <= _wt_val <= 600:
+                            weight_list.append(_wt_val)
+                            break
+            except Exception:
+                pass
 
             dc = tds[14].get_text(strip=True)
             ddm = re.match(r'([芝ダ障])(\d+)', dc)
@@ -795,6 +917,43 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         result['best_time_str'] = best_time_str
         result['best_time_date'] = best_time_date
         result['best_time_dist'] = best_time_dist
+
+        # Weight history (for weight_ma5/weight_trend/weight_peak_diff)
+        result['weight_history'] = weight_list[:5]  # most recent 5
+
+        # Lap data: try to get previous race's first3f/last3f from race link
+        try:
+            first_row = rows[0] if rows else None
+            if first_row:
+                _race_link = first_row.find("a", href=re.compile(r'/race/\d+'))
+                if _race_link:
+                    _prev_rid_match = re.search(r'/race/(\d+)', _race_link['href'])
+                    if _prev_rid_match:
+                        _prev_rid = _prev_rid_match.group(1)
+                        # Try to get lap data from race result page
+                        _race_url = f"https://race.netkeiba.com/race/result.html?race_id={_prev_rid}"
+                        _race_resp = requests.get(_race_url, headers=HEADERS, timeout=8)
+                        _race_resp.encoding = "EUC-JP"
+                        _race_soup = BeautifulSoup(_race_resp.text, "html.parser")
+                        # Look for lap time data in pay_block or RapTime section
+                        _rap_section = _race_soup.find("dl", class_=re.compile("RapTime|RaceRap"))
+                        if _rap_section:
+                            _rap_text = _rap_section.get_text()
+                            _rap_nums = re.findall(r'(\d{2}\.\d)', _rap_text)
+                            if len(_rap_nums) >= 2:
+                                _rap_floats = [float(x) for x in _rap_nums]
+                                _n_laps = len(_rap_floats)
+                                # first3f = sum of first 3 furlongs (each ~200m)
+                                _n_first3 = min(3, _n_laps // 2) if _n_laps >= 4 else 1
+                                _n_last3 = min(3, _n_laps - _n_first3) if _n_laps >= 4 else max(1, _n_laps - 1)
+                                _first3f = sum(_rap_floats[:_n_first3])
+                                _last3f = sum(_rap_floats[-_n_last3:])
+                                if 25.0 < _first3f < 50.0 and 25.0 < _last3f < 50.0:
+                                    result['prev_race_first3f'] = round(_first3f, 1)
+                                    result['prev_race_last3f'] = round(_last3f, 1)
+                                    result['prev_race_pace_diff'] = round(_last3f - _first3f, 1)
+        except Exception:
+            pass
 
     except Exception:
         pass
@@ -920,6 +1079,8 @@ def set_horse_defaults(horse):
         'prev2_finish': 5, 'prev3_finish': 5, 'prev4_finish': 5, 'prev5_finish': 5,
         'avg_finish_3r': 5.0, 'avg_finish_5r': 5.0, 'best_finish_3r': 5, 'best_finish_5r': 5,
         'top3_count_3r': 0, 'top3_count_5r': 0, 'finish_trend': 0, 'prev2_last3f': 35.5,
+        'weight_history': [],
+        'prev_race_first3f_scraped': 0, 'prev_race_last3f_scraped': 0, 'prev_race_pace_diff_scraped': 0,
     })
 
 
@@ -955,6 +1116,12 @@ def apply_horse_stats(horse, stats, race_info):
     horse['top3_count_5r'] = stats.get('top3_count_5r', 0)
     horse['finish_trend'] = stats.get('finish_trend', 0)
     horse['prev2_last3f'] = stats.get('prev2_last3f', 35.5)
+    # Weight history for weight trend features
+    horse['weight_history'] = stats.get('weight_history', [])
+    # Lap features from previous race
+    horse['prev_race_first3f_scraped'] = stats.get('prev_race_first3f', 0)
+    horse['prev_race_last3f_scraped'] = stats.get('prev_race_last3f', 0)
+    horse['prev_race_pace_diff_scraped'] = stats.get('prev_race_pace_diff', 0)
     # UI用追加フィールド
     horse['持ちタイム'] = stats.get('best_time', 0.0)
     horse['タイム表示'] = stats.get('best_time_str', '')
@@ -1195,7 +1362,66 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                             df.loc[df.index[idx_h], 'training_time_filled'] = RANK_TO_WOOD_4F[_rank]
                             df.loc[df.index[idx_h], 'has_training'] = 1
 
-        # ペース/ラップ特徴量
+        # ===== Stable comment score =====
+        if 'stable_comment_score' not in df.columns:
+            df['stable_comment_score'] = 0
+        if race_id and (df['stable_comment_score'] == 0).all():
+            try:
+                from scrape_training import fetch_stable_comments
+                _comments = fetch_stable_comments(race_id)
+                if _comments:
+                    for idx_h in range(len(df)):
+                        _umaban = int(df.iloc[idx_h].get('馬番', df.iloc[idx_h].get('horse_num', 0)))
+                        if _umaban in _comments:
+                            df.loc[df.index[idx_h], 'stable_comment_score'] = float(_comments[_umaban].get('score', 0))
+            except Exception:
+                pass
+
+        # ===== Weight trend features (weight_ma5, weight_trend, weight_peak_diff) =====
+        try:
+            for idx_h in range(len(df)):
+                _wh = horses[idx_h].get('weight_history', []) if idx_h < len(horses) else []
+                _current_w = float(df.iloc[idx_h].get('馬体重', 480))
+                if _wh and len(_wh) >= 2:
+                    _recent = _wh[:5]
+                    df.loc[df.index[idx_h], 'weight_ma5'] = float(np.mean(_recent))
+                    # Linear trend (slope): simple least squares
+                    _n = len(_recent)
+                    _x = np.arange(_n, dtype=float)
+                    _y = np.array(_recent, dtype=float)
+                    _slope = float(np.polyfit(_x, _y, 1)[0]) if _n >= 2 else 0.0
+                    df.loc[df.index[idx_h], 'weight_trend'] = _slope
+                    df.loc[df.index[idx_h], 'weight_peak_diff'] = _current_w - float(max(_recent))
+                elif _current_w > 0:
+                    df.loc[df.index[idx_h], 'weight_ma5'] = _current_w
+                    df.loc[df.index[idx_h], 'weight_trend'] = 0.0
+                    df.loc[df.index[idx_h], 'weight_peak_diff'] = 0.0
+        except Exception:
+            pass
+        for _wc in ['weight_ma5', 'weight_trend', 'weight_peak_diff']:
+            if _wc not in df.columns:
+                df[_wc] = 480.0 if _wc == 'weight_ma5' else 0.0
+            df[_wc] = pd.to_numeric(df[_wc], errors='coerce').fillna(480.0 if _wc == 'weight_ma5' else 0.0)
+
+        # ===== Lap / Pace features (prev_race_first3f, prev_race_last3f, prev_race_pace_diff) =====
+        # Use scraped data from get_horse_stats if available
+        _lap_filled = False
+        try:
+            for idx_h in range(len(df)):
+                if idx_h < len(horses):
+                    _f3 = horses[idx_h].get('prev_race_first3f_scraped', 0)
+                    _l3 = horses[idx_h].get('prev_race_last3f_scraped', 0)
+                    _pd = horses[idx_h].get('prev_race_pace_diff_scraped', 0)
+                    if _f3 > 0 and _l3 > 0:
+                        df.loc[df.index[idx_h], 'prev_race_first3f'] = float(_f3)
+                        df.loc[df.index[idx_h], 'prev_race_last3f'] = float(_l3)
+                        df.loc[df.index[idx_h], 'prev_race_pace_diff'] = float(_pd)
+                        # prev_agari_relative = horse's agari - race average agari
+                        _horse_agari = float(df.iloc[idx_h].get('上がり3F', 35.5) if '上がり3F' in df.columns else 35.5)
+                        df.loc[df.index[idx_h], 'prev_agari_relative'] = _horse_agari - float(_l3)
+                        _lap_filled = True
+        except Exception:
+            pass
         if 'prev_race_first3f' not in df.columns or (df.get('prev_race_first3f', pd.Series([0])) == 0).all():
             df['prev_race_first3f'] = 35.0
             df['prev_race_last3f'] = 35.5
@@ -1479,16 +1705,74 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
     else:
         ai_scores = use_model.predict(X)
 
-    # XGB/CatBoost ensemble (if available in model data)
+    # XGB/CatBoost/FT ensemble (if available in model data)
     ens_w = model_data.get('ensemble_weights', {})
     xgb_m = model_data.get('xgb_model')
     cb_m = model_data.get('cb_model')
-    if xgb_m is not None or cb_m is not None:
+    ft_state = model_data.get('ft_model_state')
+    ft_config = model_data.get('ft_model_config')
+    ft_scaler_mean = model_data.get('ft_scaler_mean')
+    ft_scaler_scale = model_data.get('ft_scaler_scale')
+
+    has_ensemble = (xgb_m is not None or cb_m is not None
+                    or (ft_state is not None and _TORCH_AVAILABLE))
+    if has_ensemble:
         w_lgb = ens_w.get('lgb', 0.5)
         w_xgb = ens_w.get('xgb', 0.3)
-        w_cb = ens_w.get('cb', 0.2)
-        total_w = w_lgb + w_xgb + w_cb
+        w_cb = ens_w.get('cb', 0.0)
+        w_ft = ens_w.get('ft', 0.0)
+
+        # FT-Transformer inference
+        ft_pred = None
+        if ft_state is not None and ft_scaler_mean is not None and _TORCH_AVAILABLE:
+            try:
+                # FT model was trained on Pattern A features (124).
+                # For live models with extra features, use only the first N features
+                # matching the scaler dimension.
+                n_ft_features = len(ft_scaler_mean)
+                X_ft = X[:, :n_ft_features].astype(np.float32)
+
+                # Apply StandardScaler
+                mean = np.array(ft_scaler_mean, dtype=np.float32)
+                scale = np.array(ft_scaler_scale, dtype=np.float32)
+                scale[scale == 0] = 1.0  # avoid division by zero
+                X_ft_scaled = (X_ft - mean) / scale
+
+                # Reconstruct model using actual weight dimensions, not stored config
+                actual_n_features = n_ft_features
+                cfg = dict(ft_config) if ft_config else {}
+                cfg['n_features'] = actual_n_features
+                ft_model = FTTransformer(
+                    n_features=cfg['n_features'],
+                    d_token=cfg.get('d_token', 64),
+                    n_heads=cfg.get('n_heads', 4),
+                    n_layers=cfg.get('n_layers', 3),
+                    dropout=cfg.get('dropout', 0.1),
+                )
+                ft_model.load_state_dict(ft_state)
+                ft_model.eval()
+
+                device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+                ft_model.to(device)
+                X_tensor = torch.tensor(X_ft_scaled, dtype=torch.float32).to(device)
+
+                with torch.no_grad():
+                    logits = ft_model(X_tensor)
+                    ft_pred = torch.sigmoid(logits).cpu().numpy()
+                print(f"[FT] FT-Transformer推論完了 (n_features={actual_n_features})")
+            except Exception as e:
+                print(f"[WARN] FT-Transformer推論失敗 (LGB+XGBにフォールバック): {e}")
+                ft_pred = None
+
+        # If FT unavailable, redistribute its weight to LGB+XGB
+        if ft_pred is None:
+            w_ft = 0.0
+
+        total_w = w_lgb + w_xgb + w_cb + w_ft
+        if total_w <= 0:
+            total_w = 1.0
         combined = ai_scores * (w_lgb / total_w)
+
         if xgb_m is not None:
             try:
                 import xgboost as xgb_lib
@@ -1498,14 +1782,19 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
                 combined += ai_scores * (w_xgb / total_w)
         else:
             combined += ai_scores * (w_xgb / total_w)
+
         if cb_m is not None:
             try:
                 cb_pred = cb_m.predict_proba(X)[:, 1]
                 combined += cb_pred * (w_cb / total_w)
             except Exception:
                 combined += ai_scores * (w_cb / total_w)
-        else:
+        elif w_cb > 0:
             combined += ai_scores * (w_cb / total_w)
+
+        if ft_pred is not None:
+            combined += ft_pred * (w_ft / total_w)
+
         ai_scores = combined
 
     # 補助スコア

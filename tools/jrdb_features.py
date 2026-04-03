@@ -614,6 +614,99 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB KKA merge failed: {e}")
 
+    # OZ: 基準オッズ特徴量
+    _oz_path = os.path.join(DATA_DIR, 'jrdb_oz.csv')
+    if os.path.exists(_oz_path):
+        try:
+            _oz = pd.read_csv(_oz_path, encoding='utf-8-sig', dtype={'race_id': str})
+            _oz_race = _oz[_oz['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_oz_race) > 0:
+                _oz_row = _oz_race.iloc[0]
+                _ozr = pd.DataFrame()
+                _uma_list = []
+                _base_t_list = []
+                _base_f_list = []
+                for i in range(1, 19):
+                    t_val = pd.to_numeric(_oz_row.get(f'tansho_{i:02d}'), errors='coerce')
+                    f_val = pd.to_numeric(_oz_row.get(f'fukusho_{i:02d}'), errors='coerce')
+                    if pd.notna(t_val) and t_val > 0:
+                        _uma_list.append(i)
+                        _base_t_list.append(t_val)
+                        _base_f_list.append(f_val if pd.notna(f_val) and f_val > 0 else np.nan)
+                if _uma_list:
+                    _ozr = pd.DataFrame({
+                        '_uma': _uma_list,
+                        'oz_tansho_base_log': np.log1p(np.array(_base_t_list).clip(1.0)),
+                        'oz_fukusho_base_log': np.log1p(np.array([f if not np.isnan(f) else 2.0 for f in _base_f_list]).clip(1.0)),
+                    })
+                    # Compute base popularity rank (lower odds = higher rank)
+                    _ozr['oz_base_pop_rank'] = pd.Series(_base_t_list).rank(method='min', ascending=True).astype(int).values
+                    _ozr = _ozr.drop_duplicates(subset='_uma', keep='last')
+                    horses_df = horses_df.merge(_ozr, on='_uma', how='left', suffixes=('', '_oz'))
+        except Exception as e:
+            print(f"[WARN] JRDB OZ merge failed: {e}")
+
+    # KYI: 基準オッズ特徴量（OZがない場合のフォールバック）
+    if 'oz_tansho_base_log' not in horses_df.columns or horses_df['oz_tansho_base_log'].isna().all():
+        try:
+            # Re-read KYI for 基準オッズ columns
+            if os.path.exists(kyi_path):
+                _kyi2 = pd.read_csv(kyi_path, encoding='utf-8-sig', dtype=str)
+                _kyi2_race = _kyi2[_kyi2['nk_race_id'].astype(str) == str(race_id_nk)]
+                if len(_kyi2_race) > 0 and '基準オッズ' in _kyi2_race.columns:
+                    _kr2 = pd.DataFrame()
+                    _kr2['_uma'] = pd.to_numeric(_kyi2_race['馬番'], errors='coerce')
+                    _base_odds = pd.to_numeric(_kyi2_race['基準オッズ'], errors='coerce')
+                    _base_fuku = pd.to_numeric(_kyi2_race.get('基準複勝オッズ', pd.Series(dtype=float)), errors='coerce')
+                    _base_pop = pd.to_numeric(_kyi2_race.get('基準人気順位', pd.Series(dtype=float)), errors='coerce')
+                    _kr2['oz_tansho_base_log'] = np.log1p(_base_odds.clip(lower=1.0).fillna(10.0))
+                    _kr2['oz_fukusho_base_log'] = np.log1p(_base_fuku.clip(lower=1.0).fillna(2.0))
+                    _kr2['oz_base_pop_rank'] = _base_pop.fillna(8).astype(int)
+                    _kr2 = _kr2.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
+                    if '_uma' not in horses_df.columns:
+                        horses_df['_uma'] = horses_df['horse_num'].astype(int) if 'horse_num' in horses_df.columns else horses_df.index + 1
+                    horses_df = horses_df.merge(_kr2, on='_uma', how='left', suffixes=('', '_kyi2'))
+                    # Prefer non-null values from KYI
+                    for _c in ['oz_tansho_base_log', 'oz_fukusho_base_log', 'oz_base_pop_rank']:
+                        _c2 = f'{_c}_kyi2'
+                        if _c2 in horses_df.columns:
+                            horses_df[_c] = horses_df[_c].fillna(horses_df[_c2])
+                            horses_df.drop(columns=[_c2], inplace=True, errors='ignore')
+        except Exception as e:
+            print(f"[WARN] JRDB KYI oz fallback failed: {e}")
+
+    # odds_change_rate / pop_rank_change / odds_sharp_drop
+    # These require realtime odds vs base odds comparison
+    # At prediction time, if realtime odds are available in horses_df, compute them
+    try:
+        if 'oz_tansho_base_log' in horses_df.columns:
+            _base_odds_raw = np.expm1(horses_df['oz_tansho_base_log'].fillna(2.3))
+            # Check if realtime odds are available (from 単勝オッズ column)
+            _rt_odds_col = None
+            for _oc in ['単勝オッズ', 'odds_log']:
+                if _oc in horses_df.columns:
+                    _rt_odds_col = _oc
+                    break
+            if _rt_odds_col and (horses_df.get(_rt_odds_col, pd.Series([0])) > 0).any():
+                if _rt_odds_col == 'odds_log':
+                    _rt_odds = np.expm1(horses_df[_rt_odds_col].fillna(0))
+                else:
+                    _rt_odds = horses_df[_rt_odds_col].fillna(0)
+                _valid = (_base_odds_raw > 0) & (_rt_odds > 0)
+                _change = pd.Series(0.0, index=horses_df.index)
+                _change[_valid] = ((_base_odds_raw[_valid] - _rt_odds[_valid]) / _base_odds_raw[_valid]).clip(-2.0, 2.0)
+                horses_df['odds_change_rate'] = _change
+                # pop_rank_change
+                _base_rank = horses_df.get('oz_base_pop_rank', pd.Series([8] * len(horses_df))).fillna(8)
+                _rt_rank = _rt_odds.rank(method='min', ascending=True)
+                horses_df['pop_rank_change'] = (_base_rank - _rt_rank).fillna(0).astype(int)
+                # odds_sharp_drop: realtime <= base * 0.8
+                _sharp = pd.Series(0, index=horses_df.index)
+                _sharp[_valid] = (_rt_odds[_valid] <= _base_odds_raw[_valid] * 0.8).astype(int)
+                horses_df['odds_sharp_drop'] = _sharp
+    except Exception as e:
+        print(f"[WARN] Odds change features failed: {e}")
+
     horses_df.drop(columns=['_uma'], inplace=True, errors='ignore')
 
     # デフォルト値で埋め（拡張特徴量含む）
@@ -624,6 +717,9 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         'jrdb_ze_idm_avg': 37.0, 'jrdb_ze_ten_avg': -15.0, 'jrdb_ze_agari_avg': -12.0,
         'jrdb_ze_furi_count': 0.0, 'jrdb_tb_homestr_inner': 2.0,
         'jrdb_dam_rensho_avg': 1600.0, 'jrdb_bms_rensho_avg': 1600.0,
+        'oz_tansho_base_log': 2.3, 'oz_fukusho_base_log': 0.7,
+        'oz_base_pop_rank': 8, 'odds_change_rate': 0.0,
+        'pop_rank_change': 0, 'odds_sharp_drop': 0,
     }
     _all_defaults = {**JRDB_DEFAULTS, **_ext_defaults}
     for feat, default in _all_defaults.items():

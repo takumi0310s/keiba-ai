@@ -4,7 +4,7 @@ REM Run as Administrator
 
 echo Setting up Weekly Report task...
 
-schtasks /create /tn "keiba-ai\WeeklyReport" /tr "C:\Users\sato\keiba-ai\weekly_report.bat" /sc weekly /d MON /st 08:00 /rl HIGHEST /f
+schtasks /create /tn "keiba-ai\WeeklyReport" /tr "C:\Users\takum\keiba-ai\weekly_report.bat" /sc weekly /d MON /st 08:00 /rl HIGHEST /f
 
 if %errorlevel% equ 0 (
     echo Task created:

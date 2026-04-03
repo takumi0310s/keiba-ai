@@ -23,6 +23,7 @@ sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 # === predict_core から全共通関数をインポート ===
+from jrdb_features import merge_jrdb_predict_features
 from predict_core import (
     HEADERS, INVESTMENT_PER_RACE, COURSE_MAP, SURFACE_MAP, COND_MAP, SEX_MAP,
     CONDITION_PROFILES, MODERN_JOCKEY_WR, SIRE_APT,
@@ -197,6 +198,13 @@ def run_daily_predict(date_str):
             # 特徴量構築 & 予測
             df = build_features(horses, race_info, model_data, race_id=race_id,
                                 odds_dict=odds_dict, jra_track_info=jra_info, weather_info=weather_info)
+
+            # JRDB特徴量マージ（KYI前日データ + TYB直前データ）
+            try:
+                df = merge_jrdb_predict_features(df, race_id)
+            except Exception as e:
+                print(f"    [JRDB] feature merge skipped: {e}")
+
             df = predict_race(df, model_data, odds_available, race_info=race_info)
 
             # 条件分類

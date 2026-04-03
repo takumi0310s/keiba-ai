@@ -140,6 +140,15 @@ def fetch_jrdb_pre_race(date_str, dry_run=False):
             results[ft] = -1
         time.sleep(2)
 
+    # Extended JRDB data (CHA/JO/KTA/KKA)
+    try:
+        import subprocess
+        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_batch2.py'), '--types', 'cha', 'kta'], timeout=120)
+        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_extra.py'), '--types', 'jo', 'kka'], timeout=120)
+        print(f"  [JRDB] Extended data (CHA/JO/KTA/KKA) updated")
+    except Exception as e:
+        print(f"  [WARN] Extended JRDB fetch failed: {e}")
+
     return results
 
 

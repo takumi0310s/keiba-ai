@@ -3,8 +3,8 @@
 
 $TaskName = "KeibaAI_DailyPremiumScrape"
 $Description = "netkeiba premium data daily scraping (speed_index, newspaper, result)"
-$BatPath = "C:\Users\sato\keiba-ai\daily_premium_scrape.bat"
-$WorkDir = "C:\Users\sato\keiba-ai"
+$BatPath = "C:\Users\takum\keiba-ai\daily_premium_scrape.bat"
+$WorkDir = "C:\Users\takum\keiba-ai"
 
 # 既存タスクがあれば削除
 $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue

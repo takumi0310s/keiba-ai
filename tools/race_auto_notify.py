@@ -32,6 +32,8 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 MINUTES_BEFORE = 5
 JRDB_MINUTES_BEFORE = 20  # TYB取得タイミング（発走20分前）
 
+_cached_model_data = None
+
 
 def get_todays_races(date_str):
     """netkeibaから当日全レースの発走時刻を取得。
@@ -140,7 +142,10 @@ def predict_and_notify(race_info, date_str):
         )
         from notify import send_discord
 
-        model_data = load_models()
+        global _cached_model_data
+        if _cached_model_data is None:
+            _cached_model_data = load_models()
+        model_data = _cached_model_data
         if model_data['model'] is None:
             print("    Model not found")
             return

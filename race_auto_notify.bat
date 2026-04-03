@@ -2,7 +2,7 @@
 REM Race auto-predict and Discord notify (5 min before each race)
 REM Runs Sat/Sun AM 09:30 via Task Scheduler
 
-cd /d C:\Users\sato\keiba-ai
+cd /d C:\Users\takum\keiba-ai
 
 REM Prevent PC sleep
 powercfg /change standby-timeout-ac 0
