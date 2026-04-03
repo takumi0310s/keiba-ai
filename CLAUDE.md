@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-03-30
+Last updated: 2026-04-03
 
 ---
 
@@ -10,12 +10,13 @@ Last updated: 2026-03-30
 **競馬AI予測システム（中央競馬専用）**
 
 JRA中央競馬の全レースをAIで予測し、条件別に最適な買い目を自動生成するシステム。
-LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予測し、6つの条件分類に基づいて三連複/馬連の買い目を推奨する。
+LGB+XGB+FT-Transformer+IntraRace Attention 4モデルアンサンブルで複勝圏（3着以内）を予測し、6つの条件分類に基づいて三連複/馬連の買い目を推奨する。
 
 - **Streamlit**: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app
 - **GitHub**: https://github.com/takumi0310s/keiba-ai
+- **現行モデル**: v13.5b（124特徴量、4モデルGrid Ensemble、WF AUC 0.8788）
 - **2段階モデル**: Pattern A（リークフリー評価用）+ Pattern B（当日情報込み実運用）
-- **検証済み**: WF 2020-2025, 20,579レース, 全条件ROI 100%超え
+- **検証済み**: WF 2020-2025, 実配当ROI 428.4%, 全条件PASS
 
 ---
 
@@ -87,6 +88,14 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 11. V11 speed index試行 → 不採用（WF AUC 0.801 < 0.802 baseline）
 12. **V12総合再学習（+7特徴量）→ WF AUC 0.8037（+0.0031）→ 採用**
     - dam_top3rリーク発見（全年データで計算→expanding windowに修正→マイナス寄与で除外）
+13. **v13.4 JRDB完全連携（+50特徴量）→ WF AUC 0.8610（LGB+XGB）→ 採用**
+    - 騎手・調教師・血統・レースペース等のJRDB特徴量を大量追加（74→124特徴量）
+14. **v13.5 FT-Transformer追加 → WF AUC 0.8659（3-model）→ 採用**
+    - LGB+XGB+FT-Transformer 3モデルアンサンブル
+15. **v13.5b IntraRace Attention追加 → WF AUC 0.8788（4-model grid）→ 採用（現行）**
+    - レース内馬同士の相対関係をAttentionで学習
+    - Grid Search重み最適化、IR重み0.35で最大貢献
+    - 実配当ROI 428.4%（全条件v13.4以上、JRA公式配当検証済み）
 
 ### テスト・検証（22項目 + Phase 10-13）
 1. リークフリー検証（encode_categoricals/encode_sires静的解析）→ PASS
@@ -148,17 +157,24 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 - **Pattern A（評価用）**: リークフリー厳守。モデルの真の実力を評価
 - **Pattern B（実運用）**: 使える情報は全て使って最高精度で予測
 
-### Pattern A スペック
+### Pattern A スペック（v13.5b、現行）
+- ファイル: `keiba_model_v135_central.pkl.gz`（LGB+XGB）+ FT/IRモデルは動的学習
+- WF AUC: **0.8788**（walk-forward 2020-2025平均, 4-model grid ensemble）
+- 特徴量: **124個**（リークフリー、JRDB連携含む）
+- 学習データ: ~527,000行
+- 目的変数: `finish <= 3`（複勝圏 binary）
+- アンサンブル: LGB + XGB + FT-Transformer + IntraRace Attention（Grid重み最適化）
+- 実配当ROI: **428.4%**（JRA公式配当、WF 2023-2025、全条件PASS）
+
+### Pattern A スペック（v12、旧版）
 - ファイル: `keiba_model_v12_central.pkl.gz`
 - WF AUC: **0.8037**（walk-forward 2020-2025平均, LGB単体）
 - 特徴量: **74個**（リークフリー、V9.3の67 + V12の7）
-- 学習データ: ~527,000行
-- 目的変数: `finish <= 3`（複勝圏 binary）
 
 ### Pattern B スペック
-- ファイル: `keiba_model_v12_central_live.pkl.gz`
-- 特徴量: **82個**（Pattern A 74 + 当日情報8）
-- app.pyはPattern Bを優先、なければA→V8にフォールバック
+- ファイル: `keiba_model_v135_central_live.pkl.gz`（LGB+XGB）
+- 特徴量: **132個**（Pattern A 124 + 当日情報8）
+- app.pyはPattern Bを優先、なければA→V12→V8にフォールバック
 - 馬場/天候データ取得失敗時は0=欠損として予測
 
 ### Pattern A 全74特徴量
@@ -305,10 +321,16 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 | precipitation | 気象庁API | 降水量(mm) |
 | weather_enc | 気象庁API | 天候(晴=0, 曇=1, 雨=2, 雪=3) |
 
-### アンサンブル構成
+### アンサンブル構成（v13.5b、現行）
+- **4モデル Grid Ensemble**: LightGBM + XGBoost + FT-Transformer + IntraRace Attention
+- 重み: Grid Search最適化（年ごとに異なる）
+- 典型的重み: LGB=0.25, XGB=0.25-0.30, FT=0.10-0.15, IR=0.35
+- `pred = w_lgb * lgb + w_xgb * xgb + w_ft * ft + w_ir * ir`
+- IntraRace Attentionがレース内相対関係を捕捉し、最大の貢献（重み0.35）
+
+### アンサンブル構成（v12以前）
 - **LightGBM（主）** + **XGBoost（副）**
 - 重み: AUC比例（LGB ~56%, XGB ~44%）
-- `pred = w_lgb * lgb_pred + w_xgb * xgb_pred`
 
 ### LGBパラメータ
 ```python
@@ -358,21 +380,31 @@ LightGBM + XGBoostアンサンブルモデルで複勝圏（3着以内）を予�
 
 ### 条件定義テーブル
 
-WF 2020-2025, 20,579レース, Pattern A (AUC 0.8017), JRA公式配当データ
+#### v13.5b（現行）WF 2023-2025, 10,314レース, 4-model Grid Ensemble (AUC 0.8788), JRA公式配当データ
 
-| 条件 | 条件内容 | 買い目 | 実ROI | 推定ROI | 的中率 | N | 保守ROI(×0.7) |
-|------|----------|--------|-------|---------|--------|------|---------------|
-| A | 8-14頭/1600m+/良〜稍重 | trio 7点 | **205.3%** | 439.6% | 44.5% | 6,438 | 143.7% |
-| B | 8-14頭/1600m+/重〜不良 | trio 7点 | **236.9%** | 445.1% | 45.2% | 847 | 165.8% |
-| C | 15頭+/1600m+/良〜稍重 | trio 7点 | **285.6%** | 538.8% | 33.7% | 4,774 | 199.9% |
-| D | 1200-1400m | trio 7点 | **136.0%** | 236.0% | 27.0% | 7,254 | 95.2% |
-| E | 7頭以下 | umaren 2点 | **118.0%** | 145.2% | 53.4% | 461 | 82.6% |
-| X | 15頭+/重〜不良 | trio 7点 | **330.5%** | 544.2% | 35.5% | 805 | 231.3% |
+| 条件 | 条件内容 | 買い目 | v13.5b実ROI | 的中率 | N | v13.4実ROI |
+|------|----------|--------|------------|--------|------|-----------|
+| A | 8-14頭/1600m+/良〜稍重 | trio 7点 | **355.4%** | 63.2% | 3,212 | 308.0% |
+| B | 8-14頭/1600m+/重〜不良 | trio 7点 | **346.8%** | 61.3% | 398 | 259.4% |
+| C | 15頭+/1600m+/良〜稍重 | trio 7点 | **623.0%** | 51.6% | 2,473 | 521.5% |
+| D | 1200-1400m | trio 7点 | **360.8%** | 48.2% | 3,581 | 314.7% |
+| E | 7頭以下 | umaren 2点 | **195.7%** | 72.7% | 267 | 141.4% |
+| X | 15頭+/重〜不良 | trio 7点 | **701.2%** | 54.0% | 383 | 498.9% |
+| **全体** | | | **428.4%** | | **10,314** | 361.9% |
 
-- **全条件ROI 100%超え**（バックテスト実績）
+#### v12（旧版）WF 2020-2025, 20,579レース, LGB単体 (AUC 0.8037), JRA公式配当データ
+
+| 条件 | 条件内容 | 買い目 | 実ROI | 的中率 | N |
+|------|----------|--------|-------|--------|------|
+| A | 8-14頭/1600m+/良〜稍重 | trio 7点 | **205.3%** | 44.5% | 6,438 |
+| B | 8-14頭/1600m+/重〜不良 | trio 7点 | **236.9%** | 45.2% | 847 |
+| C | 15頭+/1600m+/良〜稍重 | trio 7点 | **285.6%** | 33.7% | 4,774 |
+| D | 1200-1400m | trio 7点 | **136.0%** | 27.0% | 7,254 |
+| E | 7頭以下 | umaren 2点 | **118.0%** | 53.4% | 461 |
+| X | 15頭+/重〜不良 | trio 7点 | **330.5%** | 35.5% | 805 |
+
+- **全条件ROI 100%超え**（v13.5b、v12ともに）
 - **1000m以下は非推奨**: ROI 85.0% (N=534) → 予測はするが購入非推奨表示
-- 保守的見積り（×0.7）ではD, Eが100%以下 → 実運用で要モニタリング
-- 推定ROIは実ROIの約2倍（推定式 `o1*o2*o3*20` が過大評価）
 - 投資額: 全条件700円/レース
 
 ### 買い目構成
@@ -403,18 +435,21 @@ def classify_condition(num_horses, distance, condition):
 - 軽微な技術的リーク（fillna global mean, Bayesian prior）→ 影響無視可能
 
 ### ウォークフォワード年別AUC
-| 年 | V9.3 AUC | V12 AUC | 改善 |
-|----|----------|---------|------|
-| 2020 | 0.7954 | 0.7923 | -0.0031 |
-| 2021 | 0.7999 | 0.8015 | +0.0016 |
-| 2022 | 0.8002 | 0.8052 | +0.0050 |
-| 2023 | 0.8021 | 0.8042 | +0.0021 |
-| 2024 | 0.8074 | 0.8109 | +0.0035 |
-| 2025 | 0.8065 | 0.8079 | +0.0014 |
-| **平均** | **0.8019** | **0.8037** | **+0.0018** |
+| 年 | V12 (LGB) | v13.4 (LGB+XGB) | v13.5b (4-model grid) | v13.5b改善 |
+|----|-----------|-----------------|----------------------|-----------|
+| 2020 | 0.7923 | 0.8527 | 0.8515 | -0.0013 |
+| 2021 | 0.8015 | 0.8647 | 0.8806 | +0.0159 |
+| 2022 | 0.8052 | 0.8675 | 0.8830 | +0.0155 |
+| 2023 | 0.8042 | 0.8687 | 0.8845 | +0.0158 |
+| 2024 | 0.8109 | 0.8706 | 0.8853 | +0.0147 |
+| 2025 | 0.8079 | 0.8696 | 0.8851 | +0.0155 |
+| **平均** | **0.8037** | **0.8656** | **0.8788** | **+0.0127** |
+
+注: v13.4/v13.5bはJRDB特徴量追加(124個)によりv12(74個)から大幅改善。
 
 ### 実配当ROI（条件別）→ 全条件100%超え
-- A: 205.3%, B: 236.9%, C: 285.6%, D: 136.0%, E: 118.0%, X: 330.5%
+- **v13.5b**: A: 355.4%, B: 346.8%, C: 623.0%, D: 360.8%, E: 195.7%(uma), X: 701.2% — **全体428.4%**
+- **v12**: A: 205.3%, B: 236.9%, C: 285.6%, D: 136.0%, E: 118.0%, X: 330.5%
 
 ### モンテカルロ結果（10,000試行×1,000レース）
 | 初期資金 | 破産確率 | 利益確率 | 期待ROI | 平均最終資金 |
@@ -526,7 +561,7 @@ LEAK_FEATURES_A = {
 |------|------|------|
 | **odds_logリーク** | 確定オッズを特徴量に使用していた | 絶対に使わない。importance 1位だった |
 | **推定ROI過大評価** | `o1*o2*o3*20` が実配当の約2倍 | 必ず実配当ROI(jra_payouts.csv)で判断 |
-| **LGB+XGB+MLP** | V10: WF 0.8050 < LGB単体 0.8083 | MLPは逆効果。LGB+XGBで十分 |
+| **LGB+XGB+MLP** | V10: WF 0.8050 < LGB単体 0.8083 | MLPは逆効果。ただしFT-TransformerとIntraRaceは有効（v13.5b） |
 | **コース別専用モデル** | 汎用モデルに勝てなかった | 過学習リスク大。汎用モデル一択 |
 | **坂路調教マッチ率** | horse_name→horse_id変換が27%しか成功しない | AUC改善なし。現在はmean fillで対応 |
 | **Optuna過信** | 100試行で+0.0006のみ | 微改善は本番環境で消える可能性大 |
@@ -601,11 +636,12 @@ keiba-ai/
 ├── .gitignore                      # 大容量CSV除外設定
 │
 ├── # === モデルファイル ===
-├── keiba_model_v12_central_live.pkl.gz # Pattern B (実運用, 82特徴量)
-├── keiba_model_v12_central.pkl.gz  # Pattern A (評価用, 74特徴量)
-├── keiba_model_v9_central_live.pkl # Pattern B旧版 (75特徴量, フォールバック)
-├── keiba_model_v9_central.pkl      # Pattern A旧版 (67特徴量, フォールバック)
-├── keiba_model_v8.pkl              # V8フォールバック
+├── keiba_model_v135_central_live.pkl.gz # v13.5b Pattern B (実運用, 132特徴量, 現行)
+├── keiba_model_v135_central.pkl.gz  # v13.5b Pattern A (評価用, 124特徴量, 現行)
+├── keiba_model_v134_central_live.pkl.gz # v13.4 Pattern B (フォールバック)
+├── keiba_model_v134_central.pkl.gz  # v13.4 Pattern A (フォールバック)
+├── keiba_model_v12_central_live.pkl.gz # V12 Pattern B (旧版, 82特徴量)
+├── keiba_model_v12_central.pkl.gz  # V12 Pattern A (旧版, 74特徴量)
 │
 ├── # === 運用スクリプト ===
 ├── predict_and_log.py              # CLI予測・ログ記録
@@ -614,7 +650,8 @@ keiba-ai/
 ├── monte_carlo_sim.py              # モンテカルロ破産確率
 ├── project_status.py               # プロジェクトステータスCLI
 ├── backtest_central_leakfree.py    # WFバックテスト
-├── calc_actual_roi.py              # JRA公式配当ROI計算
+├── calc_actual_roi.py              # JRA公式配当ROI計算（v12）
+├── calc_actual_roi_v135b.py        # v13.5b実配当ROI検証（v13.4比較）
 ├── analyze_conditions.py           # 条件分析
 │
 ├── # === データ取得 ===
@@ -628,13 +665,16 @@ keiba-ai/
 ├── weekly_report.bat               # 毎週月曜9:00
 │
 ├── train/                          # === 学習スクリプト ===
+│   ├── train_v135b_intra_ensemble.py # **v13.5b 4-model ensemble（現行）**
+│   ├── train_v135_ft_transformer.py # v13.5 FT-Transformer + データ構築
+│   ├── train_v134_jockey_trainer.py # v13.4 JRDB騎手・調教師特徴量
+│   ├── train_v134_odds_change.py   # v13.4 オッズ変動特徴量
+│   ├── train_v134_weight_trend.py  # v13.4 馬体重トレンド特徴量
+│   ├── train_v134b_2020fix.py      # v13.4b 2020年修正版
 │   ├── train_v92_central.py        # V9.2基盤関数群（全特徴量エンジニアリング）
 │   ├── train_v92_leakfree.py       # FEATURES_PATTERN_A, LEAK_FEATURES_A定義
-│   ├── train_v12_comprehensive.py   # **V12学習+WFバックテスト（現行）**
+│   ├── train_v12_comprehensive.py   # V12学習+WFバックテスト（旧版）
 │   ├── train_v121_comprehensive.py  # V12.1テスト（不採用: prev_review+shinba_eval）
-│   ├── train_v93_leakfree.py       # Pattern A学習（V9.3、旧版）
-│   ├── train_v93_pattern_b.py      # Pattern B学習（V9.3、旧版）
-│   ├── train_v10_ensemble.py       # LGB+XGB+MLP (参考、不採用)
 │   ├── optuna_tune_lgb.py          # Optunaハイパラ最適化
 │   ├── explore_features.py         # 特徴量探索
 │   └── analyze_course_distance.py  # コース/距離分析
@@ -682,8 +722,11 @@ keiba-ai/
 │   ├── netkeiba_shinba_eval.csv    # 新馬評価(7,998行, 2024-2025)
 │   ├── sire_shinba_stats.csv       # 種牡馬新馬成績(449種牡馬)
 │   ├── netkeiba_siblings.csv       # 母産駒成績(17,441母馬)
+│   ├── actual_roi_v135b.json       # v13.5b実配当ROI結果（v13.4比較）
+│   ├── v135b_intra_ensemble_results.json # v13.5b学習結果
+│   ├── v135_ft_transformer_results.json  # v13.5 FT学習結果
 │   ├── v12_training_results.json   # V12学習結果
-│   ├── actual_roi_results.json     # 実配当ROI結果
+│   ├── actual_roi_results.json     # v12実配当ROI結果
 │   ├── monte_carlo_results.json    # MC結果
 │   ├── final_validation_report.json# 最終検証レポート
 │   └── ... (検証結果JSON 16ファイル)
@@ -782,9 +825,10 @@ python tools/weekly_report.py              # 週次レポート
 
 ### モデル学習
 ```bash
-python train/train_v12_comprehensive.py    # V12 WFバックテスト+学習（現行）
-python train/train_v93_leakfree.py         # V9.3 Pattern A学習（旧版）
-python train/train_v93_pattern_b.py        # V9.3 Pattern B学習（旧版）
+python train/train_v135b_intra_ensemble.py # v13.5b 4-model ensemble WFバックテスト+学習（現行）
+python train/train_v135_ft_transformer.py  # v13.5 FT-Transformer学習
+python train/train_v12_comprehensive.py    # V12 WFバックテスト+学習（旧版）
+python calc_actual_roi_v135b.py            # v13.5b 実配当ROI検証（JRA公式配当）
 ```
 
 ### バックテスト・検証
@@ -837,17 +881,18 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 ## 現行モデルのベースライン（これを下回る変更は一切採用しない）
 
-- **WF AUC: 0.8037**（walk-forward 2020-2025平均, LGB単体, V12）
-- **年別WF AUC**: 2020=0.7923, 2021=0.8015, 2022=0.8052, 2023=0.8042, 2024=0.8109, 2025=0.8079
-- **旧ベースライン（V9.3）**: WF AUC 0.8017, 年別: 2020=0.7951, 2021=0.7997, 2022=0.8024, 2023=0.8012, 2024=0.8071, 2025=0.8048
-- **実配当ROI**: A=205%(trio), B=237%(trio), C=286%(trio), D=136%(trio), E=118%(umaren), X=331%(trio)
-- **全条件ROI 100%超え**
+- **WF AUC: 0.8788**（walk-forward 2020-2025平均, 4-model grid ensemble, v13.5b）
+- **年別WF AUC**: 2020=0.8515, 2021=0.8806, 2022=0.8830, 2023=0.8845, 2024=0.8853, 2025=0.8851
+- **実配当ROI**: A=355%(trio), B=347%(trio), C=623%(trio), D=361%(trio), E=196%(umaren), X=701%(trio) — **全体428.4%**
+- **全条件ROI 100%超え**（全条件v13.4以上を確認済み）
+- **旧ベースライン（v13.4 LGB+XGB）**: WF AUC 0.8656, 実配当ROI 361.9%
+- **旧ベースライン（V12 LGB単体）**: WF AUC 0.8037, 実配当ROI ~205%
 
 ## 重要ルール
 
 1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A。実運用予測はPattern B
 2. バックテストは必ず**ウォークフォワード**（時系列分割）で実施
-3. **改善が確認できない変更は採用しない**: WF AUC > 0.8037 かつ全年AUC > 0.78 かつ 実ROI全条件100%超え
+3. **改善が確認できない変更は採用しない**: WF AUC > 0.8788 かつ全年AUC > 0.85 かつ 実ROI全条件v13.5b以上
 4. app.pyを変更したら必ず**python構文チェック**してからcommit
 5. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
 6. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
@@ -988,6 +1033,32 @@ race_review 2020-2025全年データ取得完了後(264,973行)、2特徴量を�
 | 2025 | 0.8073 | 0.8084 | 0.0264 |
 
 不採用理由: AUC改善は微小(+0.00034)、2021年で過学習閾値超過。v12(74特徴量)を維持。
+
+### v13.5b 正式採用（2026-04-03）— 4-model Grid Ensemble
+
+v13.4 (LGB+XGB) → v13.5b (LGB+XGB+FT-Transformer+IntraRace Attention) への大規模アップグレード。
+124特徴量（JRDB連携含む）、4モデルGrid Ensemble、WF AUC 0.8788 (+0.0131 vs v13.4)。
+
+**実配当ROI検証（JRA公式配当、WF 2023-2025、10,314レース）:**
+
+| 条件 | N | v13.4 ROI | v13.5b ROI | 差分 | 判定 |
+|:---:|---:|---:|---:|---:|:---:|
+| A | 3,212 | 308.0% | **355.4%** | +47.4% | OK |
+| B | 398 | 259.4% | **346.8%** | +87.4% | OK |
+| C | 2,473 | 521.5% | **623.0%** | +101.5% | OK |
+| D | 3,581 | 314.7% | **360.8%** | +46.1% | OK |
+| E | 267 | 141.4% | **195.7%** | +54.3% | OK |
+| X | 383 | 498.9% | **701.2%** | +202.3% | OK |
+| **全体** | **10,314** | **361.9%** | **428.4%** | **+66.5%** | **ALL PASS** |
+
+**年×条件 ROI安定性（v13.5b）:**
+- 2023: A=426%, B=308%, C=712%, D=380%, E=175%, X=535%
+- 2024: A=326%, B=388%, C=563%, D=322%, E=145%, X=933%
+- 2025: A=317%, B=377%, C=598%, D=380%, E=117%, X=699%
+
+**Grid重み（年ごと最適化）:**
+- 典型: LGB=0.25, XGB=0.25-0.30, FT=0.10-0.15, IR=0.35
+- IntraRace Attentionが最大貢献（レース内相対関係を捕捉）
 
 ### predict_core.pyバグ修正（2026-03-29）
 
