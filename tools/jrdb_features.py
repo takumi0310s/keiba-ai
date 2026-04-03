@@ -187,8 +187,23 @@ def extract_tyb_features(tyb_df):
     if tyb_df is None or len(tyb_df) == 0:
         return pd.DataFrame()
 
+    # English→Japanese column mapping (handle re-exported CSVs)
+    _tyb_col_map = {
+        'race_id': 'nk_race_id',
+        'umaban': '馬番',
+        'padock_idx': 'パドック指数',
+        'odds_idx': 'オッズ指数',
+        'sogo_idx': '総合指数',
+        'batai_code': '馬体コード',
+        'kehai_code': '気配コード',
+    }
+    for eng, jpn in _tyb_col_map.items():
+        if eng in tyb_df.columns and jpn not in tyb_df.columns:
+            tyb_df = tyb_df.rename(columns={eng: jpn})
+
     result = pd.DataFrame()
-    result['jra_race_id'] = tyb_df['jra_race_id']
+    if 'jra_race_id' in tyb_df.columns:
+        result['jra_race_id'] = tyb_df['jra_race_id']
     result['nk_race_id'] = tyb_df['nk_race_id']
     result['馬番'] = pd.to_numeric(tyb_df['馬番'], errors='coerce')
 
@@ -453,6 +468,11 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
     if os.path.exists(tyb_path):
         try:
             tyb = pd.read_csv(tyb_path, encoding='utf-8-sig', dtype=str)
+            # English→Japanese column mapping for TYB CSV
+            if 'race_id' in tyb.columns and 'nk_race_id' not in tyb.columns:
+                tyb = tyb.rename(columns={'race_id': 'nk_race_id'})
+            if 'umaban' in tyb.columns and '馬番' not in tyb.columns:
+                tyb = tyb.rename(columns={'umaban': '馬番'})
             tyb_race = tyb[tyb['nk_race_id'].astype(str) == str(race_id_nk)]
             if len(tyb_race) > 0:
                 tyb_feats = extract_tyb_features(tyb_race)
@@ -467,8 +487,146 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB TYB merge failed: {e}")
 
-    # デフォルト値で埋め
-    for feat, default in JRDB_DEFAULTS.items():
+    # 拡張JRDB特徴量（CHA/JO/KTA/ZE/SR/KKA）
+    # _uma列を準備
+    if '_uma' not in horses_df.columns:
+        horses_df['_uma'] = horses_df['horse_num'].astype(int) if 'horse_num' in horses_df.columns else horses_df.index + 1
+
+    _rid_str = str(race_id_nk).zfill(12)
+
+    # CHA: 追切指数
+    _cha_path = os.path.join(DATA_DIR, 'jrdb_cha.csv')
+    if os.path.exists(_cha_path):
+        try:
+            _cha = pd.read_csv(_cha_path, encoding='utf-8-sig', dtype=str)
+            _cha_race = _cha[_cha['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_cha_race) > 0:
+                _cr = pd.DataFrame()
+                _cr['_uma'] = pd.to_numeric(_cha_race['umaban'], errors='coerce')
+                _cr['jrdb_oikiri_idx'] = pd.to_numeric(_cha_race['oikiri_idx'], errors='coerce')
+                _cr['jrdb_ten_time_idx'] = pd.to_numeric(_cha_race['ten_time_idx'], errors='coerce')
+                _cr['jrdb_shimai_time_idx'] = pd.to_numeric(_cha_race['shimai_time_idx'], errors='coerce')
+                _cr = _cr.drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_cr, on='_uma', how='left', suffixes=('', '_cha'))
+        except Exception as e:
+            print(f"[WARN] JRDB CHA merge failed: {e}")
+
+    # JO: CID/LS指数
+    _jo_path = os.path.join(DATA_DIR, 'jrdb_jo.csv')
+    if os.path.exists(_jo_path):
+        try:
+            _jo = pd.read_csv(_jo_path, encoding='utf-8-sig', dtype=str)
+            _jo_race = _jo[_jo['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_jo_race) > 0:
+                _jr = pd.DataFrame()
+                _jr['_uma'] = pd.to_numeric(_jo_race['umaban'], errors='coerce')
+                _jr['jrdb_cid_idx'] = pd.to_numeric(_jo_race['cid_idx'], errors='coerce')
+                _jr['jrdb_ls_idx'] = pd.to_numeric(_jo_race['ls_idx'], errors='coerce')
+                _jr = _jr.drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_jr, on='_uma', how='left', suffixes=('', '_jo'))
+        except Exception as e:
+            print(f"[WARN] JRDB JO merge failed: {e}")
+
+    # blood_num → 馬番マッピング（KYIから取得、PACIフォールバック）
+    _blood_map = None
+    _kyi_path = os.path.join(DATA_DIR, 'jrdb_kyi.csv')
+    _paci_path = os.path.join(DATA_DIR, 'jrdb_paci.csv')
+    for _bp in [_kyi_path, _paci_path]:
+        if _blood_map is not None:
+            break
+        if os.path.exists(_bp):
+            try:
+                _uma_col = '馬番' if _bp == _kyi_path else 'umaban'
+                _rid_col = 'nk_race_id' if _bp == _kyi_path else 'race_id'
+                _bn_col = '血統登録番号' if _bp == _kyi_path else 'blood_num'
+                _bdf = pd.read_csv(_bp, encoding='utf-8-sig', dtype=str,
+                                   usecols=[_rid_col, _uma_col, _bn_col])
+                _bdf_race = _bdf[_bdf[_rid_col].astype(str).str.zfill(12) == _rid_str]
+                if len(_bdf_race) > 0:
+                    _blood_map = _bdf_race[[_uma_col, _bn_col]].drop_duplicates(subset=_bn_col, keep='last')
+                    _blood_map = _blood_map.rename(columns={_uma_col: '_uma_str', _bn_col: 'blood_num'})
+            except Exception:
+                pass
+
+    # KTA: IDM予想/展開予想（blood_num経由）
+    _kta_path = os.path.join(DATA_DIR, 'jrdb_kta.csv')
+    if os.path.exists(_kta_path) and _blood_map is not None:
+        try:
+            _kta = pd.read_csv(_kta_path, encoding='utf-8-sig', dtype=str)
+            _kta_race = _kta[_kta['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_kta_race) > 0:
+                _kta_m = _kta_race.merge(_blood_map, on='blood_num', how='left')
+                _kr = pd.DataFrame()
+                _kr['_uma'] = pd.to_numeric(_kta_m['_uma_str'], errors='coerce')
+                _kr['jrdb_kta_idm'] = pd.to_numeric(_kta_m['idm'], errors='coerce')
+                _kr['jrdb_kta_ten_pred'] = pd.to_numeric(_kta_m['ten_idx_pred'], errors='coerce')
+                _kr['jrdb_kta_agari_pred'] = pd.to_numeric(_kta_m['agari_idx_pred'], errors='coerce')
+                _kr = _kr.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_kr, on='_uma', how='left', suffixes=('', '_kta'))
+        except Exception as e:
+            print(f"[WARN] JRDB KTA merge failed: {e}")
+
+    # ZE: 過去5走集計（blood_num経由）
+    _ze_path = os.path.join(DATA_DIR, 'jrdb_ze.csv')
+    if os.path.exists(_ze_path) and _blood_map is not None:
+        try:
+            _blood_nums = _blood_map['blood_num'].unique().tolist()
+            _ze = pd.read_csv(_ze_path, encoding='utf-8-sig', dtype=str)
+            _ze_filt = _ze[_ze['blood_num'].isin(_blood_nums)]
+            if len(_ze_filt) > 0:
+                _ze_filt = _ze_filt.copy()
+                _ze_filt['_idm'] = pd.to_numeric(_ze_filt['idm'], errors='coerce')
+                _ze_filt['_ten'] = pd.to_numeric(_ze_filt['ten_idx'], errors='coerce')
+                _ze_filt['_agari'] = pd.to_numeric(_ze_filt['agari_idx'], errors='coerce')
+                _ze_filt['_furi'] = (pd.to_numeric(_ze_filt['furi'], errors='coerce').fillna(0) > 0).astype(int)
+                _agg = _ze_filt.groupby('blood_num').agg(
+                    jrdb_ze_idm_avg=('_idm', 'mean'),
+                    jrdb_ze_ten_avg=('_ten', 'mean'),
+                    jrdb_ze_agari_avg=('_agari', 'mean'),
+                    jrdb_ze_furi_count=('_furi', 'sum'),
+                ).reset_index()
+                _bm_ze = _blood_map.merge(_agg, on='blood_num', how='left')
+                _zr = pd.DataFrame()
+                _zr['_uma'] = pd.to_numeric(_bm_ze['_uma_str'], errors='coerce')
+                for c in ['jrdb_ze_idm_avg', 'jrdb_ze_ten_avg', 'jrdb_ze_agari_avg', 'jrdb_ze_furi_count']:
+                    _zr[c] = _bm_ze[c].values
+                _zr = _zr.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_zr, on='_uma', how='left', suffixes=('', '_ze'))
+        except Exception as e:
+            print(f"[WARN] JRDB ZE merge failed: {e}")
+
+    # SR: トラックバイアス（前走レースのバイアス）
+    # 予測時は前走race_idが必要 → 簡易的にスキップ（学習時のみ有効）
+
+    # KKA: 母/BMS連勝指数
+    _kka_path = os.path.join(DATA_DIR, 'jrdb_kka.csv')
+    if os.path.exists(_kka_path):
+        try:
+            _kka = pd.read_csv(_kka_path, encoding='utf-8-sig', dtype=str)
+            _kka_race = _kka[_kka['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_kka_race) > 0:
+                _kkr = pd.DataFrame()
+                _kkr['_uma'] = pd.to_numeric(_kka_race['umaban'], errors='coerce')
+                _kkr['jrdb_dam_rensho_avg'] = pd.to_numeric(_kka_race['dam_rensho_avg'], errors='coerce')
+                _kkr['jrdb_bms_rensho_avg'] = pd.to_numeric(_kka_race['bms_rensho_avg'], errors='coerce')
+                _kkr = _kkr.drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_kkr, on='_uma', how='left', suffixes=('', '_kka'))
+        except Exception as e:
+            print(f"[WARN] JRDB KKA merge failed: {e}")
+
+    horses_df.drop(columns=['_uma'], inplace=True, errors='ignore')
+
+    # デフォルト値で埋め（拡張特徴量含む）
+    _ext_defaults = {
+        'jrdb_oikiri_idx': 53.0, 'jrdb_ten_time_idx': 14.5, 'jrdb_shimai_time_idx': 21.0,
+        'jrdb_cid_idx': 0.0, 'jrdb_ls_idx': 0.0,
+        'jrdb_kta_idm': 13.0, 'jrdb_kta_ten_pred': -14.0, 'jrdb_kta_agari_pred': -11.0,
+        'jrdb_ze_idm_avg': 37.0, 'jrdb_ze_ten_avg': -15.0, 'jrdb_ze_agari_avg': -12.0,
+        'jrdb_ze_furi_count': 0.0, 'jrdb_tb_homestr_inner': 2.0,
+        'jrdb_dam_rensho_avg': 1600.0, 'jrdb_bms_rensho_avg': 1600.0,
+    }
+    _all_defaults = {**JRDB_DEFAULTS, **_ext_defaults}
+    for feat, default in _all_defaults.items():
         if feat in horses_df.columns:
             horses_df[feat] = pd.to_numeric(horses_df[feat], errors='coerce').fillna(default)
         else:
