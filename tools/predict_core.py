@@ -1174,6 +1174,22 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     use_sire_map = model_data.get('sire_map', {})
     use_bms_map = model_data.get('bms_map', {})
 
+    # set_horse_defaults未呼出時のフォールバック
+    _defaults = {
+        '父': '', '母の父': '', '前走着順': 5, '所属地': '', '馬体重': 480,
+        '場体重増減': 0, '騎手勝率': 0.0, '前走オッズ': 15.0, '前走人気': 8,
+        '上がり3F': 35.5, '通過順平均': 8.0, '通過順4': 8, '前走間隔': 30,
+        'prev2_finish': 5, 'prev3_finish': 5, 'prev4_finish': 5, 'prev5_finish': 5,
+        'avg_finish_3r': 5.0, 'avg_finish_5r': 5.0, 'best_finish_3r': 5, 'best_finish_5r': 5,
+        'top3_count_3r': 0, 'top3_count_5r': 0, 'finish_trend': 0, 'prev2_last3f': 35.5,
+        'weight_history': None,
+        'prev_race_first3f_scraped': 0, 'prev_race_last3f_scraped': 0,
+        'prev_race_pace_diff_scraped': 0,
+    }
+    for col, default in _defaults.items():
+        if col not in df.columns:
+            df[col] = default
+
     df['頭数'] = num_horses
     df['斤量平均差'] = df['斤量'] - df['斤量'].mean()
     dist = race_info['distance']
