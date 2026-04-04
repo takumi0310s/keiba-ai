@@ -115,6 +115,17 @@ JRDB_DEFAULTS = {
     'jrdb_ls_rank': 0,
 }
 
+# PACI Tier A デフォルト値（merge_jrdb_train_featuresとは別管理）
+PACI_TIER_A_DEFAULTS = {
+    'paci_manken_idx': 36.0,       # 万券指数（穴馬評価）
+    'paci_goal_rank': 8.0,         # ゴール順位予想
+    'paci_dochu_rank': 8.0,        # 道中順位予想
+    'paci_goal_diff': 12.0,        # ゴール差予想
+    'paci_jockey_exp_wr': 14.5,    # 騎手期待勝率
+    'paci_jockey_exp_3rd': 21.9,   # 騎手期待3着率
+    'paci_ninki_idx': 159.0,       # 人気指数
+}
+
 
 # =====================================================
 # KYI → 特徴量変換
@@ -655,6 +666,27 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB KKA merge failed: {e}")
 
+    # PACI: Tier A 展開予想指数（manken/goal_rank/dochu_rank/goal_diff/jockey_exp/ninki）
+    _paci_path = os.path.join(DATA_DIR, 'jrdb_paci.csv')
+    if os.path.exists(_paci_path):
+        try:
+            _paci = pd.read_csv(_paci_path, encoding='utf-8-sig', dtype=str)
+            _paci_race = _paci[_paci['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_paci_race) > 0:
+                _pr = pd.DataFrame()
+                _pr['_uma'] = pd.to_numeric(_paci_race['umaban'], errors='coerce')
+                _pr['paci_manken_idx'] = pd.to_numeric(_paci_race['manken_idx'], errors='coerce')
+                _pr['paci_goal_rank'] = pd.to_numeric(_paci_race['goal_rank'], errors='coerce')
+                _pr['paci_dochu_rank'] = pd.to_numeric(_paci_race['dochu_rank'], errors='coerce')
+                _pr['paci_goal_diff'] = pd.to_numeric(_paci_race['goal_diff'], errors='coerce')
+                _pr['paci_jockey_exp_wr'] = pd.to_numeric(_paci_race['jockey_exp_wr'], errors='coerce')
+                _pr['paci_jockey_exp_3rd'] = pd.to_numeric(_paci_race['jockey_exp_3rd'], errors='coerce')
+                _pr['paci_ninki_idx'] = pd.to_numeric(_paci_race['ninki_idx'], errors='coerce')
+                _pr = _pr.drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_pr, on='_uma', how='left', suffixes=('', '_paci'))
+        except Exception as e:
+            print(f"[WARN] JRDB PACI merge failed: {e}")
+
     # OZ: 基準オッズ特徴量
     _oz_path = os.path.join(DATA_DIR, 'jrdb_oz.csv')
     if os.path.exists(_oz_path):
@@ -764,7 +796,7 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         'oz_base_pop_rank': 8, 'odds_change_rate': 0.0,
         'pop_rank_change': 0, 'odds_sharp_drop': 0,
     }
-    _all_defaults = {**JRDB_DEFAULTS, **_ext_defaults}
+    _all_defaults = {**JRDB_DEFAULTS, **_ext_defaults, **PACI_TIER_A_DEFAULTS}
     for feat, default in _all_defaults.items():
         if feat in horses_df.columns:
             horses_df[feat] = pd.to_numeric(horses_df[feat], errors='coerce').fillna(default)
