@@ -595,8 +595,49 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB ZE merge failed: {e}")
 
-    # SR: トラックバイアス（前走レースのバイアス）
-    # 予測時は前走race_idが必要 → 簡易的にスキップ（学習時のみ有効）
+    # SR: トラックバイアス（当該レースのバイアス）
+    _sr_path = os.path.join(DATA_DIR, 'jrdb_sr.csv')
+    if os.path.exists(_sr_path):
+        try:
+            _sr = pd.read_csv(_sr_path, encoding='utf-8-sig', dtype=str)
+            _sr_race = _sr[_sr['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_sr_race) > 0:
+                _sr_row = _sr_race.iloc[-1]
+                _tb = str(_sr_row.get('tb_homestr', ''))
+                _inner = int(_tb[0]) if _tb and len(_tb) >= 1 and _tb[0].isdigit() else 2
+                horses_df['jrdb_tb_homestr_inner'] = _inner
+        except Exception as e:
+            print(f"[WARN] JRDB SR merge failed: {e}")
+
+    # SKB: パドック観察データ（構造化コード）
+    _skb_path = os.path.join(DATA_DIR, 'jrdb_skb.csv')
+    if os.path.exists(_skb_path):
+        try:
+            _skb = pd.read_csv(_skb_path, encoding='utf-8-sig', dtype=str)
+            _skb_race = _skb[_skb['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_skb_race) > 0:
+                _skr = pd.DataFrame()
+                _skr['_uma'] = pd.to_numeric(_skb_race['umaban'], errors='coerce')
+                _skr['jrdb_heavy_apt_skb'] = pd.to_numeric(_skb_race.get('heavy_apt', 0), errors='coerce')
+                _skr['jrdb_anshin'] = pd.to_numeric(_skb_race.get('anshin', 0), errors='coerce')
+                _skr['jrdb_run_stage'] = pd.to_numeric(_skb_race.get('run_stage', 0), errors='coerce')
+                _skr = _skr.drop_duplicates(subset='_uma', keep='last')
+                horses_df = horses_df.merge(_skr, on='_uma', how='left', suffixes=('', '_skb'))
+        except Exception as e:
+            print(f"[WARN] JRDB SKB merge failed: {e}")
+
+    # JOA: 開催条件（馬場バイアス詳細）— レース単位
+    _joa_path = os.path.join(DATA_DIR, 'jrdb_joa.csv')
+    if os.path.exists(_joa_path):
+        try:
+            _joa = pd.read_csv(_joa_path, encoding='utf-8-sig', dtype=str)
+            _joa_nk = _joa[_joa.get('nk_race_id', pd.Series(dtype=str)).astype(str) == _rid_str]
+            if len(_joa_nk) > 0:
+                _jr = _joa_nk.iloc[-1]
+                horses_df['jrdb_turf_baba_code'] = pd.to_numeric(_jr.get('turf_baba_code', 0), errors='coerce') or 0
+                horses_df['jrdb_dirt_baba_code'] = pd.to_numeric(_jr.get('dirt_baba_code', 0), errors='coerce') or 0
+        except Exception as e:
+            print(f"[WARN] JRDB JOA merge failed: {e}")
 
     # KKA: 母/BMS連勝指数
     _kka_path = os.path.join(DATA_DIR, 'jrdb_kka.csv')
@@ -717,6 +758,8 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         'jrdb_ze_idm_avg': 37.0, 'jrdb_ze_ten_avg': -15.0, 'jrdb_ze_agari_avg': -12.0,
         'jrdb_ze_furi_count': 0.0, 'jrdb_tb_homestr_inner': 2.0,
         'jrdb_dam_rensho_avg': 1600.0, 'jrdb_bms_rensho_avg': 1600.0,
+        'jrdb_heavy_apt_skb': 0, 'jrdb_anshin': 0, 'jrdb_run_stage': 0,
+        'jrdb_turf_baba_code': 0, 'jrdb_dirt_baba_code': 0,
         'oz_tansho_base_log': 2.3, 'oz_fukusho_base_log': 0.7,
         'oz_base_pop_rank': 8, 'odds_change_rate': 0.0,
         'pop_rank_change': 0, 'odds_sharp_drop': 0,

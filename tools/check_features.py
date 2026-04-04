@@ -1,31 +1,45 @@
 """
-特徴量チェックツール — 過去レースURLで特徴量を取得し、ゼロ列・NaN列・取得数を表示。
-引数なしで実行可能（デフォルトで直近の過去レースIDを使用）。
+特徴量チェックツール — 予測パイプラインの総合診断。
+
+機能:
+  1. 過去/当日レースURLで特徴量取得 → ゼロ列・NaN列・取得数を表示
+  2. モデル学習時特徴量と予測時特徴量の一致チェック
+  3. data/フォルダの未使用jrdb_*.csv検出
+  4. 4モデルアンサンブル（LGB+XGB+FT+IR）の状態確認
 
 Usage:
     python tools/check_features.py
-    python tools/check_features.py https://race.netkeiba.com/race/shutuba.html?race_id=202505030811
-    python tools/check_features.py 202505030811
+    python tools/check_features.py 202606030301
+    python tools/check_features.py --audit
 """
 import sys
 import os
 import re
 import io
+import glob
 
 # Windows cp932対策
 if sys.stdout.encoding and sys.stdout.encoding.lower().startswith('cp'):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
 from tools.predict_core import (
     load_models, parse_shutuba, build_features, load_feature_lookups,
     fetch_realtime_odds, fetch_jra_and_weather, get_horse_stats,
     set_horse_defaults, apply_horse_stats,
 )
 
-# デフォルトの過去レースID（2025中山11R）
 DEFAULT_RACE_ID = "202506010111"
+
+# jrdb_features.pyで使用されるJRDB CSVファイル
+USED_JRDB_FILES = {
+    'jrdb_kyi.csv', 'jrdb_sed.csv', 'jrdb_tyb.csv', 'jrdb_cha.csv',
+    'jrdb_jo.csv', 'jrdb_kta.csv', 'jrdb_ze.csv', 'jrdb_kka.csv',
+    'jrdb_oz.csv', 'jrdb_paci.csv', 'jrdb_sr.csv', 'jrdb_skb.csv',
+    'jrdb_joa.csv',
+}
 
 
 def extract_race_id(arg):
@@ -37,14 +51,114 @@ def extract_race_id(arg):
     return None
 
 
+def audit_jrdb_files():
+    """data/フォルダの未使用jrdb_*.csv検出"""
+    print(f"\n{'='*60}")
+    print("JRDB CSV ファイル監査")
+    print(f"{'='*60}")
+    data_dir = os.path.join(BASE_DIR, 'data')
+    all_jrdb = sorted(glob.glob(os.path.join(data_dir, 'jrdb_*.csv')))
+
+    used = []
+    unused = []
+    for path in all_jrdb:
+        fname = os.path.basename(path)
+        size_mb = os.path.getsize(path) / (1024 * 1024)
+        if fname in USED_JRDB_FILES:
+            used.append((fname, size_mb))
+        else:
+            unused.append((fname, size_mb))
+
+    print(f"\n使用中: {len(used)}ファイル")
+    for fname, sz in used:
+        print(f"  OK  {fname} ({sz:.1f}MB)")
+
+    print(f"\n未使用: {len(unused)}ファイル")
+    for fname, sz in unused:
+        print(f"  --  {fname} ({sz:.1f}MB)")
+
+    return unused
+
+
+def audit_model_ensemble(model_data):
+    """4モデルアンサンブル状態確認"""
+    print(f"\n{'='*60}")
+    print("モデルアンサンブル状態")
+    print(f"{'='*60}")
+
+    ew = model_data.get('ensemble_weights', {})
+    print(f"\n  Ensemble weights: {ew}")
+    print(f"  Ensemble type: {model_data.get('ensemble_type', '?')}")
+
+    checks = {
+        'LGB': model_data.get('model') is not None,
+        'XGB': model_data.get('xgb_model') is not None,
+        'FT': model_data.get('ft_model_state') is not None,
+        'IR': model_data.get('ir_model_state') is not None,
+    }
+    for name, ok in checks.items():
+        w = ew.get(name.lower(), 0)
+        status = 'OK' if ok else 'MISSING'
+        print(f"  {name}: {status} (weight={w})")
+
+    try:
+        import torch
+        print(f"  PyTorch: {torch.__version__} ({'CUDA' if torch.cuda.is_available() else 'CPU'})")
+    except ImportError:
+        print("  PyTorch: NOT INSTALLED (FT/IR will be skipped)")
+
+
+def audit_feature_names(model_data):
+    """学習時feature_namesと予測時特徴量の一致チェック"""
+    print(f"\n{'='*60}")
+    print("学習時 vs 予測時 特徴量チェック")
+    print(f"{'='*60}")
+
+    model_feats = model_data.get('features', [])
+    lgb_model = model_data.get('model')
+
+    # LGB feature names
+    if hasattr(lgb_model, 'feature_name'):
+        lgb_names = lgb_model.feature_name()
+        n_lgb = lgb_model.num_feature()
+        print(f"\n  Model features list: {len(model_feats)}")
+        print(f"  LGB num_feature(): {n_lgb}")
+        print(f"  LGB feature_name(): {lgb_names[:3]}... (Column_N形式 = 名前なし学習)")
+
+        if n_lgb != len(model_feats):
+            print(f"\n  [INFO] LGB({n_lgb}) != features list({len(model_feats)})")
+            print(f"  → LGBには先頭{n_lgb}列のみ渡す（末尾{len(model_feats)-n_lgb}個はTYB直前データ）")
+            extra_feats = model_feats[n_lgb:]
+            print(f"  → LGB対象外: {extra_feats}")
+
+    # XGB
+    xgb_m = model_data.get('xgb_model')
+    if xgb_m:
+        n_xgb = xgb_m.num_features() if hasattr(xgb_m, 'num_features') else '?'
+        print(f"  XGB num_features(): {n_xgb}")
+
+    # FT scaler dimension
+    ft_mean = model_data.get('ft_scaler_mean')
+    if ft_mean is not None:
+        print(f"  FT scaler dimension: {len(ft_mean)}")
+
+    # IR scaler dimension
+    ir_mean = model_data.get('ir_scaler_mean')
+    if ir_mean is not None:
+        print(f"  IR scaler dimension: {len(ir_mean)}")
+
+
 def main():
-    if len(sys.argv) > 1:
-        race_id = extract_race_id(sys.argv[1])
-        if not race_id:
-            print(f"[ERROR] レースIDを抽出できません: {sys.argv[1]}")
-            sys.exit(1)
-    else:
-        race_id = DEFAULT_RACE_ID
+    audit_mode = '--audit' in sys.argv
+
+    # Race ID
+    race_id = DEFAULT_RACE_ID
+    for arg in sys.argv[1:]:
+        if arg.startswith('--'):
+            continue
+        rid = extract_race_id(arg)
+        if rid:
+            race_id = rid
 
     print(f"=== 特徴量チェック ===")
     print(f"Race ID: {race_id}\n")
@@ -89,14 +203,12 @@ def main():
         except Exception:
             pass
 
-    # オッズ（過去レースなので取得できなくてもOK）
     odds_dict = {}
     try:
         odds_dict = fetch_realtime_odds(race_id) or {}
     except Exception:
         pass
 
-    # JRA馬場・天候（過去なので取得できなくてもOK）
     jra_info, weather_info = None, None
     try:
         jra_info, weather_info = fetch_jra_and_weather(race_info.get('course', ''))
@@ -119,52 +231,80 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    # 結果表示
+    # === 期待特徴量ベースの結果表示 ===
     expected = model_data.get('features', [])
     n_expected = len(expected) if expected else '?'
-    n_actual = len(df.columns)
 
     print(f"\n{'='*60}")
-    print(f"特徴量数: {n_actual} / 期待: {n_expected}")
-    print(f"馬数: {len(df)}")
+    print(f"期待特徴量: {n_expected} / 生成列数: {len(df.columns)} / 馬数: {len(df)}")
 
-    # ゼロ列
-    zero_cols = [c for c in df.columns if (df[c] == 0).all()]
-    print(f"\n全ゼロ列: {len(zero_cols)}個")
-    if zero_cols:
-        for c in zero_cols:
-            print(f"  - {c}")
+    # 期待特徴量のステータス
+    zero_expected = [f for f in expected if f in df.columns and (df[f] == 0).all()]
+    nonzero_expected = [f for f in expected if f in df.columns and not (df[f] == 0).all()]
+    missing_expected = [f for f in expected if f not in df.columns]
 
-    # NaN列
+    print(f"\nOK (non-zero): {len(nonzero_expected)}/{n_expected}")
+    print(f"ZERO (all zero): {len(zero_expected)}")
+    print(f"MISSING: {len(missing_expected)}")
+
+    # 正当なゼロを分類
+    legit_zeros = {'dist_cat', 'season', 'location_enc', 'is_nar'}
+    real_zeros = [f for f in zero_expected if f not in legit_zeros]
+    legit_count = len([f for f in zero_expected if f in legit_zeros])
+
+    if legit_count > 0:
+        print(f"\n  正当なゼロ ({legit_count}): {[f for f in zero_expected if f in legit_zeros]}")
+
+    if real_zeros:
+        print(f"\n  要注意ゼロ ({len(real_zeros)}):")
+        for f in real_zeros:
+            print(f"    - {f}")
+
+    if missing_expected:
+        print(f"\n  不足特徴量 ({len(missing_expected)}):")
+        for f in missing_expected:
+            print(f"    - {f}")
+
+    # NaN
     nan_cols = [c for c in df.columns if df[c].isna().any()]
-    print(f"\nNaN含む列: {len(nan_cols)}個")
     if nan_cols:
+        print(f"\n  NaN列 ({len(nan_cols)}):")
         for c in nan_cols:
-            n_nan = df[c].isna().sum()
-            print(f"  - {c} ({n_nan}/{len(df)} NaN)")
+            print(f"    - {c} ({df[c].isna().sum()}/{len(df)})")
 
-    # 期待特徴量で不足しているもの
-    if expected:
-        missing = [f for f in expected if f not in df.columns]
-        extra = [c for c in df.columns if c not in expected]
-        if missing:
-            print(f"\n不足特徴量: {len(missing)}個")
-            for f in missing:
-                print(f"  - {f}")
-        if extra:
-            print(f"\n余分な列: {len(extra)}個")
-            for c in extra:
-                print(f"  - {c}")
+    # === 追加チェック ===
+    # モデルアンサンブル状態
+    audit_model_ensemble(model_data)
 
-    # 全ゼロ + NaN 警告
-    problem_count = len(zero_cols) + len(nan_cols)
+    # 学習時/予測時特徴量一致
+    audit_feature_names(model_data)
+
+    # JRDB CSV監査
+    audit_jrdb_files()
+
+    # === 総合判定 ===
     print(f"\n{'='*60}")
-    if problem_count >= 5:
-        print(f"⚠ 警告: 問題のある列が{problem_count}個あります。原因を調査してください。")
-    elif problem_count > 0:
-        print(f"△ {problem_count}個の列に注意（許容範囲内の可能性あり）")
+    print("総合判定")
+    print(f"{'='*60}")
+    issues = []
+    if missing_expected:
+        issues.append(f"不足特徴量 {len(missing_expected)}個")
+    if len(real_zeros) >= 10:
+        issues.append(f"要注意ゼロ {len(real_zeros)}個")
+    if not model_data.get('ir_model_state'):
+        issues.append("IR Attention モデルなし")
+    if not model_data.get('ft_model_state'):
+        issues.append("FT-Transformer モデルなし")
+
+    if issues:
+        print(f"\n  注意事項:")
+        for iss in issues:
+            print(f"    - {iss}")
     else:
-        print("✓ 全特徴量が正常に取得されています")
+        print(f"\n  全チェック OK")
+
+    rate = len(nonzero_expected) / len(expected) * 100 if expected else 0
+    print(f"\n  特徴量取得率: {len(nonzero_expected)}/{n_expected} ({rate:.0f}%)")
 
 
 if __name__ == "__main__":
