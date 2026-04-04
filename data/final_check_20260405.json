@@ -74,5 +74,35 @@
       "action": "週次レポートで自動監視中"
     }
   ],
-  "all_approved": true
+  "all_approved": true,
+  "bet_config": {
+    "description": "条件別最適馬券種（OOS 2023-2025 ROI比較で自動選択）",
+    "conditions": {
+      "A": {"best_bet": "trio", "trio_roi": 210.9, "umaren_roi": 154.3, "wide_roi": 135.9, "investment": 700},
+      "B": {"best_bet": "trio", "trio_roi": 209.9, "umaren_roi": 181.7, "wide_roi": 157.9, "investment": 700},
+      "C": {"best_bet": "trio", "trio_roi": 279.4, "umaren_roi": 199.6, "wide_roi": 166.0, "investment": 700},
+      "D": {"best_bet": "trio", "trio_roi": 145.9, "umaren_roi": 129.2, "wide_roi": 120.2, "investment": 700},
+      "E": {"best_bet": "umaren", "trio_roi": 97.2, "umaren_roi": 118.8, "wide_roi": 108.6, "investment": 700},
+      "X": {"best_bet": "trio", "trio_roi": 260.7, "umaren_roi": 186.2, "wide_roi": 173.6, "investment": 700}
+    },
+    "maiden_roi": {
+      "description": "新馬戦（race_cond=00）OOS ROI — 除外せず通常レースと同額で購入",
+      "trio_roi": 259.6,
+      "umaren_roi": 256.2,
+      "wide_roi": 176.7,
+      "best_bet": "trio",
+      "n": 901,
+      "investment": 700,
+      "note": "新馬戦は条件A-X判定に従い通常と同じ馬券種・金額で購入。除外しない。"
+    },
+    "under_1000m": {
+      "recommended": false,
+      "roi": 85.0,
+      "note": "1000m以下は予測するが購入非推奨表示"
+    }
+  },
+  "discord_streamlit_consistency": {
+    "status": "OK",
+    "detail": "predict_core.py/app.py/notify.py全てCONDITION_PROFILESのbet_type/investmentを参照。一致確認済み。"
+  }
 }
