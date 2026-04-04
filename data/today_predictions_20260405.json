@@ -1,0 +1,482 @@
+[
+  {
+    "race_id": "202606010101",
+    "race_name": "3歳未勝利",
+    "course": "中山",
+    "distance": 1200,
+    "num_horses": 16,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 14,
+      "name": "フュルスティン",
+      "score": 0.6441
+    },
+    "score_range": [
+      0.1434,
+      0.6441
+    ]
+  },
+  {
+    "race_id": "202606010102",
+    "race_name": "3歳未勝利",
+    "course": "中山",
+    "distance": 1800,
+    "num_horses": 13,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 4,
+      "name": "フィンガー",
+      "score": 0.8127
+    },
+    "score_range": [
+      0.1466,
+      0.8127
+    ]
+  },
+  {
+    "race_id": "202606010103",
+    "race_name": "3歳新馬",
+    "course": "中山",
+    "distance": 1200,
+    "num_horses": 15,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 11,
+      "name": "ニシノラン",
+      "score": 0.5632
+    },
+    "score_range": [
+      0.1435,
+      0.5632
+    ]
+  },
+  {
+    "race_id": "202606010104",
+    "race_name": "3歳未勝利",
+    "course": "中山",
+    "distance": 1800,
+    "num_horses": 12,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 5,
+      "name": "カシマライフウ",
+      "score": 0.754
+    },
+    "score_range": [
+      0.1452,
+      0.754
+    ]
+  },
+  {
+    "race_id": "202606010105",
+    "race_name": "3歳未勝利",
+    "course": "中山",
+    "distance": 1600,
+    "num_horses": 16,
+    "condition": "C",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 9,
+      "name": "レヴェランジェ",
+      "score": 0.5124
+    },
+    "score_range": [
+      0.1505,
+      0.5124
+    ]
+  },
+  {
+    "race_id": "202606010106",
+    "race_name": "3歳新馬",
+    "course": "中山",
+    "distance": 2000,
+    "num_horses": 17,
+    "condition": "C",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 14,
+      "name": "オービタルピリオド",
+      "score": 0.5494
+    },
+    "score_range": [
+      0.1429,
+      0.5494
+    ]
+  },
+  {
+    "race_id": "202606010107",
+    "race_name": "4歳以上1勝クラス",
+    "course": "中山",
+    "distance": 1800,
+    "num_horses": 16,
+    "condition": "C",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 13,
+      "name": "バタール",
+      "score": 0.6305
+    },
+    "score_range": [
+      0.1593,
+      0.6305
+    ]
+  },
+  {
+    "race_id": "202606010108",
+    "race_name": "4歳以上1勝クラス",
+    "course": "中山",
+    "distance": 1200,
+    "num_horses": 16,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 14,
+      "name": "パレスドフィーヌ",
+      "score": 0.5828
+    },
+    "score_range": [
+      0.1546,
+      0.5828
+    ]
+  },
+  {
+    "race_id": "202606010109",
+    "race_name": "招福S",
+    "course": "中山",
+    "distance": 1800,
+    "num_horses": 11,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 2,
+      "name": "デコラシオン",
+      "score": 0.7428
+    },
+    "score_range": [
+      0.1674,
+      0.7428
+    ]
+  },
+  {
+    "race_id": "202606010110",
+    "race_name": "ジュニアC",
+    "course": "中山",
+    "distance": 1600,
+    "num_horses": 8,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 5,
+      "name": "サレジオ",
+      "score": 0.7019
+    },
+    "score_range": [
+      0.165,
+      0.7019
+    ]
+  },
+  {
+    "race_id": "202606010111",
+    "race_name": "中山金杯",
+    "course": "中山",
+    "distance": 2000,
+    "num_horses": 14,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 2,
+      "name": "アンゴラブラック",
+      "score": 0.6441
+    },
+    "score_range": [
+      0.1543,
+      0.6441
+    ]
+  },
+  {
+    "race_id": "202606010112",
+    "race_name": "4歳以上2勝クラス",
+    "course": "中山",
+    "distance": 1200,
+    "num_horses": 16,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 2,
+      "name": "テセラリアン",
+      "score": 0.5461
+    },
+    "score_range": [
+      0.1457,
+      0.5461
+    ]
+  },
+  {
+    "race_id": "202609020101",
+    "race_name": "3歳未勝利",
+    "course": "阪神",
+    "distance": 1200,
+    "num_horses": 16,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 3,
+      "name": "マリリンバローズ",
+      "score": 0.6226
+    },
+    "score_range": [
+      0.1492,
+      0.6226
+    ]
+  },
+  {
+    "race_id": "202609020102",
+    "race_name": "3歳未勝利",
+    "course": "阪神",
+    "distance": 1800,
+    "num_horses": 11,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 9,
+      "name": "ロードアマルフィ",
+      "score": 0.7761
+    },
+    "score_range": [
+      0.1506,
+      0.7761
+    ]
+  },
+  {
+    "race_id": "202609020103",
+    "race_name": "3歳未勝利",
+    "course": "阪神",
+    "distance": 1200,
+    "num_horses": 16,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 12,
+      "name": "ナムラロダン",
+      "score": 0.7113
+    },
+    "score_range": [
+      0.1434,
+      0.7113
+    ]
+  },
+  {
+    "race_id": "202609020104",
+    "race_name": "3歳未勝利",
+    "course": "阪神",
+    "distance": 1800,
+    "num_horses": 13,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 9,
+      "name": "ジュンドラドラ",
+      "score": 0.5935
+    },
+    "score_range": [
+      0.1443,
+      0.5935
+    ]
+  },
+  {
+    "race_id": "202609020105",
+    "race_name": "3歳未勝利",
+    "course": "阪神",
+    "distance": 1600,
+    "num_horses": 18,
+    "condition": "C",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 2,
+      "name": "パンキー",
+      "score": 0.551
+    },
+    "score_range": [
+      0.1463,
+      0.551
+    ]
+  },
+  {
+    "race_id": "202609020106",
+    "race_name": "3歳1勝クラス",
+    "course": "阪神",
+    "distance": 1400,
+    "num_horses": 11,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 5,
+      "name": "ケイアイクウガ",
+      "score": 0.4734
+    },
+    "score_range": [
+      0.1626,
+      0.4734
+    ]
+  },
+  {
+    "race_id": "202609020107",
+    "race_name": "4歳以上1勝クラス",
+    "course": "阪神",
+    "distance": 1400,
+    "num_horses": 12,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 9,
+      "name": "ヒミノエトワール",
+      "score": 0.7025
+    },
+    "score_range": [
+      0.1624,
+      0.7025
+    ]
+  },
+  {
+    "race_id": "202609020108",
+    "race_name": "三木ホースランドパークJS",
+    "course": "阪神",
+    "distance": 3140,
+    "num_horses": 11,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 4,
+      "name": "ホウオウプロサンゲ",
+      "score": 0.7408
+    },
+    "score_range": [
+      0.2465,
+      0.7408
+    ]
+  },
+  {
+    "race_id": "202609020109",
+    "race_name": "君子蘭賞",
+    "course": "阪神",
+    "distance": 1800,
+    "num_horses": 7,
+    "condition": "E",
+    "bet_type": "umaren",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 2,
+      "name": "アンジュドジョワ",
+      "score": 0.646
+    },
+    "score_range": [
+      0.156,
+      0.646
+    ]
+  },
+  {
+    "race_id": "202609020110",
+    "race_name": "仲春特別",
+    "course": "阪神",
+    "distance": 1400,
+    "num_horses": 11,
+    "condition": "D",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 7,
+      "name": "チムグクル",
+      "score": 0.616
+    },
+    "score_range": [
+      0.1585,
+      0.616
+    ]
+  },
+  {
+    "race_id": "202609020111",
+    "race_name": "毎日杯",
+    "course": "阪神",
+    "distance": 1800,
+    "num_horses": 7,
+    "condition": "E",
+    "bet_type": "umaren",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 6,
+      "name": "ウップヘリーア",
+      "score": 0.5946
+    },
+    "score_range": [
+      0.2695,
+      0.5946
+    ]
+  },
+  {
+    "race_id": "202609020112",
+    "race_name": "4歳以上2勝クラス",
+    "course": "阪神",
+    "distance": 2000,
+    "num_horses": 14,
+    "condition": "A",
+    "bet_type": "trio",
+    "amount": 700,
+    "recommended": true,
+    "top1": {
+      "num": 11,
+      "name": "エンマ",
+      "score": 0.5957
+    },
+    "score_range": [
+      0.17,
+      0.5957
+    ]
+  }
+]

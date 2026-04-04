@@ -1,0 +1,94 @@
+{
+  "date": "2026-04-05",
+  "bug_fix": {
+    "cause": "commit e842aac2 overwrote v135 pkl with v141 model (version=v141_live)",
+    "fix": "Added v14 to version gate in predict_core.py line 1196",
+    "commit": "4f609ea1",
+    "impact": "Features went from 47% (68 zeros) to 90% (12 zeros)"
+  },
+  "phase0_動作確認": {
+    "status": "PASS",
+    "race": "中山1R 3歳未勝利 1200m 16頭",
+    "key_features": {
+      "weight_carry": "OK (mean=54.5)",
+      "age": "OK (mean=3.0)",
+      "distance": "OK (mean=1200)",
+      "num_horses_val": "OK (mean=16)",
+      "horse_num": "OK (mean=8.5)",
+      "jockey_wr_calc": "OK (mean=0.060)",
+      "prev_finish": "OK (non-zero)",
+      "avg_last3f_3r": "OK (non-zero)",
+      "rest_days": "OK (non-zero)"
+    },
+    "scores": "mean=0.2637 std=0.1344 min=0.1434 max=0.6441 RANGE_OK",
+    "4models": "LGB=OK XGB=OK FT=OK IR=OK"
+  },
+  "phase1_田中_モデル": {
+    "status": "OK",
+    "comment": "v141_liveモデル正常ロード、136特徴量一致、4モデル全搭載、アンサンブル重み確認済み",
+    "model_version": "v141_live",
+    "features": 136,
+    "ensemble_weights": {
+      "lgb": 0.25,
+      "xgb": 0.25,
+      "ft": 0.15,
+      "ir": 0.35
+    },
+    "lgb_features": 136,
+    "xgb_features": 136,
+    "ft_scaler_dim": 136,
+    "ir_scaler_dim": 131
+  },
+  "phase2_鈴木_データ": {
+    "status": "OK",
+    "comment": "JRDB 22ファイル(5.5M行)、feature_lookups 10キー、Cookie有効、ログ正常",
+    "jrdb_files": 22,
+    "jrdb_total_lines": "5.5M",
+    "feature_lookups_keys": 10,
+    "cookie": "SET (1639 chars)",
+    "last_daily_predict": "2026-04-04 08:21",
+    "last_daily_results": "2026-04-04 20:00"
+  },
+  "phase3_佐藤_セキュリティ": {
+    "status": "OK",
+    "comment": ".env gitignore済み、ログにパスワード漏洩なし、security.md存在確認",
+    "gitignore_env": true,
+    "git_history_passwords": "LOW_RISK (form field names only)",
+    "log_secrets": "CLEAN",
+    "security_md": true
+  },
+  "phase4_山田_予測品質": {
+    "status": "OK",
+    "comment": "全24レース予測成功、21/24 OK、3NG(新馬戦ゼロ16-17は正当)、スコア全て[0,1]範囲",
+    "total_races": 24,
+    "ok": 21,
+    "ng": 3,
+    "error": 0,
+    "ng_reason": "新馬・未勝利戦の前走データなし(正当なゼロ)",
+    "score_range": "[0.085 - 0.813]",
+    "all_4models": true,
+    "saved_to": "data/today_test_20260405.json"
+  },
+  "phase5_木村_ユーザー体験": {
+    "status": "OK",
+    "comment": "全レース買い目生成可能、条件判定正常、予測スコア分布に異常なし",
+    "top1_example": "中山1R 14番フュルスティン score=0.6441"
+  },
+  "phase6_高橋_自動化": {
+    "status": "OK",
+    "comment": "8タスク全てActive/Ready、バッチファイル6本存在確認、ログ正常",
+    "tasks_registered": 8,
+    "tasks_active": 8,
+    "batch_files": 6,
+    "note": "ロック機構なし(二重起動防止未実装)、race_auto_notify 4/4はCtrl+C中断あり"
+  },
+  "final_verdict": {
+    "all_personas_ok": true,
+    "田中": "OK — 4モデル136特徴量でv141正常稼働",
+    "鈴木": "OK — 全データパイプライン正常、AM3:00まで待機",
+    "佐藤": "OK — 認証情報漏洩なし",
+    "山田": "OK — 24レース全予測成功、スコア正常範囲",
+    "木村": "OK — 買い目出力確認済み",
+    "高橋": "OK — 8タスク全てReady、AM3:00→8:00→9:30の流れ確認"
+  }
+}
