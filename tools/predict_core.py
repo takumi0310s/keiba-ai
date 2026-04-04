@@ -1193,7 +1193,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # v5+ 英語名特徴量
-    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12', 'v13')):
+    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12', 'v13', 'v14')):
         df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
         df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
