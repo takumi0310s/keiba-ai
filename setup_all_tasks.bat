@@ -42,8 +42,12 @@ echo   8. WeeklyReport (Mon 08:00) ... done
 
 echo.
 echo ============================================================
-echo   All tasks registered. Listing:
+echo   Fixing battery/sleep settings...
 echo ============================================================
-schtasks /query /fo TABLE /tn "keiba-ai\*"
+powershell -ExecutionPolicy Bypass -File "C:\Users\takum\keiba-ai\fix_task_settings.ps1"
+
 echo.
+echo ============================================================
+echo   All tasks registered and configured.
+echo ============================================================
 pause

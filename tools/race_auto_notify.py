@@ -20,9 +20,8 @@ import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+# Windows encoding: PYTHONIOENCODING=utf-8 (set in bat) handles this.
+# Do NOT re-wrap sys.stdout here — it crashes when stdout is redirected to a file.
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
@@ -422,4 +421,14 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"\n  FATAL ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        try:
+            from notify import send_discord
+            send_discord("Auto-Notify CRASH", f"```{traceback.format_exc()[-500:]}```", color="red")
+        except Exception:
+            pass
