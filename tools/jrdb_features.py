@@ -620,21 +620,49 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         _blood_map = _kyi_fallback_blood_map
         print(f"[JRDB] blood_map: 馬名フォールバックから{len(_blood_map)}馬取得")
 
-    # KTA: IDM予想/展開予想（blood_num経由）
+    # KTA: IDM予想/展開予想（blood_num経由、馬名フォールバック付き）
     _kta_path = os.path.join(DATA_DIR, 'jrdb_kta.csv')
-    if os.path.exists(_kta_path) and _blood_map is not None:
+    if os.path.exists(_kta_path):
         try:
             _kta = pd.read_csv(_kta_path, encoding='utf-8-sig', dtype=str)
             _kta_race = _kta[_kta['race_id'].astype(str).str.zfill(12) == _rid_str]
             if len(_kta_race) > 0:
-                _kta_m = _kta_race.merge(_blood_map, on='blood_num', how='left')
-                _kr = pd.DataFrame()
-                _kr['_uma'] = pd.to_numeric(_kta_m['_uma_str'], errors='coerce')
-                _kr['jrdb_kta_idm'] = pd.to_numeric(_kta_m['idm'], errors='coerce')
-                _kr['jrdb_kta_ten_pred'] = pd.to_numeric(_kta_m['ten_idx_pred'], errors='coerce')
-                _kr['jrdb_kta_agari_pred'] = pd.to_numeric(_kta_m['agari_idx_pred'], errors='coerce')
-                _kr = _kr.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
-                horses_df = horses_df.merge(_kr, on='_uma', how='left', suffixes=('', '_kta'))
+                if _blood_map is not None:
+                    _kta_m = _kta_race.merge(_blood_map, on='blood_num', how='left')
+                    _kr = pd.DataFrame()
+                    _kr['_uma'] = pd.to_numeric(_kta_m['_uma_str'], errors='coerce')
+                elif 'horse_name' in _kta_race.columns and '馬名' in horses_df.columns:
+                    # blood_mapなし → horse_nameでmerge
+                    _uma_col_h = 'horse_num' if 'horse_num' in horses_df.columns else '馬番'
+                    _name_map = horses_df[['馬名', _uma_col_h]].copy()
+                    _name_map['_uma'] = _name_map[_uma_col_h].astype(int)
+                    _kta_m = _kta_race.merge(_name_map[['馬名', '_uma']], left_on='horse_name', right_on='馬名', how='inner')
+                    _kr = pd.DataFrame()
+                    _kr['_uma'] = _kta_m['_uma']
+                else:
+                    _kta_m = pd.DataFrame()
+                    _kr = pd.DataFrame()
+                if len(_kta_m) > 0:
+                    _kr['jrdb_kta_idm'] = pd.to_numeric(_kta_m['idm'], errors='coerce').values
+                    _kr['jrdb_kta_ten_pred'] = pd.to_numeric(_kta_m['ten_idx_pred'], errors='coerce').values
+                    _kr['jrdb_kta_agari_pred'] = pd.to_numeric(_kta_m['agari_idx_pred'], errors='coerce').values
+                    _kr = _kr.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
+                    # IDMが全0の場合、過去KTAの最新非ゼロIDMで補完
+                    if (_kr['jrdb_kta_idm'].fillna(0) == 0).all() and 'horse_name' in _kta.columns:
+                        _name_col_h = '馬名' if '馬名' in horses_df.columns else None
+                        _uma_col_h = 'horse_num' if 'horse_num' in horses_df.columns else '馬番'
+                        if _name_col_h:
+                            for _ki in range(len(_kr)):
+                                _uma_v = int(_kr.iloc[_ki]['_uma'])
+                                _hmask = horses_df[_uma_col_h].astype(int) == _uma_v
+                                if _hmask.any():
+                                    _hname = str(horses_df.loc[_hmask, _name_col_h].iloc[0])
+                                    _past = _kta[_kta['horse_name'] == _hname].sort_values('race_id', ascending=False)
+                                    _past_idm = pd.to_numeric(_past['idm'], errors='coerce')
+                                    _nz = _past_idm[_past_idm > 0]
+                                    if len(_nz) > 0:
+                                        _kr.iloc[_ki, _kr.columns.get_loc('jrdb_kta_idm')] = float(_nz.iloc[0])
+                    horses_df = horses_df.merge(_kr, on='_uma', how='left', suffixes=('', '_kta'))
         except Exception as e:
             print(f"[WARN] JRDB KTA merge failed: {e}")
 

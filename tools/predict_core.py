@@ -1835,13 +1835,16 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         try:
             odds_full = fetch_realtime_odds_full(race_id)
             if odds_full:
-                # 基準オッズキャッシュ: 初回取得時に保存
-                save_odds_base(race_id, odds_full)
-                # 基準オッズとの差分を計算
+                # まず差分計算（キャッシュが既にあれば基準値と比較）
+                _had_base = bool(load_odds_base(race_id))
                 df = compute_odds_change_features(df, race_id, odds_full)
+                # キャッシュ未保存なら保存（初回のみ）
+                save_odds_base(race_id, odds_full)
                 _n_change = (df.get('odds_change_rate', pd.Series([0])) != 0).sum()
                 if _n_change > 0:
                     print(f"[ODDS] netkeibaオッズ変動特徴量計算完了 ({_n_change}/{len(df)}馬)")
+                elif not _had_base:
+                    print(f"[ODDS] 基準オッズ保存完了（初回取得、次回から変動計算可能）")
         except Exception as e:
             print(f"[WARN] netkeibaオッズ変動計算失敗: {e}")
 
