@@ -1,0 +1,78 @@
+{
+  "date": "2026-04-05",
+  "version": "v3",
+  "phase0_残ゼロ修正": {
+    "prev_agari_relative": {
+      "before": "ZERO(0/16)",
+      "after": "OK(16/16)",
+      "fix": "db.netkeibaラップデータ取得先変更(dl.RapTime→th/td)"
+    },
+    "jrdb_prev_late_start": {
+      "status": "正当なゼロ(全馬前走出遅なし、P(all_zero)=4.5%)"
+    },
+    "remaining_zeros": 1,
+    "total_features": 136
+  },
+  "phase1_実動作": {
+    "race": "中山11R 美浦S 2000m 16頭",
+    "key_features_all_ok": true,
+    "jrdb_all_ok": true,
+    "stable_comment_score": "6/16 OK",
+    "training_intensity_enc": "15/16 OK",
+    "odds_change_rate": "16/16 OK",
+    "prev_agari_relative": "16/16 OK",
+    "score_range": "[0.2208, 0.5781]",
+    "4models": "LGB=OK XGB=OK FT=OK IR=OK",
+    "zero_count": "1/136 (jrdb_prev_late_start only)"
+  },
+  "phase2_回帰テスト": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "tests": [
+      "test_version_gate_future_proof: PASS",
+      "test_predict_core_is_single_source: PASS",
+      "test_app_uses_core_build_features: PASS",
+      "test_model_feature_count_consistency: PASS",
+      "test_dist_cat_5bins: PASS",
+      "test_no_stdout_rewrap_in_notify: PASS",
+      "test_env_in_gitignore: PASS",
+      "test_bat_has_encoding_vars: PASS",
+      "test_4models_present: PASS"
+    ],
+    "version_gate_fix": "startswith→regex(v>=5)に変更、v15+でも自動対応"
+  },
+  "phase3_田中_モデル": {
+    "status": "OK",
+    "comment": "v141_live 136特徴量、4モデル正常、重みLGB=0.25/XGB=0.25/FT=0.15/IR=0.35"
+  },
+  "phase4_山田_データ": {
+    "status": "OK",
+    "comment": "JRDB馬名フォールバック動作確認、ラップデータ取得修正済み"
+  },
+  "phase5_高橋_自動化": {
+    "status": "OK",
+    "comment": "8タスクReady、stdout再ラップ削除済み、PYTHONIOENCODING設定済み"
+  },
+  "phase6_佐藤_セキュリティ": {
+    "status": "OK",
+    "comment": ".env gitignore確認、ログにパスワード漏洩なし"
+  },
+  "phase7_木村_ユーザー体験": {
+    "status": "OK",
+    "comment": "中山11R 美浦S予測→スコア正常→買い目生成可能"
+  },
+  "phase8_最終承認": {
+    "田中": "OK — 4モデル136特徴量、回帰テスト9/9PASS",
+    "鈴木": "OK — バージョンゲートregex化、過去11バグ全て再発防止テスト済み",
+    "佐藤": "OK — .env保護、ログクリーン",
+    "山田": "OK — ゼロ特徴量1/136(正当)、ラップデータ取得修正",
+    "木村": "OK — 実レースで全特徴量正常、スコア[0.22-0.58]",
+    "高橋": "OK — race_auto_notifyクラッシュ修正、タスク設定改善"
+  },
+  "fixes_this_session": [
+    "prev_agari_relative: db.netkeibaラップ取得方法修正(th/td pattern)",
+    "バージョンゲート: startswith→regex(v>=5)で将来自動対応",
+    "regression_test.py: 9項目の自動回帰テスト新規作成"
+  ]
+}

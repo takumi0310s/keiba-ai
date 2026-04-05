@@ -975,7 +975,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         # Weight history (for weight_ma5/weight_trend/weight_peak_diff)
         result['weight_history'] = weight_list[:5]  # most recent 5
 
-        # Lap data: try to get previous race's first3f/last3f from race link
+        # Lap data: get previous race's first3f/last3f from db.netkeiba race page
         try:
             first_row = rows[0] if rows else None
             if first_row:
@@ -984,28 +984,26 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                     _prev_rid_match = re.search(r'/race/(\d+)', _race_link['href'])
                     if _prev_rid_match:
                         _prev_rid = _prev_rid_match.group(1)
-                        # Try to get lap data from race result page
-                        _race_url = f"https://race.netkeiba.com/race/result.html?race_id={_prev_rid}"
+                        _race_url = f"https://db.netkeiba.com/race/{_prev_rid}/"
                         _race_resp = requests.get(_race_url, headers=HEADERS, timeout=8)
                         _race_resp.encoding = "EUC-JP"
                         _race_soup = BeautifulSoup(_race_resp.text, "html.parser")
-                        # Look for lap time data in pay_block or RapTime section
-                        _rap_section = _race_soup.find("dl", class_=re.compile("RapTime|RaceRap"))
-                        if _rap_section:
-                            _rap_text = _rap_section.get_text()
-                            _rap_nums = re.findall(r'(\d{2}\.\d)', _rap_text)
-                            if len(_rap_nums) >= 2:
-                                _rap_floats = [float(x) for x in _rap_nums]
-                                _n_laps = len(_rap_floats)
-                                # first3f = sum of first 3 furlongs (each ~200m)
-                                _n_first3 = min(3, _n_laps // 2) if _n_laps >= 4 else 1
-                                _n_last3 = min(3, _n_laps - _n_first3) if _n_laps >= 4 else max(1, _n_laps - 1)
-                                _first3f = sum(_rap_floats[:_n_first3])
-                                _last3f = sum(_rap_floats[-_n_last3:])
-                                if 25.0 < _first3f < 50.0 and 25.0 < _last3f < 50.0:
-                                    result['prev_race_first3f'] = round(_first3f, 1)
-                                    result['prev_race_last3f'] = round(_last3f, 1)
-                                    result['prev_race_pace_diff'] = round(_last3f - _first3f, 1)
+                        # Find ラップ row: <th>ラップ</th><td>12.2 - 11.1 - ...</td>
+                        _rap_nums = []
+                        for _th in _race_soup.find_all("th"):
+                            if 'ラップ' in _th.get_text():
+                                _td = _th.find_next_sibling("td")
+                                if _td:
+                                    _rap_nums = re.findall(r'(\d{2}\.\d)', _td.get_text())
+                                break
+                        if len(_rap_nums) >= 4:
+                            _rap_floats = [float(x) for x in _rap_nums]
+                            _first3f = sum(_rap_floats[:3])
+                            _last3f = sum(_rap_floats[-3:])
+                            if 25.0 < _first3f < 50.0 and 25.0 < _last3f < 50.0:
+                                result['prev_race_first3f'] = round(_first3f, 1)
+                                result['prev_race_last3f'] = round(_last3f, 1)
+                                result['prev_race_pace_diff'] = round(_last3f - _first3f, 1)
         except Exception:
             pass
 
@@ -1332,7 +1330,9 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     df['馬齢グループ'] = df['馬齢'].clip(2, 7)
 
     # v5+ 英語名特徴量
-    if version.startswith(('v5', 'v6', 'v8', 'v9', 'v10', 'v12', 'v13', 'v14')):
+    # v5以降の全バージョンで英語名特徴量を生成（v15+でも自動対応）
+    _ver_num = re.search(r'v(\d+)', version)
+    if _ver_num and int(_ver_num.group(1)) >= 5:
         df['sire_enc'] = df['父'].apply(lambda x: use_sire_map.get(x, n_top) if use_sire_map else n_top)
         df['bms_enc'] = df['母の父'].apply(lambda x: use_bms_map.get(x, n_top) if use_bms_map else n_top)
 
