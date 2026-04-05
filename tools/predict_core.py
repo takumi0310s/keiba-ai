@@ -816,11 +816,14 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
                 except:
                     pass
 
-            # Weight extraction (column 23 or 24, format: "480(+4)" or just "480")
+            # Weight extraction (format: "480(+4)" or "480")
+            # db.netkeiba result table has 33 cols; weight is typically at td[28]
             try:
-                for _wt_idx in range(20, min(len(tds), 28)):
+                for _wt_idx in range(20, min(len(tds), 33)):
                     _wt_text = tds[_wt_idx].get_text(strip=True)
-                    _wt_match = re.match(r'(\d{3,})', _wt_text)
+                    _wt_match = re.match(r'(\d{3,})\(', _wt_text)
+                    if not _wt_match:
+                        _wt_match = re.match(r'^(\d{3})$', _wt_text)
                     if _wt_match:
                         _wt_val = int(_wt_match.group(1))
                         if 350 <= _wt_val <= 600:
