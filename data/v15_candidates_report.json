@@ -1,0 +1,166 @@
+{
+  "date": "2026-04-06",
+  "base_model": "v14.1 (131 features Pattern A, 4-model ensemble, WF AUC 0.8856)",
+  "screening_method": "2025年単年fold LGB AUC差分（簡易スクリーニング）",
+  "GROUP_1_データ品質": {
+    "D1_training_times_2025": {
+      "status": "未実行（スクレイピング長時間）",
+      "note": "現在2,551件/推定4.7万件。再取得で学習データ品質向上の可能性",
+      "priority": "HIGH",
+      "action": "bulk_scrape_history.pyで追加取得予定"
+    },
+    "D2_Cookie自動更新": {
+      "status": "実装済み（refresh_cookie.py）",
+      "note": "週1タスクスケジューラ登録は手動で実施"
+    },
+    "D3_JRDB前日データ": {
+      "status": "改善済み（馬名フォールバック実装）",
+      "note": "KYI/JO/SED全てフォールバック対応済み"
+    }
+  },
+  "GROUP_2_未試行特徴量": {
+    "A1_PACI_TierB": {
+      "features": [
+        "sogo_mark",
+        "idm_mark",
+        "jockey_mark",
+        "train_mark"
+      ],
+      "auc_diff": -0.000295,
+      "verdict": "REJECT",
+      "reason": "AUC低下。marks情報はPACI Tier Aの数値指数に既に内包されている"
+    },
+    "A1_paci_idm_mark_individual": {
+      "auc_diff": 0.000191,
+      "verdict": "MARGINAL（不採用）",
+      "reason": "+0.0002で採用基準(+0.0005)未達"
+    },
+    "A2_KKA_dam_rensho": {
+      "features": [
+        "dam_rensho_avg",
+        "bms_rensho_avg"
+      ],
+      "auc_diff": -0.000995,
+      "verdict": "REJECT",
+      "reason": "AUC低下。既存のsire_dist_wr/bms_surface_wrで血統効果は十分捕捉"
+    }
+  },
+  "GROUP_3_再試行特徴量": {
+    "E1_PCI": {
+      "verdict": "既に採用済み（v12で追加、v14.1に含まれる）"
+    },
+    "E2_age_peak_dist": {
+      "auc_diff": -0.000729,
+      "verdict": "REJECT",
+      "reason": "v14.1でもマイナス。age/distanceの交互作用はLGBが自動学習"
+    },
+    "E5_調教データ拡張": {
+      "verdict": "要D1完了後に再評価",
+      "reason": "現在のtraining_timesカバレッジが低い"
+    },
+    "E6_SKB_codes": {
+      "auc_diff": 0.032065,
+      "verdict": "REJECT（データリーク）",
+      "reason": "SKBはレース後データ（結果分析）。+0.032は全てリーク。使用不可"
+    }
+  },
+  "GROUP_4_モデル構造": {
+    "F1_Optuna_LGB": {
+      "best_config": "num_leaves=63, lr=0.03, min_child_samples=50",
+      "auc_diff": 0.000523,
+      "verdict": "MARGINAL",
+      "reason": "単年+0.0005は微小。フルWF(6年)で安定するか不確実。現行パラメータ維持推奨",
+      "note": "lr=0.03は学習が遅く、早期停止まで多ラウンド→過学習リスク"
+    },
+    "F2_重み最適化": {
+      "verdict": "未実行（フルWF必要）",
+      "priority": "LOW",
+      "reason": "現行Grid最適化済み（LGB=0.25/XGB=0.25/FT=0.15/IR=0.35）"
+    },
+    "F3_CatBoost": {
+      "verdict": "未実行",
+      "priority": "MEDIUM",
+      "reason": "5モデル目として追加可能。LGB+XGBと相関高い場合は効果薄"
+    },
+    "F4_キャリブレーション": {
+      "verdict": "未実行",
+      "priority": "LOW",
+      "reason": "AUC（ランキング精度）は変わらない。ROI計算の精度向上のみ"
+    },
+    "F5_TabNet": {
+      "verdict": "未実行",
+      "priority": "LOW",
+      "reason": "FT-Transformer+IR Attentionで既にDL枠を使用。追加効果は限定的"
+    },
+    "F6_LGBMランカー": {
+      "verdict": "未実行",
+      "priority": "LOW",
+      "reason": "レース内ランキング損失。IR Attentionが同等の役割を既に担当"
+    }
+  },
+  "GROUP_5_賭け方": {
+    "C1_Kelly基準": {
+      "verdict": "実装推奨",
+      "priority": "HIGH",
+      "reason": "モデル改善なしでROI改善可能。リスクは増大",
+      "note": "EV>1.5のレースに重点投資、EV<1.0は見送り"
+    },
+    "C2_馬券種動的選択": {
+      "verdict": "要検討",
+      "priority": "MEDIUM",
+      "reason": "現行条件分類(A-X)は既に最適化済み。さらなる精緻化は過学適合リスク"
+    },
+    "C3_穴馬シグナル": {
+      "verdict": "実装推奨",
+      "priority": "MEDIUM",
+      "reason": "AIスコアvsオッズ乖離の検出は追加コストなしで実装可能"
+    },
+    "C4_EVモデル": {
+      "verdict": "REJECT",
+      "reason": "EV予測は確率×オッズ。モデルの確率精度向上が先"
+    },
+    "C5_オッズ依存度低減": {
+      "verdict": "達成済み",
+      "reason": "v14.1はPACI特徴量中心。prev_odds_log除外時AUC差-0.0026（LOW依存）"
+    }
+  },
+  "GROUP_6_将来検討": {
+    "G1_netkeibaマスターコース": {
+      "verdict": "検討中",
+      "cost": "月4,980円",
+      "benefit": "個別ラップ・ポジション・ピッチストライド → IR Attentionと高相性",
+      "recommendation": "ROI安定確認後に導入"
+    },
+    "G2_新馬専用サブモデル": {
+      "verdict": "検討中",
+      "benefit": "新馬戦はデータ不足で予測困難。血統+調教特化で改善可能",
+      "recommendation": "N>500で統計的に有意な評価が可能になってから"
+    },
+    "G3_LSTM時系列": {
+      "verdict": "保留",
+      "reason": "IR Attentionがレース内関係を捕捉。時系列方向はexpanding windowで対応"
+    },
+    "G4_自動投票連携": {
+      "verdict": "将来",
+      "reason": "ROI安定期間6ヶ月以上確認後"
+    }
+  },
+  "ペルソナ評価": {
+    "田中（ML）": "v14.1の131特徴量は十分に最適化されている。特徴量追加でのAUC改善余地は微小（<0.001）。モデル構造改善（CatBoost追加・重み再最適化）は中長期課題。",
+    "鈴木（品質）": "GROUP 2-3の全候補をデータリーク含めて検証済み。SKBリーク検出は重要な成果。回帰テスト9項目でガード。",
+    "佐藤（SEC）": "SKBの事後データ使用を即座に却下できたのは良い。Cookie自動更新の定期実行を推奨。",
+    "山田（DA）": "PACI marks/KKA renshoは既存特徴量と重複。136特徴量で飽和状態。training_times拡充が最も効果的。",
+    "木村（購入者）": "モデル改善より賭け方改善（C1 Kelly基準）の方がROIへの即効性あり。",
+    "高橋（自動化）": "データパイプライン改善（D1-D3）が運用安定性に最も寄与。"
+  },
+  "conclusion": {
+    "model_change": "不採用（v14.1維持）",
+    "reason": "全特徴量候補がAUC改善基準(+0.0005以上)未達。SKBは+0.032だがリーク。LGBパラメータ微調整(lr=0.03)は+0.0005で不安定。",
+    "next_actions": [
+      "D1: training_times 2025完全取得→再学習→ベースライン更新",
+      "C1: Kelly基準ベット実装（ROI改善の最速手段）",
+      "C3: 穴馬シグナルスキャン実装",
+      "F3: CatBoost5モデル目の追加検証（フルWF）"
+    ]
+  }
+}

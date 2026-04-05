@@ -1,0 +1,93 @@
+{
+  "baseline_auc": 0.869053,
+  "baseline_features": 131,
+  "candidates": {
+    "A1_PACI_TierB": {
+      "auc": 0.8687577105415978,
+      "diff": -0.000295,
+      "status": "REJECT",
+      "features": [
+        "paci_sogo_mark",
+        "paci_idm_mark",
+        "paci_jockey_mark",
+        "paci_train_mark"
+      ]
+    },
+    "A1_paci_sogo_mark": {
+      "auc": 0.8686429916194174,
+      "diff": -0.00041,
+      "status": "REJECT",
+      "features": [
+        "paci_sogo_mark"
+      ]
+    },
+    "A1_paci_idm_mark": {
+      "auc": 0.8692435459299505,
+      "diff": 0.000191,
+      "status": "MARGINAL",
+      "features": [
+        "paci_idm_mark"
+      ]
+    },
+    "A1_paci_jockey_mark": {
+      "auc": 0.8688064062394298,
+      "diff": -0.000246,
+      "status": "REJECT",
+      "features": [
+        "paci_jockey_mark"
+      ]
+    },
+    "A1_paci_train_mark": {
+      "auc": 0.8685619307814074,
+      "diff": -0.000491,
+      "status": "REJECT",
+      "features": [
+        "paci_train_mark"
+      ]
+    },
+    "A2_KKA_rensho": {
+      "auc": 0.8680573191461618,
+      "diff": -0.000995,
+      "status": "REJECT",
+      "features": [
+        "dam_rensho_avg",
+        "bms_rensho_avg"
+      ]
+    },
+    "A2_dam_rensho_avg": {
+      "auc": 0.8684334048790038,
+      "diff": -0.000619,
+      "status": "REJECT",
+      "features": [
+        "dam_rensho_avg"
+      ]
+    },
+    "A2_bms_rensho_avg": {
+      "auc": 0.8685918891764428,
+      "diff": -0.000461,
+      "status": "REJECT",
+      "features": [
+        "bms_rensho_avg"
+      ]
+    },
+    "E2_age_peak_dist": {
+      "auc": 0.8683238992731619,
+      "diff": -0.000729,
+      "status": "REJECT",
+      "features": [
+        "age_peak_dist"
+      ]
+    },
+    "E6_SKB_codes": {
+      "auc": 0.9011177230801428,
+      "diff": 0.032065,
+      "status": "ADOPT",
+      "features": [
+        "skb_kishi_code_1",
+        "skb_baba_code_1",
+        "skb_kyaku_code_1"
+      ]
+    }
+  },
+  "timestamp": "2026-04-06T01:32:04.873173"
+}
