@@ -148,6 +148,25 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 INVESTMENT_PER_RACE = 700
 
+def _get_headers_with_cookie():
+    """Cookie認証付きヘッダーを返す（.envから読み込み）"""
+    headers = dict(HEADERS)
+    try:
+        cookie = os.environ.get('NETKEIBA_COOKIE', '')
+        if not cookie:
+            _env_path = os.path.join(BASE_DIR, '.env')
+            if os.path.exists(_env_path):
+                with open(_env_path, 'r') as f:
+                    for line in f:
+                        if line.startswith('NETKEIBA_COOKIE='):
+                            cookie = line.split('=', 1)[1].strip().strip('"').strip("'")
+                            break
+        if cookie:
+            headers['Cookie'] = cookie
+    except Exception:
+        pass
+    return headers
+
 # === マッピング定数 ===
 COURSE_MAP = {
     '札幌':0,'函館':1,'福島':2,'新潟':3,'東京':4,'中山':5,'中京':6,'京都':7,'阪神':8,'小倉':9,
@@ -999,41 +1018,142 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
 # === オッズ取得 ===
 
 def fetch_realtime_odds(race_id):
-    """単勝リアルタイムオッズを取得"""
-    odds_dict = {}
+    """単勝リアル���イムオッズ＋人気順位を取得
+
+    Returns:
+        dict: {馬番: オッズ} (後方互換)
+        ※ pop_rank_dict, full結果は fetch_realtime_odds_full() で取得可能
+    """
+    result = _fetch_odds_api(race_id)
+    return {u: v['odds'] for u, v in result.items()}
+
+
+def fetch_realtime_odds_full(race_id):
+    """単勝オッズ＋人気順位を取得
+
+    Returns:
+        dict: {馬番: {'odds': float, 'pop_rank': int}}
+    """
+    return _fetch_odds_api(race_id)
+
+
+def _fetch_odds_api(race_id):
+    """netkeiba APIから単勝オッズ＋人気順位を取得（Cookie認証対応）"""
+    result = {}
     try:
         url = f"https://race.netkeiba.com/api/api_get_jra_odds.html?race_id={race_id}&type=1"
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        try:
-            data = resp.json()
-            if isinstance(data, dict) and 'data' in data:
-                odds_data = data['data'].get('odds', data['data'])
-                if isinstance(odds_data, dict):
-                    tansho = odds_data.get('1', odds_data)
-                    if isinstance(tansho, dict):
-                        for umaban_str, vals in tansho.items():
-                            if not umaban_str.isdigit():
-                                continue
-                            umaban = int(umaban_str)
-                            if isinstance(vals, list) and len(vals) >= 1:
-                                try:
-                                    odds_val = float(str(vals[0]).replace(',', ''))
-                                    if 1.0 <= odds_val <= 9999.9:
-                                        odds_dict[umaban] = odds_val
-                                except:
-                                    pass
-                            elif isinstance(vals, (int, float, str)):
-                                try:
-                                    odds_val = float(str(vals).replace(',', ''))
-                                    if 1.0 <= odds_val <= 9999.9:
-                                        odds_dict[umaban] = odds_val
-                                except:
-                                    pass
-        except:
-            pass
+        resp = requests.get(url, headers=_get_headers_with_cookie(), timeout=10)
+        data = resp.json()
+        if isinstance(data, dict) and 'data' in data:
+            odds_data = data['data'].get('odds', data['data'])
+            if isinstance(odds_data, dict):
+                tansho = odds_data.get('1', odds_data)
+                if isinstance(tansho, dict):
+                    for umaban_str, vals in tansho.items():
+                        if not umaban_str.isdigit():
+                            continue
+                        umaban = int(umaban_str)
+                        if isinstance(vals, list) and len(vals) >= 1:
+                            try:
+                                odds_val = float(str(vals[0]).replace(',', ''))
+                                pop_rank = int(vals[2]) if len(vals) >= 3 and str(vals[2]).isdigit() else 0
+                                if 1.0 <= odds_val <= 9999.9:
+                                    result[umaban] = {'odds': odds_val, 'pop_rank': pop_rank}
+                            except (ValueError, TypeError, IndexError):
+                                pass
     except Exception:
         pass
-    return odds_dict
+    return result
+
+
+# === オッズ基準値キャッシュ（AM8:00予測時のオッズを基準として保存） ===
+
+_ODDS_CACHE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                 'data', 'odds_base_cache.json')
+
+
+def save_odds_base(race_id, odds_full):
+    """基準オッズをキャッシュに保存（初回取得時のみ）"""
+    try:
+        cache = {}
+        if os.path.exists(_ODDS_CACHE_PATH):
+            with open(_ODDS_CACHE_PATH, 'r') as f:
+                cache = json.load(f)
+        rid = str(race_id)
+        if rid not in cache:
+            cache[rid] = {
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M'),
+                'odds': {str(u): v for u, v in odds_full.items()},
+            }
+            with open(_ODDS_CACHE_PATH, 'w') as f:
+                json.dump(cache, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def load_odds_base(race_id):
+    """キャッシュから基準オッズを読み込み
+
+    Returns:
+        dict: {馬番(int): {'odds': float, 'pop_rank': int}} or {}
+    """
+    try:
+        if os.path.exists(_ODDS_CACHE_PATH):
+            with open(_ODDS_CACHE_PATH, 'r') as f:
+                cache = json.load(f)
+            entry = cache.get(str(race_id), {})
+            odds_data = entry.get('odds', {})
+            return {int(k): v for k, v in odds_data.items()}
+    except Exception:
+        pass
+    return {}
+
+
+def compute_odds_change_features(df, race_id, odds_dict_full):
+    """リアルタイムオッズとキャッシュ基準オッズからodds_change特徴量を計算
+
+    Args:
+        df: 馬DataFrame（horse_num列が必要）
+        race_id: レースID
+        odds_dict_full: fetch_realtime_odds_full()の結果
+
+    Returns:
+        df: odds_change_rate, pop_rank_change, odds_sharp_drop が追加されたdf
+    """
+    base = load_odds_base(race_id)
+    if not base or not odds_dict_full:
+        return df
+
+    uma_col = 'horse_num' if 'horse_num' in df.columns else '馬番'
+    change_rates = []
+    pop_changes = []
+    sharp_drops = []
+
+    for _, row in df.iterrows():
+        uma = int(row.get(uma_col, 0))
+        b = base.get(uma, {})
+        r = odds_dict_full.get(uma, {})
+        base_odds = b.get('odds', 0) if isinstance(b, dict) else 0
+        rt_odds = r.get('odds', 0) if isinstance(r, dict) else 0
+        base_pop = b.get('pop_rank', 0) if isinstance(b, dict) else 0
+        rt_pop = r.get('pop_rank', 0) if isinstance(r, dict) else 0
+
+        if base_odds > 0 and rt_odds > 0:
+            change_rates.append(np.clip((base_odds - rt_odds) / base_odds, -2.0, 2.0))
+            sharp_drops.append(1 if rt_odds <= base_odds * 0.8 else 0)
+        else:
+            change_rates.append(0.0)
+            sharp_drops.append(0)
+
+        if base_pop > 0 and rt_pop > 0:
+            pop_changes.append(int(base_pop - rt_pop))
+        else:
+            pop_changes.append(0)
+
+    df['odds_change_rate'] = change_rates
+    df['pop_rank_change'] = pop_changes
+    df['odds_sharp_drop'] = sharp_drops
+    return df
 
 
 def is_race_started(race_id):
@@ -1705,6 +1825,25 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df = merge_jrdb_predict_features(df, race_id)
     except Exception as e:
         print(f"[JRDB] 特徴量取得スキップ: {e}")
+
+    # ===== netkeibaオッズ変動特徴量（JRDB OZがない場合のフォールバック） =====
+    _odds_feats_zero = (
+        ('odds_change_rate' not in df.columns or (df.get('odds_change_rate', pd.Series([0])) == 0).all()) and
+        ('pop_rank_change' not in df.columns or (df.get('pop_rank_change', pd.Series([0])) == 0).all())
+    )
+    if _odds_feats_zero and race_id and odds_dict:
+        try:
+            odds_full = fetch_realtime_odds_full(race_id)
+            if odds_full:
+                # 基準オッズキャッシュ: 初回取得時に保存
+                save_odds_base(race_id, odds_full)
+                # 基準オッズとの差分を計算
+                df = compute_odds_change_features(df, race_id, odds_full)
+                _n_change = (df.get('odds_change_rate', pd.Series([0])) != 0).sum()
+                if _n_change > 0:
+                    print(f"[ODDS] netkeibaオッズ変動特徴量計算完了 ({_n_change}/{len(df)}馬)")
+        except Exception as e:
+            print(f"[WARN] netkeibaオッズ変動計算失敗: {e}")
 
     # 必要な特徴量の確保
     use_features = model_data.get('features')

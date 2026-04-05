@@ -32,7 +32,8 @@ from predict_core import (
     classify_race_condition, generate_trio_bets, generate_wide_bets, generate_umaren_bets,
     load_models, fetch_oikiri_ranks,
     parse_shutuba, get_horse_stats, build_features, predict_race,
-    calc_pace_advantage, fetch_realtime_odds, is_race_started, fetch_result_odds,
+    calc_pace_advantage, fetch_realtime_odds, fetch_realtime_odds_full,
+    save_odds_base, is_race_started, fetch_result_odds,
     fetch_jra_and_weather, set_horse_defaults, apply_horse_stats,
 )
 
@@ -152,7 +153,10 @@ def run_daily_predict(date_str):
                 else:
                     print(f"  オッズ: 結果ページから取得失敗")
             else:
-                odds_dict = fetch_realtime_odds(race_id)
+                odds_full = fetch_realtime_odds_full(race_id)
+                odds_dict = {u: v['odds'] for u, v in odds_full.items()}
+                if odds_full:
+                    save_odds_base(race_id, odds_full)
                 print(f"  オッズ取得: {len(odds_dict)}頭分" if odds_dict else "  オッズ: 未取得（レース前オッズ未発表の可能性）")
             time.sleep(0.3)
 

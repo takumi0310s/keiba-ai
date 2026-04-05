@@ -134,7 +134,7 @@ def predict_and_notify(race_info, date_str):
     try:
         # Import prediction functions from predict_core (共通予測モジュール)
         from predict_core import (
-            load_models, parse_shutuba, fetch_realtime_odds,
+            load_models, parse_shutuba, fetch_realtime_odds, fetch_realtime_odds_full, save_odds_base,
             classify_race_condition, generate_trio_bets, generate_umaren_bets,
             build_features, predict_race, is_race_started, fetch_result_odds,
             CONDITION_PROFILES, get_horse_stats, fetch_jra_and_weather,
@@ -169,8 +169,11 @@ def predict_and_notify(race_info, date_str):
             print("    Skipping <=1000m")
             return
 
-        # Fetch odds
-        odds_dict = fetch_realtime_odds(race_id)
+        # Fetch odds (full = odds + pop_rank, save base cache for change features)
+        odds_full = fetch_realtime_odds_full(race_id)
+        odds_dict = {u: v['odds'] for u, v in odds_full.items()}
+        if odds_full:
+            save_odds_base(race_id, odds_full)
         time.sleep(1)
 
         # Fetch JRA track & weather
