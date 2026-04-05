@@ -41,6 +41,8 @@ if not IS_CLOUD:
         calc_horse_ev as _core_calc_horse_ev,
         calc_race_confidence as _core_calc_race_confidence,
         calc_variable_investment as _core_calc_variable_investment,
+        fetch_realtime_odds_full as _core_fetch_odds_full,
+        save_odds_base as _core_save_odds_base,
     )
 else:
     # Cloud: requestsとbs4はTRACK RECORDなどの表示で不要
@@ -4889,9 +4891,15 @@ if st.button("🔍 予想する") and url_input:
     # 障害レース警告
     if race_info.get('surface') == '障':
         st.warning("障害レースはAIモデルの対象外です。予測精度は保証されません。")
-    # Fetch realtime odds
+    # Fetch realtime odds (full = odds + pop_rank for change features)
     with st.spinner("オッズを取得中..."):
         realtime_odds = fetch_realtime_odds(race_id, is_nar=is_nar)
+        try:
+            _odds_full = _core_fetch_odds_full(race_id)
+            if _odds_full:
+                _core_save_odds_base(race_id, _odds_full)
+        except Exception:
+            pass
     # Fetch training (oikiri) data
     with st.spinner("調教データを取得中..."):
         training_data = fetch_training_data(race_id, is_nar=is_nar)

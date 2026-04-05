@@ -457,6 +457,8 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         horses_df: JRDB特徴量を追加したDataFrame
     """
     # KYIからの特徴量
+    _kyi_matched = False
+    _kyi_fallback_blood_map = None  # horse name → blood_num (for ZE/SED fallback)
     kyi_path = os.path.join(DATA_DIR, 'jrdb_kyi.csv')
     if os.path.exists(kyi_path):
         try:
@@ -471,6 +473,39 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                 kyi_merge = kyi_feats[['_uma'] + jrdb_cols].drop_duplicates(subset='_uma', keep='last')
                 horses_df = horses_df.merge(kyi_merge, on='_uma', how='left')
                 horses_df.drop(columns=['_uma'], inplace=True, errors='ignore')
+                _kyi_matched = True
+            else:
+                # KYI当日データなし → 馬名ベースで過去KYIから最新データを取得
+                _name_col = '馬名' if '馬名' in horses_df.columns else None
+                _uma_col_h = 'horse_num' if 'horse_num' in horses_df.columns else '馬番'
+                if _name_col and '馬名' in kyi.columns:
+                    horses_df['_uma'] = horses_df[_uma_col_h].astype(int)
+                    _fb_rows = []
+                    _fb_blood = {}  # _uma → blood_num
+                    for _, _h in horses_df.iterrows():
+                        _hname = str(_h.get(_name_col, ''))
+                        _uma_val = int(_h['_uma'])
+                        _past = kyi[kyi['馬名'] == _hname].sort_values('nk_race_id', ascending=False)
+                        if len(_past) > 0:
+                            _latest = _past.iloc[0:1]
+                            _feats = extract_kyi_features(_latest)
+                            _feats['_uma'] = _uma_val
+                            _fb_rows.append(_feats)
+                            _bn = str(_past.iloc[0].get('血統登録番号', ''))
+                            if _bn:
+                                _fb_blood[_uma_val] = _bn
+                    if _fb_rows:
+                        _fb_df = pd.concat(_fb_rows, ignore_index=True)
+                        jrdb_cols = [c for c in _fb_df.columns if c.startswith('jrdb_')]
+                        _fb_merge = _fb_df[['_uma'] + jrdb_cols].drop_duplicates(subset='_uma', keep='last')
+                        horses_df = horses_df.merge(_fb_merge, on='_uma', how='left')
+                        _kyi_matched = True
+                        print(f"[JRDB] KYI当日データなし → 馬名フォールバックで{len(_fb_rows)}/{len(horses_df)}馬取得")
+                    if _fb_blood:
+                        _kyi_fallback_blood_map = pd.DataFrame([
+                            {'_uma_str': str(u), 'blood_num': b} for u, b in _fb_blood.items()
+                        ])
+                    horses_df.drop(columns=['_uma'], inplace=True, errors='ignore')
         except Exception as e:
             print(f"[WARN] JRDB KYI merge failed: {e}")
 
@@ -522,7 +557,7 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB CHA merge failed: {e}")
 
-    # JO: CID/LS指数
+    # JO: CID/LS指数（当日データ優先、なければ馬名フォールバック）
     _jo_path = os.path.join(DATA_DIR, 'jrdb_jo.csv')
     if os.path.exists(_jo_path):
         try:
@@ -535,10 +570,32 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                 _jr['jrdb_ls_idx'] = pd.to_numeric(_jo_race['ls_idx'], errors='coerce')
                 _jr = _jr.drop_duplicates(subset='_uma', keep='last')
                 horses_df = horses_df.merge(_jr, on='_uma', how='left', suffixes=('', '_jo'))
+            elif 'horse_name' in _jo.columns or '馬名' in _jo.columns:
+                # 当日データなし → 馬名から過去JO最新値を取得
+                _hn_col_jo = 'horse_name' if 'horse_name' in _jo.columns else '馬名'
+                _name_col_h = '馬名' if '馬名' in horses_df.columns else None
+                _uma_col_h = 'horse_num' if 'horse_num' in horses_df.columns else '馬番'
+                if _name_col_h:
+                    _jo_fb_rows = []
+                    for _, _h in horses_df.iterrows():
+                        _hname = str(_h.get(_name_col_h, ''))
+                        _uma_val = int(_h[_uma_col_h])
+                        _jo_past = _jo[_jo[_hn_col_jo] == _hname].sort_values('race_id', ascending=False)
+                        if len(_jo_past) > 0:
+                            _r = _jo_past.iloc[0]
+                            _cid = pd.to_numeric(_r.get('cid_idx', 0), errors='coerce')
+                            _ls = pd.to_numeric(_r.get('ls_idx', 0), errors='coerce')
+                            _jo_fb_rows.append({'_uma': _uma_val, 'jrdb_cid_idx': _cid, 'jrdb_ls_idx': _ls})
+                    if _jo_fb_rows:
+                        _jo_fb = pd.DataFrame(_jo_fb_rows).drop_duplicates(subset='_uma', keep='last')
+                        horses_df = horses_df.merge(_jo_fb, on='_uma', how='left', suffixes=('', '_jo'))
+                        _n_jo = (_jo_fb['jrdb_cid_idx'].notna() & (_jo_fb['jrdb_cid_idx'] != 0)).sum()
+                        if _n_jo > 0:
+                            print(f"[JRDB] JO当日データなし → 馬名フォールバックで{_n_jo}馬取得")
         except Exception as e:
             print(f"[WARN] JRDB JO merge failed: {e}")
 
-    # blood_num → 馬番マッピング（KYIから取得、PACIフォールバック）
+    # blood_num → 馬番マッピング（KYIから取得、PACIフォールバック、馬名フォールバック）
     _blood_map = None
     _kyi_path = os.path.join(DATA_DIR, 'jrdb_kyi.csv')
     _paci_path = os.path.join(DATA_DIR, 'jrdb_paci.csv')
@@ -558,6 +615,10 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                     _blood_map = _blood_map.rename(columns={_uma_col: '_uma_str', _bn_col: 'blood_num'})
             except Exception:
                 pass
+    # KYI馬名フォールバックからのblood_map
+    if _blood_map is None and _kyi_fallback_blood_map is not None:
+        _blood_map = _kyi_fallback_blood_map
+        print(f"[JRDB] blood_map: 馬名フォールバックから{len(_blood_map)}馬取得")
 
     # KTA: IDM予想/展開予想（blood_num経由）
     _kta_path = os.path.join(DATA_DIR, 'jrdb_kta.csv')
@@ -605,6 +666,55 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                 horses_df = horses_df.merge(_zr, on='_uma', how='left', suffixes=('', '_ze'))
         except Exception as e:
             print(f"[WARN] JRDB ZE merge failed: {e}")
+
+    # SED: 前走データ（馬場差/不利/出遅）— blood_num経由で最新行を取得
+    _sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
+    _sed_feats_needed = ['jrdb_prev_track_bias', 'jrdb_prev_interference', 'jrdb_prev_late_start']
+    _sed_feats_zero = all(
+        c not in horses_df.columns or (horses_df.get(c, pd.Series([0])) == 0).all()
+        for c in _sed_feats_needed
+    )
+    if os.path.exists(_sed_path) and _blood_map is not None and _sed_feats_zero:
+        try:
+            _blood_nums = _blood_map['blood_num'].unique().tolist()
+            _sed_cols = ['blood_num', 'race_id', '馬���差', '不利', '出遅']
+            # English column fallback
+            _sed_raw = pd.read_csv(_sed_path, encoding='utf-8-sig', dtype=str)
+            _sed_col_map = {}
+            for _jc, _ec in [('馬場差', 'baba_sa'), ('不利', 'furi'), ('出遅', 'deokure')]:
+                if _jc in _sed_raw.columns:
+                    _sed_col_map[_jc] = _jc
+                elif _ec in _sed_raw.columns:
+                    _sed_col_map[_jc] = _ec
+            if 'blood_num' in _sed_raw.columns and len(_sed_col_map) == 3:
+                _sed_filt = _sed_raw[_sed_raw['blood_num'].isin(_blood_nums)].copy()
+                if len(_sed_filt) > 0:
+                    # 各馬の最新SED行を取得（= 前走データ）
+                    _sed_filt = _sed_filt.sort_values('race_id', ascending=False)
+                    _sed_latest = _sed_filt.drop_duplicates(subset='blood_num', keep='first')
+                    _sr_df = _sed_latest.merge(_blood_map, on='blood_num', how='inner')
+                    _sr_result = pd.DataFrame()
+                    _sr_result['_uma'] = pd.to_numeric(_sr_df['_uma_str'], errors='coerce')
+                    _sr_result['jrdb_prev_track_bias'] = pd.to_numeric(_sr_df[_sed_col_map['馬場差']], errors='coerce')
+                    _sr_result['jrdb_prev_interference'] = pd.to_numeric(_sr_df[_sed_col_map['不利']], errors='coerce')
+                    _sr_result['jrdb_prev_late_start'] = pd.to_numeric(_sr_df[_sed_col_map['出遅']], errors='coerce')
+                    _sr_result = _sr_result.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
+                    if '_uma' not in horses_df.columns:
+                        horses_df['_uma'] = horses_df['horse_num'].astype(int) if 'horse_num' in horses_df.columns else horses_df.index + 1
+                    horses_df = horses_df.merge(_sr_result, on='_uma', how='left', suffixes=('', '_sed_fb'))
+                    # Prefer new values over existing zeros
+                    for _sc in _sed_feats_needed:
+                        _sc_fb = f'{_sc}_sed_fb'
+                        if _sc_fb in horses_df.columns:
+                            horses_df[_sc] = horses_df[_sc].fillna(0)
+                            _mask = horses_df[_sc] == 0
+                            horses_df.loc[_mask, _sc] = horses_df.loc[_mask, _sc_fb]
+                            horses_df.drop(columns=[_sc_fb], inplace=True, errors='ignore')
+                    _n_filled = sum(1 for c in _sed_feats_needed if c in horses_df.columns and (horses_df[c] != 0).any())
+                    if _n_filled > 0:
+                        print(f"[JRDB] SED前走データ: blood_numフォールバックで{_n_filled}/3特徴量取得")
+        except Exception as e:
+            print(f"[WARN] JRDB SED prev fallback failed: {e}")
 
     # SR: トラックバイアス（当該レースのバイアス）
     _sr_path = os.path.join(DATA_DIR, 'jrdb_sr.csv')
