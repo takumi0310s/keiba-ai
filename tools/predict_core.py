@@ -2242,3 +2242,175 @@ def calc_variable_investment(confidence, cond_key, base_investment=700):
 
     # 100円単位に丸め
     return int(round(amount / 100) * 100)
+
+
+def calc_kelly_investment(df_sorted, odds_dict=None, cond_key='A',
+                          base_bankroll=30000, fraction=0.5,
+                          min_bet=100, max_bet=2000):
+    """Kelly基準で投資額を計算。
+
+    ハーフKelly（fraction=0.5）でリスク抑制。
+    三連複7点フォーメーションの場合、TOP1-3の複勝圏確率を使う。
+
+    Args:
+        df_sorted: スコア降順ソート済みDF
+        odds_dict: {馬番: 単勝オッズ}
+        cond_key: 条件(A-X)
+        base_bankroll: 仮想バンクロール（Kelly計算用）
+        fraction: Kelly fraction（0.5=ハーフKelly推奨）
+        min_bet: 最低ベット額
+        max_bet: 最大ベット額
+
+    Returns:
+        (amount, kelly_info): (投資額(100円単位), {'kelly_f': f値, 'ev': EV, 'edge': エッジ})
+    """
+    if len(df_sorted) < 3 or not odds_dict:
+        return 700, {'kelly_f': 0, 'ev': 1.0, 'edge': 0}
+
+    scores = df_sorted['スコア'].values
+    score_sum = scores.sum()
+    if score_sum <= 0:
+        return 700, {'kelly_f': 0, 'ev': 1.0, 'edge': 0}
+
+    # TOP1の複勝圏（3着以内）確率を推定
+    top1_prob = min(scores[0] / score_sum * 3.0, 0.85)
+
+    # TOP1-3の三連複的中確率（TOP1軸-TOP2,3-TOP2~6フォーメーション）
+    # 簡易推定: TOP1が3着以内 × TOP2が3着以内 × TOP3~6のいずれかが3着以内
+    top2_prob = min(scores[1] / score_sum * 3.0, 0.80)
+    remaining_prob = min(sum(scores[2:6]) / score_sum * 3.0, 0.95)
+    trio_hit_prob = top1_prob * top2_prob * remaining_prob
+
+    # 三連複の想定配当を推定（条件別）
+    cond_avg_payout = {
+        'A': 4000, 'B': 5000, 'C': 8000, 'D': 5000,
+        'E': 2500, 'X': 10000,
+    }
+    avg_payout = cond_avg_payout.get(cond_key, 5000)
+
+    # 単勝オッズから補正（オッズが高い＝配当も高い）
+    top1_uma = int(df_sorted.iloc[0]['馬番'])
+    top1_odds = odds_dict.get(top1_uma, 10.0)
+    payout_est = avg_payout * max(top1_odds / 5.0, 0.5)  # 5倍馬を基準に補正
+
+    # Kelly基準: f* = (p * b - q) / b
+    # p = 的中確率, b = 配当倍率-1, q = 1-p
+    if cond_key == 'E':
+        # 馬連2点
+        b = payout_est / 350 - 1  # 350円/点 × 2点
+    else:
+        # 三連複7点
+        b = payout_est / 100 - 1  # 100円/点 × 7点
+
+    p = trio_hit_prob
+    q = 1 - p
+
+    if b <= 0:
+        kelly_f = 0
+    else:
+        kelly_f = (p * b - q) / b
+
+    # ハーフKelly
+    kelly_f_adj = kelly_f * fraction
+
+    # EV = 期待値
+    ev = p * (b + 1) if b > 0 else 0
+
+    # 投資額計算
+    if kelly_f_adj <= 0:
+        amount = min_bet
+        edge = 0
+    else:
+        raw_amount = base_bankroll * kelly_f_adj
+        amount = max(min_bet, min(max_bet, raw_amount))
+        edge = kelly_f
+
+    # 100円単位に丸め
+    amount = int(round(amount / 100) * 100)
+    amount = max(min_bet, min(max_bet, amount))
+
+    # 条件D/Eは控えめ
+    if cond_key in ('D', 'E'):
+        amount = min(amount, 1000)
+
+    kelly_info = {
+        'kelly_f': round(kelly_f, 4),
+        'kelly_adj': round(kelly_f_adj, 4),
+        'ev': round(ev, 2),
+        'edge': round(kelly_f * 100, 1),  # エッジ%
+        'trio_hit_prob': round(trio_hit_prob, 4),
+        'payout_est': int(payout_est),
+    }
+    return amount, kelly_info
+
+
+def scan_value_horses(df_sorted, odds_dict=None, threshold=2.0):
+    """穴馬シグナルスキャン — AIスコアvsオッズの乖離検出。
+
+    AI確率が高いのにオッズが高い馬 = 市場が過小評価している馬。
+    乖離度 = AI推定確率 / 市場確率(1/オッズ)
+
+    Args:
+        df_sorted: スコア降順ソート済みDF
+        odds_dict: {馬番: 単勝オッズ}
+        threshold: 乖離度閾値（2.0以上で穴馬判定）
+
+    Returns:
+        list of {'umaban': int, 'horse_name': str, 'score': float, 'odds': float,
+                 'divergence': float, 'reasons': list}
+    """
+    signals = []
+    if len(df_sorted) < 3 or not odds_dict:
+        return signals
+
+    scores = df_sorted['スコア'].values
+    score_sum = scores.sum()
+    if score_sum <= 0:
+        return signals
+
+    for idx, (_, row) in enumerate(df_sorted.iterrows()):
+        umaban = int(row['馬番'])
+        horse_name = str(row.get('馬名', f'{umaban}番'))
+        ai_score = scores[idx]
+        ai_prob = ai_score / score_sum * 3.0  # 複勝圏確率推定
+
+        odds = odds_dict.get(umaban, 0)
+        if odds <= 1.0:
+            continue
+
+        market_prob = 1.0 / odds  # 市場の勝率推定
+        market_top3_prob = market_prob * 2.5  # 複勝圏は約2.5倍（経験則）
+
+        if market_top3_prob <= 0:
+            continue
+
+        divergence = ai_prob / market_top3_prob
+
+        if divergence >= threshold:
+            reasons = []
+            # 過小評価の理由候補
+            if 'prev_finish' in row and row['prev_finish'] >= 8:
+                reasons.append('前走大敗→巻き返し')
+            if 'rest_days' in row and row['rest_days'] >= 60:
+                reasons.append('休み明け→フレッシュ')
+            if 'jrdb_prev_interference' in row and row.get('jrdb_prev_interference', 0) > 0:
+                reasons.append('前走不利あり→実力以上')
+            if 'finish_trend' in row and row.get('finish_trend', 0) < -2:
+                reasons.append('着順上昇傾向')
+            if 'training_intensity_enc' in row and row.get('training_intensity_enc', 0) >= 2:
+                reasons.append('調教強め以上')
+            if not reasons:
+                reasons.append('AI高評価vs市場低評価')
+
+            signals.append({
+                'umaban': umaban,
+                'horse_name': horse_name,
+                'ai_score': round(ai_score, 4),
+                'ai_prob': round(ai_prob, 3),
+                'odds': odds,
+                'market_prob': round(market_top3_prob, 3),
+                'divergence': round(divergence, 2),
+                'reasons': reasons,
+            })
+
+    return sorted(signals, key=lambda x: -x['divergence'])
