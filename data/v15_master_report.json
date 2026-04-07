@@ -1,0 +1,41 @@
+{
+  "phase": "phase1_only",
+  "baseline_auc": 0.8856,
+  "total_features": 145,
+  "base_features": 131,
+  "new_features": [
+    "jockey_horse_rides",
+    "jockey_horse_wr",
+    "jockey_horse_top3r",
+    "jockey_change",
+    "jockey_change_to_top",
+    "transport_distance_km",
+    "is_long_transport",
+    "course_renovated",
+    "post_renovation_flag",
+    "gaisha_rank",
+    "paci_sogo_mark",
+    "paci_idm_mark",
+    "paci_jockey_mark",
+    "paci_train_mark"
+  ],
+  "coverage": {
+    "jockey_horse_rides": 47.354346836595354,
+    "jockey_horse_wr": 100.0,
+    "jockey_horse_top3r": 100.0,
+    "jockey_change": 55.76069640418753,
+    "jockey_change_to_top": 15.255272341071159,
+    "transport_distance_km": 99.83158852981339,
+    "is_long_transport": 11.27408587467759,
+    "course_renovated": 1.3192231831285086,
+    "post_renovation_flag": 14.47883477469276,
+    "gaisha_rank": 0.0,
+    "paci_sogo_mark": 35.75216203914429,
+    "paci_idm_mark": 35.75216203914429,
+    "paci_jockey_mark": 35.74514489455318,
+    "paci_train_mark": 35.74590350477924
+  },
+  "dataframe_rows": 527280,
+  "timestamp": "2026-04-08T01:05:01.302230",
+  "elapsed_min": 4.460265227158865
+}

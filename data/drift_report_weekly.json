@@ -1,0 +1,105 @@
+{
+  "date": "2026-04-08",
+  "period": "2026-03-11 to 2026-04-08",
+  "auc": {
+    "current": 0.7026,
+    "baseline": 0.8856,
+    "delta": -0.183,
+    "alert": true,
+    "n_races": 114,
+    "n_predictions": 1605
+  },
+  "hit_rates": {
+    "A": {
+      "current": 0.3421,
+      "expected": 0.632,
+      "delta": -0.2899,
+      "n": 38
+    },
+    "B": {
+      "current": 0.0,
+      "expected": 0.613,
+      "delta": null,
+      "n": 3
+    },
+    "C": {
+      "current": 0.16,
+      "expected": 0.516,
+      "delta": -0.356,
+      "n": 25
+    },
+    "D": {
+      "current": 0.1628,
+      "expected": 0.482,
+      "delta": -0.3192,
+      "n": 43
+    },
+    "E": {
+      "current": null,
+      "expected": 0.727,
+      "delta": null,
+      "n": 0
+    },
+    "X": {
+      "current": 0.0,
+      "expected": 0.54,
+      "delta": -0.54,
+      "n": 7
+    }
+  },
+  "roi": {
+    "current": 344.7,
+    "investment": 81200,
+    "payout": 279900,
+    "4week_trend": [
+      [
+        "03/12",
+        0.0
+      ],
+      [
+        "03/19",
+        426.7287784679089
+      ],
+      [
+        "03/26",
+        0.0
+      ],
+      [
+        "04/02",
+        229.16149068322983
+      ]
+    ],
+    "alert": false
+  },
+  "ks_test": {
+    "ai_score": {
+      "statistic": 0.2848,
+      "p_value": 0.0,
+      "alert": true
+    },
+    "ai_score_positive": {
+      "statistic": 0.2645,
+      "p_value": 9e-06,
+      "alert": true
+    },
+    "ai_score_negative": {
+      "statistic": 0.2952,
+      "p_value": 0.0,
+      "alert": true
+    },
+    "actual_finish": {
+      "statistic": 0.0303,
+      "p_value": 0.840175,
+      "alert": false
+    }
+  },
+  "alerts": [
+    "AUC dropped by 0.1830 below baseline (0.7026 vs 0.8856)",
+    "Condition A hit rate 34.2% vs expected 63.2% (N=38)",
+    "Condition C hit rate 16.0% vs expected 51.6% (N=25)",
+    "Condition D hit rate 16.3% vs expected 48.2% (N=43)",
+    "KS drift detected for 'ai_score': statistic=0.2848, p=0.000000",
+    "KS drift detected for 'ai_score_positive': statistic=0.2645, p=0.000009",
+    "KS drift detected for 'ai_score_negative': statistic=0.2952, p=0.000000"
+  ]
+}
