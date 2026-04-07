@@ -1,0 +1,2087 @@
+======================================================================
+  v15 Full Improvement Pipeline
+  Started: 2026-04-07 01:42:47
+  Device: cuda
+  Baseline: v14.1 WF AUC 0.8856
+======================================================================
+
+[0] Building v14.1 dataframe...
+
+[1] Building v13.4 features...
+Loading data...
+  Raw: 531619 rows, 52 cols
+  Columns: ['year', 'month', 'day', 'kai', 'course', 'nichi', 'race_num', 'race_name', 'class_code', 'surface']...
+  Valid: 527280 rows, 38002 races
+  Year range: 2015-2025
+  Father sample: ['マンハッタンカフェ', 'マンハッタンカフェ', 'ダンスインザダーク', 'ダンスインザダーク', 'スウェプトオーヴァーボード']
+  BMS sample: ['キャロルハウス', 'キャロルハウス', 'トニービン', 'トニービン', 'サンデーサイレンス']
+  Top 5 sires: ['ディープインパクト', 'ハーツクライ', 'ダイワメジャー', 'ロードカナロア', 'キングカメハメハ']
+  Top 5 BMS: ['サンデーサイレンス', 'キングカメハメハ', 'ディープインパクト', 'アグネスタキオン', 'クロフネ']
+Loading training times...
+  955580 training records
+  Wood: 296654 valid, Sakaro: 658735 valid
+Merging training time features...
+  Wood training matched: 95370/527280 (18.1%)
+  Merging sakaro training features...
+  Sakaro name→horse_id mapped: 654220/658735 (99.3%)
+  Sakaro training matched: 153874/527280 (29.2%)
+Computing jockey stats (expanding window)...
+Computing trainer stats (expanding window)...
+Computing horse career features...
+Computing sire performance features...
+Computing lag features...
+  Lag features computed for 58921 horses
+Computing distance aptitude features...
+Computing frame advantage features...
+  Speed Index: 189950/527280 matched (36.0%)
+  Training 1F: 200623/527280 matched (38.0%)
+  Computing sire_shinba_top3r (expanding window, leak-free)...
+  Sire shinba (expanding): 0/527280 computed (0.0%)
+  Computing dam_top3r (expanding window, leak-free)...
+  Dam stats (expanding): 508203/527280 computed (96.4%)
+  PCI: 527280/527280 computed (100.0%)
+  Merging JRDB features (train)...
+    KYI: 527280/527280 matched (100.0%)
+    SED: merging as prev-race features...
+    SED prev: 452394/527280 matched (85.8%)
+    jrdb_idm: 98.3% non-default
+    jrdb_training_idx: 99.7% non-default
+    jrdb_stable_idx: 100.0% non-default
+    jrdb_info_idx: 100.0% non-default
+    jrdb_composite_idx: 99.8% non-default
+    CHA: 273538/527280 matched (51.9%)
+    JO: 283722/527280 matched (53.8%)
+    KTA: 282969/527280 matched (53.7%)
+    ZE: 523614/527280 matched (99.3%)
+    SR: 527280/527280 matched (100.0%)
+    KKA: 516186/527280 matched (97.9%)
+    netkeiba_race_analysis.csv: 52764 rows
+    netkeiba_stable_comments.csv: 78311 rows
+    Combined unique: 73768 entries
+    Matched: 73212/527280 (13.9%)
+      Year 2015: 0/49610 (0.0%)
+      Year 2016: 0/49699 (0.0%)
+      Year 2017: 0/48927 (0.0%)
+      Year 2018: 0/48200 (0.0%)
+      Year 2019: 0/47122 (0.0%)
+      Year 2020: 13780/47882 (28.8%)
+      Year 2021: 13883/47476 (29.2%)
+      Year 2022: 12385/46841 (26.4%)
+      Year 2023: 11309/47274 (23.9%)
+      Year 2024: 11628/46752 (24.9%)
+      Year 2025: 10227/47497 (21.5%)
+    OZ: 298300 horse-level records from 21591 races
+    Matched: 283722/527280 (53.8%)
+      Year 2015: 0/49610 (0.0%)
+      Year 2016: 0/49699 (0.0%)
+      Year 2017: 0/48927 (0.0%)
+      Year 2018: 0/48200 (0.0%)
+      Year 2019: 0/47122 (0.0%)
+      Year 2020: 47882/47882 (100.0%)
+      Year 2021: 47476/47476 (100.0%)
+      Year 2022: 46841/46841 (100.0%)
+      Year 2023: 47274/47274 (100.0%)
+      Year 2024: 46752/46752 (100.0%)
+      Year 2025: 47497/47497 (100.0%)
+    odds_change_rate: mean=-0.251, std=0.993
+    odds_sharp_drop: 136042 (25.8%)
+  Computing weight trends (expanding window)...
+    10000/58921 horses processed...
+    20000/58921 horses processed...
+    30000/58921 horses processed...
+    40000/58921 horses processed...
+    50000/58921 horses processed...
+    weight_ma5:       468359/527280 (88.8%) non-default
+    weight_trend:     413952/527280 (78.5%) non-zero
+    weight_peak_diff: 281012/527280 (53.3%) non-zero
+
+[v14.1] Merging PACI Tier A features...
+    PACI Tier A: 518665/527280 matched (98.4%)
+  Data: 527280 rows, 131 features
+
+  Training data coverage:
+    time_1f_last_filled: nonzero=519003/527280 (98.4%)
+    training_intensity_enc: nonzero=175641/527280 (33.3%)
+    wood_best_4f_filled: nonzero=527280/527280 (100.0%)
+    has_wood_training: nonzero=95370/527280 (18.1%)
+    stable_comment_score: nonzero=29129/527280 (5.5%)
+
+======================================================================
+  TASK 1: v14.2 Retrain (expanded data)
+======================================================================
+
+============================================================
+  4-Model WF 2021: train=291440, test=47476
+============================================================
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[490]	valid_0's auc: 0.865179
+    FT-v142-2021 Epoch   1: loss=0.9073 val_AUC=0.8170 best=0.8170 lr=0.000999
+    FT-v142-2021 Epoch   2: loss=0.8044 val_AUC=0.8477 best=0.8477 lr=0.000996
+    FT-v142-2021 Epoch   3: loss=0.7640 val_AUC=0.8515 best=0.8515 lr=0.000991
+    FT-v142-2021 Epoch   4: loss=0.7570 val_AUC=0.8564 best=0.8564 lr=0.000984
+    FT-v142-2021 Epoch   5: loss=0.7456 val_AUC=0.8565 best=0.8565 lr=0.000976
+    FT-v142-2021 Epoch   6: loss=0.7448 val_AUC=0.8583 best=0.8583 lr=0.000965
+    FT-v142-2021 Epoch   7: loss=0.7404 val_AUC=0.8591 best=0.8591 lr=0.000952
+    FT-v142-2021 Epoch   8: loss=0.7381 val_AUC=0.8592 best=0.8592 lr=0.000938
+    FT-v142-2021 Epoch   9: loss=0.7372 val_AUC=0.8606 best=0.8606 lr=0.000922
+    FT-v142-2021 Epoch  10: loss=0.7325 val_AUC=0.8601 best=0.8606 lr=0.000905
+    FT-v142-2021 Epoch  11: loss=0.7325 val_AUC=0.8612 best=0.8612 lr=0.000885
+    FT-v142-2021 Epoch  13: loss=0.7289 val_AUC=0.8621 best=0.8621 lr=0.000842
+    FT-v142-2021 Epoch  14: loss=0.7285 val_AUC=0.8623 best=0.8623 lr=0.000819
+    FT-v142-2021 Epoch  15: loss=0.7272 val_AUC=0.8620 best=0.8623 lr=0.000794
+    FT-v142-2021 Epoch  17: loss=0.7244 val_AUC=0.8628 best=0.8628 lr=0.000741
+    FT-v142-2021 Epoch  18: loss=0.7235 val_AUC=0.8628 best=0.8628 lr=0.000713
+    FT-v142-2021 Epoch  20: loss=0.7198 val_AUC=0.8610 best=0.8628 lr=0.000655
+    FT-v142-2021 Epoch  22: loss=0.7189 val_AUC=0.8630 best=0.8630 lr=0.000594
+    FT-v142-2021 Epoch  24: loss=0.7162 val_AUC=0.8635 best=0.8635 lr=0.000531
+    FT-v142-2021 Epoch  25: loss=0.7175 val_AUC=0.8634 best=0.8635 lr=0.000500
+    FT-v142-2021 Epoch  28: loss=0.7146 val_AUC=0.8637 best=0.8637 lr=0.000406
+    FT-v142-2021 Epoch  30: loss=0.7128 val_AUC=0.8630 best=0.8637 lr=0.000345
+    FT-v142-2021 Epoch  35: loss=0.7077 val_AUC=0.8627 best=0.8637 lr=0.000206
+    FT-v142-2021 Early stop at epoch 38
+    IntraRace: train=13888 races, val=2255 races
+    IR Epoch   1: loss=1.4043 val_AUC=0.8703 best=0.8703
+    IR Epoch   2: loss=1.2629 val_AUC=0.8844 best=0.8844
+    IR Epoch   3: loss=1.2286 val_AUC=0.8895 best=0.8895
+    IR Epoch   5: loss=1.2020 val_AUC=0.8913 best=0.8913
+    IR Epoch   6: loss=1.1918 val_AUC=0.8930 best=0.8930
+    IR Epoch  10: loss=1.1619 val_AUC=0.8907 best=0.8930
+    IR Early stop at epoch 14
+  2021: LGB=0.8652 XGB=0.8666 FT=0.8637 IR=0.8738(90%) Grid=0.8845 gap=0.0424
+
+============================================================
+  4-Model WF 2022: train=338916, test=46841
+============================================================
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[420]	valid_0's auc: 0.866604
+    FT-v142-2022 Epoch   1: loss=0.8824 val_AUC=0.8339 best=0.8339 lr=0.000999
+    FT-v142-2022 Epoch   2: loss=0.7906 val_AUC=0.8513 best=0.8513 lr=0.000996
+    FT-v142-2022 Epoch   3: loss=0.7586 val_AUC=0.8565 best=0.8565 lr=0.000991
+    FT-v142-2022 Epoch   4: loss=0.7494 val_AUC=0.8585 best=0.8585 lr=0.000984
+    FT-v142-2022 Epoch   5: loss=0.7443 val_AUC=0.8606 best=0.8606 lr=0.000976
+    FT-v142-2022 Epoch   6: loss=0.7412 val_AUC=0.8611 best=0.8611 lr=0.000965
+    FT-v142-2022 Epoch   7: loss=0.7385 val_AUC=0.8616 best=0.8616 lr=0.000952
+    FT-v142-2022 Epoch   8: loss=0.7335 val_AUC=0.8621 best=0.8621 lr=0.000938
+    FT-v142-2022 Epoch   9: loss=0.7341 val_AUC=0.8630 best=0.8630 lr=0.000922
+    FT-v142-2022 Epoch  10: loss=0.7293 val_AUC=0.8627 best=0.8630 lr=0.000905
+    FT-v142-2022 Epoch  12: loss=0.7269 val_AUC=0.8636 best=0.8636 lr=0.000864
+    FT-v142-2022 Epoch  13: loss=0.7242 val_AUC=0.8638 best=0.8638 lr=0.000842
+    FT-v142-2022 Epoch  14: loss=0.7240 val_AUC=0.8646 best=0.8646 lr=0.000819
+    FT-v142-2022 Epoch  15: loss=0.7254 val_AUC=0.8649 best=0.8649 lr=0.000794
+    FT-v142-2022 Epoch  17: loss=0.7199 val_AUC=0.8652 best=0.8652 lr=0.000741
+    FT-v142-2022 Epoch  20: loss=0.7169 val_AUC=0.8644 best=0.8652 lr=0.000655
+    FT-v142-2022 Epoch  21: loss=0.7166 val_AUC=0.8655 best=0.8655 lr=0.000624
+    FT-v142-2022 Epoch  22: loss=0.7145 val_AUC=0.8655 best=0.8655 lr=0.000594
+    FT-v142-2022 Epoch  24: loss=0.7128 val_AUC=0.8656 best=0.8656 lr=0.000531
+    FT-v142-2022 Epoch  25: loss=0.7123 val_AUC=0.8656 best=0.8656 lr=0.000500
+    FT-v142-2022 Epoch  26: loss=0.7111 val_AUC=0.8658 best=0.8658 lr=0.000469
+    FT-v142-2022 Epoch  27: loss=0.7099 val_AUC=0.8662 best=0.8662 lr=0.000437
+    FT-v142-2022 Epoch  30: loss=0.7068 val_AUC=0.8656 best=0.8662 lr=0.000345
+    FT-v142-2022 Epoch  32: loss=0.7052 val_AUC=0.8662 best=0.8662 lr=0.000287
+    FT-v142-2022 Epoch  35: loss=0.7033 val_AUC=0.8660 best=0.8662 lr=0.000206
+    FT-v142-2022 Epoch  40: loss=0.6997 val_AUC=0.8649 best=0.8662 lr=0.000095
+    FT-v142-2022 Early stop at epoch 42
+    IntraRace: train=16143 races, val=2247 races
+    IR Epoch   1: loss=1.3897 val_AUC=0.8735 best=0.8735
+    IR Epoch   2: loss=1.2429 val_AUC=0.8819 best=0.8819
+    IR Epoch   3: loss=1.2153 val_AUC=0.8885 best=0.8885
+    IR Epoch   5: loss=1.1910 val_AUC=0.8909 best=0.8909
+    IR Epoch   6: loss=1.1817 val_AUC=0.8924 best=0.8924
+    IR Epoch  10: loss=1.1522 val_AUC=0.8910 best=0.8924
+    IR Early stop at epoch 14
+  2022: LGB=0.8666 XGB=0.8685 FT=0.8662 IR=0.8740(91%) Grid=0.8849 gap=0.0311
+
+============================================================
+  4-Model WF 2023: train=385757, test=47274
+============================================================
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[484]	valid_0's auc: 0.868236
+    FT-v142-2023 Epoch   1: loss=0.8806 val_AUC=0.8302 best=0.8302 lr=0.000999
+    FT-v142-2023 Epoch   2: loss=0.7833 val_AUC=0.8518 best=0.8518 lr=0.000996
+    FT-v142-2023 Epoch   3: loss=0.7618 val_AUC=0.8566 best=0.8566 lr=0.000991
+    FT-v142-2023 Epoch   4: loss=0.7493 val_AUC=0.8580 best=0.8580 lr=0.000984
+    FT-v142-2023 Epoch   5: loss=0.7445 val_AUC=0.8599 best=0.8599 lr=0.000976
+    FT-v142-2023 Epoch   6: loss=0.7387 val_AUC=0.8617 best=0.8617 lr=0.000965
+    FT-v142-2023 Epoch   8: loss=0.7388 val_AUC=0.8617 best=0.8617 lr=0.000938
+    FT-v142-2023 Epoch   9: loss=0.7328 val_AUC=0.8640 best=0.8640 lr=0.000922
+    FT-v142-2023 Epoch  10: loss=0.7305 val_AUC=0.8646 best=0.8646 lr=0.000905
+    FT-v142-2023 Epoch  12: loss=0.7261 val_AUC=0.8653 best=0.8653 lr=0.000864
+    FT-v142-2023 Epoch  13: loss=0.7256 val_AUC=0.8655 best=0.8655 lr=0.000842
+    FT-v142-2023 Epoch  14: loss=0.7244 val_AUC=0.8661 best=0.8661 lr=0.000819
+    FT-v142-2023 Epoch  15: loss=0.7209 val_AUC=0.8658 best=0.8661 lr=0.000794
+    FT-v142-2023 Epoch  18: loss=0.7196 val_AUC=0.8665 best=0.8665 lr=0.000713
+    FT-v142-2023 Epoch  19: loss=0.7170 val_AUC=0.8670 best=0.8670 lr=0.000684
+    FT-v142-2023 Epoch  20: loss=0.7169 val_AUC=0.8666 best=0.8670 lr=0.000655
+    FT-v142-2023 Epoch  23: loss=0.7125 val_AUC=0.8671 best=0.8671 lr=0.000563
+    FT-v142-2023 Epoch  24: loss=0.7129 val_AUC=0.8673 best=0.8673 lr=0.000531
+    FT-v142-2023 Epoch  25: loss=0.7113 val_AUC=0.8668 best=0.8673 lr=0.000500
+    FT-v142-2023 Epoch  27: loss=0.7096 val_AUC=0.8680 best=0.8680 lr=0.000437
+    FT-v142-2023 Epoch  30: loss=0.7088 val_AUC=0.8675 best=0.8680 lr=0.000345
+    FT-v142-2023 Epoch  35: loss=0.7023 val_AUC=0.8670 best=0.8680 lr=0.000206
+    FT-v142-2023 Early stop at epoch 37
+    IntraRace: train=18390 races, val=2286 races
+    IR Epoch   1: loss=1.3677 val_AUC=0.8803 best=0.8803
+    IR Epoch   2: loss=1.2284 val_AUC=0.8899 best=0.8899
+    IR Epoch   3: loss=1.2068 val_AUC=0.8929 best=0.8929
+    IR Epoch   4: loss=1.1925 val_AUC=0.8939 best=0.8939
+    IR Epoch   5: loss=1.1840 val_AUC=0.8929 best=0.8939
+    IR Epoch   6: loss=1.1733 val_AUC=0.8940 best=0.8940
+    IR Epoch   9: loss=1.1554 val_AUC=0.8942 best=0.8942
+    IR Epoch  10: loss=1.1496 val_AUC=0.8934 best=0.8942
+    IR Epoch  15: loss=1.1156 val_AUC=0.8923 best=0.8942
+    IR Early stop at epoch 17
+  2023: LGB=0.8682 XGB=0.8694 FT=0.8680 IR=0.8756(91%) Grid=0.8867 gap=0.0308
+
+============================================================
+  4-Model WF 2024: train=433031, test=46752
+============================================================
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.869969
+    FT-v142-2024 Epoch   1: loss=0.8797 val_AUC=0.8426 best=0.8426 lr=0.000999
+    FT-v142-2024 Epoch   2: loss=0.7680 val_AUC=0.8572 best=0.8572 lr=0.000996
+    FT-v142-2024 Epoch   3: loss=0.7478 val_AUC=0.8598 best=0.8598 lr=0.000991
+    FT-v142-2024 Epoch   4: loss=0.7413 val_AUC=0.8626 best=0.8626 lr=0.000984
+    FT-v142-2024 Epoch   5: loss=0.7362 val_AUC=0.8636 best=0.8636 lr=0.000976
+    FT-v142-2024 Epoch   6: loss=0.7334 val_AUC=0.8652 best=0.8652 lr=0.000965
+    FT-v142-2024 Epoch   7: loss=0.7301 val_AUC=0.8656 best=0.8656 lr=0.000952
+    FT-v142-2024 Epoch   8: loss=0.7287 val_AUC=0.8659 best=0.8659 lr=0.000938
+    FT-v142-2024 Epoch   9: loss=0.7264 val_AUC=0.8664 best=0.8664 lr=0.000922
+    FT-v142-2024 Epoch  10: loss=0.7246 val_AUC=0.8669 best=0.8669 lr=0.000905
+    FT-v142-2024 Epoch  11: loss=0.7220 val_AUC=0.8676 best=0.8676 lr=0.000885
+    FT-v142-2024 Epoch  14: loss=0.7190 val_AUC=0.8680 best=0.8680 lr=0.000819
+    FT-v142-2024 Epoch  15: loss=0.7179 val_AUC=0.8677 best=0.8680 lr=0.000794
+    FT-v142-2024 Epoch  16: loss=0.7166 val_AUC=0.8693 best=0.8693 lr=0.000768
+    FT-v142-2024 Epoch  20: loss=0.7110 val_AUC=0.8690 best=0.8693 lr=0.000655
+    FT-v142-2024 Epoch  25: loss=0.7074 val_AUC=0.8694 best=0.8694 lr=0.000500
+    FT-v142-2024 Epoch  30: loss=0.7024 val_AUC=0.8687 best=0.8694 lr=0.000345
+    FT-v142-2024 Epoch  35: loss=0.6981 val_AUC=0.8689 best=0.8694 lr=0.000206
+    FT-v142-2024 Early stop at epoch 35
+    IntraRace: train=20676 races, val=2312 races
+    IR Epoch   1: loss=1.3528 val_AUC=0.8854 best=0.8854
+    IR Epoch   2: loss=1.2208 val_AUC=0.8915 best=0.8915
+    IR Epoch   3: loss=1.2007 val_AUC=0.8940 best=0.8940
+    IR Epoch   4: loss=1.1847 val_AUC=0.8950 best=0.8950
+    IR Epoch   5: loss=1.1777 val_AUC=0.8967 best=0.8967
+    IR Epoch   7: loss=1.1640 val_AUC=0.8970 best=0.8970
+    IR Epoch  10: loss=1.1442 val_AUC=0.8965 best=0.8970
+    IR Epoch  15: loss=1.1097 val_AUC=0.8952 best=0.8970
+    IR Early stop at epoch 15
+  2024: LGB=0.8700 XGB=0.8714 FT=0.8694 IR=0.8795(91%) Grid=0.8888 gap=0.0264
+
+============================================================
+  4-Model WF 2025: train=479783, test=47497
+============================================================
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[666]	valid_0's auc: 0.868691
+    FT-v142-2025 Epoch   1: loss=0.8818 val_AUC=0.8410 best=0.8410 lr=0.000999
+    FT-v142-2025 Epoch   2: loss=0.7635 val_AUC=0.8546 best=0.8546 lr=0.000996
+    FT-v142-2025 Epoch   3: loss=0.7455 val_AUC=0.8580 best=0.8580 lr=0.000991
+    FT-v142-2025 Epoch   4: loss=0.7415 val_AUC=0.8616 best=0.8616 lr=0.000984
+    FT-v142-2025 Epoch   5: loss=0.7363 val_AUC=0.8614 best=0.8616 lr=0.000976
+    FT-v142-2025 Epoch   6: loss=0.7303 val_AUC=0.8622 best=0.8622 lr=0.000965
+    FT-v142-2025 Epoch   7: loss=0.7280 val_AUC=0.8643 best=0.8643 lr=0.000952
+    FT-v142-2025 Epoch   8: loss=0.7268 val_AUC=0.8645 best=0.8645 lr=0.000938
+    FT-v142-2025 Epoch   9: loss=0.7253 val_AUC=0.8654 best=0.8654 lr=0.000922
+    FT-v142-2025 Epoch  10: loss=0.7215 val_AUC=0.8654 best=0.8654 lr=0.000905
+    FT-v142-2025 Epoch  11: loss=0.7205 val_AUC=0.8657 best=0.8657 lr=0.000885
+    FT-v142-2025 Epoch  12: loss=0.7184 val_AUC=0.8661 best=0.8661 lr=0.000864
+    FT-v142-2025 Epoch  13: loss=0.7185 val_AUC=0.8665 best=0.8665 lr=0.000842
+    FT-v142-2025 Epoch  15: loss=0.7162 val_AUC=0.8665 best=0.8665 lr=0.000794
+    FT-v142-2025 Epoch  16: loss=0.7141 val_AUC=0.8669 best=0.8669 lr=0.000768
+    FT-v142-2025 Epoch  18: loss=0.7127 val_AUC=0.8676 best=0.8676 lr=0.000713
+    FT-v142-2025 Epoch  20: loss=0.7102 val_AUC=0.8672 best=0.8676 lr=0.000655
+    FT-v142-2025 Epoch  21: loss=0.7094 val_AUC=0.8679 best=0.8679 lr=0.000624
+    FT-v142-2025 Epoch  22: loss=0.7085 val_AUC=0.8682 best=0.8682 lr=0.000594
+    FT-v142-2025 Epoch  23: loss=0.7072 val_AUC=0.8686 best=0.8686 lr=0.000563
+    FT-v142-2025 Epoch  25: loss=0.7064 val_AUC=0.8684 best=0.8686 lr=0.000500
+    FT-v142-2025 Epoch  28: loss=0.7041 val_AUC=0.8691 best=0.8691 lr=0.000406
+    FT-v142-2025 Epoch  30: loss=0.7017 val_AUC=0.8685 best=0.8691 lr=0.000345
+    FT-v142-2025 Epoch  34: loss=0.6989 val_AUC=0.8692 best=0.8692 lr=0.000232
+    FT-v142-2025 Epoch  35: loss=0.6975 val_AUC=0.8682 best=0.8692 lr=0.000206
+    FT-v142-2025 Epoch  40: loss=0.6957 val_AUC=0.8685 best=0.8692 lr=0.000095
+    FT-v142-2025 Early stop at epoch 44
+    IntraRace: train=22988 races, val=2314 races
+    IR Epoch   1: loss=1.3409 val_AUC=0.8817 best=0.8817
+    IR Epoch   2: loss=1.2154 val_AUC=0.8909 best=0.8909
+    IR Epoch   3: loss=1.1937 val_AUC=0.8910 best=0.8910
+    IR Epoch   4: loss=1.1807 val_AUC=0.8940 best=0.8940
+    IR Epoch   5: loss=1.1715 val_AUC=0.8942 best=0.8942
+    IR Epoch   6: loss=1.1647 val_AUC=0.8952 best=0.8952
+    IR Epoch   8: loss=1.1532 val_AUC=0.8958 best=0.8958
+    IR Epoch  10: loss=1.1408 val_AUC=0.8961 best=0.8961
+    IR Epoch  15: loss=1.1119 val_AUC=0.8937 best=0.8961
+    IR Early stop at epoch 18
+  2025: LGB=0.8687 XGB=0.8701 FT=0.8692 IR=0.8783(91%) Grid=0.8874 gap=0.0353
+
+  TASK 1 Summary:
+    v14.1 baseline: 0.885600
+    v14.2 Grid Mean: 0.886445 (+0.000845)
+    Overfit check: PASS
+    Verdict: ADOPTED
+
+======================================================================
+  TASK 4: CatBoost 5th Model
+======================================================================
+  Base AUC to beat: 0.886445
+
+  5-Model WF 2021: train=291440, test=47476
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[490]	valid_0's auc: 0.865179
+    FT-CB-2021 Epoch   1: loss=0.9078 val_AUC=0.8303 best=0.8303 lr=0.000999
+    FT-CB-2021 Epoch   2: loss=0.7900 val_AUC=0.8476 best=0.8476 lr=0.000996
+    FT-CB-2021 Epoch   3: loss=0.7627 val_AUC=0.8534 best=0.8534 lr=0.000991
+    FT-CB-2021 Epoch   4: loss=0.7532 val_AUC=0.8551 best=0.8551 lr=0.000984
+    FT-CB-2021 Epoch   5: loss=0.7463 val_AUC=0.8570 best=0.8570 lr=0.000976
+    FT-CB-2021 Epoch   6: loss=0.7426 val_AUC=0.8574 best=0.8574 lr=0.000965
+    FT-CB-2021 Epoch   7: loss=0.7400 val_AUC=0.8590 best=0.8590 lr=0.000952
+    FT-CB-2021 Epoch   9: loss=0.7362 val_AUC=0.8604 best=0.8604 lr=0.000922
+    FT-CB-2021 Epoch  10: loss=0.7310 val_AUC=0.8599 best=0.8604 lr=0.000905
+    FT-CB-2021 Epoch  12: loss=0.7316 val_AUC=0.8617 best=0.8617 lr=0.000864
+    FT-CB-2021 Epoch  13: loss=0.7283 val_AUC=0.8620 best=0.8620 lr=0.000842
+    FT-CB-2021 Epoch  15: loss=0.7263 val_AUC=0.8619 best=0.8620 lr=0.000794
+    FT-CB-2021 Epoch  16: loss=0.7245 val_AUC=0.8630 best=0.8630 lr=0.000768
+    FT-CB-2021 Epoch  18: loss=0.7227 val_AUC=0.8637 best=0.8637 lr=0.000713
+    FT-CB-2021 Epoch  19: loss=0.7201 val_AUC=0.8639 best=0.8639 lr=0.000684
+    FT-CB-2021 Epoch  20: loss=0.7200 val_AUC=0.8633 best=0.8639 lr=0.000655
+    FT-CB-2021 Epoch  23: loss=0.7164 val_AUC=0.8640 best=0.8640 lr=0.000563
+    FT-CB-2021 Epoch  25: loss=0.7143 val_AUC=0.8637 best=0.8640 lr=0.000500
+    FT-CB-2021 Epoch  30: loss=0.7110 val_AUC=0.8633 best=0.8640 lr=0.000345
+    FT-CB-2021 Early stop at epoch 33
+    IntraRace: train=13888 races, val=2255 races
+    IR Epoch   1: loss=1.4080 val_AUC=0.8718 best=0.8718
+    IR Epoch   2: loss=1.2627 val_AUC=0.8852 best=0.8852
+    IR Epoch   3: loss=1.2306 val_AUC=0.8899 best=0.8899
+    IR Epoch   4: loss=1.2129 val_AUC=0.8913 best=0.8913
+    IR Epoch   5: loss=1.2023 val_AUC=0.8913 best=0.8913
+    IR Epoch   6: loss=1.1916 val_AUC=0.8929 best=0.8929
+    IR Epoch  10: loss=1.1619 val_AUC=0.8915 best=0.8929
+    IR Early stop at epoch 14
+  2021: LGB=0.8652 XGB=0.8666 CB=0.8654 FT=0.8640 IR=0.8731 4m=0.8853 5m=0.8845 gap=0.0424
+
+  5-Model WF 2022: train=338916, test=46841
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[420]	valid_0's auc: 0.866604
+    FT-CB-2022 Epoch   1: loss=0.9025 val_AUC=0.8207 best=0.8207 lr=0.000999
+    FT-CB-2022 Epoch   2: loss=0.7882 val_AUC=0.8490 best=0.8490 lr=0.000996
+    FT-CB-2022 Epoch   3: loss=0.7630 val_AUC=0.8525 best=0.8525 lr=0.000991
+    FT-CB-2022 Epoch   4: loss=0.7540 val_AUC=0.8542 best=0.8542 lr=0.000984
+    FT-CB-2022 Epoch   5: loss=0.7455 val_AUC=0.8582 best=0.8582 lr=0.000976
+    FT-CB-2022 Epoch   6: loss=0.7432 val_AUC=0.8587 best=0.8587 lr=0.000965
+    FT-CB-2022 Epoch   7: loss=0.7384 val_AUC=0.8588 best=0.8588 lr=0.000952
+    FT-CB-2022 Epoch   8: loss=0.7357 val_AUC=0.8596 best=0.8596 lr=0.000938
+    FT-CB-2022 Epoch  10: loss=0.7321 val_AUC=0.8609 best=0.8609 lr=0.000905
+    FT-CB-2022 Epoch  11: loss=0.7304 val_AUC=0.8614 best=0.8614 lr=0.000885
+    FT-CB-2022 Epoch  12: loss=0.7298 val_AUC=0.8623 best=0.8623 lr=0.000864
+    FT-CB-2022 Epoch  13: loss=0.7280 val_AUC=0.8625 best=0.8625 lr=0.000842
+    FT-CB-2022 Epoch  15: loss=0.7236 val_AUC=0.8631 best=0.8631 lr=0.000794
+    FT-CB-2022 Epoch  17: loss=0.7206 val_AUC=0.8633 best=0.8633 lr=0.000741
+    FT-CB-2022 Epoch  19: loss=0.7184 val_AUC=0.8637 best=0.8637 lr=0.000684
+    FT-CB-2022 Epoch  20: loss=0.7181 val_AUC=0.8643 best=0.8643 lr=0.000655
+    FT-CB-2022 Epoch  25: loss=0.7138 val_AUC=0.8640 best=0.8643 lr=0.000500
+    FT-CB-2022 Epoch  30: loss=0.7096 val_AUC=0.8637 best=0.8643 lr=0.000345
+    FT-CB-2022 Early stop at epoch 30
+    IntraRace: train=16143 races, val=2247 races
+    IR Epoch   1: loss=1.3761 val_AUC=0.8740 best=0.8740
+    IR Epoch   2: loss=1.2433 val_AUC=0.8813 best=0.8813
+    IR Epoch   3: loss=1.2159 val_AUC=0.8883 best=0.8883
+    IR Epoch   4: loss=1.2020 val_AUC=0.8903 best=0.8903
+    IR Epoch   5: loss=1.1915 val_AUC=0.8914 best=0.8914
+    IR Epoch   7: loss=1.1762 val_AUC=0.8914 best=0.8914
+    IR Epoch  10: loss=1.1559 val_AUC=0.8904 best=0.8914
+    IR Epoch  15: loss=1.1193 val_AUC=0.8898 best=0.8914
+    IR Early stop at epoch 15
+  2022: LGB=0.8666 XGB=0.8685 CB=0.8669 FT=0.8643 IR=0.8737 4m=0.8862 5m=0.8855 gap=0.0311
+
+  5-Model WF 2023: train=385757, test=47274
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[484]	valid_0's auc: 0.868236
+    FT-CB-2023 Epoch   1: loss=0.8817 val_AUC=0.8296 best=0.8296 lr=0.000999
+    FT-CB-2023 Epoch   2: loss=0.7879 val_AUC=0.8501 best=0.8501 lr=0.000996
+    FT-CB-2023 Epoch   3: loss=0.7625 val_AUC=0.8561 best=0.8561 lr=0.000991
+    FT-CB-2023 Epoch   4: loss=0.7472 val_AUC=0.8595 best=0.8595 lr=0.000984
+    FT-CB-2023 Epoch   5: loss=0.7401 val_AUC=0.8606 best=0.8606 lr=0.000976
+    FT-CB-2023 Epoch   6: loss=0.7364 val_AUC=0.8629 best=0.8629 lr=0.000965
+    FT-CB-2023 Epoch   7: loss=0.7354 val_AUC=0.8639 best=0.8639 lr=0.000952
+    FT-CB-2023 Epoch   8: loss=0.7318 val_AUC=0.8644 best=0.8644 lr=0.000938
+    FT-CB-2023 Epoch   9: loss=0.7296 val_AUC=0.8647 best=0.8647 lr=0.000922
+    FT-CB-2023 Epoch  10: loss=0.7277 val_AUC=0.8648 best=0.8648 lr=0.000905
+    FT-CB-2023 Epoch  11: loss=0.7259 val_AUC=0.8653 best=0.8653 lr=0.000885
+    FT-CB-2023 Epoch  13: loss=0.7220 val_AUC=0.8655 best=0.8655 lr=0.000842
+    FT-CB-2023 Epoch  14: loss=0.7213 val_AUC=0.8664 best=0.8664 lr=0.000819
+    FT-CB-2023 Epoch  15: loss=0.7199 val_AUC=0.8658 best=0.8664 lr=0.000794
+    FT-CB-2023 Epoch  17: loss=0.7180 val_AUC=0.8664 best=0.8664 lr=0.000741
+    FT-CB-2023 Epoch  19: loss=0.7160 val_AUC=0.8671 best=0.8671 lr=0.000684
+    FT-CB-2023 Epoch  20: loss=0.7154 val_AUC=0.8663 best=0.8671 lr=0.000655
+    FT-CB-2023 Epoch  25: loss=0.7107 val_AUC=0.8670 best=0.8671 lr=0.000500
+    FT-CB-2023 Epoch  26: loss=0.7103 val_AUC=0.8673 best=0.8673 lr=0.000469
+    FT-CB-2023 Epoch  30: loss=0.7073 val_AUC=0.8668 best=0.8673 lr=0.000345
+    FT-CB-2023 Epoch  35: loss=0.7033 val_AUC=0.8669 best=0.8673 lr=0.000206
+    FT-CB-2023 Early stop at epoch 36
+    IntraRace: train=18390 races, val=2286 races
+    IR Epoch   1: loss=1.3716 val_AUC=0.8804 best=0.8804
+    IR Epoch   2: loss=1.2321 val_AUC=0.8903 best=0.8903
+    IR Epoch   3: loss=1.2071 val_AUC=0.8921 best=0.8921
+    IR Epoch   4: loss=1.1926 val_AUC=0.8939 best=0.8939
+    IR Epoch   5: loss=1.1827 val_AUC=0.8936 best=0.8939
+    IR Epoch   6: loss=1.1744 val_AUC=0.8941 best=0.8941
+    IR Epoch   7: loss=1.1672 val_AUC=0.8944 best=0.8944
+    IR Epoch   8: loss=1.1612 val_AUC=0.8954 best=0.8954
+    IR Epoch  10: loss=1.1482 val_AUC=0.8934 best=0.8954
+    IR Epoch  15: loss=1.1150 val_AUC=0.8914 best=0.8954
+    IR Early stop at epoch 16
+  2023: LGB=0.8682 XGB=0.8694 CB=0.8683 FT=0.8673 IR=0.8768 4m=0.8868 5m=0.8860 gap=0.0308
+
+  5-Model WF 2024: train=433031, test=46752
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.869969
+    FT-CB-2024 Epoch   1: loss=0.8472 val_AUC=0.8489 best=0.8489 lr=0.000999
+    FT-CB-2024 Epoch   2: loss=0.7653 val_AUC=0.8563 best=0.8563 lr=0.000996
+    FT-CB-2024 Epoch   3: loss=0.7481 val_AUC=0.8608 best=0.8608 lr=0.000991
+    FT-CB-2024 Epoch   4: loss=0.7421 val_AUC=0.8621 best=0.8621 lr=0.000984
+    FT-CB-2024 Epoch   5: loss=0.7377 val_AUC=0.8638 best=0.8638 lr=0.000976
+    FT-CB-2024 Epoch   6: loss=0.7342 val_AUC=0.8652 best=0.8652 lr=0.000965
+    FT-CB-2024 Epoch   7: loss=0.7305 val_AUC=0.8653 best=0.8653 lr=0.000952
+    FT-CB-2024 Epoch   8: loss=0.7282 val_AUC=0.8659 best=0.8659 lr=0.000938
+    FT-CB-2024 Epoch   9: loss=0.7272 val_AUC=0.8671 best=0.8671 lr=0.000922
+    FT-CB-2024 Epoch  10: loss=0.7261 val_AUC=0.8667 best=0.8671 lr=0.000905
+    FT-CB-2024 Epoch  13: loss=0.7219 val_AUC=0.8677 best=0.8677 lr=0.000842
+    FT-CB-2024 Epoch  14: loss=0.7188 val_AUC=0.8681 best=0.8681 lr=0.000819
+    FT-CB-2024 Epoch  15: loss=0.7189 val_AUC=0.8682 best=0.8682 lr=0.000794
+    FT-CB-2024 Epoch  17: loss=0.7172 val_AUC=0.8686 best=0.8686 lr=0.000741
+    FT-CB-2024 Epoch  19: loss=0.7140 val_AUC=0.8695 best=0.8695 lr=0.000684
+    FT-CB-2024 Epoch  20: loss=0.7132 val_AUC=0.8690 best=0.8695 lr=0.000655
+    FT-CB-2024 Epoch  25: loss=0.7091 val_AUC=0.8694 best=0.8695 lr=0.000500
+    FT-CB-2024 Epoch  27: loss=0.7075 val_AUC=0.8699 best=0.8699 lr=0.000437
+    FT-CB-2024 Epoch  28: loss=0.7064 val_AUC=0.8700 best=0.8700 lr=0.000406
+    FT-CB-2024 Epoch  30: loss=0.7043 val_AUC=0.8694 best=0.8700 lr=0.000345
+    FT-CB-2024 Epoch  35: loss=0.7004 val_AUC=0.8698 best=0.8700 lr=0.000206
+    FT-CB-2024 Early stop at epoch 38
+    IntraRace: train=20676 races, val=2312 races
+    IR Epoch   1: loss=1.3414 val_AUC=0.8855 best=0.8855
+    IR Epoch   2: loss=1.2221 val_AUC=0.8923 best=0.8923
+    IR Epoch   3: loss=1.1992 val_AUC=0.8934 best=0.8934
+    IR Epoch   4: loss=1.1832 val_AUC=0.8937 best=0.8937
+    IR Epoch   5: loss=1.1743 val_AUC=0.8967 best=0.8967
+    IR Epoch  10: loss=1.1417 val_AUC=0.8958 best=0.8967
+    IR Early stop at epoch 13
+  2024: LGB=0.8700 XGB=0.8714 CB=0.8705 FT=0.8700 IR=0.8781 4m=0.8877 5m=0.8870 gap=0.0264
+
+  5-Model WF 2025: train=479783, test=47497
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[666]	valid_0's auc: 0.868691
+    FT-CB-2025 Epoch   1: loss=0.8645 val_AUC=0.8411 best=0.8411 lr=0.000999
+    FT-CB-2025 Epoch   2: loss=0.7650 val_AUC=0.8562 best=0.8562 lr=0.000996
+    FT-CB-2025 Epoch   3: loss=0.7442 val_AUC=0.8588 best=0.8588 lr=0.000991
+    FT-CB-2025 Epoch   4: loss=0.7377 val_AUC=0.8601 best=0.8601 lr=0.000984
+    FT-CB-2025 Epoch   5: loss=0.7333 val_AUC=0.8621 best=0.8621 lr=0.000976
+    FT-CB-2025 Epoch   6: loss=0.7313 val_AUC=0.8633 best=0.8633 lr=0.000965
+    FT-CB-2025 Epoch   7: loss=0.7276 val_AUC=0.8642 best=0.8642 lr=0.000952
+    FT-CB-2025 Epoch   8: loss=0.7250 val_AUC=0.8651 best=0.8651 lr=0.000938
+    FT-CB-2025 Epoch   9: loss=0.7244 val_AUC=0.8660 best=0.8660 lr=0.000922
+    FT-CB-2025 Epoch  10: loss=0.7202 val_AUC=0.8655 best=0.8660 lr=0.000905
+    FT-CB-2025 Epoch  11: loss=0.7188 val_AUC=0.8664 best=0.8664 lr=0.000885
+    FT-CB-2025 Epoch  12: loss=0.7189 val_AUC=0.8669 best=0.8669 lr=0.000864
+    FT-CB-2025 Epoch  13: loss=0.7156 val_AUC=0.8673 best=0.8673 lr=0.000842
+    FT-CB-2025 Epoch  15: loss=0.7140 val_AUC=0.8677 best=0.8677 lr=0.000794
+    FT-CB-2025 Epoch  16: loss=0.7136 val_AUC=0.8681 best=0.8681 lr=0.000768
+    FT-CB-2025 Epoch  18: loss=0.7122 val_AUC=0.8687 best=0.8687 lr=0.000713
+    FT-CB-2025 Epoch  20: loss=0.7093 val_AUC=0.8689 best=0.8689 lr=0.000655
+    FT-CB-2025 Epoch  23: loss=0.7063 val_AUC=0.8690 best=0.8690 lr=0.000563
+    FT-CB-2025 Epoch  25: loss=0.7049 val_AUC=0.8683 best=0.8690 lr=0.000500
+    FT-CB-2025 Epoch  30: loss=0.7022 val_AUC=0.8685 best=0.8690 lr=0.000345
+    FT-CB-2025 Early stop at epoch 33
+    IntraRace: train=22988 races, val=2314 races
+    IR Epoch   1: loss=1.3343 val_AUC=0.8851 best=0.8851
+    IR Epoch   2: loss=1.2152 val_AUC=0.8894 best=0.8894
+    IR Epoch   3: loss=1.1931 val_AUC=0.8928 best=0.8928
+    IR Epoch   4: loss=1.1799 val_AUC=0.8941 best=0.8941
+    IR Epoch   5: loss=1.1708 val_AUC=0.8953 best=0.8953
+    IR Epoch   7: loss=1.1581 val_AUC=0.8956 best=0.8956
+    IR Epoch   8: loss=1.1506 val_AUC=0.8964 best=0.8964
+    IR Epoch  10: loss=1.1416 val_AUC=0.8958 best=0.8964
+    IR Epoch  15: loss=1.1102 val_AUC=0.8930 best=0.8964
+    IR Early stop at epoch 16
+  2025: LGB=0.8687 XGB=0.8701 CB=0.8676 FT=0.8690 IR=0.8785 4m=0.8888 5m=0.8880 gap=0.0353
+
+  TASK 4 Summary:
+    4-model mean: 0.886981
+    5-model mean: 0.886202 (-0.000779 vs 4m)
+    Base AUC:     0.886445
+    Overfit:      PASS
+    Verdict:      NOT ADOPTED
+
+======================================================================
+  TASK 5: Optuna Hyperparameter Tuning
+======================================================================
+
+  [LGB] Running 100 trials...
+  0%|          | 0/100 [00:00<?, ?it/s]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[514]	valid_0's auc: 0.865292
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[743]	valid_0's auc: 0.867424
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[653]	valid_0's auc: 0.868724
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[651]	valid_0's auc: 0.870536
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[686]	valid_0's auc: 0.869263
+Best trial: 0. Best value: 0.868248:   0%|          | 0/100 [01:01<?, ?it/s]Best trial: 0. Best value: 0.868248:   1%|1         | 1/100 [01:01<1:41:09, 61.31s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[166]	valid_0's auc: 0.863376
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[223]	valid_0's auc: 0.865359
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[238]	valid_0's auc: 0.867101
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[276]	valid_0's auc: 0.868989
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[218]	valid_0's auc: 0.866974
+Best trial: 0. Best value: 0.868248:   1%|1         | 1/100 [01:31<1:41:09, 61.31s/it]Best trial: 0. Best value: 0.868248:   2%|2         | 2/100 [01:31<1:10:42, 43.30s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[301]	valid_0's auc: 0.864737
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[314]	valid_0's auc: 0.866518
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[429]	valid_0's auc: 0.86831
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[314]	valid_0's auc: 0.869612
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[398]	valid_0's auc: 0.868755
+Best trial: 0. Best value: 0.868248:   2%|2         | 2/100 [02:17<1:10:42, 43.30s/it]Best trial: 0. Best value: 0.868248:   3%|3         | 3/100 [02:17<1:11:52, 44.46s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[284]	valid_0's auc: 0.865053
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[491]	valid_0's auc: 0.867326
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[533]	valid_0's auc: 0.868227
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[545]	valid_0's auc: 0.870627
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[569]	valid_0's auc: 0.869255
+Best trial: 0. Best value: 0.868248:   3%|3         | 3/100 [02:54<1:11:52, 44.46s/it]Best trial: 0. Best value: 0.868248:   4%|4         | 4/100 [02:54<1:06:18, 41.45s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[296]	valid_0's auc: 0.864853
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[345]	valid_0's auc: 0.867548
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[451]	valid_0's auc: 0.868154
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[400]	valid_0's auc: 0.870576
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[455]	valid_0's auc: 0.868823
+Best trial: 0. Best value: 0.868248:   4%|4         | 4/100 [03:46<1:06:18, 41.45s/it]Best trial: 0. Best value: 0.868248:   5%|5         | 5/100 [03:46<1:11:34, 45.20s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[887]	valid_0's auc: 0.865264
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.867294
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868465
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869953
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.86859
+Best trial: 0. Best value: 0.868248:   5%|5         | 5/100 [05:00<1:11:34, 45.20s/it]Best trial: 0. Best value: 0.868248:   6%|6         | 6/100 [05:00<1:26:06, 54.97s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865063
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867522
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[993]	valid_0's auc: 0.868527
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.870114
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868461
+Best trial: 0. Best value: 0.868248:   6%|6         | 6/100 [06:20<1:26:06, 54.97s/it]Best trial: 0. Best value: 0.868248:   7%|7         | 7/100 [06:20<1:37:47, 63.09s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[186]	valid_0's auc: 0.864454
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[195]	valid_0's auc: 0.866467
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[238]	valid_0's auc: 0.867987
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[208]	valid_0's auc: 0.869328
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[283]	valid_0's auc: 0.869118
+Best trial: 0. Best value: 0.868248:   7%|7         | 7/100 [06:56<1:37:47, 63.09s/it]Best trial: 0. Best value: 0.868248:   8%|8         | 8/100 [06:56<1:23:32, 54.49s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[716]	valid_0's auc: 0.865334
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[622]	valid_0's auc: 0.867091
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[737]	valid_0's auc: 0.868526
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[555]	valid_0's auc: 0.870166
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[824]	valid_0's auc: 0.869219
+Best trial: 0. Best value: 0.868248:   8%|8         | 8/100 [07:59<1:23:32, 54.49s/it]Best trial: 0. Best value: 0.868248:   9%|9         | 9/100 [07:59<1:26:58, 57.34s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[197]	valid_0's auc: 0.86434
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[226]	valid_0's auc: 0.866259
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[272]	valid_0's auc: 0.867879
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[307]	valid_0's auc: 0.869738
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[361]	valid_0's auc: 0.868032
+Best trial: 0. Best value: 0.868248:   9%|9         | 9/100 [08:33<1:26:58, 57.34s/it]Best trial: 0. Best value: 0.868248:  10%|#         | 10/100 [08:33<1:14:48, 49.87s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.864956
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866248
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867543
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869165
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867414
+Best trial: 0. Best value: 0.868248:  10%|#         | 10/100 [10:03<1:14:48, 49.87s/it]Best trial: 0. Best value: 0.868248:  11%|#1        | 11/100 [10:03<1:32:10, 62.14s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[486]	valid_0's auc: 0.865306
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[645]	valid_0's auc: 0.867658
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[623]	valid_0's auc: 0.86872
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[860]	valid_0's auc: 0.871058
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[767]	valid_0's auc: 0.869646
+Best trial: 11. Best value: 0.868478:  11%|#1        | 11/100 [10:57<1:32:10, 62.14s/it]Best trial: 11. Best value: 0.868478:  12%|#2        | 12/100 [10:57<1:27:38, 59.75s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[421]	valid_0's auc: 0.86537
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[410]	valid_0's auc: 0.86645
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[434]	valid_0's auc: 0.86862
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[442]	valid_0's auc: 0.869903
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[440]	valid_0's auc: 0.868874
+Best trial: 11. Best value: 0.868478:  12%|#2        | 12/100 [11:49<1:27:38, 59.75s/it]Best trial: 11. Best value: 0.868478:  13%|#3        | 13/100 [11:49<1:23:17, 57.44s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.865583
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.867357
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.868799
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.870437
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.868634
+Best trial: 11. Best value: 0.868478:  13%|#3        | 13/100 [13:24<1:23:17, 57.44s/it]Best trial: 11. Best value: 0.868478:  14%|#4        | 14/100 [13:24<1:38:29, 68.71s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[433]	valid_0's auc: 0.865065
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[532]	valid_0's auc: 0.867176
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[669]	valid_0's auc: 0.868698
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[546]	valid_0's auc: 0.870034
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[634]	valid_0's auc: 0.868926
+Best trial: 11. Best value: 0.868478:  14%|#4        | 14/100 [14:19<1:38:29, 68.71s/it]Best trial: 11. Best value: 0.868478:  15%|#5        | 15/100 [14:19<1:31:44, 64.76s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[875]	valid_0's auc: 0.865679
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867979
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[767]	valid_0's auc: 0.868853
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[957]	valid_0's auc: 0.870986
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[897]	valid_0's auc: 0.869354
+Best trial: 15. Best value: 0.86857:  15%|#5        | 15/100 [15:46<1:31:44, 64.76s/it] Best trial: 15. Best value: 0.86857:  16%|#6        | 16/100 [15:46<1:39:44, 71.24s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[366]	valid_0's auc: 0.865214
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[522]	valid_0's auc: 0.867138
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[612]	valid_0's auc: 0.869202
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[586]	valid_0's auc: 0.871009
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[386]	valid_0's auc: 0.868936
+Best trial: 15. Best value: 0.86857:  16%|#6        | 16/100 [16:44<1:39:44, 71.24s/it]Best trial: 15. Best value: 0.86857:  17%|#7        | 17/100 [16:44<1:33:09, 67.35s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[994]	valid_0's auc: 0.865839
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867607
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869058
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870548
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868961
+Best trial: 15. Best value: 0.86857:  17%|#7        | 17/100 [18:20<1:33:09, 67.35s/it]Best trial: 15. Best value: 0.86857:  18%|#8        | 18/100 [18:20<1:44:00, 76.11s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.865904
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[825]	valid_0's auc: 0.867458
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[977]	valid_0's auc: 0.869277
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[988]	valid_0's auc: 0.870778
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869065
+Best trial: 15. Best value: 0.86857:  18%|#8        | 18/100 [19:38<1:44:00, 76.11s/it]Best trial: 15. Best value: 0.86857:  19%|#9        | 19/100 [19:38<1:43:24, 76.60s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865963
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867761
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.86897
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870775
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868845
+Best trial: 15. Best value: 0.86857:  19%|#9        | 19/100 [20:51<1:43:24, 76.60s/it]Best trial: 15. Best value: 0.86857:  20%|##        | 20/100 [20:51<1:40:30, 75.38s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.86584
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867461
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868372
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.870106
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.8686
+Best trial: 15. Best value: 0.86857:  20%|##        | 20/100 [22:41<1:40:30, 75.38s/it]Best trial: 15. Best value: 0.86857:  21%|##1       | 21/100 [22:41<1:53:03, 85.86s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[715]	valid_0's auc: 0.865879
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.867812
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869081
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870877
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[953]	valid_0's auc: 0.869367
+Best trial: 21. Best value: 0.868603:  21%|##1       | 21/100 [23:57<1:53:03, 85.86s/it]Best trial: 21. Best value: 0.868603:  22%|##2       | 22/100 [23:57<1:47:50, 82.96s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[798]	valid_0's auc: 0.865842
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[762]	valid_0's auc: 0.867567
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.869508
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[867]	valid_0's auc: 0.870832
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.869406
+Best trial: 22. Best value: 0.868631:  22%|##2       | 22/100 [25:13<1:47:50, 82.96s/it]Best trial: 22. Best value: 0.868631:  23%|##3       | 23/100 [25:13<1:43:37, 80.74s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[968]	valid_0's auc: 0.865728
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867778
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[978]	valid_0's auc: 0.868956
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[993]	valid_0's auc: 0.870555
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.869167
+Best trial: 22. Best value: 0.868631:  23%|##3       | 23/100 [26:41<1:43:37, 80.74s/it]Best trial: 22. Best value: 0.868631:  24%|##4       | 24/100 [26:41<1:45:01, 82.92s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[817]	valid_0's auc: 0.866095
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[748]	valid_0's auc: 0.86818
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869254
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[930]	valid_0's auc: 0.870984
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[994]	valid_0's auc: 0.869421
+Best trial: 24. Best value: 0.868787:  24%|##4       | 24/100 [27:51<1:45:01, 82.92s/it]Best trial: 24. Best value: 0.868787:  25%|##5       | 25/100 [27:51<1:39:00, 79.20s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[967]	valid_0's auc: 0.866098
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[732]	valid_0's auc: 0.86731
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.868931
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870593
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869387
+Best trial: 24. Best value: 0.868787:  25%|##5       | 25/100 [29:18<1:39:00, 79.20s/it]Best trial: 24. Best value: 0.868787:  26%|##6       | 26/100 [29:18<1:40:23, 81.40s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[708]	valid_0's auc: 0.866155
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[981]	valid_0's auc: 0.868449
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[716]	valid_0's auc: 0.868992
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870733
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.86956
+Best trial: 24. Best value: 0.868787:  26%|##6       | 26/100 [30:29<1:40:23, 81.40s/it]Best trial: 24. Best value: 0.868787:  27%|##7       | 27/100 [30:29<1:35:07, 78.19s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[700]	valid_0's auc: 0.865825
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[631]	valid_0's auc: 0.867991
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[917]	valid_0's auc: 0.869209
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[919]	valid_0's auc: 0.871488
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[706]	valid_0's auc: 0.869307
+Best trial: 24. Best value: 0.868787:  27%|##7       | 27/100 [31:28<1:35:07, 78.19s/it]Best trial: 24. Best value: 0.868787:  28%|##8       | 28/100 [31:28<1:27:10, 72.65s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[505]	valid_0's auc: 0.865689
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[631]	valid_0's auc: 0.86792
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[878]	valid_0's auc: 0.869294
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[619]	valid_0's auc: 0.870977
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[695]	valid_0's auc: 0.869328
+Best trial: 24. Best value: 0.868787:  28%|##8       | 28/100 [32:22<1:27:10, 72.65s/it]Best trial: 24. Best value: 0.868787:  29%|##9       | 29/100 [32:22<1:19:16, 67.00s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[685]	valid_0's auc: 0.865797
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[770]	valid_0's auc: 0.86825
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[555]	valid_0's auc: 0.868877
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[660]	valid_0's auc: 0.870958
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[774]	valid_0's auc: 0.869516
+Best trial: 24. Best value: 0.868787:  29%|##9       | 29/100 [33:16<1:19:16, 67.00s/it]Best trial: 24. Best value: 0.868787:  30%|###       | 30/100 [33:16<1:13:36, 63.09s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[422]	valid_0's auc: 0.865562
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[501]	valid_0's auc: 0.867491
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[598]	valid_0's auc: 0.868904
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[505]	valid_0's auc: 0.871062
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[693]	valid_0's auc: 0.869522
+Best trial: 24. Best value: 0.868787:  30%|###       | 30/100 [34:04<1:13:36, 63.09s/it]Best trial: 24. Best value: 0.868787:  31%|###1      | 31/100 [34:04<1:07:14, 58.47s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[679]	valid_0's auc: 0.865878
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[680]	valid_0's auc: 0.867536
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[822]	valid_0's auc: 0.869002
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[890]	valid_0's auc: 0.871159
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[815]	valid_0's auc: 0.869147
+Best trial: 24. Best value: 0.868787:  31%|###1      | 31/100 [35:04<1:07:14, 58.47s/it]Best trial: 24. Best value: 0.868787:  32%|###2      | 32/100 [35:04<1:06:56, 59.07s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[593]	valid_0's auc: 0.865491
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[822]	valid_0's auc: 0.868159
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[746]	valid_0's auc: 0.869345
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[919]	valid_0's auc: 0.871342
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869946
+Best trial: 32. Best value: 0.868857:  32%|###2      | 32/100 [36:10<1:06:56, 59.07s/it]Best trial: 32. Best value: 0.868857:  33%|###3      | 33/100 [36:10<1:08:22, 61.24s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[562]	valid_0's auc: 0.865785
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[496]	valid_0's auc: 0.867348
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[474]	valid_0's auc: 0.868563
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[509]	valid_0's auc: 0.870242
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[514]	valid_0's auc: 0.868979
+Best trial: 32. Best value: 0.868857:  33%|###3      | 33/100 [37:00<1:08:22, 61.24s/it]Best trial: 32. Best value: 0.868857:  34%|###4      | 34/100 [37:00<1:03:36, 57.83s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[601]	valid_0's auc: 0.865526
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[628]	valid_0's auc: 0.867268
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[733]	valid_0's auc: 0.868907
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[715]	valid_0's auc: 0.870542
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[839]	valid_0's auc: 0.86927
+Best trial: 32. Best value: 0.868857:  34%|###4      | 34/100 [37:58<1:03:36, 57.83s/it]Best trial: 32. Best value: 0.868857:  35%|###5      | 35/100 [37:58<1:02:39, 57.84s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[375]	valid_0's auc: 0.865588
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[486]	valid_0's auc: 0.867131
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[408]	valid_0's auc: 0.868622
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[554]	valid_0's auc: 0.870417
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[397]	valid_0's auc: 0.86919
+Best trial: 32. Best value: 0.868857:  35%|###5      | 35/100 [38:45<1:02:39, 57.84s/it]Best trial: 32. Best value: 0.868857:  36%|###6      | 36/100 [38:45<58:00, 54.39s/it]  Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[885]	valid_0's auc: 0.865693
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.868075
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869357
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[833]	valid_0's auc: 0.870779
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[949]	valid_0's auc: 0.869379
+Best trial: 32. Best value: 0.868857:  36%|###6      | 36/100 [40:01<58:00, 54.39s/it]Best trial: 32. Best value: 0.868857:  37%|###7      | 37/100 [40:01<1:04:03, 61.01s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[246]	valid_0's auc: 0.864954
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[338]	valid_0's auc: 0.866444
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[354]	valid_0's auc: 0.868392
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[367]	valid_0's auc: 0.870288
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[426]	valid_0's auc: 0.868418
+Best trial: 32. Best value: 0.868857:  37%|###7      | 37/100 [40:36<1:04:03, 61.01s/it]Best trial: 32. Best value: 0.868857:  38%|###8      | 38/100 [40:36<55:06, 53.33s/it]  Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[445]	valid_0's auc: 0.865869
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[497]	valid_0's auc: 0.867993
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[490]	valid_0's auc: 0.868803
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[604]	valid_0's auc: 0.871341
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[600]	valid_0's auc: 0.869793
+Best trial: 32. Best value: 0.868857:  38%|###8      | 38/100 [41:24<55:06, 53.33s/it]Best trial: 32. Best value: 0.868857:  39%|###9      | 39/100 [41:24<52:30, 51.65s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[855]	valid_0's auc: 0.865851
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[968]	valid_0's auc: 0.868226
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[886]	valid_0's auc: 0.868879
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[789]	valid_0's auc: 0.870971
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.869354
+Best trial: 32. Best value: 0.868857:  39%|###9      | 39/100 [42:25<52:30, 51.65s/it]Best trial: 32. Best value: 0.868857:  40%|####      | 40/100 [42:25<54:27, 54.46s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866442
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868266
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869254
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.871227
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869576
+Best trial: 40. Best value: 0.868953:  40%|####      | 40/100 [43:58<54:27, 54.46s/it]Best trial: 40. Best value: 0.868953:  41%|####1     | 41/100 [43:58<1:04:54, 66.01s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.866334
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868301
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869412
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[984]	valid_0's auc: 0.871116
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869379
+Best trial: 40. Best value: 0.868953:  41%|####1     | 41/100 [45:30<1:04:54, 66.01s/it]Best trial: 40. Best value: 0.868953:  42%|####2     | 42/100 [45:30<1:11:22, 73.84s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.866027
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867988
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869331
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.870944
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.86923
+Best trial: 40. Best value: 0.868953:  42%|####2     | 42/100 [47:05<1:11:22, 73.84s/it]Best trial: 40. Best value: 0.868953:  43%|####3     | 43/100 [47:05<1:16:06, 80.11s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866044
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867564
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868985
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.87062
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868837
+Best trial: 40. Best value: 0.868953:  43%|####3     | 43/100 [48:45<1:16:06, 80.11s/it]Best trial: 40. Best value: 0.868953:  44%|####4     | 44/100 [48:45<1:20:12, 85.94s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866439
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.868224
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869479
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871319
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.869655
+Best trial: 44. Best value: 0.869023:  44%|####4     | 44/100 [50:14<1:20:12, 85.94s/it]Best trial: 44. Best value: 0.869023:  45%|####5     | 45/100 [50:14<1:19:38, 86.88s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[979]	valid_0's auc: 0.866453
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868111
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869391
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.871034
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[992]	valid_0's auc: 0.869701
+Best trial: 44. Best value: 0.869023:  45%|####5     | 45/100 [51:53<1:19:38, 86.88s/it]Best trial: 44. Best value: 0.869023:  46%|####6     | 46/100 [51:53<1:21:39, 90.74s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.866436
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868142
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869277
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[986]	valid_0's auc: 0.871129
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869474
+Best trial: 44. Best value: 0.869023:  46%|####6     | 46/100 [53:43<1:21:39, 90.74s/it]Best trial: 44. Best value: 0.869023:  47%|####6     | 47/100 [53:43<1:25:03, 96.30s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866269
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868432
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869432
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[983]	valid_0's auc: 0.871144
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869694
+Best trial: 44. Best value: 0.869023:  47%|####6     | 47/100 [55:37<1:25:03, 96.30s/it]Best trial: 44. Best value: 0.869023:  48%|####8     | 48/100 [55:37<1:28:12, 101.78s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865193
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86685
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868015
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869688
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867984
+Best trial: 44. Best value: 0.869023:  48%|####8     | 48/100 [57:13<1:28:12, 101.78s/it]Best trial: 44. Best value: 0.869023:  49%|####9     | 49/100 [57:13<1:24:55, 99.92s/it] Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[991]	valid_0's auc: 0.865799
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867582
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869049
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870876
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86913
+Best trial: 44. Best value: 0.869023:  49%|####9     | 49/100 [59:07<1:24:55, 99.92s/it]Best trial: 44. Best value: 0.869023:  50%|#####     | 50/100 [59:07<1:26:52, 104.26s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[983]	valid_0's auc: 0.866173
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868346
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869168
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.86972
+Best trial: 44. Best value: 0.869023:  50%|#####     | 50/100 [1:00:55<1:26:52, 104.26s/it]Best trial: 44. Best value: 0.869023:  51%|#####1    | 51/100 [1:00:55<1:26:00, 105.31s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.866259
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86817
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86922
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871062
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869379
+Best trial: 44. Best value: 0.869023:  51%|#####1    | 51/100 [1:02:44<1:26:00, 105.31s/it]Best trial: 44. Best value: 0.869023:  52%|#####2    | 52/100 [1:02:44<1:25:04, 106.35s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865946
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.867963
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869113
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871003
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869358
+Best trial: 44. Best value: 0.869023:  52%|#####2    | 52/100 [1:04:35<1:25:04, 106.35s/it]Best trial: 44. Best value: 0.869023:  53%|#####3    | 53/100 [1:04:35<1:24:25, 107.78s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.866272
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[993]	valid_0's auc: 0.867797
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869603
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870987
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869575
+Best trial: 44. Best value: 0.869023:  53%|#####3    | 53/100 [1:06:15<1:24:25, 107.78s/it]Best trial: 44. Best value: 0.869023:  54%|#####4    | 54/100 [1:06:15<1:20:48, 105.40s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[986]	valid_0's auc: 0.866226
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[941]	valid_0's auc: 0.868164
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[980]	valid_0's auc: 0.869494
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.871068
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[987]	valid_0's auc: 0.869673
+Best trial: 44. Best value: 0.869023:  54%|#####4    | 54/100 [1:07:56<1:20:48, 105.40s/it]Best trial: 44. Best value: 0.869023:  55%|#####5    | 55/100 [1:07:56<1:18:12, 104.28s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.865871
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[801]	valid_0's auc: 0.867187
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.869022
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[975]	valid_0's auc: 0.87032
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[910]	valid_0's auc: 0.868854
+Best trial: 44. Best value: 0.869023:  55%|#####5    | 55/100 [1:09:34<1:18:12, 104.28s/it]Best trial: 44. Best value: 0.869023:  56%|#####6    | 56/100 [1:09:34<1:15:00, 102.30s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865769
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.867685
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868948
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870599
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868973
+Best trial: 44. Best value: 0.869023:  56%|#####6    | 56/100 [1:11:21<1:15:00, 102.30s/it]Best trial: 44. Best value: 0.869023:  57%|#####6    | 57/100 [1:11:21<1:14:23, 103.80s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865324
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867458
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868738
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.870468
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868836
+Best trial: 44. Best value: 0.869023:  57%|#####6    | 57/100 [1:13:18<1:14:23, 103.80s/it]Best trial: 44. Best value: 0.869023:  58%|#####8    | 58/100 [1:13:18<1:15:23, 107.71s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[776]	valid_0's auc: 0.865539
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.868307
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869454
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.870657
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[986]	valid_0's auc: 0.869789
+Best trial: 44. Best value: 0.869023:  58%|#####8    | 58/100 [1:14:54<1:15:23, 107.71s/it]Best trial: 44. Best value: 0.869023:  59%|#####8    | 59/100 [1:14:54<1:11:14, 104.26s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866225
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867723
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868832
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870761
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.869286
+Best trial: 44. Best value: 0.869023:  59%|#####8    | 59/100 [1:16:52<1:11:14, 104.26s/it]Best trial: 44. Best value: 0.869023:  60%|######    | 60/100 [1:16:52<1:12:08, 108.20s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.865225
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.867033
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.868185
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869808
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868303
+Best trial: 44. Best value: 0.869023:  60%|######    | 60/100 [1:18:32<1:12:08, 108.20s/it]Best trial: 44. Best value: 0.869023:  61%|######1   | 61/100 [1:18:32<1:08:43, 105.72s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866497
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.868513
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869629
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871513
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869581
+Best trial: 61. Best value: 0.869146:  61%|######1   | 61/100 [1:20:12<1:08:43, 105.72s/it]Best trial: 61. Best value: 0.869146:  62%|######2   | 62/100 [1:20:12<1:06:01, 104.24s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.866462
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868171
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869447
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870866
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869526
+Best trial: 61. Best value: 0.869146:  62%|######2   | 62/100 [1:21:45<1:06:01, 104.24s/it]Best trial: 61. Best value: 0.869146:  63%|######3   | 63/100 [1:21:45<1:02:10, 100.82s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[863]	valid_0's auc: 0.866743
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.868671
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869598
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[973]	valid_0's auc: 0.871543
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.870002
+Best trial: 63. Best value: 0.869311:  63%|######3   | 63/100 [1:23:15<1:02:10, 100.82s/it]Best trial: 63. Best value: 0.869311:  64%|######4   | 64/100 [1:23:15<58:29, 97.48s/it]   Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[980]	valid_0's auc: 0.866648
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.8685
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869487
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[980]	valid_0's auc: 0.871683
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869697
+Best trial: 63. Best value: 0.869311:  64%|######4   | 64/100 [1:24:46<58:29, 97.48s/it]Best trial: 63. Best value: 0.869311:  65%|######5   | 65/100 [1:24:46<55:44, 95.56s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.866826
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868276
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869635
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871359
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870017
+Best trial: 63. Best value: 0.869311:  65%|######5   | 65/100 [1:26:16<55:44, 95.56s/it]Best trial: 63. Best value: 0.869311:  66%|######6   | 66/100 [1:26:16<53:07, 93.74s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[988]	valid_0's auc: 0.866677
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86837
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869704
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.871537
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.869999
+Best trial: 63. Best value: 0.869311:  66%|######6   | 66/100 [1:27:44<53:07, 93.74s/it]Best trial: 63. Best value: 0.869311:  67%|######7   | 67/100 [1:27:44<50:38, 92.09s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[974]	valid_0's auc: 0.866646
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.868262
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[994]	valid_0's auc: 0.869675
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.87145
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[994]	valid_0's auc: 0.869687
+Best trial: 63. Best value: 0.869311:  67%|######7   | 67/100 [1:29:11<50:38, 92.09s/it]Best trial: 63. Best value: 0.869311:  68%|######8   | 68/100 [1:29:11<48:22, 90.69s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[948]	valid_0's auc: 0.866636
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[994]	valid_0's auc: 0.868398
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869674
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.871358
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86994
+Best trial: 63. Best value: 0.869311:  68%|######8   | 68/100 [1:30:38<48:22, 90.69s/it]Best trial: 63. Best value: 0.869311:  69%|######9   | 69/100 [1:30:38<46:11, 89.40s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[948]	valid_0's auc: 0.866405
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[981]	valid_0's auc: 0.868599
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869598
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[987]	valid_0's auc: 0.871435
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869755
+Best trial: 63. Best value: 0.869311:  69%|######9   | 69/100 [1:32:03<46:11, 89.40s/it]Best trial: 63. Best value: 0.869311:  70%|#######   | 70/100 [1:32:03<44:09, 88.32s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.866575
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[979]	valid_0's auc: 0.868423
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86947
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871373
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869838
+Best trial: 63. Best value: 0.869311:  70%|#######   | 70/100 [1:33:19<44:09, 88.32s/it]Best trial: 63. Best value: 0.869311:  71%|#######1  | 71/100 [1:33:19<40:54, 84.63s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866784
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.868328
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869555
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.871223
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869523
+Best trial: 63. Best value: 0.869311:  71%|#######1  | 71/100 [1:34:43<40:54, 84.63s/it]Best trial: 63. Best value: 0.869311:  72%|#######2  | 72/100 [1:34:43<39:23, 84.43s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[988]	valid_0's auc: 0.866593
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.868537
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.869742
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[957]	valid_0's auc: 0.871199
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.869801
+Best trial: 63. Best value: 0.869311:  72%|#######2  | 72/100 [1:36:12<39:23, 84.43s/it]Best trial: 63. Best value: 0.869311:  73%|#######3  | 73/100 [1:36:12<38:35, 85.76s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[973]	valid_0's auc: 0.866796
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868397
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[985]	valid_0's auc: 0.86952
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.871321
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869895
+Best trial: 63. Best value: 0.869311:  73%|#######3  | 73/100 [1:37:29<38:35, 85.76s/it]Best trial: 63. Best value: 0.869311:  74%|#######4  | 74/100 [1:37:29<36:00, 83.11s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.866343
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868207
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86941
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[976]	valid_0's auc: 0.870931
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869489
+Best trial: 63. Best value: 0.869311:  74%|#######4  | 74/100 [1:38:36<36:00, 83.11s/it]Best trial: 63. Best value: 0.869311:  75%|#######5  | 75/100 [1:38:36<32:37, 78.28s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[972]	valid_0's auc: 0.866636
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.868557
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[978]	valid_0's auc: 0.869418
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[982]	valid_0's auc: 0.871377
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86965
+Best trial: 63. Best value: 0.869311:  75%|#######5  | 75/100 [1:39:52<32:37, 78.28s/it]Best trial: 63. Best value: 0.869311:  76%|#######6  | 76/100 [1:39:52<30:59, 77.50s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[980]	valid_0's auc: 0.866547
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868554
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[982]	valid_0's auc: 0.869683
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.871182
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.869686
+Best trial: 63. Best value: 0.869311:  76%|#######6  | 76/100 [1:41:08<30:59, 77.50s/it]Best trial: 63. Best value: 0.869311:  77%|#######7  | 77/100 [1:41:08<29:30, 77.00s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.866543
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868312
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.869658
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.871273
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.8695
+Best trial: 63. Best value: 0.869311:  77%|#######7  | 77/100 [1:42:30<29:30, 77.00s/it]Best trial: 63. Best value: 0.869311:  78%|#######8  | 78/100 [1:42:30<28:47, 78.52s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.86624
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.868207
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869258
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870896
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869334
+Best trial: 63. Best value: 0.869311:  78%|#######8  | 78/100 [1:43:39<28:47, 78.52s/it]Best trial: 63. Best value: 0.869311:  79%|#######9  | 79/100 [1:43:39<26:30, 75.72s/it]Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[974]	valid_0's auc: 0.866656
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[705]	valid_0's auc: 0.86828
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[746]	valid_0's auc: 0.869661
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[895]	valid_0's auc: 0.871439
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[837]	valid_0's auc: 0.870197
+Best trial: 63. Best value: 0.869311:  79%|#######9  | 79/100 [1:45:09<26:30, 75.72s/it]Best trial: 63. Best value: 0.869311:  80%|########  | 80/100 [1:45:09<26:37, 79.90s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[725]	valid_0's auc: 0.866408
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.868547
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[895]	valid_0's auc: 0.86958
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[954]	valid_0's auc: 0.871571
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.870249
+Best trial: 63. Best value: 0.869311:  80%|########  | 80/100 [1:46:43<26:37, 79.90s/it]Best trial: 63. Best value: 0.869311:  81%|########1 | 81/100 [1:46:43<26:41, 84.28s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[784]	valid_0's auc: 0.866541
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[926]	valid_0's auc: 0.868764
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[778]	valid_0's auc: 0.869452
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[861]	valid_0's auc: 0.871311
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[968]	valid_0's auc: 0.870106
+Best trial: 63. Best value: 0.869311:  81%|########1 | 81/100 [1:48:17<26:41, 84.28s/it]Best trial: 63. Best value: 0.869311:  82%|########2 | 82/100 [1:48:17<26:06, 87.02s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[734]	valid_0's auc: 0.866208
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[955]	valid_0's auc: 0.868906
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[903]	valid_0's auc: 0.869721
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[800]	valid_0's auc: 0.870873
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[897]	valid_0's auc: 0.869928
+Best trial: 63. Best value: 0.869311:  82%|########2 | 82/100 [1:49:54<26:06, 87.02s/it]Best trial: 63. Best value: 0.869311:  83%|########2 | 83/100 [1:49:54<25:31, 90.08s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[564]	valid_0's auc: 0.866101
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[780]	valid_0's auc: 0.868431
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[754]	valid_0's auc: 0.869509
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[576]	valid_0's auc: 0.870804
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[991]	valid_0's auc: 0.869868
+Best trial: 63. Best value: 0.869311:  83%|########2 | 83/100 [1:51:16<25:31, 90.08s/it]Best trial: 63. Best value: 0.869311:  84%|########4 | 84/100 [1:51:16<23:24, 87.80s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[552]	valid_0's auc: 0.865896
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[903]	valid_0's auc: 0.868291
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[738]	valid_0's auc: 0.868938
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[813]	valid_0's auc: 0.871122
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[773]	valid_0's auc: 0.869475
+Best trial: 63. Best value: 0.869311:  84%|########4 | 84/100 [1:52:37<23:24, 87.80s/it]Best trial: 63. Best value: 0.869311:  85%|########5 | 85/100 [1:52:37<21:23, 85.57s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[920]	valid_0's auc: 0.866185
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[997]	valid_0's auc: 0.868478
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[868]	valid_0's auc: 0.869441
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[970]	valid_0's auc: 0.871351
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[987]	valid_0's auc: 0.869963
+Best trial: 63. Best value: 0.869311:  85%|########5 | 85/100 [1:54:27<21:23, 85.57s/it]Best trial: 63. Best value: 0.869311:  86%|########6 | 86/100 [1:54:27<21:40, 92.92s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[703]	valid_0's auc: 0.865984
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[818]	valid_0's auc: 0.86808
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[787]	valid_0's auc: 0.868929
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[745]	valid_0's auc: 0.87109
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[860]	valid_0's auc: 0.869943
+Best trial: 63. Best value: 0.869311:  86%|########6 | 86/100 [1:55:31<21:40, 92.92s/it]Best trial: 63. Best value: 0.869311:  87%|########7 | 87/100 [1:55:31<18:14, 84.21s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[719]	valid_0's auc: 0.865704
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[975]	valid_0's auc: 0.868029
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[999]	valid_0's auc: 0.869467
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.87116
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869626
+Best trial: 63. Best value: 0.869311:  87%|########7 | 87/100 [1:57:07<18:14, 84.21s/it]Best trial: 63. Best value: 0.869311:  88%|########8 | 88/100 [1:57:07<17:33, 87.78s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[566]	valid_0's auc: 0.866323
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[787]	valid_0's auc: 0.868761
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[860]	valid_0's auc: 0.8701
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.871679
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[837]	valid_0's auc: 0.87028
+Best trial: 88. Best value: 0.869429:  88%|########8 | 88/100 [1:58:28<17:33, 87.78s/it]Best trial: 88. Best value: 0.869429:  89%|########9 | 89/100 [1:58:28<15:43, 85.77s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[918]	valid_0's auc: 0.866628
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868943
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869665
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.871306
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[968]	valid_0's auc: 0.87024
+Best trial: 88. Best value: 0.869429:  89%|########9 | 89/100 [2:00:06<15:43, 85.77s/it]Best trial: 88. Best value: 0.869429:  90%|######### | 90/100 [2:00:06<14:55, 89.57s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[693]	valid_0's auc: 0.86622
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[803]	valid_0's auc: 0.868729
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[743]	valid_0's auc: 0.869512
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[575]	valid_0's auc: 0.871447
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[925]	valid_0's auc: 0.870238
+Best trial: 88. Best value: 0.869429:  90%|######### | 90/100 [2:01:23<14:55, 89.57s/it]Best trial: 88. Best value: 0.869429:  91%|#########1| 91/100 [2:01:23<12:51, 85.75s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[504]	valid_0's auc: 0.866498
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[666]	valid_0's auc: 0.868668
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[705]	valid_0's auc: 0.869621
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[746]	valid_0's auc: 0.871431
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[719]	valid_0's auc: 0.870178
+Best trial: 88. Best value: 0.869429:  91%|#########1| 91/100 [2:02:35<12:51, 85.75s/it]Best trial: 88. Best value: 0.869429:  92%|#########2| 92/100 [2:02:35<10:52, 81.59s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[748]	valid_0's auc: 0.866362
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[696]	valid_0's auc: 0.868602
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[531]	valid_0's auc: 0.869332
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[534]	valid_0's auc: 0.870962
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[781]	valid_0's auc: 0.870146
+Best trial: 88. Best value: 0.869429:  92%|#########2| 92/100 [2:03:46<10:52, 81.59s/it]Best trial: 88. Best value: 0.869429:  93%|#########3| 93/100 [2:03:46<09:09, 78.43s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[401]	valid_0's auc: 0.865573
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[785]	valid_0's auc: 0.868516
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[797]	valid_0's auc: 0.869494
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[652]	valid_0's auc: 0.871286
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[771]	valid_0's auc: 0.870136
+Best trial: 88. Best value: 0.869429:  93%|#########3| 93/100 [2:04:55<09:09, 78.43s/it]Best trial: 88. Best value: 0.869429:  94%|#########3| 94/100 [2:04:55<07:34, 75.69s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[491]	valid_0's auc: 0.86586
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[746]	valid_0's auc: 0.868733
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[729]	valid_0's auc: 0.869643
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[698]	valid_0's auc: 0.871397
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[606]	valid_0's auc: 0.869634
+Best trial: 88. Best value: 0.869429:  94%|#########3| 94/100 [2:06:06<07:34, 75.69s/it]Best trial: 88. Best value: 0.869429:  95%|#########5| 95/100 [2:06:06<06:11, 74.31s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[547]	valid_0's auc: 0.865952
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[531]	valid_0's auc: 0.867815
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[749]	valid_0's auc: 0.869553
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[815]	valid_0's auc: 0.871373
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[677]	valid_0's auc: 0.87016
+Best trial: 88. Best value: 0.869429:  95%|#########5| 95/100 [2:07:20<06:11, 74.31s/it]Best trial: 88. Best value: 0.869429:  96%|#########6| 96/100 [2:07:20<04:56, 74.00s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[504]	valid_0's auc: 0.866288
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[661]	valid_0's auc: 0.868016
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[536]	valid_0's auc: 0.869233
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[721]	valid_0's auc: 0.871118
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[626]	valid_0's auc: 0.8698
+Best trial: 88. Best value: 0.869429:  96%|#########6| 96/100 [2:08:23<04:56, 74.00s/it]Best trial: 88. Best value: 0.869429:  97%|#########7| 97/100 [2:08:23<03:32, 70.83s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[634]	valid_0's auc: 0.866316
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[657]	valid_0's auc: 0.868462
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[821]	valid_0's auc: 0.869333
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[996]	valid_0's auc: 0.871618
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[808]	valid_0's auc: 0.870126
+Best trial: 88. Best value: 0.869429:  97%|#########7| 97/100 [2:09:46<03:32, 70.83s/it]Best trial: 88. Best value: 0.869429:  98%|#########8| 98/100 [2:09:46<02:28, 74.40s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[733]	valid_0's auc: 0.866307
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.868921
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.869871
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[998]	valid_0's auc: 0.871315
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870198
+Best trial: 88. Best value: 0.869429:  98%|#########8| 98/100 [2:11:23<02:28, 74.40s/it]Best trial: 88. Best value: 0.869429:  99%|#########9| 99/100 [2:11:23<01:21, 81.20s/it]Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[837]	valid_0's auc: 0.866487
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[990]	valid_0's auc: 0.868825
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[992]	valid_0's auc: 0.869607
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.871517
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[1000]	valid_0's auc: 0.870153
+Best trial: 88. Best value: 0.869429:  99%|#########9| 99/100 [2:12:56<01:21, 81.20s/it]Best trial: 88. Best value: 0.869429: 100%|##########| 100/100 [2:12:56<00:00, 84.77s/it]Best trial: 88. Best value: 0.869429: 100%|##########| 100/100 [2:12:56<00:00, 79.76s/it]
+  LGB best: 0.869429 (baseline LGB single ~0.87)
+  LGB params: {'num_leaves': 71, 'learning_rate': 0.03295139509671682, 'feature_fraction': 0.7581807909081508, 'bagging_fraction': 0.9303232219315238, 'bagging_freq': 3, 'min_child_samples': 98, 'reg_alpha': 7.299601434545565, 'reg_lambda': 0.0013935326651339389}
+
+  [XGB] Running 100 trials...
+  0%|          | 0/100 [00:00<?, ?it/s]Best trial: 0. Best value: 0.868118:   0%|          | 0/100 [00:49<?, ?it/s]Best trial: 0. Best value: 0.868118:   1%|1         | 1/100 [00:49<1:21:07, 49.17s/it]Best trial: 1. Best value: 0.869213:   1%|1         | 1/100 [02:18<1:21:07, 49.17s/it]Best trial: 1. Best value: 0.869213:   2%|2         | 2/100 [02:18<1:59:15, 73.01s/it]Best trial: 1. Best value: 0.869213:   2%|2         | 2/100 [04:18<1:59:15, 73.01s/it]Best trial: 1. Best value: 0.869213:   3%|3         | 3/100 [04:18<2:32:34, 94.38s/it]Best trial: 1. Best value: 0.869213:   3%|3         | 3/100 [05:50<2:32:34, 94.38s/it]Best trial: 1. Best value: 0.869213:   4%|4         | 4/100 [05:50<2:29:29, 93.43s/it]Best trial: 1. Best value: 0.869213:   4%|4         | 4/100 [07:07<2:29:29, 93.43s/it]Best trial: 1. Best value: 0.869213:   5%|5         | 5/100 [07:07<2:18:40, 87.58s/it]Best trial: 1. Best value: 0.869213:   5%|5         | 5/100 [08:43<2:18:40, 87.58s/it]Best trial: 1. Best value: 0.869213:   6%|6         | 6/100 [08:43<2:21:42, 90.45s/it]Best trial: 1. Best value: 0.869213:   6%|6         | 6/100 [10:25<2:21:42, 90.45s/it]Best trial: 1. Best value: 0.869213:   7%|7         | 7/100 [10:25<2:25:37, 93.95s/it]Best trial: 1. Best value: 0.869213:   7%|7         | 7/100 [12:09<2:25:37, 93.95s/it]Best trial: 1. Best value: 0.869213:   8%|8         | 8/100 [12:09<2:28:59, 97.17s/it]Best trial: 1. Best value: 0.869213:   8%|8         | 8/100 [13:33<2:28:59, 97.17s/it]Best trial: 1. Best value: 0.869213:   9%|9         | 9/100 [13:33<2:21:26, 93.26s/it]Best trial: 1. Best value: 0.869213:   9%|9         | 9/100 [15:06<2:21:26, 93.26s/it]Best trial: 1. Best value: 0.869213:  10%|#         | 10/100 [15:06<2:19:44, 93.16s/it]Best trial: 1. Best value: 0.869213:  10%|#         | 10/100 [16:31<2:19:44, 93.16s/it]Best trial: 1. Best value: 0.869213:  11%|#1        | 11/100 [16:31<2:14:23, 90.60s/it]Best trial: 1. Best value: 0.869213:  11%|#1        | 11/100 [17:35<2:14:23, 90.60s/it]Best trial: 1. Best value: 0.869213:  12%|#2        | 12/100 [17:35<2:01:07, 82.58s/it]Best trial: 12. Best value: 0.869485:  12%|#2        | 12/100 [19:11<2:01:07, 82.58s/it]Best trial: 12. Best value: 0.869485:  13%|#3        | 13/100 [19:11<2:05:35, 86.61s/it]Best trial: 12. Best value: 0.869485:  13%|#3        | 13/100 [20:45<2:05:35, 86.61s/it]Best trial: 12. Best value: 0.869485:  14%|#4        | 14/100 [20:45<2:07:19, 88.84s/it]Best trial: 12. Best value: 0.869485:  14%|#4        | 14/100 [21:37<2:07:19, 88.84s/it]Best trial: 12. Best value: 0.869485:  15%|#5        | 15/100 [21:37<1:50:11, 77.78s/it]Best trial: 12. Best value: 0.869485:  15%|#5        | 15/100 [23:13<1:50:11, 77.78s/it]Best trial: 12. Best value: 0.869485:  16%|#6        | 16/100 [23:13<1:56:31, 83.23s/it]Best trial: 12. Best value: 0.869485:  16%|#6        | 16/100 [24:20<1:56:31, 83.23s/it]Best trial: 12. Best value: 0.869485:  17%|#7        | 17/100 [24:20<1:48:26, 78.39s/it]Best trial: 12. Best value: 0.869485:  17%|#7        | 17/100 [25:24<1:48:26, 78.39s/it]Best trial: 12. Best value: 0.869485:  18%|#8        | 18/100 [25:24<1:40:56, 73.86s/it]Best trial: 12. Best value: 0.869485:  18%|#8        | 18/100 [27:00<1:40:56, 73.86s/it]Best trial: 12. Best value: 0.869485:  19%|#9        | 19/100 [27:00<1:49:02, 80.78s/it]Best trial: 12. Best value: 0.869485:  19%|#9        | 19/100 [28:48<1:49:02, 80.78s/it]Best trial: 12. Best value: 0.869485:  20%|##        | 20/100 [28:48<1:58:33, 88.92s/it]Best trial: 12. Best value: 0.869485:  20%|##        | 20/100 [30:24<1:58:33, 88.92s/it]Best trial: 12. Best value: 0.869485:  21%|##1       | 21/100 [30:24<1:59:42, 90.91s/it]Best trial: 12. Best value: 0.869485:  21%|##1       | 21/100 [32:00<1:59:42, 90.91s/it]Best trial: 12. Best value: 0.869485:  22%|##2       | 22/100 [32:00<2:00:02, 92.34s/it]Best trial: 12. Best value: 0.869485:  22%|##2       | 22/100 [33:37<2:00:02, 92.34s/it]Best trial: 12. Best value: 0.869485:  23%|##3       | 23/100 [33:37<2:00:33, 93.95s/it]Best trial: 12. Best value: 0.869485:  23%|##3       | 23/100 [35:12<2:00:33, 93.95s/it]Best trial: 12. Best value: 0.869485:  24%|##4       | 24/100 [35:12<1:59:21, 94.22s/it]Best trial: 12. Best value: 0.869485:  24%|##4       | 24/100 [36:40<1:59:21, 94.22s/it]Best trial: 12. Best value: 0.869485:  25%|##5       | 25/100 [36:40<1:55:33, 92.45s/it]Best trial: 12. Best value: 0.869485:  25%|##5       | 25/100 [38:05<1:55:33, 92.45s/it]Best trial: 12. Best value: 0.869485:  26%|##6       | 26/100 [38:05<1:51:11, 90.15s/it]Best trial: 12. Best value: 0.869485:  26%|##6       | 26/100 [39:08<1:51:11, 90.15s/it]Best trial: 12. Best value: 0.869485:  27%|##7       | 27/100 [39:08<1:39:43, 81.96s/it]Best trial: 12. Best value: 0.869485:  27%|##7       | 27/100 [40:32<1:39:43, 81.96s/it]Best trial: 12. Best value: 0.869485:  28%|##8       | 28/100 [40:32<1:39:03, 82.56s/it]Best trial: 12. Best value: 0.869485:  28%|##8       | 28/100 [41:46<1:39:03, 82.56s/it]Best trial: 12. Best value: 0.869485:  29%|##9       | 29/100 [41:46<1:34:33, 79.91s/it]Best trial: 12. Best value: 0.869485:  29%|##9       | 29/100 [43:13<1:34:33, 79.91s/it]Best trial: 12. Best value: 0.869485:  30%|###       | 30/100 [43:13<1:35:43, 82.04s/it]Best trial: 12. Best value: 0.869485:  30%|###       | 30/100 [44:10<1:35:43, 82.04s/it]Best trial: 12. Best value: 0.869485:  31%|###1      | 31/100 [44:10<1:25:48, 74.62s/it]Best trial: 12. Best value: 0.869485:  31%|###1      | 31/100 [45:38<1:25:48, 74.62s/it]Best trial: 12. Best value: 0.869485:  32%|###2      | 32/100 [45:38<1:28:55, 78.46s/it]Best trial: 12. Best value: 0.869485:  32%|###2      | 32/100 [47:09<1:28:55, 78.46s/it]Best trial: 12. Best value: 0.869485:  33%|###3      | 33/100 [47:09<1:31:52, 82.28s/it]Best trial: 12. Best value: 0.869485:  33%|###3      | 33/100 [48:24<1:31:52, 82.28s/it]Best trial: 12. Best value: 0.869485:  34%|###4      | 34/100 [48:24<1:28:11, 80.17s/it]Best trial: 12. Best value: 0.869485:  34%|###4      | 34/100 [49:30<1:28:11, 80.17s/it]Best trial: 12. Best value: 0.869485:  35%|###5      | 35/100 [49:30<1:22:09, 75.84s/it]Best trial: 12. Best value: 0.869485:  35%|###5      | 35/100 [50:58<1:22:09, 75.84s/it]Best trial: 12. Best value: 0.869485:  36%|###6      | 36/100 [50:58<1:25:00, 79.69s/it]Best trial: 12. Best value: 0.869485:  36%|###6      | 36/100 [52:22<1:25:00, 79.69s/it]Best trial: 12. Best value: 0.869485:  37%|###7      | 37/100 [52:22<1:24:46, 80.73s/it]Best trial: 12. Best value: 0.869485:  37%|###7      | 37/100 [54:02<1:24:46, 80.73s/it]Best trial: 12. Best value: 0.869485:  38%|###8      | 38/100 [54:02<1:29:29, 86.61s/it]Best trial: 12. Best value: 0.869485:  38%|###8      | 38/100 [55:19<1:29:29, 86.61s/it]Best trial: 12. Best value: 0.869485:  39%|###9      | 39/100 [55:19<1:25:12, 83.82s/it]Best trial: 12. Best value: 0.869485:  39%|###9      | 39/100 [56:44<1:25:12, 83.82s/it]Best trial: 12. Best value: 0.869485:  40%|####      | 40/100 [56:44<1:24:13, 84.22s/it]Best trial: 12. Best value: 0.869485:  40%|####      | 40/100 [58:00<1:24:13, 84.22s/it]Best trial: 12. Best value: 0.869485:  41%|####1     | 41/100 [58:00<1:20:15, 81.63s/it]Best trial: 12. Best value: 0.869485:  41%|####1     | 41/100 [59:23<1:20:15, 81.63s/it]Best trial: 12. Best value: 0.869485:  42%|####2     | 42/100 [59:23<1:19:24, 82.14s/it]Best trial: 12. Best value: 0.869485:  42%|####2     | 42/100 [1:00:53<1:19:24, 82.14s/it]Best trial: 12. Best value: 0.869485:  43%|####3     | 43/100 [1:00:53<1:20:15, 84.48s/it]Best trial: 12. Best value: 0.869485:  43%|####3     | 43/100 [1:02:15<1:20:15, 84.48s/it]Best trial: 12. Best value: 0.869485:  44%|####4     | 44/100 [1:02:15<1:18:04, 83.65s/it]Best trial: 12. Best value: 0.869485:  44%|####4     | 44/100 [1:03:11<1:18:04, 83.65s/it]Best trial: 12. Best value: 0.869485:  45%|####5     | 45/100 [1:03:11<1:09:09, 75.44s/it]Best trial: 12. Best value: 0.869485:  45%|####5     | 45/100 [1:04:48<1:09:09, 75.44s/it]Best trial: 12. Best value: 0.869485:  46%|####6     | 46/100 [1:04:48<1:13:36, 81.79s/it]Best trial: 12. Best value: 0.869485:  46%|####6     | 46/100 [1:06:34<1:13:36, 81.79s/it]Best trial: 12. Best value: 0.869485:  47%|####6     | 47/100 [1:06:34<1:18:48, 89.21s/it]Best trial: 12. Best value: 0.869485:  47%|####6     | 47/100 [1:08:03<1:18:48, 89.21s/it]Best trial: 12. Best value: 0.869485:  48%|####8     | 48/100 [1:08:03<1:17:10, 89.05s/it]Best trial: 12. Best value: 0.869485:  48%|####8     | 48/100 [1:09:39<1:17:10, 89.05s/it]Best trial: 12. Best value: 0.869485:  49%|####9     | 49/100 [1:09:39<1:17:33, 91.24s/it]Best trial: 12. Best value: 0.869485:  49%|####9     | 49/100 [1:11:06<1:17:33, 91.24s/it]Best trial: 12. Best value: 0.869485:  50%|#####     | 50/100 [1:11:06<1:14:54, 89.89s/it]Best trial: 12. Best value: 0.869485:  50%|#####     | 50/100 [1:12:12<1:14:54, 89.89s/it]Best trial: 12. Best value: 0.869485:  51%|#####1    | 51/100 [1:12:12<1:07:27, 82.60s/it]Best trial: 12. Best value: 0.869485:  51%|#####1    | 51/100 [1:13:47<1:07:27, 82.60s/it]Best trial: 12. Best value: 0.869485:  52%|#####2    | 52/100 [1:13:47<1:09:13, 86.53s/it]Best trial: 12. Best value: 0.869485:  52%|#####2    | 52/100 [1:15:31<1:09:13, 86.53s/it]Best trial: 12. Best value: 0.869485:  53%|#####3    | 53/100 [1:15:31<1:11:42, 91.54s/it]Best trial: 53. Best value: 0.869629:  53%|#####3    | 53/100 [1:17:07<1:11:42, 91.54s/it]Best trial: 53. Best value: 0.869629:  54%|#####4    | 54/100 [1:17:07<1:11:23, 93.11s/it]Best trial: 53. Best value: 0.869629:  54%|#####4    | 54/100 [1:18:52<1:11:23, 93.11s/it]Best trial: 53. Best value: 0.869629:  55%|#####5    | 55/100 [1:18:52<1:12:29, 96.66s/it]Best trial: 53. Best value: 0.869629:  55%|#####5    | 55/100 [1:20:44<1:12:29, 96.66s/it]Best trial: 53. Best value: 0.869629:  56%|#####6    | 56/100 [1:20:44<1:14:16, 101.29s/it]Best trial: 53. Best value: 0.869629:  56%|#####6    | 56/100 [1:22:31<1:14:16, 101.29s/it]Best trial: 53. Best value: 0.869629:  57%|#####6    | 57/100 [1:22:31<1:13:38, 102.76s/it]Best trial: 53. Best value: 0.869629:  57%|#####6    | 57/100 [1:24:17<1:13:38, 102.76s/it]Best trial: 53. Best value: 0.869629:  58%|#####8    | 58/100 [1:24:17<1:12:46, 103.96s/it]Best trial: 53. Best value: 0.869629:  58%|#####8    | 58/100 [1:26:07<1:12:46, 103.96s/it]Best trial: 53. Best value: 0.869629:  59%|#####8    | 59/100 [1:26:07<1:12:11, 105.65s/it]Best trial: 53. Best value: 0.869629:  59%|#####8    | 59/100 [1:27:59<1:12:11, 105.65s/it]Best trial: 53. Best value: 0.869629:  60%|######    | 60/100 [1:27:59<1:11:38, 107.47s/it]Best trial: 53. Best value: 0.869629:  60%|######    | 60/100 [1:29:51<1:11:38, 107.47s/it]Best trial: 53. Best value: 0.869629:  61%|######1   | 61/100 [1:29:51<1:10:47, 108.92s/it]Best trial: 53. Best value: 0.869629:  61%|######1   | 61/100 [1:31:43<1:10:47, 108.92s/it]Best trial: 53. Best value: 0.869629:  62%|######2   | 62/100 [1:31:43<1:09:31, 109.77s/it]Best trial: 53. Best value: 0.869629:  62%|######2   | 62/100 [1:33:20<1:09:31, 109.77s/it]Best trial: 53. Best value: 0.869629:  63%|######3   | 63/100 [1:33:20<1:05:23, 106.04s/it]Best trial: 53. Best value: 0.869629:  63%|######3   | 63/100 [1:35:14<1:05:23, 106.04s/it]Best trial: 53. Best value: 0.869629:  64%|######4   | 64/100 [1:35:14<1:05:02, 108.39s/it]Best trial: 53. Best value: 0.869629:  64%|######4   | 64/100 [1:37:04<1:05:02, 108.39s/it]Best trial: 53. Best value: 0.869629:  65%|######5   | 65/100 [1:37:04<1:03:27, 108.77s/it]Best trial: 53. Best value: 0.869629:  65%|######5   | 65/100 [1:39:01<1:03:27, 108.77s/it]Best trial: 53. Best value: 0.869629:  66%|######6   | 66/100 [1:39:01<1:03:09, 111.44s/it]Best trial: 53. Best value: 0.869629:  66%|######6   | 66/100 [1:40:49<1:03:09, 111.44s/it]Best trial: 53. Best value: 0.869629:  67%|######7   | 67/100 [1:40:49<1:00:42, 110.38s/it]Best trial: 53. Best value: 0.869629:  67%|######7   | 67/100 [1:42:33<1:00:42, 110.38s/it]Best trial: 53. Best value: 0.869629:  68%|######8   | 68/100 [1:42:33<57:47, 108.35s/it]  Best trial: 53. Best value: 0.869629:  68%|######8   | 68/100 [1:44:20<57:47, 108.35s/it]Best trial: 53. Best value: 0.869629:  69%|######9   | 69/100 [1:44:20<55:43, 107.86s/it]Best trial: 53. Best value: 0.869629:  69%|######9   | 69/100 [1:45:54<55:43, 107.86s/it]Best trial: 53. Best value: 0.869629:  70%|#######   | 70/100 [1:45:54<51:56, 103.90s/it]Best trial: 53. Best value: 0.869629:  70%|#######   | 70/100 [1:47:45<51:56, 103.90s/it]Best trial: 53. Best value: 0.869629:  71%|#######1  | 71/100 [1:47:45<51:09, 105.83s/it]Best trial: 53. Best value: 0.869629:  71%|#######1  | 71/100 [1:49:22<51:09, 105.83s/it]Best trial: 53. Best value: 0.869629:  72%|#######2  | 72/100 [1:49:22<48:16, 103.44s/it]Best trial: 53. Best value: 0.869629:  72%|#######2  | 72/100 [1:51:16<48:16, 103.44s/it]Best trial: 53. Best value: 0.869629:  73%|#######3  | 73/100 [1:51:16<47:57, 106.56s/it]Best trial: 53. Best value: 0.869629:  73%|#######3  | 73/100 [1:53:08<47:57, 106.56s/it]Best trial: 53. Best value: 0.869629:  74%|#######4  | 74/100 [1:53:08<46:48, 108.00s/it]Best trial: 53. Best value: 0.869629:  74%|#######4  | 74/100 [1:54:49<46:48, 108.00s/it]Best trial: 53. Best value: 0.869629:  75%|#######5  | 75/100 [1:54:49<44:08, 105.96s/it]Best trial: 53. Best value: 0.869629:  75%|#######5  | 75/100 [1:56:38<44:08, 105.96s/it]Best trial: 53. Best value: 0.869629:  76%|#######6  | 76/100 [1:56:38<42:43, 106.80s/it]Best trial: 53. Best value: 0.869629:  76%|#######6  | 76/100 [1:58:04<42:43, 106.80s/it]Best trial: 53. Best value: 0.869629:  77%|#######7  | 77/100 [1:58:04<38:32, 100.56s/it]Best trial: 53. Best value: 0.869629:  77%|#######7  | 77/100 [1:59:56<38:32, 100.56s/it]Best trial: 53. Best value: 0.869629:  78%|#######8  | 78/100 [1:59:56<38:13, 104.27s/it]Best trial: 53. Best value: 0.869629:  78%|#######8  | 78/100 [2:01:42<38:13, 104.27s/it]Best trial: 53. Best value: 0.869629:  79%|#######9  | 79/100 [2:01:42<36:37, 104.66s/it]Best trial: 53. Best value: 0.869629:  79%|#######9  | 79/100 [2:03:33<36:37, 104.66s/it]Best trial: 53. Best value: 0.869629:  80%|########  | 80/100 [2:03:33<35:30, 106.54s/it]Best trial: 53. Best value: 0.869629:  80%|########  | 80/100 [2:05:29<35:30, 106.54s/it]Best trial: 53. Best value: 0.869629:  81%|########1 | 81/100 [2:05:29<34:37, 109.36s/it]Best trial: 53. Best value: 0.869629:  81%|########1 | 81/100 [2:07:16<34:37, 109.36s/it]Best trial: 53. Best value: 0.869629:  82%|########2 | 82/100 [2:07:16<32:36, 108.70s/it]Best trial: 82. Best value: 0.869695:  82%|########2 | 82/100 [2:09:08<32:36, 108.70s/it]Best trial: 82. Best value: 0.869695:  83%|########2 | 83/100 [2:09:08<31:06, 109.79s/it]Best trial: 82. Best value: 0.869695:  83%|########2 | 83/100 [2:10:52<31:06, 109.79s/it]Best trial: 82. Best value: 0.869695:  84%|########4 | 84/100 [2:10:52<28:47, 107.99s/it]Best trial: 82. Best value: 0.869695:  84%|########4 | 84/100 [2:12:43<28:47, 107.99s/it]Best trial: 82. Best value: 0.869695:  85%|########5 | 85/100 [2:12:43<27:11, 108.80s/it]Best trial: 82. Best value: 0.869695:  85%|########5 | 85/100 [2:14:37<27:11, 108.80s/it]Best trial: 82. Best value: 0.869695:  86%|########6 | 86/100 [2:14:37<25:45, 110.37s/it]Best trial: 82. Best value: 0.869695:  86%|########6 | 86/100 [2:16:33<25:45, 110.37s/it]Best trial: 82. Best value: 0.869695:  87%|########7 | 87/100 [2:16:33<24:16, 112.03s/it]Best trial: 82. Best value: 0.869695:  87%|########7 | 87/100 [2:18:20<24:16, 112.03s/it]Best trial: 82. Best value: 0.869695:  88%|########8 | 88/100 [2:18:20<22:05, 110.45s/it]Best trial: 82. Best value: 0.869695:  88%|########8 | 88/100 [2:20:14<22:05, 110.45s/it]Best trial: 82. Best value: 0.869695:  89%|########9 | 89/100 [2:20:14<20:27, 111.60s/it]Best trial: 82. Best value: 0.869695:  89%|########9 | 89/100 [2:22:09<20:27, 111.60s/it]Best trial: 82. Best value: 0.869695:  90%|######### | 90/100 [2:22:09<18:45, 112.55s/it]Best trial: 82. Best value: 0.869695:  90%|######### | 90/100 [2:23:35<18:45, 112.55s/it]Best trial: 82. Best value: 0.869695:  91%|#########1| 91/100 [2:23:35<15:42, 104.77s/it]Best trial: 82. Best value: 0.869695:  91%|#########1| 91/100 [2:25:31<15:42, 104.77s/it]Best trial: 82. Best value: 0.869695:  92%|#########2| 92/100 [2:25:31<14:23, 107.98s/it]Best trial: 82. Best value: 0.869695:  92%|#########2| 92/100 [2:27:25<14:23, 107.98s/it]Best trial: 82. Best value: 0.869695:  93%|#########3| 93/100 [2:27:25<12:48, 109.83s/it]Best trial: 82. Best value: 0.869695:  93%|#########3| 93/100 [2:29:02<12:48, 109.83s/it]Best trial: 82. Best value: 0.869695:  94%|#########3| 94/100 [2:29:02<10:35, 105.97s/it]Best trial: 82. Best value: 0.869695:  94%|#########3| 94/100 [2:30:49<10:35, 105.97s/it]Best trial: 82. Best value: 0.869695:  95%|#########5| 95/100 [2:30:49<08:52, 106.43s/it]Best trial: 82. Best value: 0.869695:  95%|#########5| 95/100 [2:32:47<08:52, 106.43s/it]Best trial: 82. Best value: 0.869695:  96%|#########6| 96/100 [2:32:47<07:18, 109.74s/it]Best trial: 82. Best value: 0.869695:  96%|#########6| 96/100 [2:34:46<07:18, 109.74s/it]Best trial: 82. Best value: 0.869695:  97%|#########7| 97/100 [2:34:46<05:38, 112.70s/it]Best trial: 82. Best value: 0.869695:  97%|#########7| 97/100 [2:36:40<05:38, 112.70s/it]Best trial: 82. Best value: 0.869695:  98%|#########8| 98/100 [2:36:40<03:46, 113.12s/it]Best trial: 82. Best value: 0.869695:  98%|#########8| 98/100 [2:38:35<03:46, 113.12s/it]Best trial: 82. Best value: 0.869695:  99%|#########9| 99/100 [2:38:35<01:53, 113.60s/it]Best trial: 82. Best value: 0.869695:  99%|#########9| 99/100 [2:40:36<01:53, 113.60s/it]Best trial: 82. Best value: 0.869695: 100%|##########| 100/100 [2:40:36<00:00, 115.70s/it]Best trial: 82. Best value: 0.869695: 100%|##########| 100/100 [2:40:36<00:00, 96.36s/it] 
+  XGB best: 0.869695
+  XGB params: {'max_depth': 8, 'learning_rate': 0.03244746463940461, 'subsample': 0.89950622112304, 'colsample_bytree': 0.6447843642351988, 'min_child_weight': 97, 'reg_alpha': 4.590615988739031, 'reg_lambda': 1.9405816110114396}
+
+  Evaluating Optuna best params with LGB+XGB ensemble...
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[490]	valid_0's auc: 0.865179
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[420]	valid_0's auc: 0.866604
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[484]	valid_0's auc: 0.868236
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[485]	valid_0's auc: 0.869969
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[666]	valid_0's auc: 0.868691
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[566]	valid_0's auc: 0.866323
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[787]	valid_0's auc: 0.868761
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[860]	valid_0's auc: 0.8701
+Training until validation scores don't improve for 50 rounds
+Did not meet early stopping. Best iteration is:
+[995]	valid_0's auc: 0.871679
+Training until validation scores don't improve for 50 rounds
+Early stopping, best iteration is:
+[837]	valid_0's auc: 0.87028
+
+  TASK 5 Summary:
+    Baseline LGB+XGB mean: 0.869292
+    Optimized LGB+XGB mean: 0.869987 (+0.000695)
+    Overfit: PASS
+    Verdict: ADOPTED
+    (Threshold: +0.0005 required)
+
+  Report saved: C:\Users\takum\keiba-ai\data\v15_full_improvement_report.json
+
+======================================================================
+  FINAL RESULTS
+======================================================================
+  Baseline:       v14.1 WF AUC 0.885600
+  TASK 1 (v14.2): ADOPTED AUC=0.886445
+  TASK 4 (CB):    NOT ADOPTED 5m=0.886202
+  TASK 5 (Opt):   ADOPTED delta=+0.000695
+  Final model:    v14.2 AUC=0.886445
+  Elapsed:        505.1 min
+======================================================================
