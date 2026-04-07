@@ -19,6 +19,7 @@ Usage:
     # 個別ソースのスクレイピング
     python tools/scrape_master_course.py --source laps --year 2025 --limit 10
     python tools/scrape_master_course.py --source index --year 2024 --limit 100
+    python tools/scrape_master_course.py --source race_laps --year 2020-2026
     python tools/scrape_master_course.py --source bias --year 2025
     python tools/scrape_master_course.py --source pace --year 2025
     python tools/scrape_master_course.py --source upset --year 2025
@@ -28,6 +29,7 @@ Usage:
 
     # 単一レース
     python tools/scrape_master_course.py --source laps --race_id 202605020511
+    python tools/scrape_master_course.py --source index --race_id 202505010101
 """
 import pandas as pd
 import numpy as np
@@ -65,6 +67,7 @@ MAX_RETRIES = 3
 # ---------- Output files ----------
 CSV_INDIVIDUAL_LAP = os.path.join(DATA_DIR, 'netkeiba_individual_lap.csv')
 CSV_MASTER_INDEX = os.path.join(DATA_DIR, 'netkeiba_master_index.csv')
+CSV_RACE_LAPS = os.path.join(DATA_DIR, 'netkeiba_race_laps.csv')
 CSV_TRACK_BIAS = os.path.join(DATA_DIR, 'netkeiba_track_bias.csv')
 CSV_PACE_PREDICTION = os.path.join(DATA_DIR, 'netkeiba_pace_prediction.csv')
 CSV_UPSET_LEVEL = os.path.join(DATA_DIR, 'netkeiba_upset_level.csv')
@@ -81,8 +84,16 @@ HEADER_LAP = [
 
 HEADER_MASTER_INDEX = [
     'race_id', 'umaban', 'horse_name',
-    'start_index', 'chase_index', 'finish_index',
-    'total_index', 'index_max', 'index_avg5',
+    'master_total', 'master_start', 'master_chase', 'master_finish',
+]
+
+HEADER_RACE_LAPS = [
+    'race_id',
+    'furlong_1', 'furlong_2', 'furlong_3', 'furlong_4', 'furlong_5',
+    'furlong_6', 'furlong_7', 'furlong_8', 'furlong_9', 'furlong_10',
+    'furlong_11', 'furlong_12', 'furlong_13', 'furlong_14', 'furlong_15',
+    'furlong_16', 'furlong_17', 'furlong_18',
+    'total_furlongs', 'first_3f', 'last_3f',
 ]
 
 HEADER_TRACK_BIAS = [
@@ -618,96 +629,352 @@ def _parse_db_result_laps(soup, race_id):
 # ===================================================================
 
 def scrape_master_index(session, race_id):
-    """Parse 3-component speed index (start/chase/finish) from speed.html.
+    """Parse 3-component master speed index from db.netkeiba.com result page.
 
-    Regular speed.html has: index_max, index_avg5, index_dist, index_course,
-                            index_run1, index_run2, index_run3
-    Master version may add: start_index, chase_index, finish_index
+    Source: https://db.netkeiba.com/race/{race_id}/
+    The result table (class="race_table_01 nk_tb_common") contains per-horse:
+      - TimeIndexMasterCell01 cells (4 per horse, hidden by default):
+        [0] = master_total (総合指数M)
+        [1] = master_start (スタート指数)
+        [2] = master_chase (追走指数)
+        [3] = master_finish (上がり指数)
+
+    Requires netkeiba premium (master course) cookie for data to be populated.
+
+    Returns list of rows: [race_id, umaban, horse_name,
+                           master_total, master_start, master_chase, master_finish]
     """
-    url = f"https://race.netkeiba.com/race/speed.html?race_id={race_id}"
+    url = f"https://db.netkeiba.com/race/{race_id}/"
     resp = _get(session, url)
     if resp is None:
         return []
 
     soup = BeautifulSoup(resp.text, 'html.parser')
-    html_text = resp.text
-
     rows = []
 
-    # Check for master-specific 3-component index
-    has_3comp = any(kw in html_text.lower() for kw in
-                    ['start_index', 'chase_index', 'finish_index',
-                     'sk__start', 'sk__chase', 'sk__finish',
-                     '3分解', 'スタート指数', '追走指数', '上がり指数'])
-
-    # Find the speed index table
-    table = soup.find('table', class_=re.compile(r'SpeedIndex|speed'))
-    if not table:
-        # Broader search
-        for t in soup.find_all('table'):
-            if t.find('td', class_=re.compile(r'sk__')):
-                table = t
-                break
-    if not table:
+    # Find the main result table
+    result_table = soup.find('table', class_=re.compile(r'race_table_01'))
+    if not result_table:
+        result_table = soup.find('table', {'summary': re.compile(r'レース結果', re.I)})
+    if not result_table:
         return rows
 
-    for tr in table.find_all('tr'):
+    for tr in result_table.find_all('tr'):
         tds = tr.find_all('td')
-        if len(tds) < 5:
+        if len(tds) < 8:
             continue
 
-        # Build td class map
-        td_map = {}
-        for td in tds:
-            for cls in td.get('class', []):
-                if cls.startswith('sk__'):
-                    td_map[cls] = td
-
-        umaban_td = td_map.get('sk__umaban')
-        if not umaban_td:
-            continue
+        # Extract umaban (column index 2: 着順=0, 枠番=1, 馬番=2)
         try:
-            umaban = int(umaban_td.get_text(strip=True))
-        except (ValueError, TypeError):
+            umaban_text = tds[2].get_text(strip=True)
+            if not re.match(r'^\d{1,2}$', umaban_text):
+                continue
+            umaban = int(umaban_text)
+        except (IndexError, ValueError):
             continue
 
-        horse_td = td_map.get('sk__horse_name')
+        # Extract horse name (column index 3)
         horse_name = ''
-        if horse_td:
-            span = horse_td.find('span', class_='Sort_Function_Data_Hidden')
-            horse_name = span.get_text(strip=True) if span else horse_td.get_text(strip=True)[:20]
+        try:
+            horse_td = tds[3]
+            a_tag = horse_td.find('a')
+            if a_tag:
+                horse_name = a_tag.get_text(strip=True)
+            else:
+                horse_name = horse_td.get_text(strip=True)
+        except (IndexError, AttributeError):
+            pass
 
-        # Extract standard indices
-        def _ext(key):
-            td = td_map.get(key)
-            if not td:
+        # Extract TimeIndexMasterCell01 values (4 cells per horse)
+        master_cells = tr.find_all('td', class_=re.compile(r'TimeIndexMasterCell01'))
+        if len(master_cells) < 4:
+            # No master data for this horse (premium not available or no data)
+            continue
+
+        def _extract_index(td_elem):
+            """Extract integer index value from a TimeIndexMasterCell01 td."""
+            text = td_elem.get_text(strip=True)
+            if not text:
                 return ''
-            span = td.find('span', class_='Sort_Function_Data_Hidden')
-            if span:
-                try:
-                    return int(span.get_text(strip=True))
-                except ValueError:
-                    return ''
-            txt = td.get_text(strip=True)
-            m = re.match(r'(\d{2,4})', txt)
+            m = re.match(r'^(\d+)$', text)
             return int(m.group(1)) if m else ''
 
-        # 3-component indices (master-only, may not exist)
-        start_idx = _ext('sk__start_index') or _ext('sk__start')
-        chase_idx = _ext('sk__chase_index') or _ext('sk__chase')
-        finish_idx = _ext('sk__finish_index') or _ext('sk__finish')
+        master_total = _extract_index(master_cells[0])
+        master_start = _extract_index(master_cells[1])
+        master_chase = _extract_index(master_cells[2])
+        master_finish = _extract_index(master_cells[3])
 
-        # Standard indices
-        total_idx = _ext('sk__max_index')
-        idx_avg = _ext('sk__average_index')
+        # Skip if all values are empty (premium not activated)
+        if master_total == '' and master_start == '' and master_chase == '' and master_finish == '':
+            continue
 
         rows.append([
             race_id, umaban, horse_name,
-            start_idx, chase_idx, finish_idx,
-            total_idx, idx_avg,
+            master_total, master_start, master_chase, master_finish,
         ])
 
     return rows
+
+
+def bulk_scrape_master_index(session, years, limit=0, delay=5):
+    """Bulk scrape master index data for specified years.
+
+    Args:
+        session: requests session with cookies
+        years: list of years (e.g. [2020, 2021, ..., 2026])
+        limit: max races to scrape (0 = unlimited)
+        delay: seconds between requests (default 5)
+    """
+    print("=" * 60)
+    print(f"  Bulk Scrape: Master Index (3-component)")
+    print(f"  Years: {years}")
+    print(f"  Output: {CSV_MASTER_INDEX}")
+    print(f"  Delay: {delay}s")
+    print("=" * 60)
+
+    all_race_ids = []
+    for year in years:
+        ids = get_race_ids(year)
+        all_race_ids.extend(ids)
+
+    all_race_ids = sorted(set(all_race_ids))
+    print(f"  Total race_ids: {len(all_race_ids)}")
+
+    existing = _load_existing_race_ids(CSV_MASTER_INDEX)
+    race_ids = [rid for rid in all_race_ids if str(rid) not in existing]
+    print(f"  Already scraped: {len(existing)}")
+    print(f"  Remaining: {len(race_ids)}")
+
+    if limit > 0:
+        race_ids = race_ids[:limit]
+        print(f"  Limited to: {limit}")
+
+    if not race_ids:
+        print("  Nothing to scrape.")
+        return {'races': 0, 'rows': 0, 'errors': 0, 'empty': 0}
+
+    total = len(race_ids)
+    stats = {'races': 0, 'rows': 0, 'errors': 0, 'empty': 0}
+    start_time = time.time()
+
+    for i, race_id in enumerate(race_ids):
+        elapsed = time.time() - start_time
+        eta = (elapsed / (i + 1)) * (total - i - 1) if i > 0 else 0
+        print(f"\r  [{i+1}/{total} {(i+1)/total*100:.0f}%] {race_id} "
+              f"({stats['races']}ok/{stats['empty']}empty/{stats['errors']}err "
+              f"ETA:{eta/60:.0f}m)", end='', flush=True)
+
+        try:
+            result_rows = scrape_master_index(session, race_id)
+            if result_rows:
+                _append_csv(CSV_MASTER_INDEX, result_rows, HEADER_MASTER_INDEX)
+                stats['races'] += 1
+                stats['rows'] += len(result_rows)
+            else:
+                stats['empty'] += 1
+        except Exception as e:
+            stats['errors'] += 1
+            if stats['errors'] <= 5:
+                print(f"\n  Error on {race_id}: {e}")
+            elif stats['errors'] == 6:
+                print("\n  (Suppressing further error messages)")
+
+        time.sleep(delay)
+
+        if (i + 1) % 50 == 0:
+            print(f"\n  Progress: {stats['races']} races / "
+                  f"{stats['rows']} rows / {stats['errors']} errors / "
+                  f"{stats['empty']} empty")
+
+        if stats['errors'] > 10 and stats['races'] == 0 and stats['empty'] == 0:
+            print("\n\n  ABORT: Too many errors with no successful scrapes.")
+            break
+
+    elapsed_total = time.time() - start_time
+    print(f"\n\n{'=' * 60}")
+    print(f"  COMPLETE: Master Index (3-component)")
+    print(f"  Races scraped: {stats['races']}")
+    print(f"  Rows collected: {stats['rows']}")
+    print(f"  Empty (no data): {stats['empty']}")
+    print(f"  Errors: {stats['errors']}")
+    print(f"  Time: {elapsed_total/60:.1f} minutes")
+    if os.path.exists(CSV_MASTER_INDEX):
+        try:
+            total_rows = len(pd.read_csv(CSV_MASTER_INDEX, encoding='utf-8-sig'))
+            print(f"  CSV total rows: {total_rows}")
+        except Exception:
+            pass
+    print("=" * 60)
+    return stats
+
+
+def scrape_race_laps(session, race_id):
+    """Parse race-level lap times from db.netkeiba.com result page.
+
+    Source: https://db.netkeiba.com/race/{race_id}/
+    Looks for <table class="result_table_02" summary="ラップタイム">
+    which contains:
+      - ラップ row: "12.7 - 11.5 - 12.3 - ..." (per-furlong lap times)
+      - ペース row: "12.7 - 24.2 - 36.5 - ... (first_3f-last_3f)"
+
+    Returns list with single row:
+        [race_id, f1, f2, ..., f18, total_furlongs, first_3f, last_3f]
+    """
+    url = f"https://db.netkeiba.com/race/{race_id}/"
+    resp = _get(session, url)
+    if resp is None:
+        return []
+
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    # Find the lap time table
+    lap_table = soup.find('table', {'summary': re.compile(r'ラップタイム', re.I)})
+    if not lap_table:
+        # Fallback: look for table with caption containing ラップ
+        for t in soup.find_all('table'):
+            caption = t.find('caption')
+            if caption and 'ラップ' in caption.get_text():
+                lap_table = t
+                break
+    if not lap_table:
+        return []
+
+    laps = []
+    first_3f = ''
+    last_3f = ''
+
+    for tr in lap_table.find_all('tr'):
+        th = tr.find('th')
+        td = tr.find('td')
+        if not th or not td:
+            continue
+
+        th_text = th.get_text(strip=True)
+        td_text = td.get_text(strip=True)
+
+        if 'ラップ' in th_text:
+            # Parse "12.7 - 11.5 - 12.3 - 12.6 - 12.5 - 12.5 - 12.3"
+            parts = re.findall(r'(\d+\.\d)', td_text)
+            laps = [float(p) for p in parts]
+
+        elif 'ペース' in th_text:
+            # Parse "(36.5-37.3)" at the end for first_3f and last_3f
+            m = re.search(r'\((\d+\.\d)\s*[-\u2013\u2212]\s*(\d+\.\d)\)', td_text)
+            if m:
+                first_3f = float(m.group(1))
+                last_3f = float(m.group(2))
+
+    if not laps:
+        return []
+
+    # Build row: race_id, furlong_1..furlong_18, total_furlongs, first_3f, last_3f
+    row = [race_id]
+    for j in range(18):
+        row.append(laps[j] if j < len(laps) else '')
+    row.append(len(laps))  # total_furlongs
+
+    # If first_3f/last_3f not parsed from ペース row, compute from laps
+    if not first_3f and len(laps) >= 3:
+        first_3f = round(sum(laps[:3]), 1)
+    if not last_3f and len(laps) >= 3:
+        last_3f = round(sum(laps[-3:]), 1)
+
+    row.append(first_3f)
+    row.append(last_3f)
+
+    return [row]
+
+
+def bulk_scrape_race_laps(session, years, limit=0, delay=5):
+    """Bulk scrape race-level lap times for specified years.
+
+    Args:
+        session: requests session with cookies
+        years: list of years
+        limit: max races to scrape (0 = unlimited)
+        delay: seconds between requests (default 5)
+    """
+    print("=" * 60)
+    print(f"  Bulk Scrape: Race Laps")
+    print(f"  Years: {years}")
+    print(f"  Output: {CSV_RACE_LAPS}")
+    print(f"  Delay: {delay}s")
+    print("=" * 60)
+
+    all_race_ids = []
+    for year in years:
+        ids = get_race_ids(year)
+        all_race_ids.extend(ids)
+
+    all_race_ids = sorted(set(all_race_ids))
+    print(f"  Total race_ids: {len(all_race_ids)}")
+
+    existing = _load_existing_race_ids(CSV_RACE_LAPS)
+    race_ids = [rid for rid in all_race_ids if str(rid) not in existing]
+    print(f"  Already scraped: {len(existing)}")
+    print(f"  Remaining: {len(race_ids)}")
+
+    if limit > 0:
+        race_ids = race_ids[:limit]
+        print(f"  Limited to: {limit}")
+
+    if not race_ids:
+        print("  Nothing to scrape.")
+        return {'races': 0, 'rows': 0, 'errors': 0, 'empty': 0}
+
+    total = len(race_ids)
+    stats = {'races': 0, 'rows': 0, 'errors': 0, 'empty': 0}
+    start_time = time.time()
+
+    for i, race_id in enumerate(race_ids):
+        elapsed = time.time() - start_time
+        eta = (elapsed / (i + 1)) * (total - i - 1) if i > 0 else 0
+        print(f"\r  [{i+1}/{total} {(i+1)/total*100:.0f}%] {race_id} "
+              f"({stats['races']}ok/{stats['empty']}empty/{stats['errors']}err "
+              f"ETA:{eta/60:.0f}m)", end='', flush=True)
+
+        try:
+            result_rows = scrape_race_laps(session, race_id)
+            if result_rows:
+                _append_csv(CSV_RACE_LAPS, result_rows, HEADER_RACE_LAPS)
+                stats['races'] += 1
+                stats['rows'] += len(result_rows)
+            else:
+                stats['empty'] += 1
+        except Exception as e:
+            stats['errors'] += 1
+            if stats['errors'] <= 5:
+                print(f"\n  Error on {race_id}: {e}")
+            elif stats['errors'] == 6:
+                print("\n  (Suppressing further error messages)")
+
+        time.sleep(delay)
+
+        if (i + 1) % 50 == 0:
+            print(f"\n  Progress: {stats['races']} races / "
+                  f"{stats['rows']} rows / {stats['errors']} errors / "
+                  f"{stats['empty']} empty")
+
+        if stats['errors'] > 10 and stats['races'] == 0 and stats['empty'] == 0:
+            print("\n\n  ABORT: Too many errors with no successful scrapes.")
+            break
+
+    elapsed_total = time.time() - start_time
+    print(f"\n\n{'=' * 60}")
+    print(f"  COMPLETE: Race Laps")
+    print(f"  Races scraped: {stats['races']}")
+    print(f"  Rows collected: {stats['rows']}")
+    print(f"  Empty (no data): {stats['empty']}")
+    print(f"  Errors: {stats['errors']}")
+    print(f"  Time: {elapsed_total/60:.1f} minutes")
+    if os.path.exists(CSV_RACE_LAPS):
+        try:
+            total_rows = len(pd.read_csv(CSV_RACE_LAPS, encoding='utf-8-sig'))
+            print(f"  CSV total rows: {total_rows}")
+        except Exception:
+            pass
+    print("=" * 60)
+    return stats
 
 
 # ===================================================================
@@ -1013,6 +1280,12 @@ SOURCE_MAP = {
         'header': HEADER_MASTER_INDEX,
         'label': 'Master Index (3-component)',
     },
+    'race_laps': {
+        'func': scrape_race_laps,
+        'csv': CSV_RACE_LAPS,
+        'header': HEADER_RACE_LAPS,
+        'label': 'Race Laps (per-furlong)',
+    },
     'bias': {
         'func': scrape_track_bias,
         'csv': CSV_TRACK_BIAS,
@@ -1166,13 +1439,14 @@ Examples:
   python tools/scrape_master_course.py --investigate --race_id 202605020511
   python tools/scrape_master_course.py --source laps --year 2025 --limit 10
   python tools/scrape_master_course.py --source index --year 2024 --limit 100
+  python tools/scrape_master_course.py --source race_laps --year 2020-2026
   python tools/scrape_master_course.py --source all --year 2020-2026
         """,
     )
     parser.add_argument('--investigate', action='store_true',
                         help='Investigation mode: probe all URLs for one race')
     parser.add_argument('--source', type=str, default='',
-                        choices=['laps', 'index', 'bias', 'pace', 'upset', 'all', ''],
+                        choices=['laps', 'index', 'race_laps', 'bias', 'pace', 'upset', 'all', ''],
                         help='Data source to scrape')
     parser.add_argument('--year', type=str, default='2025',
                         help='Year or year range (e.g., 2025 or 2020-2026)')
@@ -1228,7 +1502,7 @@ Examples:
 
     # Bulk scrape mode
     if not args.source:
-        print("ERROR: --source is required (laps/index/bias/pace/upset/all)")
+        print("ERROR: --source is required (laps/index/race_laps/bias/pace/upset/all)")
         print("  Or use --investigate --race_id XXXX for investigation mode")
         sys.exit(1)
 
