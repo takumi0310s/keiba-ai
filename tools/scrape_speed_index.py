@@ -72,11 +72,12 @@ def _load_session():
 def _get(session, url, retry=0):
     try:
         resp = session.get(url, timeout=15)
-        if resp.status_code in (403, 429):
+        if resp.status_code in (400, 403, 429, 500, 502, 503):
             if retry < MAX_RETRIES:
                 print(f"  {resp.status_code} - retry {retry+1}")
                 time.sleep(RETRY_DELAY)
                 return _get(session, url, retry + 1)
+            print(f"  FAIL {resp.status_code} after {MAX_RETRIES} retries: {url}")
             return None
         if resp.status_code == 404:
             return None

@@ -78,11 +78,14 @@ def _load_session():
 def _get(session, url, retry=0):
     try:
         resp = session.get(url, timeout=15)
-        if resp.status_code in (403, 429):
+        if resp.status_code in (400, 403, 429, 500, 502, 503):
             if retry < MAX_RETRIES:
                 print(f"  {resp.status_code} - waiting {RETRY_DELAY}s (retry {retry+1}/{MAX_RETRIES})")
                 time.sleep(RETRY_DELAY)
                 return _get(session, url, retry + 1)
+            print(f"  FAIL {resp.status_code} after {MAX_RETRIES} retries: {url}")
+            return None
+        if resp.status_code == 404:
             return None
         resp.encoding = 'EUC-JP'
         return resp
@@ -138,111 +141,302 @@ def get_race_ids_for_year(year):
     return sorted(nk_ids)
 
 
+def _detect_course(text):
+    """テキストからコース種別を判定する。"""
+    if not text:
+        return ''
+    if '坂' in text:
+        return '坂路'
+    if re.search(r'[ＣC][ＷW]|ウッド', text):
+        return 'CW'
+    if re.search(r'[ＤD][ＰP]|ポリ', text):
+        return 'ポリトラック'
+    if re.match(r'^[美栗]?[ＥＢＡＤＣEBADCニ]$', text.strip()):
+        return 'CW'
+    if re.search(r'[美栗][ＷW]', text):
+        return 'CW'
+    if re.search(r'[美栗][ＥＢＡＤＣEBADCニ]', text):
+        return 'CW'
+    if re.search(r'芝', text):
+        return '芝'
+    if re.search(r'ダ[ートー]', text) or text.strip() == 'ダ':
+        return 'ダート'
+    return ''
+
+
+_INT_MAP = {'一杯': '一杯', '強め': '強め', '馬也': '馬なり', '馬ナリ': '馬なり',
+            'G前': '強め', '直一杯': '一杯', '仕掛': '強め', '末強め': '強め',
+            '馬なり': '馬なり'}
+
+
+def _extract_rank(row):
+    """行からRank (A/B/C/D) を抽出する。"""
+    for td in row.find_all("td"):
+        for cls in td.get("class", []):
+            if cls.startswith("Rank_"):
+                rank_text = cls.replace("Rank_", "")
+                if rank_text in ('A', 'B', 'C', 'D'):
+                    return rank_text
+    return ""
+
+
+def _parse_time_text(time_text):
+    """TrainingTimeData cell の生テキストから4F/3F/1Fを抽出する。"""
+    t4f, t3f, t1f = 0.0, 0.0, 0.0
+    if not time_text or '----' in time_text:
+        return t4f, t3f, t1f
+    nums = re.findall(r'(\d{2}\.\d)', time_text)
+    if not nums:
+        return t4f, t3f, t1f
+    vals = [float(x) for x in nums]
+    candidates_4f = [v for v in vals if 35 < v < 70]
+    candidates_3f = [v for v in vals if 25 < v < 50]
+    candidates_1f = [v for v in vals if 10 < v < 20]
+    if candidates_4f:
+        t4f = candidates_4f[0]
+    if candidates_3f:
+        for v in candidates_3f:
+            if t4f == 0 or v < t4f:
+                t3f = v
+                break
+    if candidates_1f:
+        t1f = candidates_1f[-1]
+    return t4f, t3f, t1f
+
+
+def _parse_time_list(ul_elem):
+    """TrainingTimeDataList ul要素から4F/3F/1Fを抽出する。"""
+    t4f, t3f, t1f = 0.0, 0.0, 0.0
+    lis = ul_elem.find_all('li')
+    times = []
+    for li in lis:
+        t = li.get_text(strip=True)
+        m = re.match(r'(\d+\.?\d*)', t)
+        times.append(float(m.group(1)) if m else 0.0)
+    if len(times) >= 5:
+        if times[0] > 0:  # CW: 6F,5F,4F,3F,1F
+            t4f, t3f, t1f = times[2], times[3], times[4]
+        else:  # 坂路: -,4F,3F,2F,1F
+            t4f, t3f, t1f = times[1], times[2], times[4]
+    elif len(times) == 4:
+        t4f, t3f, t1f = times[0], times[1], times[3]
+    return t4f, t3f, t1f
+
+
 def scrape_oikiri(session, race_id, race_date=''):
-    """Scrape training times from oikiri page."""
+    """Scrape training times from oikiri page.
+
+    Supports two HTML patterns:
+      Pattern A: single row (13 cells) — horse info + training detail in one row
+      Pattern B: two-row pair — 5 cells (horse) + 9 cells (detail)
+    Uses same logic as scrape_training.py for robustness.
+    """
     url = f"https://race.netkeiba.com/race/oikiri.html?race_id={race_id}"
     resp = _get(session, url)
     if resp is None:
         return []
 
     soup = BeautifulSoup(resp.text, 'html.parser')
-    table = soup.find('table', class_=re.compile(r'OikiriTable'))
+
+    # Find table: try OikiriAllWrapper first, then OikiriTable regex
+    wrapper = soup.find('div', class_='OikiriAllWrapper')
+    if wrapper:
+        table = wrapper.find('table')
+    else:
+        table = soup.find('table', class_=re.compile(r'Oikiri'))
     if not table:
         return []
 
     time_lists = soup.find_all('ul', class_='TrainingTimeDataList')
-    rows_data = table.find_all('tr', class_=re.compile(r'OikiriDataHead'))
 
     results = []
-    for idx, row in enumerate(rows_data):
+    horse_order = []  # track horse encounter order for TrainingTimeDataList alignment
+    pending_umaban = None
+    pending_horse_name = ''
+
+    for row in table.find_all('tr'):
         td_umaban = row.select_one('td.Umaban')
-        if not td_umaban:
-            continue
-        try:
-            umaban = int(td_umaban.get_text(strip=True))
-        except (ValueError, TypeError):
-            continue
+        cells = row.find_all('td')
 
-        # Horse name
-        horse_div = row.select_one('div.Horse_Name')
-        horse_name = horse_div.get_text(strip=True) if horse_div else ''
+        if td_umaban:
+            try:
+                umaban = int(td_umaban.get_text(strip=True))
+            except (ValueError, TypeError):
+                continue
 
-        full_text = row.get_text(strip=True)
+            horse_div = row.select_one('div.Horse_Name')
+            horse_name = horse_div.get_text(strip=True) if horse_div else ''
 
-        # Course
-        course = ''
-        if re.search(r'[美栗]坂', full_text): course = '坂路'
-        elif re.search(r'[美栗][ＷW]', full_text): course = 'CW'
-        elif re.search(r'ポリ', full_text): course = 'ポリトラック'
+            if len(cells) >= 10:
+                # Pattern A: single row with all data
+                full_text = row.get_text(strip=True)
 
-        # Condition (馬場状態)
-        cond = ''
-        for c in ['良', '稍', '重', '不']:
-            if c in full_text:
-                cond = c
-                break
+                rank = _extract_rank(row)
 
-        # Rider
-        rider = ''
-        td_rider = row.select_one('td.Jockey') or row.select_one('td.Rider')
-        if td_rider:
-            rider = td_rider.get_text(strip=True)[:10]
+                # Course
+                course = ''
+                for td in cells:
+                    ct = td.get_text(strip=True)
+                    c = _detect_course(ct)
+                    if c and len(ct) <= 12:
+                        course = c
+                        break
 
-        # Intensity
-        intensity = ''
-        for pat, name in [('一杯', '一杯'), ('強め', '強め'), ('馬なり', '馬なり'), ('末強め', '末強め')]:
-            if pat in full_text:
-                intensity = name
-                break
+                # Condition
+                cond = ''
+                for c in ['良', '稍', '重', '不']:
+                    if c in full_text:
+                        cond = c
+                        break
 
-        # Rank
-        rank = ''
-        td_critic = row.select_one('td.Training_Critic')
-        evaluation = td_critic.get_text(strip=True) if td_critic else ''
-        for td in row.find_all('td'):
-            for cls in td.get('class', []):
-                if cls.startswith('Rank_'):
-                    rank_text = cls.replace('Rank_', '')
-                    if rank_text in ('A', 'B', 'C', 'D'):
-                        rank = rank_text
-                    elif any(x in rank_text for x in ['好調教', '抜群', '絶好']):
-                        rank = 'A'
-                    elif any(x in rank_text for x in ['上々', '乗込入念', '良化']):
-                        rank = 'B'
-                    else:
-                        rank = 'C'
+                # Rider
+                rider = ''
+                td_rider = row.select_one('td.Jockey') or row.select_one('td.Rider')
+                if td_rider:
+                    rider = td_rider.get_text(strip=True)[:10]
+
+                # Intensity
+                intensity = ''
+                td_load = row.select_one('td.TrainingLoad')
+                if td_load:
+                    load_text = td_load.get_text(strip=True)
+                    for key, val in _INT_MAP.items():
+                        if key in load_text:
+                            intensity = val
+                            break
+                if not intensity:
+                    for key, val in _INT_MAP.items():
+                        if key in full_text:
+                            intensity = val
+                            break
+
+                # Evaluation
+                td_critic = row.select_one('td.Training_Critic')
+                evaluation = td_critic.get_text(strip=True) if td_critic else ''
+
+                # Training date
+                training_date = ''
+                td_day = row.select_one('td.Training_Day')
+                if td_day:
+                    training_date = td_day.get_text(strip=True)
+                if not training_date:
+                    m = re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})', full_text)
+                    if m:
+                        training_date = f"{m.group(1)}/{m.group(2)}/{m.group(3)}"
+
+                # Times from TrainingTimeData cell
+                t4f = t3f = t1f = 0.0
+                td_time = row.select_one('td.TrainingTimeData')
+                if td_time:
+                    t4f, t3f, t1f = _parse_time_text(td_time.get_text(strip=True))
+
+                results.append([
+                    race_id, race_date, umaban, horse_name, course, cond,
+                    '', '', t4f, t3f, t1f,  # no 6f/5f from cell parse
+                    rider, intensity, rank, evaluation, training_date,
+                ])
+                horse_order.append(len(results) - 1)
+                pending_umaban = None
+            else:
+                # Pattern B: horse row only, wait for detail row
+                pending_umaban = umaban
+                pending_horse_name = horse_name
+
+        elif pending_umaban is not None:
+            # Pattern B: detail row
+            full_text = row.get_text(strip=True)
+            rank = _extract_rank(row)
+
+            course = ''
+            for td in cells:
+                ct = td.get_text(strip=True)
+                c = _detect_course(ct)
+                if c and len(ct) <= 12:
+                    course = c
                     break
-            if rank:
-                break
+            if not course:
+                course = _detect_course(full_text)
 
-        # Training date
-        training_date = ''
-        m = re.search(r'(\d{4})/(\d{2})/(\d{2})', full_text)
-        if m:
-            training_date = f"{m.group(1)}/{m.group(2)}/{m.group(3)}"
+            cond = ''
+            for c in ['良', '稍', '重', '不']:
+                if c in full_text:
+                    cond = c
+                    break
 
-        # Times from TrainingTimeDataList
-        t6f = t5f = t4f = t3f = t1f = 0.0
-        if idx < len(time_lists):
-            lis = time_lists[idx].find_all('li')
-            times = []
-            for li in lis:
-                t = li.get_text(strip=True)
-                m = re.match(r'(\d+\.?\d*)\(', t)
-                times.append(float(m.group(1)) if m else 0.0)
-            if len(times) >= 5:
-                if times[0] > 0:  # CW: 6F,5F,4F,3F,1F
-                    t6f, t5f, t4f, t3f, t1f = times[0], times[1], times[2], times[3], times[4]
-                else:  # 坂路: -,4F,3F,2F,1F
-                    t4f, t3f, t1f = times[1], times[2], times[4]
+            rider = ''
+            td_rider = row.select_one('td.Jockey') or row.select_one('td.Rider')
+            if td_rider:
+                rider = td_rider.get_text(strip=True)[:10]
 
-        results.append([
-            race_id, race_date, umaban, horse_name, course, cond,
-            rider, t6f, t5f, t4f, t3f, t1f,
-            intensity, rank, evaluation, training_date,
+            intensity = ''
+            td_load = row.select_one('td.TrainingLoad')
+            if td_load:
+                load_text = td_load.get_text(strip=True)
+                for key, val in _INT_MAP.items():
+                    if key in load_text:
+                        intensity = val
+                        break
+            if not intensity:
+                for key, val in _INT_MAP.items():
+                    if key in full_text:
+                        intensity = val
+                        break
+
+            td_critic = row.select_one('td.Training_Critic')
+            evaluation = td_critic.get_text(strip=True) if td_critic else ''
+
+            training_date = ''
+            td_day = row.select_one('td.Training_Day')
+            if td_day:
+                training_date = td_day.get_text(strip=True)
+            if not training_date:
+                m = re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})', full_text)
+                if m:
+                    training_date = f"{m.group(1)}/{m.group(2)}/{m.group(3)}"
+
+            t4f = t3f = t1f = 0.0
+            td_time = row.select_one('td.TrainingTimeData')
+            if td_time:
+                t4f, t3f, t1f = _parse_time_text(td_time.get_text(strip=True))
+
+            results.append([
+                race_id, race_date, pending_umaban, pending_horse_name, course, cond,
+                '', '', t4f, t3f, t1f,
+                rider, intensity, rank, evaluation, training_date,
+            ])
+            horse_order.append(len(results) - 1)
+            pending_umaban = None
+
+    # Fill times from TrainingTimeDataList for horses missing 4F
+    for ti, res_idx in enumerate(horse_order):
+        if ti >= len(time_lists):
+            break
+        row_data = results[res_idx]
+        # row_data[8] = t4f (index after race_id, race_date, umaban, horse_name, course, cond, t6f_placeholder, t5f_placeholder)
+        if row_data[8] == 0.0:  # t4f
+            t4f, t3f, t1f = _parse_time_list(time_lists[ti])
+            if t4f > 0:
+                row_data[8] = t4f
+            if t3f > 0 and row_data[9] == 0.0:
+                row_data[9] = t3f
+            if t1f > 0 and row_data[10] == 0.0:
+                row_data[10] = t1f
+
+    # Fix column order to match TRAINING_HEADER:
+    # race_id, race_date, umaban, horse_name, course, condition,
+    # rider, time_6f, time_5f, time_4f, time_3f, time_1f,
+    # intensity, rank, evaluation, training_date
+    fixed = []
+    for r in results:
+        # Current: race_id, race_date, umaban, horse_name, course, cond, '', '', t4f, t3f, t1f, rider, intensity, rank, evaluation, training_date
+        fixed.append([
+            r[0], r[1], r[2], r[3], r[4], r[5],  # race_id..condition
+            r[11],  # rider
+            r[6], r[7], r[8], r[9], r[10],  # time_6f, time_5f, time_4f, time_3f, time_1f
+            r[12], r[13], r[14], r[15],  # intensity, rank, evaluation, training_date
         ])
 
-    return results
+    return fixed
 
 
 def scrape_comment(session, race_id, race_date=''):
@@ -359,13 +553,15 @@ def main():
     all_ids = sorted(set(new_training_ids + new_comment_ids))
     total = len(all_ids)
     stats = {'training_races': 0, 'training_rows': 0, 'comment_races': 0, 'comment_rows': 0,
-             'tendency_races': 0, 'errors': 0}
+             'tendency_races': 0, 'errors': 0, 'http_errors': 0}
+    consecutive_empty = 0
 
     for i, race_id in enumerate(all_ids):
         rid = str(race_id)
         pct = (i + 1) / total * 100
         print(f"\r  [{i+1}/{total} {pct:.0f}%] {rid}", end='', flush=True)
 
+        got_data = False
         try:
             # Training
             if rid not in existing_training:
@@ -374,6 +570,7 @@ def main():
                     _append_csv(TRAINING_CSV, rows, TRAINING_HEADER)
                     stats['training_races'] += 1
                     stats['training_rows'] += len(rows)
+                    got_data = True
 
             # Comments
             if rid not in existing_comment:
@@ -382,6 +579,7 @@ def main():
                     _append_csv(COMMENT_CSV, rows, COMMENT_HEADER)
                     stats['comment_races'] += 1
                     stats['comment_rows'] += len(rows)
+                    got_data = True
 
             # Tendency (only first 100 races to avoid excessive requests)
             if i < 100:
@@ -389,9 +587,21 @@ def main():
                 if rows:
                     _append_csv(TENDENCY_CSV, rows, TENDENCY_HEADER)
                     stats['tendency_races'] += 1
+                    got_data = True
 
         except Exception as e:
             stats['errors'] += 1
+
+        if got_data:
+            consecutive_empty = 0
+        else:
+            consecutive_empty += 1
+
+        # Early abort: if 10+ consecutive races return no data, server may be down
+        if consecutive_empty >= 10 and i >= 10:
+            stats['http_errors'] = consecutive_empty
+            print(f"\n  ABORT: {consecutive_empty} consecutive races with no data. Server may be down.")
+            break
 
         # Rate limiting
         delay = DELAY_MIN + np.random.random() * (DELAY_MAX - DELAY_MIN)
