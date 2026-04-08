@@ -1,0 +1,43 @@
+[
+  {
+    "timestamp": "2026-04-08T21:26:42.716146",
+    "baseline_auc": 0.8856,
+    "checks": {
+      "weekly_auc": [
+        {
+          "year_week": 197001,
+          "date_range": "01/01-01/01",
+          "n": 36,
+          "auc": 0.59375,
+          "hit_rate": 0.1111111111111111
+        }
+      ],
+      "hit_rate": {
+        "overall": 0.2402464065708419,
+        "baseline": 0.5,
+        "n": 487
+      },
+      "weekly_roi": [
+        {
+          "year_week": 197001,
+          "n": 487,
+          "investment": 340900,
+          "payout": 346320,
+          "roi": 101.58990906424172
+        }
+      ]
+    },
+    "alerts": [
+      {
+        "level": "WARNING",
+        "type": "auc_drop",
+        "message": "週次AUC 0.5938がベースライン0.8856から0.2919低下 (W1, N=36)"
+      },
+      {
+        "level": "WARNING",
+        "type": "hit_rate_drop",
+        "message": "的中率 24.0%がBT基準50.0%から26.0%低下 (直近4週, N=487)"
+      }
+    ]
+  }
+]

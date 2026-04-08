@@ -28,7 +28,7 @@ if sys.platform == 'win32':
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 PROGRESS_FILE = os.path.join(DATA_DIR, 'scrape_progress.json')
-LIMIT_PER_YEAR = 500  # Rate-limit safe batch size
+LIMIT_PER_YEAR = 99999  # Rate-limit safe batch size
 
 
 def load_progress():
@@ -109,7 +109,7 @@ def run_year(source, year, limit=500):
         print(f"  Unknown source: {source}")
         return False
 
-    print(f"\n  Running: {source} {year} (limit={LIMIT_PER_YEAR})")
+    print(f"\n  Running: {source} {year} (limit={limit})")
     try:
         result = subprocess.run(cmd, cwd=BASE_DIR, timeout=7200, capture_output=False)
         return result.returncode == 0
