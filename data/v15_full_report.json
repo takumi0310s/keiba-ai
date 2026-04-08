@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-04-09T00:02:44.179797",
+  "v15_model": {
+    "outcome": "all_in",
+    "baseline_auc": 0.8856,
+    "all_in_grid_mean": 0.885836371477551,
+    "delta": 0.00023637147755095622,
+    "features_count": 145,
+    "adopted_features": [
+      "jockey_horse_rides",
+      "jockey_horse_wr",
+      "jockey_horse_top3r",
+      "jockey_change",
+      "jockey_change_to_top",
+      "transport_distance_km",
+      "is_long_transport",
+      "course_renovated",
+      "post_renovation_flag",
+      "gaisha_rank",
+      "paci_sogo_mark",
+      "paci_idm_mark",
+      "paci_jockey_mark",
+      "paci_train_mark"
+    ],
+    "model_saved": true,
+    "yearly_auc": {
+      "2021": 0.8835670513750371,
+      "2022": 0.8840649128578055,
+      "2023": 0.886000375788505,
+      "2024": 0.8887182905694302,
+      "2025": 0.8868312267969778
+    }
+  },
+  "odds_venue_filter": {
+    "total_patterns_tested": 1010,
+    "profitable_patterns": 172,
+    "three_star": 0
+  },
+  "drift_detector": {
+    "status": "installed",
+    "schedule": "Monday 08:30",
+    "checks": [
+      "weekly_auc",
+      "ks_test",
+      "hit_rate",
+      "weekly_roi"
+    ]
+  },
+  "scraper_master_index": {
+    "status": "ready",
+    "data_available": {
+      "3component_index": "2025+ only",
+      "track_index": "all years",
+      "track_bias": "2025+ only",
+      "race_laps": "all years"
+    }
+  },
+  "optuna": {
+    "status": "running_background",
+    "trials": "100 LGB + 100 XGB"
+  }
+}
