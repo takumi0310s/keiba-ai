@@ -206,7 +206,7 @@ def main():
     parser.add_argument('--limit', type=int, default=0, help='Max total races')
     args = parser.parse_args()
 
-    years = [args.year] if args.year > 0 else [2020, 2021, 2022, 2023, 2024]
+    years = [args.year] if args.year > 0 else [2020, 2021, 2022, 2023, 2024, 2025]
 
     print("=" * 60)
     print(f"  Stable Comment Bulk Scraper")

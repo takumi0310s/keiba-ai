@@ -234,7 +234,7 @@ def scrape_oikiri(session, race_id, race_date=''):
     url = f"https://race.netkeiba.com/race/oikiri.html?race_id={race_id}"
     resp = _get(session, url)
     if resp is None:
-        return []
+        return None  # HTTP failure
 
     soup = BeautifulSoup(resp.text, 'html.parser')
 
@@ -444,7 +444,7 @@ def scrape_comment(session, race_id, race_date=''):
     url = f"https://race.netkeiba.com/race/comment.html?race_id={race_id}"
     resp = _get(session, url)
     if resp is None:
-        return []
+        return None  # HTTP failure
     soup = BeautifulSoup(resp.text, 'html.parser')
     table = soup.find('table', class_=re.compile(r'Stable_Comment|Comment_Table'))
     if not table:
@@ -523,9 +523,6 @@ def main():
     # Deduplicate: only 12-digit race IDs
     race_ids = sorted(set(rid for rid in race_ids if len(str(rid)) >= 10))
 
-    if args.limit > 0:
-        race_ids = race_ids[:args.limit]
-
     # Check what we already have
     existing_training = set()
     if os.path.exists(TRAINING_CSV):
@@ -545,6 +542,11 @@ def main():
     new_training_ids = [rid for rid in race_ids if str(rid) not in existing_training]
     new_comment_ids = [rid for rid in race_ids if str(rid) not in existing_comment]
 
+    # Apply limit AFTER filtering existing (not before, to avoid 0-new-rows bug)
+    if args.limit > 0:
+        new_training_ids = new_training_ids[:args.limit]
+        new_comment_ids = new_comment_ids[:args.limit]
+
     print(f"  Total race IDs: {len(race_ids)}")
     print(f"  New for training: {len(new_training_ids)}")
     print(f"  New for comments: {len(new_comment_ids)}")
@@ -562,11 +564,14 @@ def main():
         print(f"\r  [{i+1}/{total} {pct:.0f}%] {rid}", end='', flush=True)
 
         got_data = False
+        http_fail = False
         try:
             # Training
             if rid not in existing_training:
                 rows = scrape_oikiri(session, rid)
-                if rows:
+                if rows is None:
+                    http_fail = True
+                elif rows:
                     _append_csv(TRAINING_CSV, rows, TRAINING_HEADER)
                     stats['training_races'] += 1
                     stats['training_rows'] += len(rows)
@@ -575,7 +580,9 @@ def main():
             # Comments
             if rid not in existing_comment:
                 rows = scrape_comment(session, rid)
-                if rows:
+                if rows is None:
+                    http_fail = True
+                elif rows:
                     _append_csv(COMMENT_CSV, rows, COMMENT_HEADER)
                     stats['comment_races'] += 1
                     stats['comment_rows'] += len(rows)
@@ -591,16 +598,17 @@ def main():
 
         except Exception as e:
             stats['errors'] += 1
+            http_fail = True
 
-        if got_data:
-            consecutive_empty = 0
-        else:
+        if http_fail:
             consecutive_empty += 1
+        else:
+            consecutive_empty = 0
 
-        # Early abort: if 10+ consecutive races return no data, server may be down
+        # Early abort: only on consecutive HTTP failures (not empty content)
         if consecutive_empty >= 10 and i >= 10:
             stats['http_errors'] = consecutive_empty
-            print(f"\n  ABORT: {consecutive_empty} consecutive races with no data. Server may be down.")
+            print(f"\n  ABORT: {consecutive_empty} consecutive HTTP failures. Server may be down.")
             break
 
         # Rate limiting
