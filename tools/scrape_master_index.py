@@ -323,19 +323,20 @@ def main():
     if args.limit > 0:
         all_ids = all_ids[:args.limit]
 
-    # Load existing to skip
-    existing_master = set()
-    if os.path.exists(MASTER_INDEX_CSV):
-        try:
-            df_exist = pd.read_csv(MASTER_INDEX_CSV, encoding='utf-8-sig',
-                                   usecols=['race_id'], dtype=str, low_memory=False)
-            existing_master = set(df_exist['race_id'].unique())
-        except Exception:
-            pass
+    # Load existing to skip (check all 3 CSVs)
+    existing_ids = set()
+    for csv_path in [MASTER_INDEX_CSV, TRACK_BIAS_CSV, RACE_LAP_CSV]:
+        if os.path.exists(csv_path):
+            try:
+                df_exist = pd.read_csv(csv_path, encoding='utf-8-sig',
+                                       usecols=['race_id'], dtype=str, low_memory=False)
+                existing_ids.update(df_exist['race_id'].unique())
+            except Exception:
+                pass
 
-    new_ids = [rid for rid in all_ids if rid not in existing_master]
+    new_ids = [rid for rid in all_ids if rid not in existing_ids]
     print(f"\n  Total race IDs: {len(all_ids)}")
-    print(f"  Already scraped: {len(existing_master)}")
+    print(f"  Already scraped: {len(existing_ids)}")
     print(f"  New to scrape: {len(new_ids)}")
 
     if not new_ids:
@@ -354,21 +355,28 @@ def main():
         try:
             master_rows, bias_row, lap_row = scrape_result_page(session, race_id)
 
+            got_any = False
+
             if master_rows:
                 _append_csv(MASTER_INDEX_CSV, master_rows, MASTER_INDEX_HEADER)
                 stats['master_races'] += 1
                 stats['master_rows'] += len(master_rows)
-                consecutive_empty = 0
-            else:
-                consecutive_empty += 1
+                got_any = True
 
             if bias_row and (bias_row[1] != '' or bias_row[2] != ''):
                 _append_csv(TRACK_BIAS_CSV, [bias_row], TRACK_BIAS_HEADER)
                 stats['bias_races'] += 1
+                got_any = True
 
             if lap_row and lap_row[1] != '':
                 _append_csv(RACE_LAP_CSV, [lap_row], RACE_LAP_HEADER)
                 stats['lap_races'] += 1
+                got_any = True
+
+            if got_any:
+                consecutive_empty = 0
+            else:
+                consecutive_empty += 1
 
         except Exception as e:
             stats['errors'] += 1
