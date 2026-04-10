@@ -1,0 +1,121 @@
+{
+  "investigation_date": "2026-04-10",
+  "summary": "9項目の残存データ調査完了。3項目取得成功、1項目既存、5項目取得不可。",
+
+  "1_data_analysis_43": {
+    "status": "NOT_AVAILABLE",
+    "reason": "data_top.htmlは「レース当週および前週のみ公開」。過去データの枠番別・距離別・馬場別・脚質別・騎手別・調教師別・種牡馬別着度数は取得不可。当週のみ「好調枠順」サマリーと「過去5年結果」テーブルが表示される。",
+    "url": "https://race.netkeiba.com/race/data_list.html",
+    "workaround": "jra_races_full.csvの過去データからコース別統計を自前で計算可能（既にframe_course_dist_wrとして実装済み）"
+  },
+
+  "2_furi_check": {
+    "status": "NOT_AVAILABLE",
+    "reason": "専用ページ（furi.html等）は存在しない。結果ページにも「不利」フラグは含まれていない。レース備考（netkeiba_race_review.csv）に「不利」テキストが含まれるレースはあるが、構造化データではない。",
+    "urls_tried": ["furi.html", "furi_check.html", "movie.html", "result.html"],
+    "workaround": "netkeiba_race_review.csv（277K行）から「不利」テキストをNLPで抽出可能。v12.1でprev_review_score として試験済みだが不採用（+0.00016、2021年gap超過）"
+  },
+
+  "3_newspaper": {
+    "status": "SUCCESS",
+    "reason": "newspaper.htmlからJV-Linkにない大量のマスターコース限定データを取得成功",
+    "data_acquired": {
+      "ai_horse_times": "各馬AI予測タイム（前半3F/後半3F）×4パターン（考慮なし/出遅れ/騎手/両方）",
+      "predicted_laps": "レースラップ予測（200m刻み、累計+区間）×4パターン",
+      "ai_start_positions": "各馬スタート後ポジション座標（top%/left%）",
+      "ai_opinion": "AI見解テキスト（推奨馬含む）",
+      "position_advantage_horses": "推定ポジション有利馬リスト",
+      "position_heatmap": "ポジション別複勝率ヒートマップ（前/中/後×内/中/外）",
+      "track_bias": "トラックバイアス（内/中/外の有利/普通/不利）",
+      "ana_best": "能力/上昇度ピックアップ馬"
+    },
+    "scraper": "tools/scrape_newspaper_ai.py",
+    "output_files": [
+      "data/netkeiba_newspaper_ai.json",
+      "data/netkeiba_ai_predict_times.csv"
+    ],
+    "encoding": "UTF-8 (一部JSコメントがEUC-JP混在、errors='ignore'で対処)",
+    "note": "既存のnewspaper scraper（scrape_premium_data.py）でai_position/training_evalは取得済み。本スクリプトはAI予測タイム・ラップ・見解等を追加取得。"
+  },
+
+  "4_pace_prediction_ai": {
+    "status": "SUCCESS",
+    "reason": "newspaper.htmlに埋め込みで取得成功",
+    "data_acquired": {
+      "race_lap_prediction": "200m刻みのAI予測ラップタイム（累計+区間タイム）",
+      "horse_first_3f": "各馬の前半3F予測タイム",
+      "horse_last_3f": "各馬の後半3F予測タイム",
+      "horse_positions": "スタート後/3コーナー/4コーナーの各馬ポジション座標",
+      "ai_opinion_text": "レース見解テキスト（展開分析・推奨馬）"
+    },
+    "scraper": "tools/scrape_newspaper_ai.py（3.と統合）",
+    "note": "4パターン取得可能: 考慮なし/出遅れ率考慮/騎手傾向考慮/両方考慮"
+  },
+
+  "5_upset_level": {
+    "status": "SUCCESS",
+    "reason": "shutuba.htmlに埋め込みで取得成功",
+    "data_acquired": {
+      "upset_level": "波乱度Lv 1-5（AIが予測するレースの波乱レベル）",
+      "top_popularity_reliability": "上位人気信頼度（%）",
+      "compatibility_score": "AIレース相性度（%）— ユーザー個別データのため汎用利用不可"
+    },
+    "scraper": "tools/scrape_newspaper_ai.py（3.と統合）",
+    "output_file": "data/netkeiba_upset_level.csv",
+    "note": "upset_levelはJSでactive classが付与されるため、var upsetLevel = parseInt('N')からパース"
+  },
+
+  "6_ev_simulation": {
+    "status": "NOT_AVAILABLE",
+    "reason": "netkeiba上に「期待値シミュレーション」専用ページは存在しない。shutuba/newspaperにも埋め込みなし。マスターコース限定機能としても確認できず。",
+    "urls_tried": ["ev.html", "simulation.html", "expectation.html", "kitaichi.html"],
+    "workaround": "自前のEV計算は既にpredict_core.pyで実装済み（オッズ×確率）"
+  },
+
+  "7_running_data": {
+    "status": "NOT_AVAILABLE",
+    "reason": "netkeiba独自の「走行データ」専用ページは存在しない。結果ページにラップ/コーナーデータがあるが、これはJV-Link（jra_races_full.csv）と同等データ。",
+    "urls_tried": ["running.html", "sokou.html", "race_data.html", "analyze.html"],
+    "result_page_data": "ラップタイム（200m刻み）、コーナー通過順位（既にjra_races_full.csvに含まれる）",
+    "workaround": "jra_races_full.csvの既存ラップデータから十分な特徴量を構築済み（prev_race_first3f, prev_race_last3f, prev_race_pace_diff, pci等）"
+  },
+
+  "8_gaisha_info": {
+    "status": "ALREADY_AVAILABLE",
+    "reason": "JRDB KYIデータに「放牧先」（50文字テキスト）と「放牧先ランク」（A-E）が存在。jrdb_ranch_rankとしてv13以降のモデルに既に組み込み済み。v15ではgaisha_rankとしても追加。",
+    "jrdb_fields": {
+      "放牧先": "50文字テキスト（放牧先/近走放牧先）",
+      "放牧先ランク": "A-E（1-5にエンコード、0=不明）"
+    },
+    "missing_fields": {
+      "帰厩日": "JRDB/netkeibaともに項目なし",
+      "外厩名": "JRDB放牧先フィールドに含まれる（テキスト）"
+    },
+    "model_usage": "jrdb_ranch_rank（v13+）、gaisha_rank（v15）として採用済み",
+    "netkeiba": "shutuba.html/newspaper.htmlに外厩情報の表示なし"
+  },
+
+  "9_dam_top3r_retest": {
+    "status": "NOT_ADOPTED",
+    "reason": "v15ベース(145特徴量)+dam_top3r(expanding window)でWFテスト実施。LGB: -0.000083、AVG: -0.000027のマイナス寄与。5年中4年でマイナス。v12時代と同様に不採用。",
+    "test_results": {
+      "baseline_lgb_auc": 0.868234,
+      "dam_lgb_auc": 0.868151,
+      "improvement_lgb": -0.000083,
+      "baseline_avg_auc": 0.869696,
+      "dam_avg_auc": 0.869670,
+      "improvement_avg": -0.000027,
+      "max_gap_base": 0.0458,
+      "max_gap_dam": 0.0340
+    },
+    "yearly_diff_lgb": {
+      "2021": -0.00027,
+      "2022": -0.00018,
+      "2023": -0.00051,
+      "2024": -0.00047,
+      "2025": "+0.00102"
+    },
+    "conclusion": "dam_top3r（母産駒複勝率）はv12/v15両方でマイナス寄与。母馬の産駒成績は個体予測に有用でないことが確定。今後の再テスト不要。",
+    "result_file": "data/dam_top3r_v15_reverify.json"
+  }
+}

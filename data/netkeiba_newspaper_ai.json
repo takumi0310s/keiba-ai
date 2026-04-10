@@ -1,0 +1,304 @@
+[
+  {
+    "race_id": "202605010811",
+    "predicted_laps": [
+      {
+        "cum": "12.3",
+        "lap": "12.3"
+      },
+      {
+        "cum": "23.4",
+        "lap": "11.1"
+      },
+      {
+        "cum": "35.0",
+        "lap": "11.6"
+      },
+      {
+        "cum": "47.2",
+        "lap": "12.2"
+      },
+      {
+        "cum": "59.5",
+        "lap": "12.3"
+      },
+      {
+        "cum": "71.7",
+        "lap": "12.2"
+      },
+      {
+        "cum": "83.9",
+        "lap": "12.2"
+      },
+      {
+        "cum": "96.4",
+        "lap": "12.5"
+      }
+    ],
+    "ai_horse_times": [
+      {
+        "horse_num": 1,
+        "horse_name": "オメガギネス",
+        "ai_first_3f": 35.9,
+        "ai_last_3f": 37.1
+      },
+      {
+        "horse_num": 2,
+        "horse_name": "ハッピーマン",
+        "ai_first_3f": 35.2,
+        "ai_last_3f": 37.6
+      },
+      {
+        "horse_num": 3,
+        "horse_name": "ブライアンセンス",
+        "ai_first_3f": 35.6,
+        "ai_last_3f": 37.2
+      },
+      {
+        "horse_num": 4,
+        "horse_name": "ペリエール",
+        "ai_first_3f": 35.5,
+        "ai_last_3f": 37.2
+      },
+      {
+        "horse_num": 5,
+        "horse_name": "シックスペンス",
+        "ai_first_3f": 35.3,
+        "ai_last_3f": 37.5
+      },
+      {
+        "horse_num": 6,
+        "horse_name": "ラムジェット",
+        "ai_first_3f": 35.8,
+        "ai_last_3f": 37.0
+      },
+      {
+        "horse_num": 7,
+        "horse_name": "ロングラン",
+        "ai_first_3f": 36.1,
+        "ai_last_3f": 37.2
+      },
+      {
+        "horse_num": 8,
+        "horse_name": "サクラトゥジュール",
+        "ai_first_3f": 35.8,
+        "ai_last_3f": 37.4
+      },
+      {
+        "horse_num": 9,
+        "horse_name": "ダブルハートボンド",
+        "ai_first_3f": 35.1,
+        "ai_last_3f": 37.6
+      },
+      {
+        "horse_num": 10,
+        "horse_name": "ロードクロンヌ",
+        "ai_first_3f": 35.4,
+        "ai_last_3f": 37.4
+      },
+      {
+        "horse_num": 11,
+        "horse_name": "サンライズホーク",
+        "ai_first_3f": 35.8,
+        "ai_last_3f": 37.2
+      },
+      {
+        "horse_num": 12,
+        "horse_name": "コスタノヴァ",
+        "ai_first_3f": 35.5,
+        "ai_last_3f": 36.9
+      },
+      {
+        "horse_num": 13,
+        "horse_name": "ナチュラルライズ",
+        "ai_first_3f": 35.2,
+        "ai_last_3f": 37.8
+      },
+      {
+        "horse_num": 14,
+        "horse_name": "ウィルソンテソーロ",
+        "ai_first_3f": 35.3,
+        "ai_last_3f": 37.3
+      },
+      {
+        "horse_num": 15,
+        "horse_name": "ペプチドナイル",
+        "ai_first_3f": 35.6,
+        "ai_last_3f": 37.3
+      },
+      {
+        "horse_num": 16,
+        "horse_name": "サイモンザナドゥ",
+        "ai_first_3f": 35.6,
+        "ai_last_3f": 37.3
+      }
+    ],
+    "ai_start_positions": [
+      {
+        "horse_num": 9,
+        "horse_name": "ダブル",
+        "position_top": -4.0,
+        "position_left": 0.0
+      },
+      {
+        "horse_num": 2,
+        "horse_name": "ハッピ",
+        "position_top": 12.0,
+        "position_left": 8.9
+      },
+      {
+        "horse_num": 13,
+        "horse_name": "ナチュ",
+        "position_top": 30.0,
+        "position_left": 6.71
+      },
+      {
+        "horse_num": 5,
+        "horse_name": "シック",
+        "position_top": -4.0,
+        "position_left": 15.92
+      },
+      {
+        "horse_num": 14,
+        "horse_name": "ウィル",
+        "position_top": 12.0,
+        "position_left": 23.42
+      },
+      {
+        "horse_num": 10,
+        "horse_name": "ロード",
+        "position_top": 30.0,
+        "position_left": 26.85
+      },
+      {
+        "horse_num": 4,
+        "horse_name": "ペリエ",
+        "position_top": -4.0,
+        "position_left": 36.62
+      },
+      {
+        "horse_num": 12,
+        "horse_name": "コスタ",
+        "position_top": 12.0,
+        "position_left": 42.66
+      },
+      {
+        "horse_num": 3,
+        "horse_name": "ブライ",
+        "position_top": -4.0,
+        "position_left": 51.44
+      },
+      {
+        "horse_num": 15,
+        "horse_name": "ペプチ",
+        "position_top": 30.0,
+        "position_left": 47.1
+      },
+      {
+        "horse_num": 16,
+        "horse_name": "サイモ",
+        "position_top": 46.0,
+        "position_left": 53.18
+      },
+      {
+        "horse_num": 6,
+        "horse_name": "ラムジ",
+        "position_top": -4.0,
+        "position_left": 70.35
+      },
+      {
+        "horse_num": 8,
+        "horse_name": "サクラ",
+        "position_top": 12.0,
+        "position_left": 70.78
+      },
+      {
+        "horse_num": 11,
+        "horse_name": "サンラ",
+        "position_top": 30.0,
+        "position_left": 75.2
+      },
+      {
+        "horse_num": 1,
+        "horse_name": "オメガ",
+        "position_top": 46.0,
+        "position_left": 77.87
+      },
+      {
+        "horse_num": 7,
+        "horse_name": "ロング",
+        "position_top": -4.0,
+        "position_left": 100.0
+      }
+    ],
+    "ai_opinion": "フェブラリーSはハイペースが予想されるため、後半の末脚勝負となりそうです。上位人気の9.ダブルハートボンドは3コーナーから4コーナーまで先頭を維持する展開が見込まれ、逃げ切りを狙います。12.コスタノヴァは3コーナーでは中団に位置しながらも、4コーナーでは後方に下がる展開ながら、優秀な末脚で巻き返しを図るでしょう。上位人気以外では5.シックスペンスが注目で、3コーナーで前方に位置し、4コーナーでも好位置をキープして上位争いに絡む可能性があります。ハイペース展開では後半の脚質が重要となり、これら3頭の動向が勝負のカギを握りそうです。",
+    "position_advantage_horses": [
+      {
+        "horse_num": 5,
+        "horse_name": "シックスペンス"
+      },
+      {
+        "horse_num": 9,
+        "horse_name": "ダブルハートボンド"
+      },
+      {
+        "horse_num": 2,
+        "horse_name": "ハッピーマン"
+      }
+    ],
+    "position_heatmap": [
+      {
+        "position": "front",
+        "track": "inner",
+        "win_rate": 34.0
+      },
+      {
+        "position": "front",
+        "track": "center",
+        "win_rate": 44.0
+      },
+      {
+        "position": "front",
+        "track": "outer",
+        "win_rate": 0.0
+      },
+      {
+        "position": "middle",
+        "track": "inner",
+        "win_rate": 17.0
+      },
+      {
+        "position": "middle",
+        "track": "center",
+        "win_rate": 30.0
+      },
+      {
+        "position": "middle",
+        "track": "outer",
+        "win_rate": 0.0
+      },
+      {
+        "position": "rear",
+        "track": "inner",
+        "win_rate": 9.0
+      },
+      {
+        "position": "rear",
+        "track": "center",
+        "win_rate": 11.0
+      },
+      {
+        "position": "rear",
+        "track": "outer",
+        "win_rate": 0.0
+      }
+    ],
+    "track_bias": [
+      "普通",
+      "普通",
+      "普通"
+    ],
+    "ana_best_ability": [],
+    "ana_best_growth": []
+  }
+]

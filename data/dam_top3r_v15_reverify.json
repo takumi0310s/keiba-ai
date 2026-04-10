@@ -1,0 +1,97 @@
+{
+  "test": "dam_top3r_v15_reinvestigation",
+  "timestamp": "2026-04-10T11:17:07.347486",
+  "baseline_lgb_auc": 0.8682338,
+  "dam_lgb_auc": 0.8681506000000001,
+  "improvement_lgb": -8.319999999983896e-05,
+  "baseline_avg_auc": 0.8696964000000001,
+  "dam_avg_auc": 0.8696698000000002,
+  "improvement_avg": -2.6599999999987745e-05,
+  "max_gap_base": 0.045826,
+  "max_gap_dam": 0.033951,
+  "adopted": "False",
+  "yearly_base": [
+    {
+      "year": 2021,
+      "lgb_auc": 0.865001,
+      "xgb_auc": 0.866139,
+      "avg_auc": 0.866551,
+      "train_lgb_auc": 0.910827,
+      "gap": 0.045826
+    },
+    {
+      "year": 2022,
+      "lgb_auc": 0.867174,
+      "xgb_auc": 0.868635,
+      "avg_auc": 0.868838,
+      "train_lgb_auc": 0.903402,
+      "gap": 0.036228
+    },
+    {
+      "year": 2023,
+      "lgb_auc": 0.868491,
+      "xgb_auc": 0.86973,
+      "avg_auc": 0.869917,
+      "train_lgb_auc": 0.910502,
+      "gap": 0.042011
+    },
+    {
+      "year": 2024,
+      "lgb_auc": 0.871271,
+      "xgb_auc": 0.872245,
+      "avg_auc": 0.872545,
+      "train_lgb_auc": 0.900045,
+      "gap": 0.028774
+    },
+    {
+      "year": 2025,
+      "lgb_auc": 0.869232,
+      "xgb_auc": 0.870412,
+      "avg_auc": 0.870631,
+      "train_lgb_auc": 0.900776,
+      "gap": 0.031544
+    }
+  ],
+  "yearly_dam": [
+    {
+      "year": 2021,
+      "lgb_auc": 0.864729,
+      "xgb_auc": 0.866308,
+      "avg_auc": 0.86646,
+      "train_lgb_auc": 0.897571,
+      "gap": 0.032842
+    },
+    {
+      "year": 2022,
+      "lgb_auc": 0.866991,
+      "xgb_auc": 0.86906,
+      "avg_auc": 0.868951,
+      "train_lgb_auc": 0.900942,
+      "gap": 0.033951
+    },
+    {
+      "year": 2023,
+      "lgb_auc": 0.867981,
+      "xgb_auc": 0.86952,
+      "avg_auc": 0.869593,
+      "train_lgb_auc": 0.891639,
+      "gap": 0.023658
+    },
+    {
+      "year": 2024,
+      "lgb_auc": 0.870797,
+      "xgb_auc": 0.872231,
+      "avg_auc": 0.872288,
+      "train_lgb_auc": 0.896515,
+      "gap": 0.025717
+    },
+    {
+      "year": 2025,
+      "lgb_auc": 0.870255,
+      "xgb_auc": 0.870301,
+      "avg_auc": 0.871057,
+      "train_lgb_auc": 0.901546,
+      "gap": 0.031291
+    }
+  ]
+}
