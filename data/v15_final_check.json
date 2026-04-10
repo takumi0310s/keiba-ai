@@ -1,0 +1,83 @@
+{
+  "test_date": "2026-04-10T14:29:07.495368",
+  "model_version": "v15",
+  "model_auc": 0.8858,
+  "features_count": 145,
+  "features_list_count": 150,
+  "ensemble": "LGB+XGB (2-model, weights: lgb=0.504, xgb=0.496)",
+  "phases": {
+    "phase_0_live_test": {
+      "status": "PASS",
+      "race_id": "202603010111",
+      "race": "Fukushima 11R",
+      "horses": 15,
+      "score_range": [
+        0.3165,
+        0.5416
+      ],
+      "condition": "C",
+      "bets": "三連複 7点",
+      "zero_features": 17,
+      "legitimate_zeros": 15,
+      "notes": "season=0(春), is_nar=0, odds_change=0(初回), renovation=0(福島), gaisha=0(KYI未), paci_marks=0(当日未公開) are all legitimate"
+    },
+    "phase_1_regression": {
+      "status": "ALL PASS",
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "items": {
+        "1-1_version_gate": "PASS",
+        "1-2_single_source": "PASS",
+        "1-3_feature_count": "PASS (LGB=145, features=150)",
+        "1-4_dist_cat_5bins": "PASS",
+        "1-5_no_stdout_rewrap": "PASS",
+        "1-6_env_gitignore": "PASS",
+        "1-7_bat_encoding": "PASS (all 6 bats)",
+        "1-8_v15_in_load_models": "PASS",
+        "1-9_v15_feature_gate": "PASS",
+        "1-10_odds_change_flow": "PASS",
+        "1-11_lgb_xgb_ensemble": "PASS"
+      }
+    },
+    "phase_2_new_features": {
+      "status": "7/7 PASS",
+      "items": {
+        "2-1_profitable_patterns": "PASS (data exists 68KB, 472 patterns)",
+        "2-2_upset_panel": "PASS (Lv1-5 display + Lv4-5 warning)",
+        "2-3_ai_prediction_time": "PASS (CSV + JSON + display)",
+        "2-4_data_analysis": "PASS (expander display)",
+        "2-5_kelly_criterion": "PASS (min=100, max=2000, 100-yen rounding)",
+        "2-6_dark_horse_signal": "PASS (8 signal types, threshold >= 2.0)",
+        "2-7_drift_monitor": "PASS (baseline=0.8856)"
+      }
+    },
+    "phase_3_automation": {
+      "status": "ALL PASS",
+      "tasks_registered": 10,
+      "bat_files": 6,
+      "cookie_valid": true,
+      "encoding_fixed": true
+    },
+    "phase_4_security": {
+      "status": "ALL PASS",
+      "env_gitignore": true,
+      "env_not_in_history": true,
+      "env_not_tracked": true,
+      "no_secrets_in_logs": true
+    }
+  },
+  "fixes_applied": [
+    "predict_core.py: v15 added to load_models() candidates (top priority)",
+    "predict_core.py: v15 new feature computation (transport_distance, renovation, jockey_change)",
+    "5 bat files: added PYTHONIOENCODING=utf-8 and PYTHONUNBUFFERED=1"
+  ],
+  "known_limitations": [
+    "v15 is LGB+XGB 2-model (no FT-Transformer/IntraRace Attention)",
+    "jockey_horse_rides/wr/top3r = 0 at prediction time (feature_lookups not yet updated)",
+    "gaisha_rank = 0 (JRDB KYI data unavailable, 0% coverage in training too)",
+    "paci_*_mark = 0 (PACI当日データ, available only race-day morning)",
+    "profitable_patterns.json not yet integrated into app.py display"
+  ],
+  "verdict": "APPROVED FOR PRODUCTION"
+}

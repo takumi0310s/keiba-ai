@@ -380,6 +380,8 @@ def load_models():
               'version': 'v9', 'n_top_encode': 80, 'is_live': False}
 
     candidates = [
+        (os.path.join(BASE_DIR, 'keiba_model_v15_central_live.pkl.gz'), True, 'v15 Pattern B (当日情報込み, 145特徴量)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v15_central.pkl.gz'), False, 'v15 Pattern A (リークフリー, 145特徴量)'),
         (os.path.join(BASE_DIR, 'keiba_model_v135_central_live.pkl.gz'), True, 'v13.5b Pattern B (当日情報込み)'),
         (os.path.join(BASE_DIR, 'keiba_model_v135_central.pkl.gz'), False, 'v13.5b Pattern A (リークフリー)'),
         (os.path.join(BASE_DIR, 'keiba_model_v134_central_live.pkl.gz'), True, 'v13.4 Pattern B (当日情報込み)'),
@@ -1847,6 +1849,84 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                     print(f"[ODDS] 基準オッズ保存完了（初回取得、次回から変動計算可能）")
         except Exception as e:
             print(f"[WARN] netkeibaオッズ変動計算失敗: {e}")
+
+    # ===== v15新特徴量（騎手×馬相性・輸送距離・コース改修・外厩） =====
+    _ver_num_v15 = re.search(r'v(\d+)', version)
+    if _ver_num_v15 and int(_ver_num_v15.group(1)) >= 15:
+        # 輸送距離（予測時に計算可能）
+        if 'transport_distance_km' not in df.columns or (df.get('transport_distance_km', pd.Series([0])) == 0).all():
+            try:
+                _venue_coords = {
+                    0:(43.06,141.35),1:(41.80,140.73),2:(37.75,140.47),3:(37.89,139.02),
+                    4:(35.67,139.48),5:(35.76,140.00),6:(35.05,137.05),7:(34.93,135.72),
+                    8:(34.78,135.36),9:(33.88,130.87),
+                }
+                _tc_coords = {0:(36.03,140.18), 1:(34.98,136.00)}
+                import math as _math
+                def _hav(lat1,lon1,lat2,lon2):
+                    R=6371.0; dlat=_math.radians(lat2-lat1); dlon=_math.radians(lon2-lon1)
+                    a=_math.sin(dlat/2)**2+_math.cos(_math.radians(lat1))*_math.cos(_math.radians(lat2))*_math.sin(dlon/2)**2
+                    return R*2*_math.atan2(_math.sqrt(a),_math.sqrt(1-a))
+                for idx_h in range(len(df)):
+                    _loc = int(df.iloc[idx_h].get('location_enc', 0))
+                    _crs = int(df.iloc[idx_h].get('course_enc', cur_course))
+                    if _loc in _tc_coords and _crs in _venue_coords:
+                        _d = _hav(_tc_coords[_loc][0],_tc_coords[_loc][1],_venue_coords[_crs][0],_venue_coords[_crs][1])
+                        df.loc[df.index[idx_h], 'transport_distance_km'] = round(_d, 1)
+                df['is_long_transport'] = (df.get('transport_distance_km', pd.Series([0]*len(df))) > 500).astype(int)
+            except Exception:
+                df['transport_distance_km'] = 0.0
+                df['is_long_transport'] = 0
+
+        # コース改修フラグ（予測時に計算可能）
+        if 'course_renovated' not in df.columns:
+            _reno_dates = [(6,2012,3),(7,2023,4)]  # 中京2012/3, 京都2023/4
+            _now = datetime.now()
+            _race_ym = _now.year * 12 + _now.month
+            df['course_renovated'] = 0
+            df['post_renovation_flag'] = 0
+            for _rc, _ry, _rm in _reno_dates:
+                _reno_ym = _ry * 12 + _rm
+                if cur_course == _rc:
+                    if _race_ym >= _reno_ym:
+                        df['post_renovation_flag'] = 1
+                    if _reno_ym <= _race_ym < _reno_ym + 12:
+                        df['course_renovated'] = 1
+
+        # 騎手変更（前走騎手との比較 — horse_statsから取得可能な場合）
+        if 'jockey_change' not in df.columns:
+            df['jockey_change'] = 0
+            df['jockey_change_to_top'] = 0
+            for idx_h in range(len(df)):
+                if idx_h < len(horses):
+                    _prev_jockey = horses[idx_h].get('prev_jockey', '')
+                    _cur_jockey = horses[idx_h].get('騎手名', '')
+                    if _prev_jockey and _cur_jockey and str(_prev_jockey) != str(_cur_jockey):
+                        df.loc[df.index[idx_h], 'jockey_change'] = 1
+
+        # 騎手×馬相性（feature_lookups.pklから取得、なければ0）
+        _jh_lookup = lookups.get('jockey_horse_stats', {}) if 'lookups' in dir() else {}
+        if _jh_lookup:
+            for idx_h in range(len(df)):
+                _jname = horses[idx_h].get('騎手名', '') if idx_h < len(horses) else ''
+                _hname = horses[idx_h].get('馬名', '') if idx_h < len(horses) else ''
+                _jh = _jh_lookup.get((_jname, _hname), {})
+                if _jh:
+                    df.loc[df.index[idx_h], 'jockey_horse_rides'] = _jh.get('rides', 0)
+                    df.loc[df.index[idx_h], 'jockey_horse_wr'] = _jh.get('wr', 0.0)
+                    df.loc[df.index[idx_h], 'jockey_horse_top3r'] = _jh.get('top3r', 0.0)
+        for _v15f in ['jockey_horse_rides', 'jockey_horse_wr', 'jockey_horse_top3r',
+                       'jockey_change', 'jockey_change_to_top', 'transport_distance_km',
+                       'is_long_transport', 'course_renovated', 'post_renovation_flag', 'gaisha_rank']:
+            if _v15f not in df.columns:
+                df[_v15f] = 0
+
+        # PACI特徴量（JRDBマージで取得済み、なければ0）
+        for _paci in ['paci_sogo_mark', 'paci_idm_mark', 'paci_jockey_mark', 'paci_train_mark',
+                       'paci_manken_idx', 'paci_goal_rank', 'paci_dochu_rank', 'paci_goal_diff',
+                       'paci_jockey_exp_wr', 'paci_jockey_exp_3rd', 'paci_ninki_idx']:
+            if _paci not in df.columns:
+                df[_paci] = 0
 
     # 必要な特徴量の確保
     use_features = model_data.get('features')
