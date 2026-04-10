@@ -5158,6 +5158,23 @@ if st.button("🔍 予想する") and url_input:
         _tw_analysis = load_thisweek_analysis().get(race_id, [])
     except Exception:
         _tw_upset, _tw_newspaper, _tw_analysis = {}, {}, []
+    # キャッシュに波乱度がない場合、リアルタイム取得
+    if not _tw_upset.get('upset_level') and not is_nar:
+        try:
+            from tools.scrape_newspaper_ai import _make_session as _nai_sess_fn, scrape_shutuba_upset
+            _nai_s = _nai_sess_fn()
+            if _nai_s:
+                _tw_upset = scrape_shutuba_upset(_nai_s, race_id)
+        except Exception:
+            pass
+    if not _tw_newspaper.get('ai_horse_times') and not is_nar:
+        try:
+            from tools.scrape_newspaper_ai import _make_session as _nai_sess_fn2, scrape_newspaper as _scrape_np2
+            _nai_s2 = _nai_sess_fn2()
+            if _nai_s2:
+                _tw_newspaper = _scrape_np2(_nai_s2, race_id)
+        except Exception:
+            pass
     st.session_state['pred_upset'] = _tw_upset
     st.session_state['pred_newspaper_ai'] = _tw_newspaper
     st.session_state['pred_data_analysis'] = _tw_analysis

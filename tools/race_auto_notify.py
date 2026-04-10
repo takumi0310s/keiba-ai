@@ -255,7 +255,7 @@ def predict_and_notify(race_info, date_str):
         else:
             bets = generate_trio_bets(df)
 
-        # 週末限定データ（波乱度・AI予測）読み込み
+        # 週末限定データ（波乱度・AI予測）— キャッシュ→リアルタイム取得フォールバック
         _upset_data, _newspaper_data = {}, {}
         try:
             from scrape_weekend_thisweek import load_thisweek_upset, load_thisweek_newspaper
@@ -263,6 +263,25 @@ def predict_and_notify(race_info, date_str):
             _newspaper_data = load_thisweek_newspaper().get(race_id, {})
         except Exception:
             pass
+        # キャッシュに波乱度がない or Lv0の場合、リアルタイム取得
+        if not _upset_data.get('upset_level'):
+            try:
+                from scrape_newspaper_ai import _make_session as _nai_session, scrape_shutuba_upset
+                _nai_sess = _nai_session()
+                if _nai_sess:
+                    _upset_data = scrape_shutuba_upset(_nai_sess, race_id)
+                    time.sleep(2)
+            except Exception:
+                pass
+        if not _newspaper_data.get('ai_horse_times'):
+            try:
+                from scrape_newspaper_ai import _make_session as _nai_session2, scrape_newspaper as _scrape_np
+                _nai_sess2 = _nai_session2()
+                if _nai_sess2:
+                    _newspaper_data = _scrape_np(_nai_sess2, race_id)
+                    time.sleep(2)
+            except Exception:
+                pass
 
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
