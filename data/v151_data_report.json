@@ -1,0 +1,83 @@
+{
+  "report_date": "2026-04-10",
+  "summary": "v15.1データ収集・テスト結果レポート",
+
+  "task1_newspaper_ai": {
+    "status": "PAST_DATA_UNAVAILABLE",
+    "reason": "newspaper.htmlのAI予測タイム/ラップ/ポジション/見解は当週レースのみ公開。過去レースでは全て空。当週取得のみ可能。",
+    "existing_data": {
+      "ai_position": "4,929レース分取得済み（data/netkeiba_ai_position.csv）",
+      "training_eval": "95,065行取得済み"
+    },
+    "action": "daily_predict.pyに統合して当週データを自動取得する方式に変更"
+  },
+
+  "task2_pace_prediction": {
+    "status": "INCLUDED_IN_TASK1",
+    "reason": "newspaper.htmlのAI展開予測はTASK1と同じページ。同様に当週のみ公開。"
+  },
+
+  "task3_upset_level": {
+    "status": "IN_PROGRESS",
+    "scraper": "tools/bulk_scrape_upset.py",
+    "total_races": 20733,
+    "completed": 50,
+    "estimated_hours": 92,
+    "output": "data/netkeiba_upset_level.csv",
+    "note": "全年のshutuba.htmlから波乱度Lv1-5+信頼度を取得中。resumable設計で中断再開可能。要バックグラウンド実行。"
+  },
+
+  "task4_jrdb_entry_fields": {
+    "status": "COMPLETED",
+    "new_fields": {
+      "入厩何走目": {"coverage": "99.9%", "description": "入厩後N走目"},
+      "入厩年月日": {"coverage": "99.9%", "description": "YYYYMMDD"},
+      "入厩何日前": {"coverage": "56.4%", "description": "レース日から遡った入厩日数"},
+      "放牧先": {"coverage": "99.9%", "description": "放牧先名称(50文字)"}
+    },
+    "files_modified": [
+      "tools/parse_jrdb.py",
+      "tools/scrape_jrdb.py",
+      "tools/jrdb_features.py"
+    ],
+    "csv_rebuilt": {
+      "file": "data/jrdb_kyi.csv",
+      "rows": 287919,
+      "columns": 70
+    },
+    "new_features": [
+      "jrdb_entry_days_ago",
+      "jrdb_entry_race_num"
+    ]
+  },
+
+  "task5_v151_test": {
+    "status": "POSITIVE_BUT_MARGINAL",
+    "test": "v15(145) + jrdb_entry_days_ago + jrdb_entry_race_num",
+    "results": {
+      "lgb_improvement": "+0.000250",
+      "avg_improvement": "+0.000038",
+      "yearly": {
+        "2021": "+0.00082",
+        "2022": "+0.00009",
+        "2023": "+0.00015",
+        "2024": "+0.00032",
+        "2025": "-0.00013"
+      },
+      "feature_importance": {
+        "jrdb_entry_days_ago": "rank 91/147",
+        "jrdb_entry_race_num": "rank 114/147"
+      },
+      "max_gap": 0.0428,
+      "verdict": "LGB単体で+0.00025改善。5年中4年プラス。微小だが安定。4-model gridテストで最終判断。"
+    },
+    "detailed_results": "data/v151_entry_test.json"
+  },
+
+  "next_steps": [
+    "波乱度バルク取得を継続実行（python tools/bulk_scrape_upset.py）",
+    "波乱度取得完了後にupset_level特徴量をv15.1に追加してWFテスト",
+    "entry_days_ago + upset_level の組み合わせで4-model gridテスト",
+    "daily_predict.pyにnewspaper AI予測タイム取得を統合"
+  ]
+}

@@ -435,6 +435,10 @@ KYI_COLUMNS = [
     ('kokyuu_flag',    539,  1),   # 降級フラグ
     ('gekiso_type',    540,  2),   # 激走タイプ
     ('rest_reason',    542,  2),   # 休養理由
+    ('entry_race_num', 560,  2),   # 入厩何走目 (例: 2=入厩後2走目)
+    ('entry_date',     562,  8),   # 入厩年月日 YYYYMMDD
+    ('entry_days_ago', 570,  3),   # 入厩何日前 (レース日から遡った日数)
+    ('ranch_name',     573, 50),   # 放牧先名称
     ('gaisha_rank',    623,  1),   # 放牧先ランク A-E
     ('stable_rank',    624,  1),   # 厩舎ランク 1-9
 ]
@@ -456,6 +460,7 @@ KYI_INT_COLS = [
     'gekiso_rank', 'ls_idx_rank', 'ten_idx_rank',
     'pace_idx_rank', 'agari_idx_rank', 'ichi_idx_rank',
     'manken_idx', 'kokyuu_flag', 'prize_total', 'prize_shutoku',
+    'entry_race_num', 'entry_days_ago',
 ]
 
 
@@ -478,7 +483,7 @@ def parse_kyi_line(line_bytes):
                 'sogo_mark', 'idm_mark', 'info_mark', 'jockey_mark',
                 'stable_mark', 'train_mark', 'gekiso_mark', 'cond_class',
                 'transport', 'manken_mark', 'gekiso_type', 'rest_reason',
-                'gaisha_rank', 'stable_rank']:
+                'entry_date', 'ranch_name', 'gaisha_rank', 'stable_rank']:
         if col in row:
             row[col] = row[col].strip()
 

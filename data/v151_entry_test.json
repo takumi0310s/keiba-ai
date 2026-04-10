@@ -1,0 +1,99 @@
+{
+  "test": "v15.1_entry_features",
+  "timestamp": "2026-04-10T12:25:34.033627",
+  "new_features": [
+    "jrdb_entry_days_ago",
+    "jrdb_entry_race_num"
+  ],
+  "baseline_lgb": 0.8679792000000001,
+  "new_lgb": 0.8682294,
+  "improvement_lgb": 0.0002501999999999782,
+  "baseline_avg": 0.8696265999999999,
+  "new_avg": 0.869665,
+  "improvement_avg": 3.840000000010502e-05,
+  "adopted": "True",
+  "yearly_base": [
+    {
+      "year": 2021,
+      "lgb_auc": 0.864258,
+      "xgb_auc": 0.86693,
+      "avg_auc": 0.866487,
+      "train_auc": 0.895226,
+      "gap": 0.030968
+    },
+    {
+      "year": 2022,
+      "lgb_auc": 0.867186,
+      "xgb_auc": 0.868703,
+      "avg_auc": 0.868847,
+      "train_auc": 0.900623,
+      "gap": 0.033437
+    },
+    {
+      "year": 2023,
+      "lgb_auc": 0.868566,
+      "xgb_auc": 0.869934,
+      "avg_auc": 0.870003,
+      "train_auc": 0.895483,
+      "gap": 0.026917
+    },
+    {
+      "year": 2024,
+      "lgb_auc": 0.870428,
+      "xgb_auc": 0.872001,
+      "avg_auc": 0.871984,
+      "train_auc": 0.896077,
+      "gap": 0.025649
+    },
+    {
+      "year": 2025,
+      "lgb_auc": 0.869458,
+      "xgb_auc": 0.870555,
+      "avg_auc": 0.870812,
+      "train_auc": 0.909041,
+      "gap": 0.039582
+    }
+  ],
+  "yearly_new": [
+    {
+      "year": 2021,
+      "lgb_auc": 0.865079,
+      "xgb_auc": 0.866091,
+      "avg_auc": 0.866603,
+      "train_auc": 0.900432,
+      "gap": 0.035354
+    },
+    {
+      "year": 2022,
+      "lgb_auc": 0.867275,
+      "xgb_auc": 0.868829,
+      "avg_auc": 0.869049,
+      "train_auc": 0.910122,
+      "gap": 0.042847
+    },
+    {
+      "year": 2023,
+      "lgb_auc": 0.86872,
+      "xgb_auc": 0.869976,
+      "avg_auc": 0.870191,
+      "train_auc": 0.901991,
+      "gap": 0.033271
+    },
+    {
+      "year": 2024,
+      "lgb_auc": 0.870747,
+      "xgb_auc": 0.871956,
+      "avg_auc": 0.872021,
+      "train_auc": 0.897163,
+      "gap": 0.026416
+    },
+    {
+      "year": 2025,
+      "lgb_auc": 0.869326,
+      "xgb_auc": 0.869981,
+      "avg_auc": 0.870461,
+      "train_auc": 0.896645,
+      "gap": 0.027318
+    }
+  ]
+}

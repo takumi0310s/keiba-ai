@@ -45,6 +45,8 @@ JRDB_FEATURES_PRE_RACE = [
     'jrdb_hoof_code',          # 蹄コード
     'jrdb_ranch_rank',         # 外厩ランク(A=1..E=5, 0=不明)
     'jrdb_stable_rank',        # 厩舎ランク(1-9)
+    'jrdb_entry_days_ago',     # 入厩何日前(レース日から遡った日数)
+    'jrdb_entry_race_num',     # 入厩何走目
     'jrdb_training_arrow',     # 調教矢印(1:抜群..5:落ち)
     'jrdb_stable_eval',        # 厩舎評価(1:超強気..4:弱気)
     'jrdb_running_style',      # 脚質(1:逃..6:自在)
@@ -94,6 +96,8 @@ JRDB_DEFAULTS = {
     'jrdb_hoof_code': 0,
     'jrdb_ranch_rank': 0,      # 不明
     'jrdb_stable_rank': 5,     # 中間
+    'jrdb_entry_days_ago': 0,  # 入厩情報なし
+    'jrdb_entry_race_num': 0,  # 入厩情報なし
     'jrdb_training_arrow': 3,  # 平行
     'jrdb_stable_eval': 3,     # 現状維持
     'jrdb_running_style': 0,   # 不明
@@ -179,6 +183,12 @@ def extract_kyi_features(kyi_df):
     result['jrdb_stable_eval'] = pd.to_numeric(kyi_df['厩舎評価コード'], errors='coerce')
     result['jrdb_running_style'] = pd.to_numeric(kyi_df['脚質'], errors='coerce')
     result['jrdb_dist_apt'] = pd.to_numeric(kyi_df['距離適性'], errors='coerce')
+
+    # 入厩情報
+    if '入厩何日前' in kyi_df.columns:
+        result['jrdb_entry_days_ago'] = pd.to_numeric(kyi_df['入厩何日前'], errors='coerce')
+    if '入厩何走目' in kyi_df.columns:
+        result['jrdb_entry_race_num'] = pd.to_numeric(kyi_df['入厩何走目'], errors='coerce')
 
     # 順位系（DARK HORSE SCAN用）
     if '激走順位' in kyi_df.columns:
