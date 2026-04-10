@@ -283,6 +283,17 @@ def predict_and_notify(race_info, date_str):
             except Exception:
                 pass
 
+        # 収益パターンマッチ
+        _pp_stars, _pp_matched = 0, []
+        try:
+            from predict_core import match_profitable_patterns
+            _pp_top1 = min((v for v in odds_dict.values() if v > 0), default=0)
+            _pp_stars, _pp_matched = match_profitable_patterns(
+                cond_key, rinfo.get('course', ''), rinfo.get('surface', '芝'),
+                rinfo.get('distance', 1600), _pp_top1)
+        except Exception:
+            pass
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）
@@ -292,7 +303,8 @@ def predict_and_notify(race_info, date_str):
         title, msg, color = build_rich_bet_message(
             df, race_name, rinfo, cond_key, cond_profile,
             bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
-            upset_data=_upset_data, newspaper_data=_newspaper_data)
+            upset_data=_upset_data, newspaper_data=_newspaper_data,
+            pp_stars=_pp_stars, pp_matched=_pp_matched)
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
 

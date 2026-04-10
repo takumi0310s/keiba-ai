@@ -175,6 +175,67 @@ SURFACE_MAP = {'芝':0,'ダ':1,'障':2}
 COND_MAP = {'良':0,'稍':1,'稍重':1,'重':2,'不':3,'不良':3}
 SEX_MAP = {'牡':0,'牝':1,'セ':2,'騸':2}
 
+# ===== 収益パターンフィルタ =====
+_PP_CACHE = None
+
+def _load_pp():
+    global _PP_CACHE
+    if _PP_CACHE is not None:
+        return _PP_CACHE
+    pp_path = os.path.join(BASE_DIR, 'data', 'profitable_patterns.json')
+    if not os.path.exists(pp_path):
+        _PP_CACHE = []
+        return []
+    try:
+        with open(pp_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        _PP_CACHE = data.get('profitable_patterns', [])
+    except Exception:
+        _PP_CACHE = []
+    return _PP_CACHE
+
+
+def match_profitable_patterns(cond_key, venue, surface, distance, top1_odds=0):
+    """レース条件に合致する収益パターンをマッチし、最高★数を返す。
+    Returns: (max_stars, matched_list[:5])
+    """
+    patterns = _load_pp()
+    if not patterns:
+        return 0, []
+    # オッズ帯
+    if top1_odds <= 0: ob = 'all'
+    elif top1_odds < 3: ob = '1-3'
+    elif top1_odds < 10: ob = '3-10'
+    elif top1_odds < 30: ob = '10-30'
+    else: ob = '30-100'
+    # 距離帯
+    if distance <= 1400: db = 'sprint'
+    elif distance <= 1600: db = 'mile'
+    elif distance <= 2200: db = 'middle'
+    else: db = 'long'
+    sj = '芝' if surface in ('芝', 0, '0') else 'ダート'
+
+    matched = []
+    for p in patterns:
+        if p.get('type') != 'trio':
+            continue
+        if p.get('condition') != 'all' and p.get('condition') != cond_key:
+            continue
+        if p.get('venue') != 'all' and p.get('venue') != venue:
+            continue
+        if p.get('surface') != 'all' and p.get('surface') != sj:
+            continue
+        if p.get('distance') != 'all' and p.get('distance') != db:
+            continue
+        if p.get('odds_band') != 'all' and p.get('odds_band') != ob:
+            continue
+        matched.append(p)
+    if not matched:
+        return 0, []
+    matched.sort(key=lambda x: x.get('roi', 0), reverse=True)
+    return max(p.get('stars', 0) for p in matched), matched[:5]
+
+
 CONDITION_PROFILES = {
     'A': {'bet_type':'trio','label':'条件A','desc':'8-14頭/1600m+/良~稍','investment':700,'roi':205.3,'hit_rate':44.5,'recommended':True},
     'B': {'bet_type':'trio','label':'条件B','desc':'8-14頭/1600m+/重~不良','investment':700,'roi':236.9,'hit_rate':45.2,'recommended':True},

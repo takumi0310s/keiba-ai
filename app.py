@@ -269,6 +269,54 @@ def render_class_rating_badge(race_class):
     return html
 
 
+# ===== 172収益パターンフィルタ（predict_core.pyに実装、ここはimport） =====
+from tools.predict_core import match_profitable_patterns as _core_match_pp
+
+
+def match_profitable_patterns(cond_key, venue, surface, distance, top1_odds=0):
+    return _core_match_pp(cond_key, venue, surface, distance, top1_odds)
+
+
+def render_profitable_pattern_badge(max_stars, matched, cond_key):
+    """収益パターンマッチ結果のバッジHTML"""
+    if max_stars <= 0:
+        return ''
+
+    if max_stars >= 3:
+        border_c, star_c, label = '#14B8A6', '#14B8A6', '強く推奨'
+        star_txt = '&#9733;&#9733;&#9733;'
+    elif max_stars == 2:
+        border_c, star_c, label = '#6C9BD2', '#6C9BD2', '推奨'
+        star_txt = '&#9733;&#9733;'
+    else:
+        border_c, star_c, label = '#B0976A', '#B0976A', '参考'
+        star_txt = '&#9733;'
+
+    best = matched[0] if matched else {}
+    best_roi = best.get('roi', 0)
+    best_n = best.get('n', 0)
+    best_hit = best.get('hit_rate', 0) * 100
+
+    html = f'<div style="margin:6px 0;padding:10px 14px;background:linear-gradient(90deg,#0E1117,#161B22);border:1px solid {border_c};border-radius:10px;">'
+    html += f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">'
+    html += f'<span style="font-size:1.1em;color:{star_c} !important;">{star_txt}</span>'
+    html += f'<span style="font-size:0.85em;color:{star_c} !important;font-weight:bold;">収益パターン {label}</span>'
+    html += f'<span style="font-size:0.72em;color:#7D8590 !important;">({len(matched)}件マッチ)</span>'
+    html += '</div>'
+    # ベストパターン詳細
+    if best_roi > 0:
+        html += f'<div style="font-size:0.78em;font-family:Oswald;color:#8B949E !important;">'
+        html += f'Best: ROI <span style="color:{star_c} !important;font-weight:bold;">{best_roi:.0f}%</span>'
+        html += f' 的中{best_hit:.0f}% N={best_n}'
+        if best.get('venue') != 'all':
+            html += f' {best["venue"]}'
+        if best.get('odds_band') != 'all':
+            html += f' odds{best["odds_band"]}'
+        html += '</div>'
+    html += '</div>'
+    return html
+
+
 
 def classify_race_condition(race_info, num_horses, is_nar=False):
     """レース条件を分類してプロファイルを返す（中央競馬専用）。
@@ -5430,6 +5478,23 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
         class_badge = render_class_rating_badge(race_class)
         if class_badge:
             st.markdown(class_badge, unsafe_allow_html=True)
+
+    # 収益パターンマッチ（172パターンフィルタ）
+    _pp_top1_odds = 0
+    if odds_available and '単勝オッズ' in df.columns:
+        _pp_odds_vals = df[df['単勝オッズ'] > 0]['単勝オッズ']
+        if len(_pp_odds_vals) > 0:
+            _pp_top1_odds = _pp_odds_vals.min()
+    _pp_venue = race_info.get('course', '')
+    _pp_surface = race_info.get('surface', '芝')
+    _pp_dist = race_info.get('distance', 1600)
+    _pp_stars, _pp_matched = match_profitable_patterns(cond_key, _pp_venue, _pp_surface, _pp_dist, _pp_top1_odds)
+    st.session_state['pred_pp_stars'] = _pp_stars
+    st.session_state['pred_pp_matched'] = _pp_matched
+    if _pp_stars > 0:
+        st.markdown(render_profitable_pattern_badge(_pp_stars, _pp_matched, cond_key), unsafe_allow_html=True)
+    elif is_recommended:
+        st.markdown('<div style="margin:6px 0;padding:8px 14px;background:#1A1418;border:1px solid #484F58;border-radius:10px;font-size:0.78em;color:#7D8590 !important;">収益パターン: マッチなし（過去データで高ROIパターンに非該当）</div>', unsafe_allow_html=True)
 
     # 信頼度スコア・投資額可変パネル
     confidence = st.session_state.get('pred_confidence', 50)

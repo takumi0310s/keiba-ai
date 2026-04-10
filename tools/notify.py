@@ -87,7 +87,8 @@ def send_discord(title, message, color="green", fields=None, channel="updates"):
 
 def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
                            bets, odds_dict=None, horses=None, date_str=None,
-                           upset_data=None, newspaper_data=None):
+                           upset_data=None, newspaper_data=None,
+                           pp_stars=0, pp_matched=None):
     """リッチな買い目通知メッセージを構築。全通知元で共通フォーマット。
 
     Args:
@@ -138,6 +139,19 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     lines = [f"**{race_name}** {surface}{distance}m {condition} {num_horses}頭"]
     # Line 2: 条件 + stars + ROI
     lines.append(f"条件{cond_key} {stars} ROI {roi:.1f}% (的中{hit_rate:.1f}%)")
+    # 収益パターンマッチ
+    if pp_stars >= 3:
+        lines.append("⭐⭐⭐ 収益パターン: 強く推奨")
+    elif pp_stars == 2:
+        lines.append("⭐⭐ 収益パターン: 推奨")
+    elif pp_stars == 1:
+        lines.append("⭐ 収益パターン: 参考")
+    if pp_matched:
+        _best = pp_matched[0]
+        _br = _best.get('roi', 0)
+        _bh = _best.get('hit_rate', 0) * 100
+        _bn = _best.get('n', 0)
+        lines.append(f"  Best: ROI {_br:.0f}% 的中{_bh:.0f}% N={_bn}")
     lines.append("")
 
     # 買い目
