@@ -1,0 +1,58 @@
+{
+  "未勝利": {
+    "race_id": "202603010101",
+    "race_name": "3歳未勝利",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15
+  },
+  "1勝": {
+    "race_id": "202603010107",
+    "race_name": "4歳以上1勝クラス",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15
+  },
+  "2勝": {
+    "race_id": "202606030512",
+    "race_name": "4歳以上2勝クラス",
+    "distance": 1200,
+    "surface": "ダ",
+    "num_horses": 16
+  },
+  "3勝(特別)": {
+    "race_id": "202603010111",
+    "race_name": "吾妻小富士S",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15
+  },
+  "重賞G2": {
+    "race_id": "202606030511",
+    "race_name": "ニュージーランドT",
+    "distance": 1600,
+    "surface": "芝",
+    "num_horses": 15
+  },
+  "重賞G2b": {
+    "race_id": "202609020511",
+    "race_name": "阪神牝馬S",
+    "distance": 1600,
+    "surface": "芝",
+    "num_horses": 10
+  },
+  "少頭数(条件E)": {
+    "race_id": "202606030509",
+    "race_name": "山藤賞",
+    "distance": 2000,
+    "surface": "芝",
+    "num_horses": 7
+  },
+  "芝短距離(条件D)": {
+    "race_id": "202603010110",
+    "race_name": "花見山特別",
+    "distance": 1200,
+    "surface": "芝",
+    "num_horses": 16
+  }
+}
