@@ -5149,6 +5149,18 @@ if st.button("🔍 予想する") and url_input:
     # netkeiba AI予測データ取得
     nk_ai = fetch_netkeiba_ai_prediction(race_id, is_nar=is_nar)
     st.session_state['pred_nk_ai'] = nk_ai
+
+    # 週末限定データ（波乱度・AI予測タイム・データ分析）
+    try:
+        from tools.scrape_weekend_thisweek import load_thisweek_upset, load_thisweek_newspaper, load_thisweek_analysis
+        _tw_upset = load_thisweek_upset().get(race_id, {})
+        _tw_newspaper = load_thisweek_newspaper().get(race_id, {})
+        _tw_analysis = load_thisweek_analysis().get(race_id, [])
+    except Exception:
+        _tw_upset, _tw_newspaper, _tw_analysis = {}, {}, []
+    st.session_state['pred_upset'] = _tw_upset
+    st.session_state['pred_newspaper_ai'] = _tw_newspaper
+    st.session_state['pred_data_analysis'] = _tw_analysis
     # 各馬にAI隊列位置を付与
     for idx in df.index:
         um = int(df.loc[idx, '馬番'])
@@ -5295,6 +5307,63 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
             env_html += '</div></div>'
             st.markdown(env_html, unsafe_allow_html=True)
 
+    # === 波乱度・AI予測タイム・データ分析パネル ===
+    _tw_upset = st.session_state.get('pred_upset', {})
+    _tw_newspaper = st.session_state.get('pred_newspaper_ai', {})
+    _tw_analysis = st.session_state.get('pred_data_analysis', [])
+    _tw_panels = []
+
+    # 波乱度パネル
+    if _tw_upset.get('upset_level') is not None:
+        _u_lv = _tw_upset['upset_level']
+        _u_rel = _tw_upset.get('top_popularity_reliability')
+        _u_colors = {1: '#14B8A6', 2: '#6C9BD2', 3: '#D4A843', 4: '#E57C3A', 5: '#E5534B'}
+        _u_labels = {1: '堅い', 2: 'やや堅い', 3: '標準', 4: '波乱含み', 5: '大荒れ'}
+        _u_color = _u_colors.get(_u_lv, '#7D8590')
+        _u_label = _u_labels.get(_u_lv, '不明')
+        _u_bar = ''.join([f'<span style="display:inline-block;width:20px;height:10px;border-radius:3px;margin-right:2px;background:{_u_color if j < _u_lv else "#2D333B"};"></span>' for j in range(5)])
+        _u_html = f'<div style="margin:8px 0;padding:12px 14px;background:linear-gradient(90deg,#1A1420,#161B22);border:1px solid {_u_color};border-radius:10px;">'
+        _u_html += f'<div style="display:flex;align-items:center;gap:10px;">'
+        _u_html += f'<span style="font-size:0.85em;color:{_u_color} !important;font-weight:bold;">波乱度 Lv{_u_lv} {_u_label}</span>'
+        _u_html += f'<span style="margin-left:4px;">{_u_bar}</span>'
+        if _u_rel is not None:
+            _u_html += f'<span style="font-size:0.78em;color:#7D8590 !important;margin-left:auto;">上位人気信頼度: <span style="color:{_u_color} !important;font-weight:bold;">{_u_rel:.0f}%</span></span>'
+        _u_html += '</div>'
+        if _u_lv >= 4:
+            _u_html += f'<div style="font-size:0.78em;color:#E5534B !important;margin-top:6px;font-weight:bold;">⚠ 波乱度Lv{_u_lv}: 見送り推奨 — 人気馬信頼度が低い</div>'
+        _u_html += '</div>'
+        st.markdown(_u_html, unsafe_allow_html=True)
+
+    # AI予測タイムパネル
+    _ai_times = _tw_newspaper.get('ai_horse_times', [])
+    _ai_opinion = _tw_newspaper.get('ai_opinion', '')
+    if _ai_times:
+        _at_html = '<div style="margin:8px 0;padding:12px 14px;background:linear-gradient(90deg,#14181F,#161B22);border:1px solid #7C3AED;border-radius:10px;">'
+        _at_html += '<div style="font-size:0.85em;color:#A78BFA !important;font-weight:bold;margin-bottom:6px;">netkeiba AI予測タイム</div>'
+        # TOP5馬のAI予測タイム
+        _at_top = _ai_times[:5]
+        _at_html += '<div style="display:grid;grid-template-columns:40px 1fr 60px 60px;gap:2px;font-size:0.8em;">'
+        _at_html += '<span style="color:#7D8590 !important;">馬番</span><span style="color:#7D8590 !important;">馬名</span><span style="color:#7D8590 !important;">前半3F</span><span style="color:#7D8590 !important;">後半3F</span>'
+        for ht in _at_top:
+            _f3f = f"{ht['ai_first_3f']:.1f}" if ht.get('ai_first_3f') else '-'
+            _l3f = f"{ht['ai_last_3f']:.1f}" if ht.get('ai_last_3f') else '-'
+            _at_html += f'<span style="color:#C9D1D9 !important;">{ht["horse_num"]}</span>'
+            _at_html += f'<span style="color:#C9D1D9 !important;">{ht["horse_name"][:6]}</span>'
+            _at_html += f'<span style="color:#C9D1D9 !important;">{_f3f}</span>'
+            _at_html += f'<span style="color:#C9D1D9 !important;">{_l3f}</span>'
+        _at_html += '</div>'
+        if _ai_opinion:
+            _at_html += f'<div style="font-size:0.75em;color:#8B949E !important;margin-top:6px;line-height:1.4;">💬 {_ai_opinion[:120]}{"..." if len(_ai_opinion) > 120 else ""}</div>'
+        _at_html += '</div>'
+        st.markdown(_at_html, unsafe_allow_html=True)
+
+    # データ分析パネル（枠順・脚質・騎手・種牡馬）
+    _analysis_items = [a for a in _tw_analysis if a.get('category') not in ('race_info', 'race_detail')]
+    if _analysis_items:
+        with st.expander(f"📊 データ分析 ({len(_analysis_items)}項目)", expanded=False):
+            for item in _analysis_items:
+                st.markdown(f"**{item['category']}**: {item['value']}")
+
     # 展開予測パネル
     p_pace = st.session_state.get('pred_pace', 'middle')
     p_reason = st.session_state.get('pred_pace_reason', '')
@@ -5368,6 +5437,10 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     st.markdown(_conf_html, unsafe_allow_html=True)
     if confidence < 40:
         st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E5534B;border-radius:8px;text-align:center;color:#E5534B !important;font-weight:bold;">⚠️ 見送り推奨 — 信頼度{confidence}（混戦/データ不足）</div>', unsafe_allow_html=True)
+    # 波乱度Lv4-5で見送り推奨追加
+    _pred_upset_lv = st.session_state.get('pred_upset', {}).get('upset_level')
+    if _pred_upset_lv is not None and _pred_upset_lv >= 4 and confidence >= 40:
+        st.markdown(f'<div style="margin:4px 0 8px;padding:10px;background:#1A1418;border:1px solid #E57C3A;border-radius:8px;text-align:center;color:#E57C3A !important;font-weight:bold;">⚠️ 波乱度Lv{_pred_upset_lv}: 荒れやすいレース — 見送りまたは少額投資推奨</div>', unsafe_allow_html=True)
 
     # netkeiba AI展開予想パネル
     _nk_ai = st.session_state.get('pred_nk_ai', {})

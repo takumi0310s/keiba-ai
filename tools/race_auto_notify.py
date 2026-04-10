@@ -255,6 +255,15 @@ def predict_and_notify(race_info, date_str):
         else:
             bets = generate_trio_bets(df)
 
+        # 週末限定データ（波乱度・AI予測）読み込み
+        _upset_data, _newspaper_data = {}, {}
+        try:
+            from scrape_weekend_thisweek import load_thisweek_upset, load_thisweek_newspaper
+            _upset_data = load_thisweek_upset().get(race_id, {})
+            _newspaper_data = load_thisweek_newspaper().get(race_id, {})
+        except Exception:
+            pass
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）
@@ -263,7 +272,8 @@ def predict_and_notify(race_info, date_str):
 
         title, msg, color = build_rich_bet_message(
             df, race_name, rinfo, cond_key, cond_profile,
-            bets, odds_dict=odds_dict, horses=horses, date_str=date_str)
+            bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
+            upset_data=_upset_data, newspaper_data=_newspaper_data)
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
 

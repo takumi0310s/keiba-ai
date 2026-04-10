@@ -86,7 +86,8 @@ def send_discord(title, message, color="green", fields=None, channel="updates"):
 
 
 def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
-                           bets, odds_dict=None, horses=None, date_str=None):
+                           bets, odds_dict=None, horses=None, date_str=None,
+                           upset_data=None, newspaper_data=None):
     """リッチな買い目通知メッセージを構築。全通知元で共通フォーマット。
 
     Args:
@@ -272,6 +273,25 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
         if shinba_lines:
             lines.append("\n🐴 新馬評価")
             lines.extend(shinba_lines)
+
+    # 波乱度・AI予測タイム
+    if upset_data:
+        _u_lv = upset_data.get('upset_level')
+        _u_rel = upset_data.get('top_popularity_reliability')
+        if _u_lv is not None:
+            _u_labels = {1: '堅い', 2: 'やや堅い', 3: '標準', 4: '波乱含み', 5: '大荒れ'}
+            _u_bar = '🟩' * _u_lv + '⬜' * (5 - _u_lv) if _u_lv <= 3 else '🟥' * _u_lv + '⬜' * (5 - _u_lv)
+            _u_line = f"\n🎲 波乱度 Lv{_u_lv} {_u_labels.get(_u_lv, '')} {_u_bar}"
+            if _u_rel is not None:
+                _u_line += f" (信頼度{_u_rel:.0f}%)"
+            lines.append(_u_line)
+            if _u_lv >= 4:
+                lines.append("⚠️ 荒れやすいレース — 見送り推奨")
+
+    if newspaper_data:
+        _ai_opinion = newspaper_data.get('ai_opinion', '')
+        if _ai_opinion:
+            lines.append(f"\n🤖 AI見解: {_ai_opinion[:100]}{'...' if len(_ai_opinion) > 100 else ''}")
 
     msg = "\n".join(lines)
     color = "green" if roi >= 200 else ("blue" if roi >= 100 else "yellow")

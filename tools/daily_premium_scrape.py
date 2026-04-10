@@ -315,6 +315,32 @@ def main():
     print(f"  Cache: {cache_file}")
     print(f"{'=' * 60}")
 
+    # --- 週末限定データ取得（波乱度・AI予測・データ分析）---
+    # 金曜または木曜の場合のみ実行（出馬表確定後〜レース前）
+    now = datetime.now()
+    is_friday_run = now.weekday() == 4  # 金曜=4
+    is_thursday_run = now.weekday() == 3  # 木曜=3 (翌日金曜分)
+    if is_friday_run or is_thursday_run or args.date:
+        print(f"\n  --- 週末限定データ取得 (newspaper/upset/analysis) ---")
+        try:
+            import subprocess
+            # 明日から2日間（金曜→土日）
+            tw_base = base + timedelta(days=1) if not args.date else base
+            tw_date = tw_base.strftime('%Y%m%d')
+            cmd = [sys.executable, os.path.join(BASE_DIR, 'tools', 'scrape_weekend_thisweek.py'),
+                   '--date', tw_date]
+            if args.dry_run:
+                cmd.append('--dry-run')
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=7200,
+                                    encoding='utf-8', errors='replace')
+            if result.stdout:
+                for line in result.stdout.strip().split('\n')[-5:]:
+                    print(f"    {line}")
+            if result.returncode != 0 and result.stderr:
+                print(f"    [WARN] thisweek scrape stderr: {result.stderr[-200:]}")
+        except Exception as e:
+            print(f"    [WARN] thisweek scrape failed: {e}")
+
     try:
         from notify import send_discord
         jrdb_msg = ""
