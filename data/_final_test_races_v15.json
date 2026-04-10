@@ -1,0 +1,202 @@
+{
+  "未勝利_中山ダ1800_重_16頭": {
+    "race_id": "202606030501",
+    "race_name": "3歳未勝利",
+    "distance": 1800,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "中山",
+    "expected_condition": "X",
+    "note": "16頭/ダ1800m/重→条件X"
+  },
+  "未勝利_中山ダ1200_重_16頭": {
+    "race_id": "202606030502",
+    "race_name": "3歳未勝利",
+    "distance": 1200,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "中山",
+    "expected_condition": "D",
+    "note": "条件D短距離"
+  },
+  "未勝利_阪神芝2000_稍重_16頭": {
+    "race_id": "202609020504",
+    "race_name": "3歳未勝利",
+    "distance": 2000,
+    "surface": "芝",
+    "num_horses": 16,
+    "venue": "阪神",
+    "expected_condition": "C",
+    "note": "阪神テスト+条件C"
+  },
+  "未勝利_福島ダ1700_良_15頭": {
+    "race_id": "202603010101",
+    "race_name": "3歳未勝利",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15,
+    "venue": "福島",
+    "expected_condition": "C",
+    "note": "福島テスト"
+  },
+  "障害_中山4R": {
+    "race_id": "202606030504",
+    "race_name": "4歳以上障害OP",
+    "distance": 3200,
+    "surface": "障",
+    "num_horses": 14,
+    "venue": "中山",
+    "expected_condition": "SKIP",
+    "note": "障害レース→自動除外確認"
+  },
+  "1勝_中山ダ1200_16頭": {
+    "race_id": "202606030507",
+    "race_name": "3歳1勝クラス",
+    "distance": 1200,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "中山",
+    "expected_condition": "D",
+    "note": "条件D"
+  },
+  "1勝_阪神ダ1400_16頭": {
+    "race_id": "202609020508",
+    "race_name": "4歳以上1勝クラス",
+    "distance": 1400,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "阪神",
+    "expected_condition": "D",
+    "note": "条件D/1400m"
+  },
+  "1勝_福島ダ1700_15頭": {
+    "race_id": "202603010107",
+    "race_name": "4歳以上1勝クラス",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15,
+    "venue": "福島",
+    "expected_condition": "C",
+    "note": "15頭/良"
+  },
+  "2勝_中山ダ1200_16頭": {
+    "race_id": "202606030512",
+    "race_name": "4歳以上2勝クラス",
+    "distance": 1200,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "中山",
+    "expected_condition": "D",
+    "note": "2勝クラスD"
+  },
+  "2勝_阪神ダ1200_16頭": {
+    "race_id": "202609020512",
+    "race_name": "4歳以上2勝クラス",
+    "distance": 1200,
+    "surface": "ダ",
+    "num_horses": 16,
+    "venue": "阪神",
+    "expected_condition": "D",
+    "note": "阪神2勝D"
+  },
+  "3勝_浄土平特別_福島芝1800_16頭": {
+    "race_id": "202603010109",
+    "race_name": "浄土平特別",
+    "distance": 1800,
+    "surface": "芝",
+    "num_horses": 16,
+    "venue": "福島",
+    "expected_condition": "C",
+    "note": "3勝クラス特別戦"
+  },
+  "OP_吾妻小富士S_福島ダ1700_15頭": {
+    "race_id": "202603010111",
+    "race_name": "吾妻小富士S",
+    "distance": 1700,
+    "surface": "ダ",
+    "num_horses": 15,
+    "venue": "福島",
+    "expected_condition": "C",
+    "note": "OP/Listed"
+  },
+  "G2_NZT_中山芝1600_15頭": {
+    "race_id": "202606030511",
+    "race_name": "ニュージーランドT",
+    "distance": 1600,
+    "surface": "芝",
+    "num_horses": 15,
+    "venue": "中山",
+    "expected_condition": "C",
+    "note": "G2重賞/条件C"
+  },
+  "G2_阪神牝馬S_阪神芝1600_10頭": {
+    "race_id": "202609020511",
+    "race_name": "阪神牝馬S",
+    "distance": 1600,
+    "surface": "芝",
+    "num_horses": 10,
+    "venue": "阪神",
+    "expected_condition": "A",
+    "note": "G2重賞/条件A"
+  },
+  "条件E_山藤賞_中山芝2000_7頭": {
+    "race_id": "202606030509",
+    "race_name": "山藤賞",
+    "distance": 2000,
+    "surface": "芝",
+    "num_horses": 7,
+    "venue": "中山",
+    "expected_condition": "E",
+    "note": "7頭以下→条件E/umaren"
+  },
+  "条件B_中山ダ1800_13頭_重": {
+    "race_id": "202606030503",
+    "race_name": "3歳未勝利",
+    "distance": 1800,
+    "surface": "ダ",
+    "num_horses": 13,
+    "venue": "中山",
+    "expected_condition": "B",
+    "note": "8-14頭/1600m+/重→条件B"
+  },
+  "芝短距離_花見山_福島芝1200_16頭": {
+    "race_id": "202603010110",
+    "race_name": "花見山特別",
+    "distance": 1200,
+    "surface": "芝",
+    "num_horses": 16,
+    "venue": "福島",
+    "expected_condition": "D",
+    "note": "芝1200m短距離"
+  },
+  "芝長距離_明石_阪神芝2400_8頭": {
+    "race_id": "202609020509",
+    "race_name": "明石特別",
+    "distance": 2400,
+    "surface": "芝",
+    "num_horses": 8,
+    "venue": "阪神",
+    "expected_condition": "A",
+    "note": "芝2400m長距離"
+  },
+  "芝中距離_大阪HC_阪神芝2600_13頭": {
+    "race_id": "202609020510",
+    "race_name": "大阪-ハンブルクC",
+    "distance": 2600,
+    "surface": "芝",
+    "num_horses": 13,
+    "venue": "阪神",
+    "expected_condition": "A",
+    "note": "芝2600m超長距離"
+  },
+  "未勝利_中山芝1600_16頭": {
+    "race_id": "202606030505",
+    "race_name": "3歳未勝利",
+    "distance": 1600,
+    "surface": "芝",
+    "num_horses": 16,
+    "venue": "中山",
+    "expected_condition": "C",
+    "note": "芝マイル"
+  }
+}
