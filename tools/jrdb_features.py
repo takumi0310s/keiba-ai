@@ -816,20 +816,50 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
 
     # PACI: Tier A 展開予想指数（manken/goal_rank/dochu_rank/goal_diff/jockey_exp/ninki）
     _paci_path = os.path.join(DATA_DIR, 'jrdb_paci.csv')
+    _paci_cols_map = [
+        ('paci_manken_idx', 'manken_idx'), ('paci_goal_rank', 'goal_rank'),
+        ('paci_dochu_rank', 'dochu_rank'), ('paci_goal_diff', 'goal_diff'),
+        ('paci_jockey_exp_wr', 'jockey_exp_wr'), ('paci_jockey_exp_3rd', 'jockey_exp_3rd'),
+        ('paci_ninki_idx', 'ninki_idx'),
+        ('paci_sogo_mark', 'sogo_mark'), ('paci_idm_mark', 'idm_mark'),
+        ('paci_jockey_mark', 'jockey_mark'), ('paci_train_mark', 'train_mark'),
+        ('gaisha_rank', 'gaisha_rank'),
+    ]
     if os.path.exists(_paci_path):
         try:
             _paci = pd.read_csv(_paci_path, encoding='utf-8-sig', dtype=str)
             _paci_race = _paci[_paci['race_id'].astype(str).str.zfill(12) == _rid_str]
-            if len(_paci_race) > 0:
+            _paci_matched = len(_paci_race) > 0
+            # 馬名フォールバック（PACI race_idはJRDB形式でnetkeiba形式と異なるため）
+            if not _paci_matched and 'horse_name' in _paci.columns:
+                _name_col_h = '馬名' if '馬名' in horses_df.columns else None
+                _uma_col_h = 'horse_num' if 'horse_num' in horses_df.columns else '馬番'
+                if _name_col_h:
+                    _paci_fb_rows = []
+                    for _, _h in horses_df.iterrows():
+                        _hname = str(_h.get(_name_col_h, ''))
+                        _uma_val = int(_h[_uma_col_h])
+                        _past = _paci[_paci['horse_name'] == _hname].sort_values('race_id', ascending=False)
+                        if len(_past) > 0:
+                            _row = _past.iloc[0:1]
+                            _entry = {'_uma': _uma_val}
+                            for _mcol, _pcol in _paci_cols_map:
+                                if _pcol in _row.columns:
+                                    _entry[_mcol] = pd.to_numeric(_row[_pcol].iloc[0], errors='coerce')
+                            _paci_fb_rows.append(_entry)
+                    if _paci_fb_rows:
+                        _pr = pd.DataFrame(_paci_fb_rows).drop_duplicates(subset='_uma', keep='last')
+                        horses_df = horses_df.merge(_pr, on='_uma', how='left', suffixes=('', '_paci'))
+                        _n_paci = sum(1 for _, r in _pr.iterrows() if pd.notna(r.get('paci_sogo_mark', float('nan'))) and r.get('paci_sogo_mark', 0) != 0)
+                        if _n_paci > 0:
+                            print(f"[JRDB] PACI馬名フォールバックで{_n_paci}/{len(_paci_fb_rows)}馬取得")
+                        _paci_matched = True
+            elif _paci_matched:
                 _pr = pd.DataFrame()
                 _pr['_uma'] = pd.to_numeric(_paci_race['umaban'], errors='coerce')
-                _pr['paci_manken_idx'] = pd.to_numeric(_paci_race['manken_idx'], errors='coerce')
-                _pr['paci_goal_rank'] = pd.to_numeric(_paci_race['goal_rank'], errors='coerce')
-                _pr['paci_dochu_rank'] = pd.to_numeric(_paci_race['dochu_rank'], errors='coerce')
-                _pr['paci_goal_diff'] = pd.to_numeric(_paci_race['goal_diff'], errors='coerce')
-                _pr['paci_jockey_exp_wr'] = pd.to_numeric(_paci_race['jockey_exp_wr'], errors='coerce')
-                _pr['paci_jockey_exp_3rd'] = pd.to_numeric(_paci_race['jockey_exp_3rd'], errors='coerce')
-                _pr['paci_ninki_idx'] = pd.to_numeric(_paci_race['ninki_idx'], errors='coerce')
+                for _mcol, _pcol in _paci_cols_map:
+                    if _pcol in _paci_race.columns:
+                        _pr[_mcol] = pd.to_numeric(_paci_race[_pcol], errors='coerce')
                 _pr = _pr.drop_duplicates(subset='_uma', keep='last')
                 horses_df = horses_df.merge(_pr, on='_uma', how='left', suffixes=('', '_paci'))
         except Exception as e:

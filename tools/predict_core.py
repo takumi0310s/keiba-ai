@@ -840,6 +840,7 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
         pop_list, pass_list, agari_list, finish_list = [], [], [], []
         race_dates = []
         odds_list = []
+        jockey_results = {}  # {jockey_name: [finish1, finish2, ...]}
         pass4_list = []
         weight_list = []
         best_time_sec = 999.9
@@ -877,6 +878,12 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
             finish_list.append(finish)
             if row_date:
                 race_dates.append(row_date)
+
+            # 騎手名を集計（騎手×馬相性計算用）
+            if len(tds) > 12:
+                _jname_row = tds[12].get_text(strip=True)
+                if _jname_row:
+                    jockey_results.setdefault(_jname_row, []).append(finish)
 
             if len(finish_list) == 1:
                 result['last_finish'] = finish
@@ -1037,6 +1044,9 @@ def get_horse_stats(horse_id, target_distance, target_surface, target_course="")
 
         # Weight history (for weight_ma5/weight_trend/weight_peak_diff)
         result['weight_history'] = weight_list[:5]  # most recent 5
+
+        # v15: 騎手×馬相性データ
+        result['jockey_results'] = jockey_results
 
         # Lap data: get previous race's first3f/last3f from db.netkeiba race page
         try:
@@ -1338,6 +1348,9 @@ def apply_horse_stats(horse, stats, race_info):
     horse['prev_race_first3f_scraped'] = stats.get('prev_race_first3f', 0)
     horse['prev_race_last3f_scraped'] = stats.get('prev_race_last3f', 0)
     horse['prev_race_pace_diff_scraped'] = stats.get('prev_race_pace_diff', 0)
+    # v15: 前走騎手（騎手変更検出用）+ 騎手×馬相性
+    horse['prev_jockey'] = stats.get('prev_jockey', '')
+    horse['jockey_results'] = stats.get('jockey_results', {})
     # UI用追加フィールド
     horse['持ちタイム'] = stats.get('best_time', 0.0)
     horse['タイム表示'] = stats.get('best_time_str', '')
@@ -1954,28 +1967,33 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                     if _reno_ym <= _race_ym < _reno_ym + 12:
                         df['course_renovated'] = 1
 
-        # 騎手変更（前走騎手との比較 — horse_statsから取得可能な場合）
+        # 騎手変更 + 騎手×馬相性（get_horse_statsで取得済みのjockey_resultsを使用）
+        # リーディング上位騎手リスト（jockey_change_to_top判定用）
+        _top_jockeys = {'C.ルメール','川田将雅','戸崎圭太','横山武史','R.ムーア','武豊',
+                        '松山弘平','坂井瑠星','D.レーン','横山和生','岩田望来','吉田隼人'}
         if 'jockey_change' not in df.columns:
             df['jockey_change'] = 0
             df['jockey_change_to_top'] = 0
-            for idx_h in range(len(df)):
-                if idx_h < len(horses):
-                    _prev_jockey = horses[idx_h].get('prev_jockey', '')
-                    _cur_jockey = horses[idx_h].get('騎手名', '')
-                    if _prev_jockey and _cur_jockey and str(_prev_jockey) != str(_cur_jockey):
-                        df.loc[df.index[idx_h], 'jockey_change'] = 1
-
-        # 騎手×馬相性（feature_lookups.pklから取得、なければ0）
-        _jh_lookup = lookups.get('jockey_horse_stats', {}) if 'lookups' in dir() else {}
-        if _jh_lookup:
-            for idx_h in range(len(df)):
-                _jname = horses[idx_h].get('騎手名', '') if idx_h < len(horses) else ''
-                _hname = horses[idx_h].get('馬名', '') if idx_h < len(horses) else ''
-                _jh = _jh_lookup.get((_jname, _hname), {})
-                if _jh:
-                    df.loc[df.index[idx_h], 'jockey_horse_rides'] = _jh.get('rides', 0)
-                    df.loc[df.index[idx_h], 'jockey_horse_wr'] = _jh.get('wr', 0.0)
-                    df.loc[df.index[idx_h], 'jockey_horse_top3r'] = _jh.get('top3r', 0.0)
+            df['jockey_horse_rides'] = 0
+            df['jockey_horse_wr'] = 0.0
+            df['jockey_horse_top3r'] = 0.0
+            for idx_h in range(min(len(df), len(horses))):
+                _prev_jockey = horses[idx_h].get('prev_jockey', '')
+                _cur_jockey = horses[idx_h].get('騎手名', '')
+                # 騎手変更判定
+                if _prev_jockey and _cur_jockey and str(_prev_jockey) != str(_cur_jockey):
+                    df.loc[df.index[idx_h], 'jockey_change'] = 1
+                    if str(_cur_jockey) in _top_jockeys:
+                        df.loc[df.index[idx_h], 'jockey_change_to_top'] = 1
+                # 騎手×馬相性（過去成績から計算）
+                _jr = horses[idx_h].get('jockey_results', {})
+                if _jr and _cur_jockey:
+                    _jr_finishes = _jr.get(str(_cur_jockey), [])
+                    if _jr_finishes:
+                        _n = len(_jr_finishes)
+                        df.loc[df.index[idx_h], 'jockey_horse_rides'] = _n
+                        df.loc[df.index[idx_h], 'jockey_horse_wr'] = sum(1 for f in _jr_finishes if f == 1) / _n
+                        df.loc[df.index[idx_h], 'jockey_horse_top3r'] = sum(1 for f in _jr_finishes if f <= 3) / _n
         for _v15f in ['jockey_horse_rides', 'jockey_horse_wr', 'jockey_horse_top3r',
                        'jockey_change', 'jockey_change_to_top', 'transport_distance_km',
                        'is_long_transport', 'course_renovated', 'post_renovation_flag', 'gaisha_rank']:
