@@ -441,7 +441,7 @@ def load_models():
               'version': 'v9', 'n_top_encode': 80, 'is_live': False}
 
     candidates = [
-        (os.path.join(BASE_DIR, 'keiba_model_v15_central_live.pkl.gz'), True, 'v15 Pattern B (当日情報込み, 145特徴量)'),
+        (os.path.join(BASE_DIR, 'keiba_model_v15_central_live.pkl.gz'), True, 'v15 Pattern B (当日情報込み, 150特徴量)'),
         (os.path.join(BASE_DIR, 'keiba_model_v15_central.pkl.gz'), False, 'v15 Pattern A (リークフリー, 145特徴量)'),
         (os.path.join(BASE_DIR, 'keiba_model_v135_central_live.pkl.gz'), True, 'v13.5b Pattern B (当日情報込み)'),
         (os.path.join(BASE_DIR, 'keiba_model_v135_central.pkl.gz'), False, 'v13.5b Pattern A (リークフリー)'),

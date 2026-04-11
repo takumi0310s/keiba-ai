@@ -1799,8 +1799,9 @@ st.markdown(CSS, unsafe_allow_html=True)
 @st.cache_resource(ttl=3600)
 def load_model():
     import os, gzip
-    # v13.5b → v13.5 → v13.4 → v12 → v9 → v8 の順で検索
+    # v15 → v13.5b → v13.4 → v12 → v9 → v8 の順で検索
     for fname in [
+        "keiba_model_v15_central.pkl.gz",
         "keiba_model_v135_central.pkl.gz",
         "keiba_model_v134_central.pkl.gz",
         "keiba_model_v12_central.pkl.gz",
@@ -1832,7 +1833,9 @@ def load_v9_models():
     import os, gzip as _gzip
     base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'central_live': None}
-    for key, fname in [('central', 'keiba_model_v135_central'),
+    for key, fname in [('central', 'keiba_model_v15_central'),
+                       ('central_live', 'keiba_model_v15_central_live'),
+                       ('central', 'keiba_model_v135_central'),
                        ('central_live', 'keiba_model_v135_central_live'),
                        ('central', 'keiba_model_v134_central'),
                        ('central_live', 'keiba_model_v134_central_live'),
@@ -5128,17 +5131,29 @@ if st.button("🔍 予想する") and url_input:
                 time.sleep(0.5)
         progress_bar.empty()
     # Score calculation — predict_core 共通モジュールを使用
+    _amd = active_model_data if isinstance(active_model_data, dict) else {}
     _model_data_for_core = {
         'model': active_model if (active_model is not None and active_model_type != 'default') else model,
         'features': active_features if active_features else FEATURES,
         'version': active_version,
         'sire_map': active_sire_map,
         'bms_map': active_bms_map,
-        'n_top_encode': active_model_data.get('n_top_encode', 80) if isinstance(active_model_data, dict) else 80,
+        'n_top_encode': _amd.get('n_top_encode', 80),
         'is_live': is_live_model,
-        'ensemble_weights': active_model_data.get('ensemble_weights', {}) if isinstance(active_model_data, dict) else {},
-        'xgb_model': active_model_data.get('xgb_model') if isinstance(active_model_data, dict) else None,
-        'cb_model': active_model_data.get('cb_model') if isinstance(active_model_data, dict) else None,
+        'ensemble_weights': _amd.get('ensemble_weights', {}),
+        'xgb_model': _amd.get('xgb_model'),
+        'cb_model': _amd.get('cb_model'),
+        'ft_model_state': _amd.get('ft_model_state'),
+        'ft_model_config': _amd.get('ft_model_config'),
+        'ft_scaler_mean': _amd.get('ft_scaler_mean'),
+        'ft_scaler_scale': _amd.get('ft_scaler_scale'),
+        'ir_model_state': _amd.get('ir_model_state'),
+        'ir_model_config': _amd.get('ir_model_config'),
+        'ir_scaler_mean': _amd.get('ir_scaler_mean'),
+        'ir_scaler_scale': _amd.get('ir_scaler_scale'),
+        'mlp_model': _amd.get('mlp_model'),
+        'mlp_scaler': _amd.get('mlp_scaler'),
+        'course_map': _amd.get('course_map'),
     }
     if _model_data_for_core['model'] is None:
         st.error("モデルが読み込めていません。keiba_model_v8.pkl が存在するか確認してください。")
@@ -6124,6 +6139,7 @@ def _batch_score_race(horses, race_info, is_nar):
         num_h = len(df)
         odds_avail = '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any()
 
+        _bmd = b_md if isinstance(b_md, dict) else {}
         _batch_model_data = {
             'model': b_model,
             'features': b_feats,
@@ -6132,9 +6148,20 @@ def _batch_score_race(horses, race_info, is_nar):
             'bms_map': b_bmap,
             'n_top_encode': n_top,
             'is_live': b_live,
-            'ensemble_weights': b_md.get('ensemble_weights', {}) if isinstance(b_md, dict) else {},
-            'xgb_model': b_md.get('xgb_model') if isinstance(b_md, dict) else None,
-            'cb_model': b_md.get('cb_model') if isinstance(b_md, dict) else None,
+            'ensemble_weights': _bmd.get('ensemble_weights', {}),
+            'xgb_model': _bmd.get('xgb_model'),
+            'cb_model': _bmd.get('cb_model'),
+            'ft_model_state': _bmd.get('ft_model_state'),
+            'ft_model_config': _bmd.get('ft_model_config'),
+            'ft_scaler_mean': _bmd.get('ft_scaler_mean'),
+            'ft_scaler_scale': _bmd.get('ft_scaler_scale'),
+            'ir_model_state': _bmd.get('ir_model_state'),
+            'ir_model_config': _bmd.get('ir_model_config'),
+            'ir_scaler_mean': _bmd.get('ir_scaler_mean'),
+            'ir_scaler_scale': _bmd.get('ir_scaler_scale'),
+            'mlp_model': _bmd.get('mlp_model'),
+            'mlp_scaler': _bmd.get('mlp_scaler'),
+            'course_map': _bmd.get('course_map'),
         }
 
         df = _core_build_features(horses, race_info, _batch_model_data)
