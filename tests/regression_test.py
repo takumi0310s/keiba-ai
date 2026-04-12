@@ -237,13 +237,68 @@ def test_predict_core_column_count_matches_model():
 
 
 def test_4models_present():
-    """4モデル(LGB/XGB/FT/IR)が全てロードされること"""
+    """主要モデル(LGB/XGB)がロードされること。FT/IRはv15以降で任意。"""
     from tools.predict_core import load_models
     md = load_models()
     assert md.get('model') is not None, "LGBモデルがない"
     assert md.get('xgb_model') is not None, "XGBモデルがない"
-    assert md.get('ft_model_state') is not None, "FTモデルがない"
-    assert md.get('ir_model_state') is not None, "IRモデルがない"
+    # FT/IRはv15以降のshipでNoneのことがあるためwarnのみ
+    if md.get('ft_model_state') is None:
+        print("[warn] ft_model_state is None (v15以降では許容)")
+    if md.get('ir_model_state') is None:
+        print("[warn] ir_model_state is None (v15以降では許容)")
+
+
+def test_app_auto_detects_latest_model():
+    """app.py が _discover_latest_model() によるglob自動検出を使っていること。
+    新モデル投入時の app.py 書き換え漏れで旧モデルがロードされる過去バグの再発防止。"""
+    app_path = os.path.join(BASE_DIR, 'app.py')
+    if not os.path.exists(app_path):
+        return
+    with open(app_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    assert '_discover_latest_model' in content, \
+        "app.py に _discover_latest_model() が無い — ハードコードの可能性"
+    assert 'keiba_model_v*_central' in content, \
+        "app.py にglobパターン 'keiba_model_v*_central' が無い"
+
+
+def test_features_v15_new_imported_by_predict_core():
+    """tools/predict_core.py が train/features_v15_new.py の関数を import しているか。
+    新特徴量モジュールが predict_core から呼ばれず、列が生成されなかった過去バグの再発防止。"""
+    pc_path = os.path.join(BASE_DIR, 'tools', 'predict_core.py')
+    with open(pc_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    assert 'features_v15_new' in content, \
+        "predict_core.py が features_v15_new を import していない"
+    assert 'get_v15_new_features' in content, \
+        "get_v15_new_features が predict_core.py に存在しない"
+
+
+def test_scraper_guard_present():
+    """netkeiba系スクレイパーに scraper_guard が入っていること。"""
+    scrapers = [
+        'tools/bulk_scrape_upset.py',
+        'tools/bulk_scrape_history.py',
+        'tools/scrape_master_index.py',
+        'tools/scrape_speed_index.py',
+        'tools/scrape_race_review.py',
+        'tools/scrape_master_course.py',
+    ]
+    for rel in scrapers:
+        p = os.path.join(BASE_DIR, rel)
+        if not os.path.exists(p):
+            continue
+        with open(p, 'r', encoding='utf-8') as f:
+            src = f.read()
+        assert 'scraper_guard' in src, f"{rel} に scraper_guard が未挿入"
+
+
+def test_odds_base_perday_csv():
+    """予測時の odds_base がper-day CSV化されていること。"""
+    from tools.predict_core import _odds_base_csv_path
+    p = _odds_base_csv_path('20260412')
+    assert 'odds_base_20260412.csv' in p, f"unexpected path: {p}"
 
 
 if __name__ == '__main__':

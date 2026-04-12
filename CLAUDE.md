@@ -1,7 +1,9 @@
 # CLAUDE.md
 
+> **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-04-03
+Last updated: 2026-04-12
 
 ---
 

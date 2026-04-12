@@ -592,4 +592,5 @@ def load_thisweek_analysis():
 
 
 if __name__ == '__main__':
+    from tools.scraper_guard import check_scraping_allowed; check_scraping_allowed()
     main()

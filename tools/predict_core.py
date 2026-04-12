@@ -13,8 +13,32 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+import sys
 from datetime import datetime
 from itertools import combinations
+
+# === v15新特徴量モジュール (Single Source of Truth for feature names) ===
+_V15_NEW_FEATURES_AVAILABLE = False
+try:
+    _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _BASE_DIR not in sys.path:
+        sys.path.insert(0, _BASE_DIR)
+    from train.features_v15_new import (
+        get_v15_new_features,
+        compute_jockey_horse_features,
+        compute_transport_distance,
+        compute_course_renovation,
+        compute_gaisha_features,
+        compute_all_v15_new_features,
+    )
+    _V15_NEW_FEATURES_AVAILABLE = True
+except Exception as _e:
+    def get_v15_new_features():
+        return ['jockey_horse_rides', 'jockey_horse_wr', 'jockey_horse_top3r',
+                'jockey_change', 'jockey_change_to_top',
+                'transport_distance_km', 'is_long_transport',
+                'course_renovated', 'post_renovation_flag',
+                'gaisha_rank']
 
 # === FT-Transformer (optional, requires torch) ===
 _TORCH_AVAILABLE = False
@@ -1138,41 +1162,114 @@ def _fetch_odds_api(race_id):
 
 
 # === オッズ基準値キャッシュ（AM8:00予測時のオッズを基準として保存） ===
+# 設計（2026-04-12 再実装）:
+#   - daily_predict.py がAM8:00時点のオッズを data/odds_base_YYYYMMDD.csv に保存
+#   - app.py の「予想する」押下時に当日CSVを読み、リアルタイムオッズと比較
+#   - 1回の押下で odds_change_rate / pop_rank_change / odds_sharp_drop が埋まる
+#   - 旧 odds_base_cache.json は load 時のフォールバックとしてのみ参照
 
-_ODDS_CACHE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                 'data', 'odds_base_cache.json')
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+_ODDS_CACHE_PATH = os.path.join(_DATA_DIR, 'odds_base_cache.json')  # legacy fallback
 
 
-def save_odds_base(race_id, odds_full):
-    """基準オッズをキャッシュに保存（初回取得時のみ）"""
+def _odds_base_csv_path(date_str=None):
+    """data/odds_base_YYYYMMDD.csv へのパス。date_str未指定なら今日。"""
+    if not date_str:
+        date_str = datetime.now().strftime('%Y%m%d')
+    return os.path.join(_DATA_DIR, f'odds_base_{date_str}.csv')
+
+
+def save_odds_base(race_id, odds_full, date_str=None):
+    """基準オッズを当日CSVに保存（同一race_idは初回のみ書き込み、上書きしない）。"""
+    if not odds_full:
+        return
     try:
-        cache = {}
-        if os.path.exists(_ODDS_CACHE_PATH):
-            with open(_ODDS_CACHE_PATH, 'r') as f:
-                cache = json.load(f)
+        os.makedirs(_DATA_DIR, exist_ok=True)
+        csv_path = _odds_base_csv_path(date_str)
+        existing = set()
+        rows = []
+        if os.path.exists(csv_path):
+            try:
+                with open(csv_path, 'r', encoding='utf-8') as f:
+                    import csv as _csv
+                    rd = _csv.DictReader(f)
+                    for r in rd:
+                        rows.append(r)
+                        existing.add(str(r.get('race_id')))
+            except Exception:
+                pass
         rid = str(race_id)
-        if rid not in cache:
-            cache[rid] = {
-                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M'),
-                'odds': {str(u): v for u, v in odds_full.items()},
-            }
-            with open(_ODDS_CACHE_PATH, 'w') as f:
-                json.dump(cache, f, ensure_ascii=False)
-    except Exception:
-        pass
+        if rid in existing:
+            return  # baseline既にあり、上書きしない
+        ts = datetime.now().strftime('%Y-%m-%d %H:%M')
+        for uma, info in odds_full.items():
+            if isinstance(info, dict):
+                odds_v = info.get('odds', 0)
+                pop_v = info.get('pop_rank', 0)
+            else:
+                odds_v = float(info) if info else 0
+                pop_v = 0
+            rows.append({
+                'race_id': rid, 'horse_num': int(uma),
+                'odds': float(odds_v) if odds_v else 0.0,
+                'pop_rank': int(pop_v) if pop_v else 0,
+                'timestamp': ts,
+            })
+        import csv as _csv
+        with open(csv_path, 'w', encoding='utf-8', newline='') as f:
+            wr = _csv.DictWriter(f, fieldnames=['race_id', 'horse_num', 'odds', 'pop_rank', 'timestamp'])
+            wr.writeheader()
+            for r in rows:
+                wr.writerow(r)
+    except Exception as e:
+        print(f"[ODDS-BASE] save失敗: {e}")
 
 
-def load_odds_base(race_id):
-    """キャッシュから基準オッズを読み込み
+def load_odds_base(race_id, date_str=None):
+    """当日CSV(なければ前日CSV、最後にlegacy JSON)から基準オッズを読み込む。
 
     Returns:
         dict: {馬番(int): {'odds': float, 'pop_rank': int}} or {}
     """
+    rid = str(race_id)
+    # 1) 当日CSV → 2) race_idの開催日付プレフィックスに紐付くもの → 3) legacy JSON
+    paths = []
+    if date_str:
+        paths.append(_odds_base_csv_path(date_str))
+    paths.append(_odds_base_csv_path())  # 今日
+    # race_idは年4桁始まりだが日付特定不可。代わりに data/odds_base_*.csv 全部走査
+    try:
+        import glob as _glob
+        for p in sorted(_glob.glob(os.path.join(_DATA_DIR, 'odds_base_*.csv')), reverse=True):
+            if p not in paths:
+                paths.append(p)
+    except Exception:
+        pass
+    for csv_path in paths:
+        if not os.path.exists(csv_path):
+            continue
+        try:
+            import csv as _csv
+            with open(csv_path, 'r', encoding='utf-8') as f:
+                rd = _csv.DictReader(f)
+                out = {}
+                for r in rd:
+                    if str(r.get('race_id')) != rid:
+                        continue
+                    out[int(r.get('horse_num') or 0)] = {
+                        'odds': float(r.get('odds') or 0),
+                        'pop_rank': int(r.get('pop_rank') or 0),
+                    }
+                if out:
+                    return out
+        except Exception:
+            continue
+    # legacy JSONフォールバック
     try:
         if os.path.exists(_ODDS_CACHE_PATH):
             with open(_ODDS_CACHE_PATH, 'r') as f:
                 cache = json.load(f)
-            entry = cache.get(str(race_id), {})
+            entry = cache.get(rid, {})
             odds_data = entry.get('odds', {})
             return {int(k): v for k, v in odds_data.items()}
     except Exception:
@@ -1911,16 +2008,15 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         try:
             odds_full = fetch_realtime_odds_full(race_id)
             if odds_full:
-                # まず差分計算（キャッシュが既にあれば基準値と比較）
-                _had_base = bool(load_odds_base(race_id))
-                df = compute_odds_change_features(df, race_id, odds_full)
-                # キャッシュ未保存なら保存（初回のみ）
-                save_odds_base(race_id, odds_full)
-                _n_change = (df.get('odds_change_rate', pd.Series([0])) != 0).sum()
-                if _n_change > 0:
-                    print(f"[ODDS] netkeibaオッズ変動特徴量計算完了 ({_n_change}/{len(df)}馬)")
-                elif not _had_base:
-                    print(f"[ODDS] 基準オッズ保存完了（初回取得、次回から変動計算可能）")
+                _base = load_odds_base(race_id)
+                if not _base:
+                    # baselineが無ければ今このタイミングを基準として保存（次以降のため）
+                    save_odds_base(race_id, odds_full)
+                    print(f"[ODDS] 基準オッズ未登録 → 現在値を基準として保存（差分は0）")
+                else:
+                    df = compute_odds_change_features(df, race_id, odds_full)
+                    _n_change = (df.get('odds_change_rate', pd.Series([0])) != 0).sum()
+                    print(f"[ODDS] 基準オッズ vs リアルタイム比較完了 ({_n_change}/{len(df)}馬で変動検出)")
         except Exception as e:
             print(f"[WARN] netkeibaオッズ変動計算失敗: {e}")
 

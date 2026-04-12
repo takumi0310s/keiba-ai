@@ -1796,65 +1796,76 @@ button[data-testid="stBaseButton-secondary"],
 st.markdown(CSS, unsafe_allow_html=True)
 
 # ===== Model & Data =====
+def _model_version_key(fname):
+    """keiba_model_vXXX_central(.pkl|.pkl.gz) -> 整数キー (大きい=新しい)。
+    v135 -> 1350, v15 -> 1500, v141 -> 1410 のように桁を揃えて比較する。"""
+    import re as _re
+    m = _re.search(r'keiba_model_v(\d+)([a-z]?)_central(?:_live)?', fname)
+    if not m:
+        return -1
+    digits = m.group(1)
+    suffix = m.group(2)
+    # 2桁版(v15) → "150"、3桁版(v135) → "135" として比較
+    if len(digits) == 2:
+        digits = digits + '0'
+    n = int(digits)
+    return n * 10 + (ord(suffix) - ord('a') + 1 if suffix else 0)
+
+
+def _discover_latest_model(suffix=''):
+    """keiba_model_v*_central{suffix}.pkl(.gz) を全列挙して最新を返す。"""
+    import os, glob
+    base = os.path.dirname(os.path.abspath(__file__))
+    pat1 = os.path.join(base, f'keiba_model_v*_central{suffix}.pkl.gz')
+    pat2 = os.path.join(base, f'keiba_model_v*_central{suffix}.pkl')
+    cands = glob.glob(pat1) + glob.glob(pat2)
+    cands = [c for c in cands if '_central_live' not in os.path.basename(c) or suffix == '_live']
+    cands.sort(key=lambda p: (_model_version_key(os.path.basename(p)),
+                              0 if p.endswith('.gz') else -1), reverse=True)
+    return cands
+
+
 @st.cache_resource(ttl=3600)
 def load_model():
+    """最新のkeiba_model_v*_central(.pkl.gz)を自動検出してロード。
+
+    新バージョン(v16, v17...)を追加するたびにここを書き換える必要がない。
+    """
     import os, gzip
-    # v15 → v13.5b → v13.4 → v12 → v9 → v8 の順で検索
-    for fname in [
-        "keiba_model_v15_central.pkl.gz",
-        "keiba_model_v135_central.pkl.gz",
-        "keiba_model_v134_central.pkl.gz",
-        "keiba_model_v12_central.pkl.gz",
-        "keiba_model_v9_central.pkl.gz", "keiba_model_v9_central.pkl",
-        "keiba_model_v8.pkl.gz", "keiba_model_v8.pkl",
-    ]:
-        if os.path.exists(fname):
-            try:
-                if fname.endswith('.gz'):
-                    with gzip.open(fname, "rb") as f:
-                        data = pickle.load(f)
-                else:
-                    with open(fname, "rb") as f:
-                        data = pickle.load(f)
-                if isinstance(data, dict):
-                    return data
-                return {'model': data, 'features': None, 'version': 'v1'}
-            except:
-                continue
-    try:
-        with open("keiba_model.pkl", "rb") as f:
-            return {'model': pickle.load(f), 'features': None, 'version': 'v1'}
-    except:
-        return None
+    cands = _discover_latest_model('')
+    # 旧式フォールバック
+    cands += [os.path.join(os.path.dirname(os.path.abspath(__file__)), n)
+              for n in ('keiba_model_v8.pkl.gz', 'keiba_model_v8.pkl', 'keiba_model.pkl')]
+    for fpath in cands:
+        if not os.path.exists(fpath):
+            continue
+        try:
+            opener = gzip.open if fpath.endswith('.gz') else open
+            with opener(fpath, 'rb') as f:
+                data = pickle.load(f)
+            if isinstance(data, dict):
+                data.setdefault('_loaded_from', os.path.basename(fpath))
+                return data
+            return {'model': data, 'features': None, 'version': 'v1',
+                    '_loaded_from': os.path.basename(fpath)}
+        except Exception:
+            continue
+    return None
 
 @st.cache_resource(ttl=3600)
 def load_v9_models():
-    """v9中央モデル（Pattern A + Pattern B）を読み込み。gz優先。"""
+    """中央Pattern A/Bモデルを最新バージョンから自動検出してロード。"""
     import os, gzip as _gzip
-    base = os.path.dirname(os.path.abspath(__file__))
     models = {'central': None, 'central_live': None}
-    for key, fname in [('central', 'keiba_model_v15_central'),
-                       ('central_live', 'keiba_model_v15_central_live'),
-                       ('central', 'keiba_model_v135_central'),
-                       ('central_live', 'keiba_model_v135_central_live'),
-                       ('central', 'keiba_model_v134_central'),
-                       ('central_live', 'keiba_model_v134_central_live'),
-                       ('central', 'keiba_model_v12_central'),
-                       ('central_live', 'keiba_model_v12_central_live'),
-                       ('central', 'keiba_model_v9_central'),
-                       ('central_live', 'keiba_model_v9_central_live')]:
-        if models[key] is not None:
-            continue  # 既にv12でロード済みならスキップ
-        for ext, opener in [('.pkl.gz', lambda p: _gzip.open(p, 'rb')),
-                            ('.pkl', lambda p: open(p, 'rb'))]:
-            fpath = os.path.join(base, fname + ext)
-            if os.path.exists(fpath):
-                try:
-                    with opener(fpath) as f:
-                        models[key] = pickle.load(f)
-                    break
-                except Exception as e:
-                    st.warning(f"{fname}{ext} 読み込みエラー: {e}")
+    for key, suffix in [('central', ''), ('central_live', '_live')]:
+        for fpath in _discover_latest_model(suffix):
+            try:
+                opener = _gzip.open if fpath.endswith('.gz') else open
+                with opener(fpath, 'rb') as f:
+                    models[key] = pickle.load(f)
+                break
+            except Exception as e:
+                st.warning(f"{os.path.basename(fpath)} 読み込みエラー: {e}")
     return models
 
 @st.cache_resource

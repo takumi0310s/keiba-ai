@@ -156,7 +156,7 @@ def run_daily_predict(date_str):
                 odds_full = fetch_realtime_odds_full(race_id)
                 odds_dict = {u: v['odds'] for u, v in odds_full.items()}
                 if odds_full:
-                    save_odds_base(race_id, odds_full)
+                    save_odds_base(race_id, odds_full, date_str=date_str)
                 print(f"  オッズ取得: {len(odds_dict)}頭分" if odds_dict else "  オッズ: 未取得（レース前オッズ未発表の可能性）")
             time.sleep(0.3)
 
