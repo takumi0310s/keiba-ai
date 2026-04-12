@@ -27,7 +27,15 @@ import json
 import sqlite3
 import argparse
 import time
+import unicodedata
 from datetime import datetime
+
+
+def _norm(text):
+    """NFKC正規化 — 全角数字・全角英字を半角に統一し、文字化け耐性を持たせる"""
+    if text is None:
+        return ''
+    return unicodedata.normalize('NFKC', text)
 
 # === パス設定 ===
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,7 +61,13 @@ def fetch_race_result(race_id):
     url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
     try:
         resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.encoding = "EUC-JP"
+        # netkeibaはページによってEUC-JP/UTF-8混在 — meta宣言を優先、だめなら apparent_encoding
+        detected = None
+        head = resp.content[:4096].decode('ascii', errors='ignore').lower()
+        m_charset = re.search(r'charset=["\']?([\w\-]+)', head)
+        if m_charset:
+            detected = m_charset.group(1)
+        resp.encoding = detected or resp.apparent_encoding or "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
     except Exception as e:
         print(f"  [ERROR] 結果ページ取得失敗: {e}")
@@ -123,30 +137,38 @@ def fetch_race_result(race_id):
             th = row.find("th")
             if not th:
                 continue
-            th_text = th.get_text(strip=True)
+            th_text = _norm(th.get_text(strip=True))
             th_hex = th_text.encode('utf-8').hex()
 
             tds = row.find_all("td")
             payout_vals = []
             for td in tds:
-                for m in re.finditer(r'([\d,]+)円', td.get_text(strip=True)):
+                td_text = _norm(td.get_text(strip=True))
+                for m in re.finditer(r'([\d,]+)円', td_text):
                     payout_vals.append(int(m.group(1).replace(',', '')))
 
             if not payout_vals:
                 continue
             payout_val = payout_vals[0]
 
-            if '単勝' in th_text or (BET_TYPE_HEX['tansho'] in th_hex and '連' not in th_text and 'e980a3' not in th_hex):
+            # NFKC正規化済みテキストで判定（三連複/3連複/３連複の全バリエーション対応）
+            is_tansho = ('単勝' in th_text) and ('連' not in th_text)
+            is_trio   = ('三連複' in th_text) or ('3連複' in th_text) or (BET_TYPE_HEX['trio_g'] in th_hex)
+            is_tierce = ('三連単' in th_text) or ('3連単' in th_text)
+            is_umaren = ('馬連' in th_text) and ('三' not in th_text) and ('単' not in th_text) and ('3' not in th_text)
+            is_wide   = ('ワイド' in th_text) or (BET_TYPE_HEX['wide'] in th_hex)
+
+            if is_tansho:
                 result['payouts']['tansho'] = payout_val
-            elif '三連複' in th_text or BET_TYPE_HEX['trio_g'] in th_hex:
+            elif is_trio:
                 result['payouts']['trio'] = payout_val
-            elif '馬連' in th_text and '三' not in th_text and '単' not in th_text:
+            elif is_umaren:
                 result['payouts']['umaren'] = payout_val
-            elif BET_TYPE_HEX['umaren'] in th_hex and BET_TYPE_HEX['umatan'] not in th_hex and '33' not in th_hex:
-                result['payouts']['umaren'] = payout_val
-            elif 'ワイド' in th_text or BET_TYPE_HEX['wide'] in th_hex:
+            elif is_wide:
                 if result['payouts']['wide'] == 0:
                     result['payouts']['wide'] = payout_val
+            elif is_tierce:
+                pass  # 三連単は使わない
 
     return result
 

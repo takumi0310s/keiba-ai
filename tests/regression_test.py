@@ -125,6 +125,117 @@ def test_bat_has_encoding_vars():
     assert 'PYTHONUNBUFFERED' in content, "PYTHONUNBUFFEREDが未設定"
 
 
+COURSE_NAMES = ['中山', '阪神', '福島', '東京', '京都', '中京', '小倉', '新潟', '函館', '札幌']
+
+
+def _make_dummy_horse(i):
+    """predict_core.build_featuresに渡せる最小限のダミー馬データ"""
+    return {
+        '馬番': i + 1,
+        '馬名': f'テスト{i}',
+        '馬齢': 4,
+        '性別': '牡',
+        '性別_enc': 0,
+        '性齢': '牡4',
+        '斤量': 56.0,
+        '騎手名': '佐藤',
+        '騎手': '佐藤',
+        '騎手勝率': 0.1,
+        '調教師': '美浦厩舎',
+        '父': '',
+        '母の父': '',
+        '所属地': '美浦',
+        '単勝オッズ': 10.0,
+        '人気': i + 1,
+        '枠番': (i // 2) + 1,
+        '馬体重': 480,
+        '場体重増減': 0,
+        '前走着順': 5,
+        '前走オッズ': 15.0,
+        '前走人気': 8,
+        '上がり3F': 35.5,
+        '通過順平均': 8.0,
+        '通過順4': 8,
+        '前走間隔': 30,
+        'horse_id_val': 0,
+        '競馬場コード_enc': 4,
+        '芝ダート_enc': 0,
+        '馬場状態_enc': 0,
+        '距離(m)': 1600,
+    }
+
+
+def test_all_courses_feature_build():
+    """全10競馬場でbuild_featuresがエラーなく動作すること"""
+    from tools.predict_core import load_models, build_features
+    md = load_models()
+    assert md.get('model') is not None, "モデルロード失敗"
+
+    horses = [_make_dummy_horse(i) for i in range(10)]
+
+    for course in COURSE_NAMES:
+        race_info = {
+            'course': course, 'distance': 1600, 'surface': '芝',
+            'condition': '良', 'race_num': 11, 'num_horses': 10,
+        }
+        try:
+            df = build_features(horses, race_info, md)
+        except Exception as e:
+            raise AssertionError(f"{course}でbuild_features失敗: {e}")
+        assert df is not None and len(df) == 10, f"{course}: 行数不一致"
+
+
+def test_app_load_model_latest_version_registered():
+    """app.pyが現行最新モデル(v15想定)を検出できること"""
+    import importlib.util, glob
+    app_path = os.path.join(BASE_DIR, 'app.py')
+    if not os.path.exists(app_path):
+        return
+
+    # _model_version_keyロジックの単体検証（Streamlit非依存）
+    import re as _re
+    def _key(fname):
+        m = _re.search(r'keiba_model_v(\d+)([a-z]?)_central(?:_live)?', fname)
+        if not m:
+            return -1
+        digits = m.group(1)
+        suffix = m.group(2)
+        if len(digits) == 2:
+            digits = digits + '0'
+        return int(digits) * 10 + (ord(suffix) - ord('a') + 1 if suffix else 0)
+
+    # app.py内の_model_version_keyが存在すること
+    with open(app_path, 'r', encoding='utf-8') as f:
+        app_src = f.read()
+    assert '_model_version_key' in app_src, "_model_version_keyが未定義"
+    assert '_discover_latest_model' in app_src, "_discover_latest_modelが未定義"
+
+    # 実在するモデルファイルの中で最大バージョンが選ばれること
+    cands = glob.glob(os.path.join(BASE_DIR, 'keiba_model_v*_central*.pkl.gz'))
+    assert cands, "モデルファイルが1つもない"
+    cands.sort(key=lambda p: _key(os.path.basename(p)), reverse=True)
+    top = os.path.basename(cands[0])
+    # v15以上のバージョン番号が存在するはず（v15登録済みの回帰防止）
+    assert _key(top) >= 1500, f"最新モデルが v15 未満: {top}"
+
+
+def test_predict_core_column_count_matches_model():
+    """build_featuresの生成列数 >= モデルが期待する特徴量数"""
+    from tools.predict_core import load_models, build_features
+    md = load_models()
+    feats = md.get('features') or []
+    if not feats:
+        return  # features listが無いモデルはスキップ
+
+    horses = [_make_dummy_horse(i) for i in range(8)]
+    race_info = {'course': '中山', 'distance': 1600, 'surface': '芝',
+                 'condition': '良', 'race_num': 11, 'num_horses': 8}
+    df = build_features(horses, race_info, md)
+
+    missing = [c for c in feats if c not in df.columns]
+    assert not missing, f"build_featuresに不足列 {len(missing)}個: {missing[:5]}"
+
+
 def test_4models_present():
     """4モデル(LGB/XGB/FT/IR)が全てロードされること"""
     from tools.predict_core import load_models
