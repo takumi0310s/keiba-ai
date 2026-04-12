@@ -1,0 +1,415 @@
+{
+  "laps": [
+    {
+      "url": "https://race.netkeiba.com/race/lap.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/result.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "個別ラップ",
+        "LapTime",
+        "ラップタイム",
+        "HaronTime",
+        "通過順位"
+      ],
+      "tables_found": 11,
+      "table_classes": [
+        "class=['RaceTable01', 'RaceCommon_Table', 'ResultRefund', 'Table_Show_All'] id=All_Result_Table",
+        "class=['Payout_Detail_Table']",
+        "class=['Payout_Detail_Table']",
+        "class=['RaceCommon_Table', 'Corner_Num']",
+        "class=['RaceCommon_Table', 'Race_HaronTime']",
+        "class=['RaceCommon_Table']",
+        "class=['RaceCommon_Table']",
+        "class=['RapSummary_Table'] id=lap_summary",
+        "class=['RapSummary_Table'] id=milage_summary"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='' id='tab_ResultSelect_1_con'>",
+        "<div class='ResultTableWrap' id=''>"
+      ],
+      "data_sections": [],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_laps_result.html"
+    },
+    {
+      "url": "https://db.netkeiba.com/race/202505010101/",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "LapTime",
+        "ラップタイム",
+        "通過順位"
+      ],
+      "tables_found": 8,
+      "table_classes": [
+        "class=['race_table_01', 'nk_tb_common']",
+        "class=['pay_table_01']",
+        "class=['pay_table_01']",
+        "class=['result_table_02']",
+        "class=['result_table_02']",
+        "class=['result_table_02']",
+        "class=['result_table_02']",
+        "class=['result_table_02']"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='mainrace_data fc' id=''>",
+        "<div class='data_intro' id=''>",
+        "<div class='race_result fc' id=''>",
+        "<div class='TimeIndexChangeBtn' id=''>",
+        "<div class='TimeIndexChangeList' id=''>",
+        "<div class='result_info box_left' id=''>",
+        "<div class='TrackBiasWrap' id=''>",
+        "<div class='TrackBiasTxt01' id=''>",
+        "<div class='TrackBiasImg Dirt' id=''>",
+        "<div class='TrackBiasIn Best' id=''>",
+        "<div class='TrackBiasCenter Normal' id=''>",
+        "<div class='TrackBiasOut Normal' id=''>",
+        "<div class='result_info box_right' id=''>",
+        "<div class='master_course_infoText02' id=''>",
+        "<div class='LapTimeArea' id=''>",
+        "<div class='FootWrap' id=''>"
+      ],
+      "data_sections": [
+        "TimeIndexHeadCell01: 78",
+        "speed_index: 78",
+        "index2: 78",
+        "TimeIndexMasterCell01: 75",
+        "index2: 75",
+        "TimeIndexMasterCell01: 95",
+        "index4: 95",
+        "TimeIndexMasterCell01: 84",
+        "index3: 84",
+        "TimeIndexMasterCell01: 91",
+        "index4: 91",
+        "TimeIndexMasterCell01: 78",
+        "TimeIndexMasterCell01: 86",
+        "index3: 86",
+        "TimeIndexMasterCell01: 79",
+        "index2: 79",
+        "TimeIndexMasterCell01: 98",
+        "index4: 98",
+        "TimeIndexHeadCell01: 73",
+        "speed_index: 73",
+        "index2: 73",
+        "TimeIndexMasterCell01: 73",
+        "TimeIndexMasterCell01: 94",
+        "index4: 94",
+        "TimeIndexHeadCell01: 74",
+        "speed_index: 74",
+        "index2: 74",
+        "TimeIndexMasterCell01: 72",
+        "index2: 72",
+        "TimeIndexMasterCell01: 89",
+        "index3: 89",
+        "TimeIndexMasterCell01: 81",
+        "index3: 81"
+      ],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_laps_.html"
+    }
+  ],
+  "index": [
+    {
+      "url": "https://race.netkeiba.com/race/speed.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "start_index",
+        "chase_index",
+        "スタート指数",
+        "追走指数",
+        "上がり指数",
+        "SpeedIndex",
+        "sk__start",
+        "sk__chase"
+      ],
+      "tables_found": 1,
+      "table_classes": [
+        "class=['SpeedIndex_Table', 'Default', 'RaceTable01', 'ShutubaTable']"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='master_course_infoText02' id=''>",
+        "<div class='TimeIndexMaster' id=''>",
+        "<div class='TypeTableMenu SpeedTypeTabMenu' id=''>",
+        "<div class='Speed_TabMenu MenuWrap' id=''>",
+        "<div class='Table_Container mb18' id='Speed_List'>"
+      ],
+      "data_sections": [
+        "IndexMaster: タイム指数マスターに切替",
+        "IndexNormal: タイム指数マスターに切替高精度＆個別ラップで区間毎指数を追加!",
+        "IndexNormalTxt01: タイム指数マスターに切替",
+        "IndexNormalTxt02: 高精度＆個別ラップで区間毎指数を追加!",
+        "sk__max_index: 105757",
+        "sk__average_index: 104747*",
+        "sk__max_distance_index: 1000未",
+        "sk__max_course_index: 1000未",
+        "sk__index3: 103535",
+        "sk__index2: 105757",
+        "sk__index1: 105050",
+        "sk__max_index: 1000-",
+        "sk__average_index: 1000-",
+        "sk__index3: 104040",
+        "sk__index2: 107474",
+        "sk__index1: 108383",
+        "sk__max_index: 939-61",
+        "sk__average_index: 939-61*",
+        "sk__index3: 1000-"
+      ],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_index_speed.html"
+    },
+    {
+      "url": "https://race.netkeiba.com/race/master_speed.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/speed_detail.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    }
+  ],
+  "bias": [
+    {
+      "url": "https://race.netkeiba.com/race/track_bias.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/course.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/data_list.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "inner"
+      ],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='RaceColumn02 race_data_column02' id=''>",
+        "<div class='PickupData_TendencyWrap' id=''>",
+        "<div class='FootWrap' id=''>"
+      ],
+      "data_sections": [],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_bias_data_list.html"
+    },
+    {
+      "url": "https://race.netkeiba.com/race/shutuba.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "TrackBias",
+        "トラックバイアス",
+        "バイアス",
+        "inner",
+        "outer"
+      ],
+      "tables_found": 9,
+      "table_classes": [
+        "class=['Shutuba_Table', 'RaceTable01', 'ShutubaTable']",
+        "class=['Table_Compatibility']",
+        "class=['RaceCommon_Table', 'Race_HaronTime']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'NoCheckData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'StartLateData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'JockeyData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'AllCheckData']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='Tooltip_OddsUpLimit_Wrap' id='odds_update_info'>",
+        "<div class='AplHeader_Wrap WebModalHead' id=''>"
+      ],
+      "data_sections": [
+        "master_course_badge: マスター"
+      ],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_bias_shutuba.html"
+    }
+  ],
+  "pace": [
+    {
+      "url": "https://race.netkeiba.com/race/yosou.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/ai.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/pace.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/shutuba.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "展開予想"
+      ],
+      "tables_found": 9,
+      "table_classes": [
+        "class=['Shutuba_Table', 'RaceTable01', 'ShutubaTable']",
+        "class=['Table_Compatibility']",
+        "class=['RaceCommon_Table', 'Race_HaronTime']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'NoCheckData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'StartLateData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'JockeyData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'AllCheckData']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='Tooltip_OddsUpLimit_Wrap' id='odds_update_info'>",
+        "<div class='AplHeader_Wrap WebModalHead' id=''>"
+      ],
+      "data_sections": [
+        "master_course_badge: マスター"
+      ],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_pace_shutuba.html"
+    }
+  ],
+  "upset": [
+    {
+      "url": "https://race.netkeiba.com/race/shutuba.html?race_id=202505010101",
+      "status": 200,
+      "has_content": true,
+      "keyword_hits": [
+        "波乱度",
+        "UpsetLevel",
+        "upset_level"
+      ],
+      "tables_found": 9,
+      "table_classes": [
+        "class=['Shutuba_Table', 'RaceTable01', 'ShutubaTable']",
+        "class=['Table_Compatibility']",
+        "class=['RaceCommon_Table', 'Race_HaronTime']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'NoCheckData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'StartLateData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'JockeyData']",
+        "class=['RaceTable01', 'ShutubaTable', 'PredictRap_Table', 'AllCheckData']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']",
+        "class=['RaceCommon_Table', 'PickupHorseTable01', 'AnaBestTable']"
+      ],
+      "interesting_divs": [
+        "<div class='Wrap fc' id='page'>",
+        "<div class='MyMenuWrap' id=''>",
+        "<div class='RaceColumnWrap fc' id=''>",
+        "<div class='RaceKaisaiWrap' id=''>",
+        "<div class='RaceNumWrap' id=''>",
+        "<div class='RaceData01' id=''>",
+        "<div class='RaceData02' id=''>",
+        "<div class='Tooltip_OddsUpLimit_Wrap' id='odds_update_info'>",
+        "<div class='AplHeader_Wrap WebModalHead' id=''>"
+      ],
+      "data_sections": [
+        "master_course_badge: マスター"
+      ],
+      "debug_file": "C:\\Users\\takum\\keiba-ai\\data\\_debug\\202505010101_upset_shutuba.html"
+    },
+    {
+      "url": "https://race.netkeiba.com/race/odds.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    },
+    {
+      "url": "https://race.netkeiba.com/race/yosou.html?race_id=202505010101",
+      "status": "FAIL (no response)",
+      "has_content": false,
+      "keyword_hits": [],
+      "tables_found": 0,
+      "table_classes": [],
+      "interesting_divs": [],
+      "data_sections": []
+    }
+  ]
+}

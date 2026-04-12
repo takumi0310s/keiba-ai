@@ -1,0 +1,3 @@
+﻿race_id,course,race_num,race_name,condition,trio_hit,trio_payout,umaren_hit,umaren_payout,investment,profit,status,bet_type,trio_bets_str,top1_finish,top2_finish,top3_finish,trio_result
+202606030601,3歳未勝利,0,3歳未勝利,D,,0,,0,700,-700,pending,trio,1-2-9; 1-6-9; 1-9-10; 1-9-15; 2-9-10; 6-9-10; 9-10-15,,,,
+202609020606,4歳以上1勝クラス,0,4歳以上1勝クラス,A,1.0,18760,0.0,0,700,18060,settled,trio,1-2-10; 1-3-10; 1-6-10; 1-8-10; 2-6-10; 3-6-10; 6-8-10,1.0,3.0,9.0,1-2-10
