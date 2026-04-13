@@ -227,7 +227,9 @@ def run_bulk_scrape(year_filter=None):
     errors = 0
     start_time = time.time()
 
+    from tools.scraper_guard import check_scraping_allowed
     for i, race_id in enumerate(remaining):
+        check_scraping_allowed()  # Fri22:00〜Mon06:00は自動停止→再開
         try:
             result = scrape_upset(session, race_id)
 

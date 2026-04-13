@@ -348,7 +348,9 @@ def main():
              'lap_races': 0, 'errors': 0}
     consecutive_empty = 0
 
+    from tools.scraper_guard import check_scraping_allowed
     for i, race_id in enumerate(new_ids):
+        check_scraping_allowed()  # Fri22:00〜Mon06:00は自動停止→再開
         pct = (i + 1) / total * 100
         print(f"\r  [{i+1}/{total} {pct:.0f}%] {race_id}", end='', flush=True)
 
