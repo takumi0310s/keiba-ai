@@ -92,14 +92,20 @@ def jv_to_netkeiba(jv_rid, nichi_num):
     return f'{year}{course}{int(kai):02d}{int(nichi_num):02d}{race_num}'
 
 
-def get_shinba_race_ids():
-    """jra_races_full.csvから新馬レースのnetkeiba race_idを取得"""
+def get_shinba_race_ids(years=None):
+    """jra_races_full.csvから新馬レースのnetkeiba race_idを取得
+
+    Args:
+        years: list[int] or None — 2桁の年(例: [20,21,22,23])。Noneなら[24,25]
+    """
+    if years is None:
+        years = [24, 25]
     csv_path = os.path.join(DATA_DIR, 'jra_races_full.csv')
     df = pd.read_csv(csv_path, encoding='utf-8', low_memory=False,
                      usecols=['year', 'month', 'day', 'course', 'kai', 'nichi',
                               'race_num', 'class_code', 'race_id', 'distance',
                               'num_horses'])
-    shinba = df[(df['class_code'] == 15) & (df['year'].isin([24, 25]))]
+    shinba = df[(df['class_code'] == 15) & (df['year'].isin(years))]
 
     seen = set()
     races = []
@@ -229,7 +235,23 @@ def scrape_newspaper(race_id):
 # ===== メイン =====
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--year', type=int, default=None,
+                    help='対象年 (例: 2020). 省略時は2024-2025')
+    ap.add_argument('--years', type=str, default=None,
+                    help='複数年カンマ区切り (例: 2020,2021,2022,2023)')
+    args = ap.parse_args()
+
+    if args.year is not None:
+        years_2d = [args.year % 100]
+    elif args.years:
+        years_2d = [int(y) % 100 for y in args.years.split(',')]
+    else:
+        years_2d = [24, 25]
+
     print(f'新馬評価スクレイピング開始: {datetime.now()}')
+    print(f'対象年 (2桁): {years_2d}')
 
     # 既存データ読み込み
     existing_ids = set()
@@ -239,8 +261,8 @@ def main():
         print(f'既存データ: {len(existing_ids)} races, {len(existing_df)} rows')
 
     # 新馬レースID取得
-    races = get_shinba_race_ids()
-    print(f'新馬レース総数 (2024-2025): {len(races)}')
+    races = get_shinba_race_ids(years=years_2d)
+    print(f'新馬レース総数 ({years_2d}): {len(races)}')
 
     # 未取得分のみ
     todo = [r for r in races if r['nk_race_id'] not in existing_ids]
