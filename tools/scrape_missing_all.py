@@ -70,6 +70,10 @@ STEPS = [
 
     # race_laps(複) 全年
     ('laps',    ['python', '-u', 'tools/scrape_master_course.py', '--source', 'race_laps', '--year', '2020-2026']),
+
+    # individual_lap (master course 個別ラップ) 2024-2025
+    ('ilap24',  ['python', '-u', 'tools/scrape_master_course.py', '--source', 'laps', '--year', '2024']),
+    ('ilap25',  ['python', '-u', 'tools/scrape_master_course.py', '--source', 'laps', '--year', '2025']),
 ]
 
 
