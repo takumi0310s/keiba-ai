@@ -1,0 +1,106 @@
+{
+  "model": "v15 Pattern B live",
+  "total_features": 150,
+  "analysis_date": "2026-04-13",
+  "category_definitions": {
+    "A": "前日までに確定、AM8:00で100%取得可能",
+    "B": "AM8:00取得可能だが当日朝スクレイピング依存で不安定",
+    "C": "発走直前まで確定しない（AM8:00予測ではデフォルト/代替値）",
+    "D": "実装バグ・常にゼロ/デフォルト値になる特徴量"
+  },
+  "A": {
+    "count": 130,
+    "features": [
+      "weight_carry", "age", "distance", "course_enc", "surface_enc", "sex_enc",
+      "num_horses_val", "horse_num", "bracket", "dist_cat", "age_sex", "season",
+      "age_season", "horse_num_ratio", "bracket_pos", "carry_diff", "age_group",
+      "surface_dist_enc", "course_surface", "is_nar", "location_enc",
+      "prev_finish", "prev_last3f", "prev_pass4", "prev_prize", "prev2_finish",
+      "prev3_finish", "avg_finish_3r", "best_finish_3r", "finish_trend",
+      "top3_count_3r", "avg_last3f_3r", "prev2_last3f", "dist_change",
+      "dist_change_abs", "rest_days", "rest_category", "prev_odds_log",
+      "prev_race_first3f", "prev_race_last3f", "prev_race_pace_diff", "pci",
+      "prev_agari_relative",
+      "jockey_wr_calc", "jockey_course_wr_calc", "trainer_top3_calc",
+      "jockey_surface_wr", "frame_course_dist_wr",
+      "sire_enc", "bms_enc", "sire_surface_wr", "sire_dist_wr", "bms_surface_wr",
+      "sire_shinba_top3r",
+      "horse_career_races", "horse_career_wr", "horse_career_top3r",
+      "horse_dist_top3r", "horse_surface_top3r",
+      "training_time_filled", "has_training", "training_per_dist",
+      "wood_best_4f_filled", "has_wood_training", "wood_count_2w",
+      "sakaro_best_4f_filled", "sakaro_best_3f_filled", "has_sakaro_training",
+      "total_training_count", "time_1f_last_filled", "training_intensity_enc",
+      "index_max_filled", "index_run1_filled", "index_avg5_filled",
+      "jrdb_idm", "jrdb_training_idx", "jrdb_stable_idx", "jrdb_composite_idx",
+      "jrdb_upset_idx", "jrdb_ten_idx_pred", "jrdb_pace_idx_pred",
+      "jrdb_agari_idx_pred", "jrdb_position_idx_pred", "jrdb_class_code",
+      "jrdb_rise_code", "jrdb_heavy_apt", "jrdb_hoof_code", "jrdb_ranch_rank",
+      "jrdb_stable_rank", "jrdb_training_arrow", "jrdb_stable_eval",
+      "jrdb_running_style", "jrdb_dist_apt",
+      "jrdb_prev_track_bias", "jrdb_prev_interference", "jrdb_prev_late_start",
+      "jrdb_oikiri_idx", "jrdb_ten_time_idx", "jrdb_shimai_time_idx",
+      "jrdb_kta_idm", "jrdb_kta_ten_pred", "jrdb_kta_agari_pred",
+      "jrdb_ze_idm_avg", "jrdb_ze_ten_avg", "jrdb_ze_agari_avg",
+      "jrdb_ze_furi_count", "jrdb_tb_homestr_inner",
+      "jrdb_dam_rensho_avg", "jrdb_bms_rensho_avg",
+      "oz_tansho_base_log", "oz_fukusho_base_log", "oz_base_pop_rank",
+      "paci_manken_idx", "paci_goal_rank", "paci_dochu_rank", "paci_goal_diff",
+      "paci_jockey_exp_wr", "paci_jockey_exp_3rd", "paci_ninki_idx",
+      "paci_sogo_mark", "paci_idm_mark", "paci_jockey_mark", "paci_train_mark",
+      "transport_distance_km", "is_long_transport", "course_renovated",
+      "post_renovation_flag",
+      "jockey_horse_rides", "jockey_horse_wr", "jockey_horse_top3r",
+      "jockey_change", "jockey_change_to_top"
+    ]
+  },
+  "B": {
+    "count": 8,
+    "features": [
+      "jrdb_paddock_idx", "jrdb_odds_idx", "jrdb_live_composite_idx",
+      "jrdb_body_code", "jrdb_demeanor_code",
+      "stable_comment_score", "gaisha_rank",
+      "weight_ma5"
+    ],
+    "note": "JRDB TYB(当日直前)は配信タイミング次第。stable_comment_scoreは厩舎コメント朝更新。gaisha_rankはPACI CSVの当日依存項目。weight_ma5は前走体重履歴が欠落すると不安定"
+  },
+  "C": {
+    "count": 7,
+    "features": [
+      "odds_change_rate", "pop_rank_change", "odds_sharp_drop",
+      "weight_trend", "weight_peak_diff"
+    ],
+    "note_extra": "真のC分類としては馬体重系とリアルタイムオッズ変化系。ただしv15特徴量リストにhorse_weight/condition_encは含まれず、予測時はbuild_features内でデフォルト扱い。odds_change_rate等はoz_base(前日確定オッズ)と当日オッズの差分で計算される構造のため、当日オッズが取れなければ常に0",
+    "am8_handling": {
+      "odds_change_rate": "当日オッズ未取得時はデフォルト0",
+      "pop_rank_change": "同上",
+      "odds_sharp_drop": "同上",
+      "weight_trend": "前走体重履歴のトレンド計算。前走値が取れれば A扱い、取れなければ0",
+      "weight_peak_diff": "同上"
+    }
+  },
+  "D": {
+    "count": 5,
+    "features": [
+      "jrdb_prev_idm",
+      "jrdb_prev_pace_idx",
+      "jrdb_prev_rise_code",
+      "jrdb_cid_idx",
+      "jrdb_ls_idx"
+    ],
+    "root_causes": {
+      "jrdb_prev_idm": "predict pathのSEDマージ処理(jrdb_features.merge_jrdb_predict_features)が jrdb_prev_track_bias/interference/late_start の3列しか処理せず、jrdb_prev_idm/pace_idx/rise_codeは extract_sed_features(学習専用) にしか実装がない。predict時は JRDB_DEFAULTS(idm=50)のまま固定",
+      "jrdb_prev_pace_idx": "同上（pace_idx=50固定）",
+      "jrdb_prev_rise_code": "同上（rise_code=3=B固定）",
+      "jrdb_cid_idx": "JOファイル(CID/LS指数)の当日マッチが取れずデフォルト0.0。race_idフォーマット不整合 or 馬名フォールバック失敗",
+      "jrdb_ls_idx": "同上"
+    },
+    "fix_priority": "high — 5特徴量全てを修正すれば情報量が増えAUC改善余地あり"
+  },
+  "summary": {
+    "usable_am8_pct": 91.3,
+    "usable_am8_count": "A(130) + B(8) = 138 / 150",
+    "unusable_or_buggy": "C(7) + D(5) = 12",
+    "recommendation": "D 5個の修正が最優先。C 7個のうちodds系3個は当日オッズ取得強化で部分回復可能。weight系2個は前走体重履歴の取得精度向上で回復"
+  }
+}

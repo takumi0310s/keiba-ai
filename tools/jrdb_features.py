@@ -705,9 +705,12 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB ZE merge failed: {e}")
 
-    # SED: 前走データ（馬場差/不利/出遅）— blood_num経由で最新行を取得
+    # SED: 前走データ（馬場差/不利/出遅/IDM/ペース指数/上昇度）— blood_num経由で最新行を取得
     _sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
-    _sed_feats_needed = ['jrdb_prev_track_bias', 'jrdb_prev_interference', 'jrdb_prev_late_start']
+    _sed_feats_needed = [
+        'jrdb_prev_track_bias', 'jrdb_prev_interference', 'jrdb_prev_late_start',
+        'jrdb_prev_idm', 'jrdb_prev_pace_idx', 'jrdb_prev_rise_code',
+    ]
     _sed_feats_zero = all(
         c not in horses_df.columns or (horses_df.get(c, pd.Series([0])) == 0).all()
         for c in _sed_feats_needed
@@ -715,16 +718,23 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
     if os.path.exists(_sed_path) and _blood_map is not None and _sed_feats_zero:
         try:
             _blood_nums = _blood_map['blood_num'].unique().tolist()
-            _sed_cols = ['blood_num', 'race_id', '馬���差', '不利', '出遅']
-            # English column fallback
             _sed_raw = pd.read_csv(_sed_path, encoding='utf-8-sig', dtype=str)
+            # Japanese→English column fallback map (6列)
+            _sed_col_candidates = [
+                ('jrdb_prev_track_bias',  '馬場差',      'baba_sa'),
+                ('jrdb_prev_interference','不利',        'furi'),
+                ('jrdb_prev_late_start',  '出遅',        'deokure'),
+                ('jrdb_prev_idm',         'IDM',         'idm'),
+                ('jrdb_prev_pace_idx',    'ペース指数',  'pace_idx'),
+                ('jrdb_prev_rise_code',   '上昇度コード','josho_code'),
+            ]
             _sed_col_map = {}
-            for _jc, _ec in [('馬場差', 'baba_sa'), ('不利', 'furi'), ('出遅', 'deokure')]:
+            for _feat, _jc, _ec in _sed_col_candidates:
                 if _jc in _sed_raw.columns:
-                    _sed_col_map[_jc] = _jc
+                    _sed_col_map[_feat] = _jc
                 elif _ec in _sed_raw.columns:
-                    _sed_col_map[_jc] = _ec
-            if 'blood_num' in _sed_raw.columns and len(_sed_col_map) == 3:
+                    _sed_col_map[_feat] = _ec
+            if 'blood_num' in _sed_raw.columns and len(_sed_col_map) >= 3:
                 _sed_filt = _sed_raw[_sed_raw['blood_num'].isin(_blood_nums)].copy()
                 if len(_sed_filt) > 0:
                     # 各馬の最新SED行を取得（= 前走データ）
@@ -733,24 +743,25 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                     _sr_df = _sed_latest.merge(_blood_map, on='blood_num', how='inner')
                     _sr_result = pd.DataFrame()
                     _sr_result['_uma'] = pd.to_numeric(_sr_df['_uma_str'], errors='coerce')
-                    _sr_result['jrdb_prev_track_bias'] = pd.to_numeric(_sr_df[_sed_col_map['馬場差']], errors='coerce')
-                    _sr_result['jrdb_prev_interference'] = pd.to_numeric(_sr_df[_sed_col_map['不利']], errors='coerce')
-                    _sr_result['jrdb_prev_late_start'] = pd.to_numeric(_sr_df[_sed_col_map['出遅']], errors='coerce')
+                    for _feat, _src_col in _sed_col_map.items():
+                        _sr_result[_feat] = pd.to_numeric(_sr_df[_src_col], errors='coerce')
                     _sr_result = _sr_result.dropna(subset=['_uma']).drop_duplicates(subset='_uma', keep='last')
                     if '_uma' not in horses_df.columns:
                         horses_df['_uma'] = horses_df['horse_num'].astype(int) if 'horse_num' in horses_df.columns else horses_df.index + 1
                     horses_df = horses_df.merge(_sr_result, on='_uma', how='left', suffixes=('', '_sed_fb'))
-                    # Prefer new values over existing zeros
+                    # Prefer new values over existing zeros/defaults
+                    _default_map = {'jrdb_prev_idm': 50.0, 'jrdb_prev_pace_idx': 50.0, 'jrdb_prev_rise_code': 3}
                     for _sc in _sed_feats_needed:
                         _sc_fb = f'{_sc}_sed_fb'
                         if _sc_fb in horses_df.columns:
-                            horses_df[_sc] = horses_df[_sc].fillna(0)
-                            _mask = horses_df[_sc] == 0
+                            _dflt = _default_map.get(_sc, 0)
+                            horses_df[_sc] = horses_df[_sc].fillna(_dflt)
+                            _mask = horses_df[_sc] == _dflt
                             horses_df.loc[_mask, _sc] = horses_df.loc[_mask, _sc_fb]
                             horses_df.drop(columns=[_sc_fb], inplace=True, errors='ignore')
-                    _n_filled = sum(1 for c in _sed_feats_needed if c in horses_df.columns and (horses_df[c] != 0).any())
+                    _n_filled = sum(1 for c in _sed_feats_needed if c in horses_df.columns and (horses_df[c] != _default_map.get(c, 0)).any())
                     if _n_filled > 0:
-                        print(f"[JRDB] SED前走データ: blood_numフォールバックで{_n_filled}/3特徴量取得")
+                        print(f"[JRDB] SED前走データ: blood_numフォールバックで{_n_filled}/{len(_sed_feats_needed)}特徴量取得")
         except Exception as e:
             print(f"[WARN] JRDB SED prev fallback failed: {e}")
 

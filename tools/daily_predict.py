@@ -38,19 +38,70 @@ from predict_core import (
 )
 
 
+# ===== リトライユーティリティ =====
+
+MAX_RETRIES = 3
+RETRY_DELAY = 5
+
+
+def retry_call(fn, label, *args, **kwargs):
+    """指定関数を最大MAX_RETRIES回リトライする。
+    成功時は戻り値を返し、全滅時は最終例外を投げる。
+    """
+    last_exc = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            last_exc = e
+            if attempt < MAX_RETRIES:
+                print(f"    [RETRY {attempt}/{MAX_RETRIES}] {label}: {e} → {RETRY_DELAY}s待機")
+                time.sleep(RETRY_DELAY)
+            else:
+                print(f"    [FAIL] {label}: {MAX_RETRIES}回全失敗: {e}")
+    if last_exc:
+        raise last_exc
+
+
+# ===== Cookie検証・自動更新 =====
+
+def ensure_cookie_valid():
+    """Cookie有効性をチェック、期限切れなら自動更新を試みる。
+    Returns: (ok: bool, message: str)
+    """
+    try:
+        sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
+        from refresh_cookie import auto_refresh_if_expired
+        refreshed, msg = auto_refresh_if_expired(headless=True)
+        if refreshed:
+            print(f"[COOKIE] {msg}")
+            return True, msg
+        if 'Cookie有効' in msg:
+            return True, msg
+        print(f"[COOKIE WARN] {msg}")
+        return False, msg
+    except Exception as e:
+        print(f"[COOKIE ERR] 検証失敗: {e}")
+        return False, str(e)
+
+
 # ===== レース一覧取得 =====
 
 def fetch_race_list(date_str):
-    """netkeibaからその日のレース一覧を取得
+    """netkeibaからその日のレース一覧を取得（リトライ付き）
     date_str: YYYYMMDD形式
 
     Returns: list of dict {'race_id': str, 'course': str, 'race_num': int}
     """
     url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={date_str}"
-    try:
+
+    def _fetch():
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.encoding = "utf-8"
-        soup = BeautifulSoup(resp.text, "html.parser")
+        return BeautifulSoup(resp.text, "html.parser")
+
+    try:
+        soup = retry_call(_fetch, f"race_list {date_str}")
     except Exception as e:
         print(f"[ERROR] レース一覧取得失敗: {e}")
         return []
@@ -102,15 +153,19 @@ def run_daily_predict(date_str):
     print(f"KEIBA AI 日次予測 - {date_str}")
     print(f"=" * 60)
 
+    # Cookie検証＋自動更新
+    print(f"\n[STEP 0] Cookie有効性チェック...")
+    ensure_cookie_valid()
+
     # モデルロード
     model_data = load_models()
     if model_data['model'] is None:
         print("[ERROR] モデルが見つかりません。終了します。")
         return
 
-    # レース一覧取得
+    # レース一覧取得（リトライ付き）
     print(f"\n[STEP 1] レース一覧取得中...")
-    races = fetch_race_list(date_str)
+    races = retry_call(fetch_race_list, "fetch_race_list", date_str)
     if not races:
         print(f"[INFO] {date_str} のレースが見つかりません（非開催日の可能性）")
         return
@@ -121,6 +176,8 @@ def run_daily_predict(date_str):
 
     # 各レースを予測
     results = []
+    failed_races = []  # 予測できなかったレース
+    skipped_jump = []  # 障害除外レース
     jra_weather_cache = {}
 
     for idx, race in enumerate(races):
@@ -128,15 +185,20 @@ def run_daily_predict(date_str):
         print(f"\n[STEP 2-{idx+1}/{len(races)}] {race['course']} {race['race_num']}R (ID={race_id})")
 
         try:
-            # 出馬表取得
-            race_name, horses, horse_ids, race_info = parse_shutuba(race_id)
+            # 出馬表取得（リトライ付き）
+            race_name, horses, horse_ids, race_info = retry_call(
+                parse_shutuba, f"parse_shutuba {race_id}", race_id
+            )
             if not horses:
                 print(f"  [WARN] 馬データなし、スキップ")
+                failed_races.append({'race_id': race_id, 'course': race['course'],
+                                     'race_num': race['race_num'], 'reason': '馬データなし'})
                 continue
 
             # 障害レース自動除外
             if race_info.get('surface') == '障':
                 print(f"  [SKIP] 障害レース（モデル非対応）")
+                skipped_jump.append(race_id)
                 continue
 
             num_horses = len(horses)
@@ -278,6 +340,8 @@ def run_daily_predict(date_str):
             print(f"  [ERROR] 予測失敗: {e}")
             import traceback
             traceback.print_exc()
+            failed_races.append({'race_id': race_id, 'course': race['course'],
+                                 'race_num': race['race_num'], 'reason': str(e)[:120]})
             continue
 
     # CSV保存
@@ -294,6 +358,34 @@ def run_daily_predict(date_str):
         print(f"{'=' * 60}")
     else:
         print(f"\n[INFO] 予測結果なし")
+
+    # 全レース取得完了の検証（障害レース除外後、取得漏れをチェック）
+    total = len(races)
+    jumps = len(skipped_jump)
+    ok = len(results)
+    miss = len(failed_races)
+    expected = total - jumps  # 障害以外の予測対象数
+
+    print(f"\n[STEP 3] 取得完了検証")
+    print(f"  全レース: {total} / 障害除外: {jumps} / 予測対象: {expected}")
+    print(f"  成功: {ok} / 失敗: {miss}")
+
+    if miss > 0 or ok < expected:
+        # 取り漏れあり — Discord警告通知
+        lines = [f"**{date_str}** 取得漏れ {miss}件 / {expected}レース中"]
+        for f in failed_races[:10]:
+            lines.append(f"- {f['course']} {f['race_num']}R ({f['race_id']}): {f['reason']}")
+        if len(failed_races) > 10:
+            lines.append(f"...他 {len(failed_races)-10} 件")
+        msg = "\n".join(lines)
+        print(f"\n[WARNING] {msg}")
+        try:
+            from notify import send_discord
+            send_discord(f"⚠️ 予測取り漏れ ({miss}件)", msg, color="red", channel="updates")
+        except Exception as e:
+            print(f"[WARN] Discord通知失敗: {e}")
+    else:
+        print(f"  [OK] 全予測対象レースの取得完了")
 
 
 if __name__ == "__main__":
