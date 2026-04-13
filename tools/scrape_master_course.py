@@ -66,7 +66,7 @@ MAX_RETRIES = 3
 
 # ---------- Output files ----------
 CSV_INDIVIDUAL_LAP = os.path.join(DATA_DIR, 'netkeiba_individual_lap.csv')
-CSV_MASTER_INDEX = os.path.join(DATA_DIR, 'netkeiba_master_index.csv')
+CSV_MASTER_INDEX = os.path.join(DATA_DIR, 'netkeiba_master_index_mc.csv')  # 7-field schema (scrape_master_index.pyと衝突するため分離)
 CSV_RACE_LAPS = os.path.join(DATA_DIR, 'netkeiba_race_laps.csv')
 CSV_TRACK_BIAS = os.path.join(DATA_DIR, 'netkeiba_track_bias.csv')
 CSV_PACE_PREDICTION = os.path.join(DATA_DIR, 'netkeiba_pace_prediction.csv')
