@@ -1,0 +1,84 @@
+{
+  "period": {
+    "start": "20260407",
+    "end": "20260413"
+  },
+  "generated_at": "2026-04-13 08:00:02",
+  "summary": {
+    "count": 1,
+    "hit": 1,
+    "hit_rate": 100.0,
+    "investment": 700,
+    "payout": 18760,
+    "profit": 18060,
+    "roi": 2680.0
+  },
+  "condition_stats": {
+    "A": {
+      "count": 1,
+      "hit": 1,
+      "hit_rate": 100.0,
+      "investment": 700,
+      "payout": 18760,
+      "roi": 2680.0,
+      "expected_hit": 44.5,
+      "expected_roi": 205.3,
+      "conservative_roi": 143.7,
+      "divergence": 1205.4
+    }
+  },
+  "daily_stats": {
+    "20260412": {
+      "count": 1,
+      "hit": 1,
+      "hit_rate": 100.0,
+      "investment": 700,
+      "payout": 18760,
+      "profit": 18060,
+      "roi": 2680.0
+    }
+  },
+  "cumulative": {
+    "overall": {
+      "count": 544,
+      "hit": 121,
+      "hit_rate": 22.2,
+      "investment": 380800,
+      "payout": 365080,
+      "profit": -15720,
+      "roi": 95.9
+    },
+    "by_condition": {
+      "A": {
+        "count": 167,
+        "roi": 82.9
+      },
+      "B": {
+        "count": 9,
+        "roi": 0.0
+      },
+      "C": {
+        "count": 150,
+        "roi": 58.3
+      },
+      "D": {
+        "count": 189,
+        "roi": 154.8
+      },
+      "E": {
+        "count": 10,
+        "roi": 31.0
+      },
+      "X": {
+        "count": 19,
+        "roi": 0.0
+      }
+    }
+  },
+  "divergence": {
+    "overall": {
+      "n": 544,
+      "live_roi": 95.3,
+      "bt_roi": 142.6,
+      "z_score": -2.09,
+      "significant": 

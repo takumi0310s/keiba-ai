@@ -39,5 +39,46 @@
         "message": "的中率 24.0%がBT基準50.0%から26.0%低下 (直近4週, N=487)"
       }
     ]
+  },
+  {
+    "timestamp": "2026-04-13T08:30:01.893760",
+    "baseline_auc": 0.8856,
+    "checks": {
+      "weekly_auc": [
+        {
+          "year_week": 197001,
+          "date_range": "01/01-01/01",
+          "n": 36,
+          "auc": 0.59375,
+          "hit_rate": 0.1111111111111111
+        }
+      ],
+      "hit_rate": {
+        "overall": 0.24180327868852458,
+        "baseline": 0.5,
+        "n": 488
+      },
+      "weekly_roi": [
+        {
+          "year_week": 197001,
+          "n": 488,
+          "investment": 341600,
+          "payout": 365080,
+          "roi": 106.87353629976582
+        }
+      ]
+    },
+    "alerts": [
+      {
+        "level": "WARNING",
+        "type": "auc_drop",
+        "message": "週次AUC 0.5938がベースライン0.8856から0.2919低下 (W1, N=36)"
+      },
+      {
+        "level": "WARNING",
+        "type": "hit_rate_drop",
+        "message": "的中率 24.2%がBT基準50.0%から25.8%低下 (直近4週, N=488)"
+      }
+    ]
   }
 ]
