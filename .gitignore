@@ -71,3 +71,5 @@ data/jrdb_cz.csv
 data/jrdb_raw/
 data/jrdb/raw/
 data/jrdb/extracted/
+data/_v15_train_df_cache.pkl
+data/_backup_netkeiba_master_index_*.csv
