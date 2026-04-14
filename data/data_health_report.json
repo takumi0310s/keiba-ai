@@ -1,0 +1,219 @@
+{
+  "timestamp": "2026-04-13T21:38:15.348728",
+  "files": {
+    "netkeiba_upset_level.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "upset_level",
+        "top_popularity_reliability"
+      ],
+      "total": 21895,
+      "years": {
+        "2020": 6914,
+        "2021": 1737,
+        "2022": 3950,
+        "2023": 5116,
+        "2024": 4106,
+        "2025": 0,
+        "2026": 72
+      },
+      "header_issues": [],
+      "coverage_issues": [
+        "year 2025 全欠落"
+      ],
+      "coverage_warnings": [],
+      "status": "ERR"
+    },
+    "netkeiba_track_bias.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "track_index",
+        "track_bias_text",
+        "track_comment"
+      ],
+      "total": 9435,
+      "years": {
+        "2020": 3457,
+        "2021": 3454,
+        "2022": 1943,
+        "2023": 0,
+        "2024": 0,
+        "2025": 581,
+        "2026": 0
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    },
+    "netkeiba_race_lap.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "lap_times",
+        "pace_first_half",
+        "pace_second_half"
+      ],
+      "total": 9096,
+      "years": {
+        "2020": 3332,
+        "2021": 3327,
+        "2022": 1872,
+        "2023": 0,
+        "2024": 0,
+        "2025": 565,
+        "2026": 0
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    },
+    "netkeiba_training_eval.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "umaban",
+        "horse_name",
+        "prev_review",
+        "training_date",
+        "training_course",
+        "training_condition",
+        "training_rider",
+        "training_time_raw",
+        "training_position",
+        "training_intensity",
+        "training_move",
+        "training_rank"
+      ],
+      "total": 95065,
+      "years": {
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 47181,
+        "2025": 47884,
+        "2026": 0
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    },
+    "netkeiba_master_index.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "umaban",
+        "horse_name",
+        "finish_order",
+        "time_index",
+        "master_index",
+        "start_index",
+        "chase_index",
+        "agari_index"
+      ],
+      "total": 7501,
+      "years": {
+        "2020": 0,
+        "2021": 0,
+        "2022": 0,
+        "2023": 0,
+        "2024": 0,
+        "2025": 7501,
+        "2026": 0
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    },
+    "netkeiba_race_review.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "umaban",
+        "horse_name",
+        "finish",
+        "remarks",
+        "review_score"
+      ],
+      "total": 277466,
+      "years": {
+        "2020": 48249,
+        "2021": 47805,
+        "2022": 46853,
+        "2023": 44594,
+        "2024": 42186,
+        "2025": 47779,
+        "2026": 0
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    },
+    "netkeiba_speed_index.csv": {
+      "exists": true,
+      "columns": [
+        "race_id",
+        "umaban",
+        "horse_name",
+        "sex_age",
+        "weight_carry",
+        "jockey",
+        "index_max",
+        "index_avg5",
+        "index_dist",
+        "index_course",
+        "index_run1",
+        "index_run2",
+        "index_run3",
+        "odds",
+        "popularity"
+      ],
+      "total": 261992,
+      "years": {
+        "2020": 44038,
+        "2021": 43874,
+        "2022": 43272,
+        "2023": 43741,
+        "2024": 43199,
+        "2025": 43852,
+        "2026": 16
+      },
+      "header_issues": [],
+      "coverage_issues": [],
+      "coverage_warnings": [],
+      "status": "OK"
+    }
+  },
+  "errors": [
+    "netkeiba_upset_level.csv: カバレッジ ['year 2025 全欠落']"
+  ],
+  "warnings": [],
+  "v16_reeval_triggers": {
+    "netkeiba_upset_level.csv": {
+      "total": 21895,
+      "coverage_pct": 125.1,
+      "threshold_pct": 50.0,
+      "met": true
+    },
+    "netkeiba_training_eval.csv": {
+      "total": 95065,
+      "coverage_pct": 38.8,
+      "threshold_pct": 40.0,
+      "met": false
+    },
+    "netkeiba_master_index.csv": {
+      "total": 7501,
+      "coverage_pct": 3.1,
+      "threshold_pct": 30.0,
+      "met": false
+    }
+  },
+  "v16_reeval_ready": false
+}
