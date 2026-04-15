@@ -148,6 +148,11 @@ def main():
     df, features = load_cache()
     print(f"df: {len(df)} rows, features: {len(features)}")
 
+    if 'race_id_unique' not in df.columns:
+        from train_v135b_intra_ensemble import build_race_id
+        df = build_race_id(df)
+        print(f"race_id_unique created: {df['race_id_unique'].nunique()} races")
+
     out = run_wf_5model(df, features)
     out['elapsed_min'] = (time.time() - t0) / 60
 

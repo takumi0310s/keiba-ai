@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-13T21:38:15.348728",
+  "timestamp": "2026-04-15T09:44:25.800566",
   "files": {
     "netkeiba_upset_level.csv": {
       "exists": true,
@@ -8,22 +8,20 @@
         "upset_level",
         "top_popularity_reliability"
       ],
-      "total": 21895,
+      "total": 36557,
       "years": {
         "2020": 6914,
         "2021": 1737,
         "2022": 3950,
         "2023": 5116,
-        "2024": 4106,
-        "2025": 0,
+        "2024": 8403,
+        "2025": 10365,
         "2026": 72
       },
       "header_issues": [],
-      "coverage_issues": [
-        "year 2025 全欠落"
-      ],
+      "coverage_issues": [],
       "coverage_warnings": [],
-      "status": "ERR"
+      "status": "OK"
     },
     "netkeiba_track_bias.csv": {
       "exists": true,
@@ -33,14 +31,14 @@
         "track_bias_text",
         "track_comment"
       ],
-      "total": 9435,
+      "total": 16154,
       "years": {
         "2020": 3457,
-        "2021": 3454,
-        "2022": 1943,
-        "2023": 0,
+        "2021": 3456,
+        "2022": 3456,
+        "2023": 3005,
         "2024": 0,
-        "2025": 581,
+        "2025": 2780,
         "2026": 0
       },
       "header_issues": [],
@@ -56,14 +54,14 @@
         "pace_first_half",
         "pace_second_half"
       ],
-      "total": 9096,
+      "total": 15604,
       "years": {
         "2020": 3332,
-        "2021": 3327,
-        "2022": 1872,
-        "2023": 0,
+        "2021": 3329,
+        "2022": 3331,
+        "2023": 2916,
         "2024": 0,
-        "2025": 565,
+        "2025": 2696,
         "2026": 0
       },
       "header_issues": [],
@@ -116,14 +114,14 @@
         "chase_index",
         "agari_index"
       ],
-      "total": 7501,
+      "total": 39096,
       "years": {
         "2020": 0,
         "2021": 0,
         "2022": 0,
-        "2023": 0,
+        "2023": 1652,
         "2024": 0,
-        "2025": 7501,
+        "2025": 37444,
         "2026": 0
       },
       "header_issues": [],
@@ -191,14 +189,12 @@
       "status": "OK"
     }
   },
-  "errors": [
-    "netkeiba_upset_level.csv: カバレッジ ['year 2025 全欠落']"
-  ],
+  "errors": [],
   "warnings": [],
   "v16_reeval_triggers": {
     "netkeiba_upset_level.csv": {
-      "total": 21895,
-      "coverage_pct": 125.1,
+      "total": 36557,
+      "coverage_pct": 208.9,
       "threshold_pct": 50.0,
       "met": true
     },
@@ -209,8 +205,8 @@
       "met": false
     },
     "netkeiba_master_index.csv": {
-      "total": 7501,
-      "coverage_pct": 3.1,
+      "total": 39096,
+      "coverage_pct": 16.0,
       "threshold_pct": 30.0,
       "met": false
     }
