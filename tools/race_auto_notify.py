@@ -440,6 +440,16 @@ def main():
     except Exception:
         pass
 
+    # 当日一括の整形済み買い目通知（#買い目）を1回だけ送信
+    # AM8:00 daily_predict で既に送信済みの場合もあるが、レース当日朝の
+    # 8:45起動時点でオッズが更新されている可能性があるため再送する
+    try:
+        from notify_bets_formatted import notify_formatted
+        sent = notify_formatted(date_str, mode='morning', channel='bets')
+        print(f"  整形済み買い目通知: {sent} messages")
+    except Exception as e:
+        print(f"  整形済み買い目通知失敗: {e}")
+
     # Keep running until all timers fire
     print(f"\n  Waiting for races... (Ctrl+C to stop)")
     try:

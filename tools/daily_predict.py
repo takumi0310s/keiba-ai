@@ -442,3 +442,11 @@ if __name__ == "__main__":
             send_discord("予測完了", f"{date_str} 予測完了（結果0件）", color="yellow", channel="updates")
     except Exception:
         pass
+
+    # 整形済み買い目通知（Discord #買い目）
+    try:
+        from notify_bets_formatted import notify_formatted
+        sent = notify_formatted(date_str, mode='morning', channel='bets')
+        print(f"[daily_predict] 整形済み買い目通知送信: {sent} messages")
+    except Exception as e:
+        print(f"[WARN] 整形済み買い目通知失敗: {e}")
