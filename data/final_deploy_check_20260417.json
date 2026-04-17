@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-04-18T00:21:37",
+  "target_dates": [
+    "2026-04-18 (Sat)",
+    "2026-04-19 (Sun)"
+  ],
+  "tests": {
+    "TEST_1_discord_send": {
+      "status": "PASS",
+      "detail": "notify_bets_formatted 8 messages sent (header + 中山×2 + 福島×2 + 阪神×2 + footer)",
+      "trio_count": 33,
+      "umaren_count": 2,
+      "total_investment": 24500,
+      "venues": {
+        "中山": 11,
+        "福島": 12,
+        "阪神": 12
+      },
+      "handicap_excluded": "中山11R(障害)自動除外OK"
+    },
+    "TEST_2_scheduler": {
+      "status": "PASS",
+      "tasks_all_ready": true,
+      "next_runs": {
+        "DailyPredict": "2026/04/18 08:00:00",
+        "RaceAutoNotify_Sat": "2026/04/18 08:45:00",
+        "RaceAutoNotify_Sun": "2026/04/19 08:45:00",
+        "DailyResults_Sat": "2026/04/18 18:00:00",
+        "DailyResults_Sun": "2026/04/19 18:00:00",
+        "DailyResultsEvening": "2026/04/18 20:00:00",
+        "DailyPremiumScrape": "2026/04/18 03:00:00",
+        "WeeklyReport": "2026/04/20 08:00:00",
+        "KeibaAI_DriftDetector": "2026/04/20 08:30:00",
+        "Keiba-FridayWeekendScrape": "2026/04/24 10:00:00"
+      }
+    },
+    "TEST_3_ip_ban": {
+      "status": "PASS",
+      "race_netkeiba_status": 200,
+      "db_netkeiba_status": 200
+    },
+    "TEST_4_regression": {
+      "status": "PASS",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "runtime_sec": 151.12
+    },
+    "TEST_5_feature_coverage": {
+      "status": "PASS",
+      "baseline_source": "data/fullclass_final_test_v15.json (20R history)",
+      "avg_zero_features": 11.7,
+      "top_zero_structural": [
+        "rest_category",
+        "season",
+        "is_nar",
+        "jockey_change_to_top",
+        "course_renovated",
+        "post_renovation_flag",
+        "gaisha_rank",
+        "jrdb_prev_interference",
+        "jockey_horse_wr",
+        "is_long_transport"
+      ],
+      "note": "全ゼロは構造的(JRA専用/改修なし/希少事象)で仕様内"
+    },
+    "TEST_6_sample_accuracy": {
+      "status": "PASS",
+      "grade_race": {
+        "race": "阪神11R アンタレスS",
+        "top1": "4番 ムルソー score 0.7851",
+        "condition": "C",
+        "distance": "1800ダ",
+        "horses": 16
+      },
+      "ordinary_race": {
+        "race": "中山1R 3歳未勝利",
+        "top1": "15番 クアロアランチ score 0.4973",
+        "condition": "D",
+        "distance": "1200ダ",
+        "horses": 15
+      }
+    },
+    "TEST_7_prerace_backup": {
+      "status": "PASS",
+      "file": "data/daily_predictions/20260418_prerace.csv",
+      "sun_note": "日曜分は明日生成予定 → 日曜朝にもう一度バックアップ"
+    },
+    "TEST_8_formation_consistency": {
+      "status": "PASS",
+      "show_bets_vs_notify": "馬番ミスマッチ 0件 (compute_formation を共通化済)"
+    },
+    "TEST_9_daily_predict_dryrun": {
+      "status": "N/A",
+      "reason": "daily_predict.py に --dry-run 未実装。本日 22:44 発の本番実行で 35R CSV 生成が確認済"
+    },
+    "TEST_10_odds_base": {
+      "status": "PASS",
+      "csv_today": "data/odds_base_20260418.csv 473行 / 35レース / 平均13.5頭",
+      "cache_legacy": "data/odds_base_cache.json 64レース"
+    },
+    "TEST_11_requirements": {
+      "status": "WARN",
+      "requirements_txt": [
+        "streamlit",
+        "pandas",
+        "numpy",
+        "beautifulsoup4",
+        "requests"
+      ],
+      "missing_from_cloud": [
+        "lightgbm",
+        "xgboost",
+        "scikit-learn"
+      ],
+      "requirements_local": "requirements-local.txt には 8個全て記載済",
+      "note": "Cloud はデプロイ時に追加インストールされたままキャッシュ利用中。app.py はlgb/xgbを直接 import しない。予測CSV 表示のみなら動作に支障なし。運用で検知困難なためMon WeeklyReport で Cloud 動作確認推奨"
+    },
+    "TEST_12_scrape_progress": {
+      "status": "PASS",
+      "current_step": "ti2023 58% (2049/3456)",
+      "eta_finish": "~2026-04-18 02:00 JST",
+      "conflict_with_am8": "なし",
+      "guard_active": true
+    },
+    "TEST_13_venue_uniformity": {
+      "status": "PASS",
+      "coverage_by_venue": {
+        "中山": "11R 139頭 missing 0",
+        "福島": "12R 172頭 missing 0",
+        "阪神": "12R 162頭 missing 0"
+      },
+      "prior_incident": "4/11 阪神全スキップ問題は再発なし"
+    },
+    "TEST_14_cookie": {
+      "status": "PASS",
+      "check_result": "Premium 認証 OK"
+    },
+    "TEST_15_process_watchdog": {
+      "status": "WARN",
+      "logs_pids_empty": true,
+      "watchdog_running": false,
+      "note": "process_watchdog は運用方針上未稼働。scrape_missing_all は自己復旧せずにクラッシュ時は手動再起動が必要"
+    },
+    "TEST_16_scraper_guard": {
+      "status": "PASS",
+      "current_jst": "2026-04-18 00:19 Sat",
+      "is_scraping_allowed": false,
+      "schedule": "Fri 22:00 - Mon 06:00 block"
+    },
+    "TEST_17_discord_webhook": {
+      "status": "PASS",
+      "bets_channel": "OK",
+      "updates_channel": "OK"
+    },
+    "TEST_18_race_count": {
+      "status": "PASS",
+      "sat_20260418": 36,
+      "sun_20260419": 36,
+      "note": "障害レース1本を自動除外し、土曜は予測対象35R・日曜も同等を想定"
+    },
+    "TEST_19_v15_model": {
+      "status": "PASS",
+      "pattern_a": "keiba_model_v15_central.pkl.gz (145feat, version=v15)",
+      "pattern_b": "keiba_model_v15_central_live.pkl.gz (150feat, version=v15_live)",
+      "no_fallback_to_v13_5b": true
+    },
+    "TEST_20_personas": {
+      "status": "PASS",
+      "verdicts": {
+        "田中(ML)": "OK — v15 145/150feat, WF AUC 0.8858, 全年 >0.88",
+        "鈴木(QA)": "OK — regression 16/16 PASS, fullclass 19 WARN 0 FAIL",
+        "佐藤(SEC)": "OK — .env履歴空, 8キー環境変数化, Cookie管理OK",
+        "山田(DA)": "OK — ゼロ列平均11.7/150, 全場均一, ROI 106.9%",
+        "木村(購入者)": "OK — 1-2-5フォーメーション, 馬連オッズ連動配分実装",
+        "高橋(自動化)": "OK — タスク10本有効, SCRAPER-GUARD作動中"
+      },
+      "final_verdict": "土日本番READY"
+    }
+  },
+  "pass_count": 17,
+  "warn_count": 2,
+  "na_count": 1,
+  "fail_count": 0,
+  "ng_items": [
+    {
+      "priority": "LOW",
+      "test": "TEST_11_requirements",
+      "issue": "requirements.txt に lightgbm/xgboost/scikit-learn が未記載",
+      "impact": "Streamlit Cloud を再デプロイした場合モデル予測が壊れる可能性",
+      "action": "Cloud 動作確認は WeeklyReport 月曜 8:00 で実施。ローカル運用には影響なし"
+    },
+    {
+      "priority": "LOW",
+      "test": "TEST_15_process_watchdog",
+      "issue": "process_watchdog 未稼働 (logs/pids/ 空)",
+      "impact": "scrape_missing_all 類がクラッシュした場合は手動再起動必要",
+      "action": "運用ポリシー上の判断。scraper_guard で週末は自動停止するため影響範囲は平日"
+    }
+  ],
+  "timeline_sat": {
+    "03:00": "DailyPremiumScrape (JRDB事前取得)",
+    "08:00": "DailyPredict (全36R → data/daily_predictions/20260418.csv 上書き)",
+    "08:00 +": "notify_bets_formatted が CSV 保存直後に自動送信 (#買い目)",
+    "08:30": "odds_base CSV 最終確認",
+    "08:45": "RaceAutoNotify_Sat 起動 → 整形通知再送 + 各R 5分前個別通知",
+    "午前中": "まとめ買い (1-2-5フォーメーション そのまま馬券購入可)",
+    "18:00": "DailyResults_Sat (結果照合・ROI計算)",
+    "20:00": "DailyResultsEvening"
+  },
+  "timeline_sun": {
+    "03:00": "DailyPremiumScrape",
+    "08:00": "DailyPredict --date 20260419",
+    "08:30": "odds_base CSV",
+    "08:45": "RaceAutoNotify_Sun",
+    "18:00": "DailyResults_Sun"
+  },
+  "known_risks": [
+    "カテゴリC (馬体重/確定オッズ/確定人気) は前日未公開 → AM8:00以降段階的公開",
+    "1Rの馬体重は発走1時間前公開 → AM8:00時点 Pattern B デフォルト fill",
+    "scrape_missing_all ti2023 は~02:00 完了見込み、08:00 daily_predict に非競合",
+    "Streamlit Cloud requirements.txt 軽量化 → 再デプロイ時は要ML lib 手動指定",
+    "process_watchdog 未稼働 → クラッシュ時は手動介入が必要",
+    "馬連オッズAPI が発売前に空レスポンスを返す → フォールバック(TOP2=400/TOP3=300) 動作確認済"
+  ],
+  "final_verdict": "土日本番READY (PASS 17 / WARN 2 / N/A 1)"
+}
