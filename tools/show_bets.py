@@ -31,19 +31,27 @@ def _parse_trio(s):
     return out
 
 
-def compute_formation(row):
+def compute_formation(row, pair_odds=None):
     """予測CSV行から1-2-5フォーメーション情報を返す。
+
+    Parameters:
+        row: dict-like (pandas Series も可)
+        pair_odds: {(n1, n2): odds} 馬連オッズ (省略可)
 
     Returns dict:
         bet_type: 'trio' | 'umaren'
         axis: int             # 軸馬番 (top1_num)
         second_col: list[int] # 2列目 (2頭、三連複時)
         third_col: list[int]  # 3列目 (5頭、三連複時)
-        umaren_pairs: list[tuple[int, int]]  # [(相手馬番, 金額)] 馬連時のみ
+        umaren_pairs: list[tuple[int, int, float|None]]
+                               # [(相手馬番, 金額, オッズ)] 馬連時のみ
         n_points: int         # 合計点数
         investment: int       # 合計金額
 
-    馬連の金額配分: 合計700円、2点の場合 400/300円
+    馬連の金額配分:
+        - pair_odds が与えられ両ペアのオッズ取得済み:
+            オッズ高い側 = 400円 / 低い側 = 300円 (配当期待大に厚張り)
+        - オッズ未取得フォールバック: TOP2=400, TOP3=300
     """
     bet_type = (row.get('bet_type') or '').lower()
     try:
@@ -58,13 +66,27 @@ def compute_formation(row):
     second_col = sorted({top2, top3} - {top1})
 
     if bet_type == 'umaren':
-        # 2点 = 400 + 300 円
+        key_t2 = tuple(sorted([top1, top2])) if top2 and top2 != top1 else None
+        key_t3 = tuple(sorted([top1, top3])) if top3 and top3 != top1 else None
+        odds_t2 = (pair_odds or {}).get(key_t2) if key_t2 else None
+        odds_t3 = (pair_odds or {}).get(key_t3) if key_t3 else None
+
+        # オッズ連動: 高い方=400円, 低い方=300円
+        if odds_t2 and odds_t3 and odds_t2 > 0 and odds_t3 > 0:
+            if odds_t2 >= odds_t3:
+                amt_t2, amt_t3 = 400, 300
+            else:
+                amt_t2, amt_t3 = 300, 400
+        else:
+            # フォールバック: TOP2=400, TOP3=300
+            amt_t2, amt_t3 = 400, 300
+
         pairs = []
-        amounts = [400, 300]
-        for idx, horse in enumerate([top2, top3]):
-            if horse and horse != top1:
-                amt = amounts[idx] if idx < len(amounts) else 0
-                pairs.append((horse, amt))
+        if top2 and top2 != top1:
+            pairs.append((top2, amt_t2, odds_t2))
+        if top3 and top3 != top1:
+            pairs.append((top3, amt_t3, odds_t3))
+
         return {
             'bet_type': 'umaren',
             'axis': top1,
@@ -126,8 +148,9 @@ def show_row(row):
     print(f"\n=== {course}{rno}R {rname} ({cond} {surf}{dist}m {tc} {nh}頭) ===")
     print(f"  race_id={rid}  券種={bet_type}")
     if bet_type == 'umaren':
-        for partner, amt in form['umaren_pairs']:
-            print(f"  馬連 {top1}-{partner}: {amt}円")
+        for partner, amt, odds in form['umaren_pairs']:
+            odds_txt = f" (オッズ{odds:.1f}倍)" if odds else ''
+            print(f"  馬連 {top1}-{partner}{odds_txt}: {amt}円")
         print(f"  合計: {form['investment']}円")
         return
     print(f"  三連複フォーメーション 1-2-5")

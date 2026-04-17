@@ -21,7 +21,10 @@ import os
 import sys
 from datetime import datetime
 
+import re
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
@@ -29,6 +32,74 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 from notify import send_discord  # noqa: E402
 from show_bets import compute_formation  # noqa: E402
+
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+
+
+def fetch_umaren_pair_odds(race_id: str) -> dict:
+    """馬連(type=4)オッズを取得。{(n1,n2): odds} を返す。失敗時は空dict。
+
+    netkeiba JRA odds API はJSON (`data.odds.4.XXYY = [odds, ?, pop_rank]`) を
+    返す。発売前・結果未確定は `"data":""` や `"result odds empty"` になる。
+    """
+    pair_odds = {}
+    try:
+        url = (
+            f"https://race.netkeiba.com/api/api_get_jra_odds.html"
+            f"?race_id={race_id}&type=4"
+        )
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        # JSON optimistic path
+        try:
+            data = resp.json()
+        except Exception:
+            data = None
+        if isinstance(data, dict):
+            d = data.get('data')
+            if isinstance(d, dict):
+                odds_bag = d.get('odds', {})
+                pairs = odds_bag.get('4', odds_bag) if isinstance(odds_bag, dict) else {}
+                if isinstance(pairs, dict):
+                    for combo_key, vals in pairs.items():
+                        if not isinstance(combo_key, str) or len(combo_key) != 4:
+                            continue
+                        try:
+                            n1 = int(combo_key[:2])
+                            n2 = int(combo_key[2:])
+                        except ValueError:
+                            continue
+                        if not (n1 and n2):
+                            continue
+                        key = tuple(sorted([n1, n2]))
+                        try:
+                            odds_str = vals[0] if isinstance(vals, list) else vals
+                            v = float(str(odds_str).replace(',', ''))
+                            if v >= 1.0:
+                                pair_odds[key] = v
+                        except (ValueError, IndexError, TypeError):
+                            continue
+        # HTML fallback (古い応答形式の互換)
+        if not pair_odds:
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            for row in soup.find_all('tr'):
+                tds = row.find_all('td')
+                if len(tds) < 2:
+                    continue
+                combo_text = tds[0].get_text(strip=True)
+                nums = re.findall(r'\d+', combo_text)
+                if len(nums) == 2:
+                    key = tuple(sorted(int(n) for n in nums))
+                    for td in tds[1:]:
+                        try:
+                            v = float(td.get_text(strip=True).replace(',', ''))
+                            if v >= 1.0:
+                                pair_odds[key] = v
+                                break
+                        except Exception:
+                            continue
+    except Exception:
+        pass
+    return pair_odds
 
 
 WEEKDAY_JP = ['月', '火', '水', '木', '金', '土', '日']
@@ -118,15 +189,16 @@ def turbulence(cond: str, num_horses: int) -> str:
     return 'Lv1'
 
 
-def build_race_block(r, stars: int) -> str:
+def build_race_block(r, stars: int, pair_odds: dict | None = None) -> str:
     """1レース分のDiscord表示ブロックを返す。
 
     show_bets.compute_formation() と完全一致するロジックで
-    三連複=1-2-5フォーメーション、馬連=2点配分(400+300円)を出力。
+    三連複=1-2-5フォーメーション、馬連=2点オッズ連動配分を出力。
+    pair_odds が渡された場合、馬連はオッズ高→400円 / 低→300円 に振り分ける。
     """
     # pandas.Series -> dict (CSV由来の型で compute_formation が解釈)
     row = r.to_dict() if hasattr(r, 'to_dict') else dict(r)
-    form = compute_formation(row)
+    form = compute_formation(row, pair_odds=pair_odds)
 
     star_str = '★' * stars if stars > 0 else '-'
     race_name_short = str(r.race_name)[:14]
@@ -149,11 +221,21 @@ def build_race_block(r, stars: int) -> str:
         return '\n'.join(lines)
 
     if form['bet_type'] == 'umaren':
-        # 馬連: 2点配分 (400 + 300)
+        # 馬連: オッズ連動配分 (取得失敗時は TOP2=400/TOP3=300)
         lines.append('  買い目:')
-        for partner, amt in form['umaren_pairs']:
-            lines.append(f"    馬連 `{form['axis']}-{partner}`: **{amt}円**")
+        exp_parts = []
+        for partner, amt, odds in form['umaren_pairs']:
+            if odds and odds > 0:
+                odds_txt = f" (オッズ{odds:.1f}倍)"
+                exp_parts.append(f"{amt}×{odds:.1f}={int(amt * odds):,}円")
+            else:
+                odds_txt = ''
+            lines.append(
+                f"    馬連 `{form['axis']}-{partner}`{odds_txt}: **{amt}円**"
+            )
         lines.append(f"  合計: **¥{form['investment']}**")
+        if exp_parts:
+            lines.append(f"  期待払戻: {' or '.join(exp_parts)}")
     else:
         # 三連複: 1-2-5フォーメーション
         col2 = ', '.join(str(n) for n in form['second_col'])
@@ -256,7 +338,14 @@ def notify_formatted(date_str_yyyymmdd: str, mode: str = 'morning',
         for _, r in sub.iterrows():
             stars = match_stars(patterns, course, r.condition,
                                 int(r.distance), r.surface)
-            blocks.append(build_race_block(r, stars))
+            # 馬連のみリアルタイムオッズ取得(失敗時はフォールバック)
+            pair_odds = None
+            if str(r.bet_type).lower() == 'umaren':
+                try:
+                    pair_odds = fetch_umaren_pair_odds(str(r.race_id))
+                except Exception:
+                    pair_odds = None
+            blocks.append(build_race_block(r, stars, pair_odds=pair_odds))
 
         venue_inv = int(sub['investment'].sum())
         header_line = (
