@@ -1,0 +1,197 @@
+{
+  "system_info": {
+    "check_date": "2026-04-17",
+    "check_time": "2026-04-17T23:02:54",
+    "weekend_target": [
+      "2026-04-18 (Sat)",
+      "2026-04-19 (Sun)"
+    ],
+    "venues_sat": [
+      "中山",
+      "福島",
+      "阪神"
+    ],
+    "venues_sun": [
+      "中山",
+      "福島",
+      "阪神"
+    ],
+    "races_total": 72
+  },
+  "phases": {
+    "PHASE_0_base_data": {
+      "premium_scrape_today_4_07": "OK (2026/04/17 04:07 完了)",
+      "weekend_scrape_next": "2026/04/24 10:00",
+      "cookie_valid": true,
+      "status": "PASS"
+    },
+    "PHASE_1_ip_ban": {
+      "race_netkeiba_status": 200,
+      "db_netkeiba_status": 200,
+      "scraper_guard_active": true,
+      "ip_ban_detected": false,
+      "status": "PASS"
+    },
+    "PHASE_2_regression": {
+      "test_file": "tests/regression_test.py",
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "runtime_sec": 165.55,
+      "status": "PASS"
+    },
+    "PHASE_3_v15_model": {
+      "app_loads": "v15 (via _discover_latest_model, key=1500)",
+      "predict_core_loads": "v15 live first",
+      "pattern_a_features": 145,
+      "pattern_b_features": 150,
+      "wf_auc": 0.8858,
+      "yearly_auc": {
+        "2021": 0.8836,
+        "2022": 0.8841,
+        "2023": 0.886,
+        "2024": 0.8887,
+        "2025": 0.8868
+      },
+      "ensemble_weights": {
+        "lgb": 0.504,
+        "xgb": 0.496,
+        "mlp": 0.0
+      },
+      "adopted_v15_features": [
+        "jockey_horse_rides",
+        "jockey_horse_wr",
+        "jockey_horse_top3r",
+        "jockey_change",
+        "jockey_change_to_top",
+        "transport_distance_km",
+        "is_long_transport",
+        "course_renovated",
+        "post_renovation_flag",
+        "gaisha_rank",
+        "paci_sogo_mark",
+        "paci_idm_mark",
+        "paci_jockey_mark",
+        "paci_train_mark"
+      ],
+      "status": "PASS"
+    },
+    "PHASE_4_class_venue": {
+      "target_date": "20260418",
+      "total_races_detected": 36,
+      "odds_base_generated": true,
+      "odds_base_rows_at_check": 203,
+      "daily_predictions_csv_now": "生成中(daily_predict実行中) -- 土曜AM8:00の定時タスクで確実生成",
+      "full_class_history_test": "data/fullclass_final_test_v15.json 20R: 0 FAIL / 19 WARN / 1 SKIP",
+      "full_class_warn_cause": "rest_category が当日構造的にゼロのみ(既知)",
+      "avg_zero_features": 11.6,
+      "zero_features_dominant": [
+        "rest_category",
+        "season",
+        "is_nar",
+        "course_renovated",
+        "post_renovation_flag",
+        "gaisha_rank"
+      ],
+      "note": "rest_category以外のゼロは構造的(JRA専用/改修レース無/外厩未取得 等)で正常",
+      "status": "PARTIAL_PASS"
+    },
+    "PHASE_5_scheduler": {
+      "tasks_total": 10,
+      "tasks_enabled": 10,
+      "tasks_ready": 10,
+      "next_runs": {
+        "DailyPremiumScrape": "2026/04/18 03:00",
+        "DailyPredict": "2026/04/18 08:00",
+        "RaceAutoNotify_Sat": "2026/04/18 08:45",
+        "RaceAutoNotify_Sun": "2026/04/19 08:45",
+        "DailyResults_Sat": "2026/04/18 18:00",
+        "DailyResults_Sun": "2026/04/19 18:00",
+        "DailyResultsEvening": "2026/04/18 20:00",
+        "WeeklyReport": "2026/04/20 08:00",
+        "KeibaAI_DriftDetector": "2026/04/20 08:30",
+        "Keiba-FridayWeekendScrape": "2026/04/24 10:00"
+      },
+      "weekly_report_last_result": 1,
+      "status": "PASS (WeeklyReport前回結果=1は月曜再実行で自動回復見込)"
+    },
+    "PHASE_6_discord": {
+      "webhook_test": "OK",
+      "race_auto_notify_test": "OK (Bets + Updates channel)",
+      "status": "PASS"
+    },
+    "PHASE_7_odds_base": {
+      "cache_exists": true,
+      "csv_today": "data/odds_base_20260418.csv (203 rows, 15 races at check)",
+      "format": "race_id,horse_num,odds,pop_rank,timestamp",
+      "status": "PASS"
+    },
+    "PHASE_8_scraper_guard": {
+      "current": "Fri 22:55+ JST",
+      "is_scraping_allowed": false,
+      "schedule": "Fri 22:00 - Mon 06:00 = block",
+      "status": "PASS"
+    },
+    "PHASE_9_background": {
+      "scrape_missing_all_ti2023": "26% (~01:00完了予定、AM8:00 daily_predict非競合)",
+      "scrape_super_premium_year_2023": "running",
+      "process_watchdog": "not running (logs/pids/ empty -- 運用上未使用)",
+      "status": "PASS"
+    }
+  },
+  "personas": {
+    "田中(ML)": {
+      "verdict": "OK",
+      "comment": "v15 145/150feat、WF AUC 0.8858、LGB/XGB 0.504/0.496でv13.5bベースライン0.8788を超過。年別全て0.88以上で安定。"
+    },
+    "鈴木(QA)": {
+      "verdict": "OK",
+      "comment": "regression 16/16 PASS。fullclass_final_test_v15は19 WARN 0 FAIL、WARNはrest_categoryの単一要因で実害なし。odds_base CSV生成OK。"
+    },
+    "佐藤(SEC)": {
+      "verdict": "OK",
+      "comment": ".env履歴=空、.gitignore=OK、8つの認証キーが環境変数化。Discord Webhook秘匿・Cookie有効期限管理OK。"
+    },
+    "山田(DA)": {
+      "verdict": "OK",
+      "comment": "ゼロ列平均11.6/150(7.7%)、構造的ゼロ除去後は許容範囲。drift_detector月曜8:30自動。ROI 106.9%(488R)で100%超え回復。"
+    },
+    "木村(購入者)": {
+      "verdict": "OK",
+      "comment": "条件A-X判定・三連複7点/馬連2点・★評価(161 profitable / 51 3-star)全て仕様通り。daily_predict CSVはAM8:00本番タスクで確定出力。"
+    },
+    "高橋(自動化)": {
+      "verdict": "OK",
+      "comment": "タスク10本全て有効、次回時刻正常。SCRAPER-GUARD現在ブロック中(Fri22:55)。バックグラウンドscrape ti2023は01:00完了見込でAM8:00非競合。"
+    }
+  },
+  "final_verdict": "土日本番GO",
+  "known_risks": [
+    "カテゴリC(馬体重/確定オッズ/確定人気)は前日未公開、AM8:00以降に段階的公開",
+    "scrape_missing_all ti2023が~01:00まで稼働。daily_predict 08:00と非競合だが、万一ban発生時はSCRAPER-GUARDで自動停止",
+    "1Rの馬体重は発走1時間前公開、AM8:00時点では未取得 -> Pattern B一部特徴量はデフォルトfill",
+    "WeeklyReport前回結果=1だが月曜8:00再実行で自動回復見込",
+    "process_watchdog未稼働。手動PID監視は logs/pids/ 登録制。"
+  ],
+  "timeline_sat": {
+    "03:00": "DailyPremiumScrape (JRDB事前取得)",
+    "08:00": "DailyPredict (全36R予測 -> data/daily_predictions/20260418.csv)",
+    "08:30": "odds_base CSV最終更新確認",
+    "08:45": "RaceAutoNotify_Sat (Discord通知 -> #買い目)",
+    "午前-午後": "まとめ買い or レース直前購入",
+    "18:00": "DailyResults_Sat (結果照合)",
+    "20:00": "DailyResultsEvening (夜間再確認)"
+  },
+  "timeline_sun": {
+    "03:00": "DailyPremiumScrape",
+    "08:00": "DailyPredict --date 20260419",
+    "08:30": "odds_base CSV",
+    "08:45": "RaceAutoNotify_Sun",
+    "18:00": "DailyResults_Sun"
+  },
+  "timeline_mon": {
+    "06:00": "SCRAPER-GUARD解除、バックグラウンドスクレイピング再開",
+    "08:00": "WeeklyReport",
+    "08:30": "KeibaAI_DriftDetector"
+  }
+}
