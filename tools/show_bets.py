@@ -31,6 +31,77 @@ def _parse_trio(s):
     return out
 
 
+def compute_formation(row):
+    """予測CSV行から1-2-5フォーメーション情報を返す。
+
+    Returns dict:
+        bet_type: 'trio' | 'umaren'
+        axis: int             # 軸馬番 (top1_num)
+        second_col: list[int] # 2列目 (2頭、三連複時)
+        third_col: list[int]  # 3列目 (5頭、三連複時)
+        umaren_pairs: list[tuple[int, int]]  # [(相手馬番, 金額)] 馬連時のみ
+        n_points: int         # 合計点数
+        investment: int       # 合計金額
+
+    馬連の金額配分: 合計700円、2点の場合 400/300円
+    """
+    bet_type = (row.get('bet_type') or '').lower()
+    try:
+        top1 = int(row.get('top1_num') or 0)
+        top2 = int(row.get('top2_num') or 0)
+        top3 = int(row.get('top3_num') or 0)
+        nh = int(row.get('num_horses') or 0)
+        investment = int(row.get('investment') or 0)
+    except (ValueError, TypeError):
+        return None
+
+    second_col = sorted({top2, top3} - {top1})
+
+    if bet_type == 'umaren':
+        # 2点 = 400 + 300 円
+        pairs = []
+        amounts = [400, 300]
+        for idx, horse in enumerate([top2, top3]):
+            if horse and horse != top1:
+                amt = amounts[idx] if idx < len(amounts) else 0
+                pairs.append((horse, amt))
+        return {
+            'bet_type': 'umaren',
+            'axis': top1,
+            'second_col': second_col,
+            'third_col': [],
+            'umaren_pairs': pairs,
+            'n_points': len(pairs),
+            'investment': investment,
+        }
+
+    # trio: 1-2-5フォーメーション
+    trio_combos = _parse_trio(row.get('trio_bets', ''))
+    all_nums = set()
+    for c in trio_combos:
+        all_nums.update(c)
+    third_col = sorted(n for n in all_nums if n != top1)
+    # 必ず5頭にする（足りなければtop2/top3, 過剰なら先頭5）
+    while len(third_col) < 5 and len(third_col) < (nh if nh else 18):
+        for n in (top2, top3):
+            if n and n != top1 and n not in third_col:
+                third_col.append(n)
+                break
+        else:
+            break
+    third_col = sorted(set(third_col))[:5]
+
+    return {
+        'bet_type': 'trio',
+        'axis': top1,
+        'second_col': second_col,
+        'third_col': third_col,
+        'umaren_pairs': [],
+        'n_points': len(trio_combos),
+        'investment': investment,
+    }
+
+
 def show_row(row):
     rid = row.get('race_id', '')
     course = row.get('course', '')
@@ -41,44 +112,29 @@ def show_row(row):
     dist = row.get('distance', '')
     surf = row.get('surface', '')
     tc = row.get('track_condition', '')
-    bet_type = (row.get('bet_type') or '').lower()
 
-    try:
-        top1 = int(row.get('top1_num') or 0)
-        top2 = int(row.get('top2_num') or 0)
-        top3 = int(row.get('top3_num') or 0)
-    except ValueError:
+    form = compute_formation(row)
+    if form is None:
         return
 
+    bet_type = form['bet_type']
+    top1 = form['axis']
+    second_col = form['second_col']
+    third_col = form['third_col']
     trio_combos = _parse_trio(row.get('trio_bets', ''))
-    all_nums = set()
-    for c in trio_combos:
-        all_nums.update(c)
-    third_col = sorted(n for n in all_nums if n != top1)
-    # 必ず5頭にする（足りなければtop2/top3, 過剰なら先頭5）
-    while len(third_col) < 5 and len(third_col) < (int(nh) if nh else 18):
-        for n in (top2, top3):
-            if n and n != top1 and n not in third_col:
-                third_col.append(n)
-                break
-        else:
-            break
-    third_col = sorted(set(third_col))[:5]
-
-    second_col = sorted({top2, top3} - {top1})
 
     print(f"\n=== {course}{rno}R {rname} ({cond} {surf}{dist}m {tc} {nh}頭) ===")
     print(f"  race_id={rid}  券種={bet_type}")
     if bet_type == 'umaren':
-        print(f"  馬連: 軸 {top1} - 相手 {', '.join(map(str, second_col))}")
+        for partner, amt in form['umaren_pairs']:
+            print(f"  馬連 {top1}-{partner}: {amt}円")
+        print(f"  合計: {form['investment']}円")
         return
     print(f"  三連複フォーメーション 1-2-5")
     print(f"    1列目(軸): {top1}")
     print(f"    2列目: {', '.join(map(str, second_col))}")
     print(f"    3列目: {', '.join(map(str, third_col))}  (※軸を除外、5頭固定)")
-    n_pts = len(second_col) * len([x for x in third_col if x not in second_col]) + \
-            (len(second_col) * (len(second_col) - 1) // 2 if all(s in third_col for s in second_col) else 0)
-    print(f"    点数(参考): trio_bets列={len(trio_combos)}点")
+    print(f"    点数: {form['n_points']}点 × 100円 = {form['investment']}円")
 
 
 def main():

@@ -28,6 +28,7 @@ sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 from notify import send_discord  # noqa: E402
+from show_bets import compute_formation  # noqa: E402
 
 
 WEEKDAY_JP = ['月', '火', '水', '木', '金', '土', '日']
@@ -117,41 +118,58 @@ def turbulence(cond: str, num_horses: int) -> str:
     return 'Lv1'
 
 
-def _wrap_trio_bets(bets: list[str], per_line: int = 3) -> str:
-    """三連複7点を3点×3行で見やすく。"""
-    chunks = [bets[i:i + per_line] for i in range(0, len(bets), per_line)]
-    return '\n       '.join(', '.join(chunks_i) for chunks_i in chunks)
-
-
 def build_race_block(r, stars: int) -> str:
-    bets = [b.strip() for b in str(r.trio_bets).split(';') if b.strip()]
-    bt_jp = BET_JP.get(r.bet_type, r.bet_type)
+    """1レース分のDiscord表示ブロックを返す。
+
+    show_bets.compute_formation() と完全一致するロジックで
+    三連複=1-2-5フォーメーション、馬連=2点配分(400+300円)を出力。
+    """
+    # pandas.Series -> dict (CSV由来の型で compute_formation が解釈)
+    row = r.to_dict() if hasattr(r, 'to_dict') else dict(r)
+    form = compute_formation(row)
+
     star_str = '★' * stars if stars > 0 else '-'
     race_name_short = str(r.race_name)[:14]
+    bt_jp = BET_JP.get(form['bet_type'] if form else r.bet_type, r.bet_type)
 
     # L1: 基本情報
-    l1 = (f"**{int(r.race_num)}R** {r.surface}{int(r.distance)}m "
-          f"{race_name_short} [{r.condition}] {star_str}")
+    l1 = (f"**{r.course} {int(r.race_num)}R** "
+          f"{r.surface}{int(r.distance)}m {race_name_short} "
+          f"({int(r.num_horses)}頭)")
+    # L2: 条件 / 馬券種 / 星
+    l2 = f"  条件 **{r.condition}** / {bt_jp} / {star_str}"
+    # L3: 軸
+    l3 = (f"  軸: {int(r.top1_num)}番 {str(r.top1_name)[:10]} "
+          f"(score {float(r.top1_score):.3f})")
 
-    # L2: 買い目
-    if r.bet_type == 'umaren':
-        # 400/300円
-        amounts = [400, 300]
-        parts = [f"`{b}` {amt}円" for b, amt in zip(bets, amounts)]
-        l2 = f"  {bt_jp}: " + ' / '.join(parts)
+    lines = [l1, l2, l3]
+
+    if form is None:
+        lines.append('  (買い目データ異常)')
+        return '\n'.join(lines)
+
+    if form['bet_type'] == 'umaren':
+        # 馬連: 2点配分 (400 + 300)
+        lines.append('  買い目:')
+        for partner, amt in form['umaren_pairs']:
+            lines.append(f"    馬連 `{form['axis']}-{partner}`: **{amt}円**")
+        lines.append(f"  合計: **¥{form['investment']}**")
     else:
-        wrapped = _wrap_trio_bets(bets)
-        l2 = f"  {bt_jp}: {wrapped}"
-        l2 += f"\n       各100円 / 合計{int(r.investment)}円"
+        # 三連複: 1-2-5フォーメーション
+        col2 = ', '.join(str(n) for n in form['second_col'])
+        col3 = ', '.join(str(n) for n in form['third_col'])
+        lines.append('  フォーメーション 1-2-5:')
+        lines.append(f"    1列目: `{form['axis']}`")
+        lines.append(f"    2列目: `{col2}`")
+        lines.append(f"    3列目: `{col3}`")
+        lines.append(f"  {form['n_points']}点 × 100円 = **¥{form['investment']}**")
 
-    # L3: AI・軸
+    # L末: 波乱度・AI見解
     tb = turbulence(r.condition, int(r.num_horses))
     ac = ai_comment(r.condition, r.surface, int(r.distance), int(r.num_horses))
-    l3 = (f"  軸: {int(r.top1_num)}番 {str(r.top1_name)[:10]} "
-          f"(score {float(r.top1_score):.3f}) | "
-          f"波乱度 {tb} | AI: {ac}")
+    lines.append(f"  波乱度 {tb} | AI: {ac}")
 
-    return '\n'.join([l1, l2, l3])
+    return '\n'.join(lines)
 
 
 def _chunk_and_send(title: str, header_line: str, blocks: list[str],
