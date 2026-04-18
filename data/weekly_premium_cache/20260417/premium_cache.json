@@ -1,0 +1,543 @@
+{
+  "202603010301": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010302": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010303": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010304": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010305": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010306": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010307": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010308": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010309": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010310": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010311": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010312": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010401": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010402": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010403": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010404": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010405": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010406": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010407": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010408": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010409": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010410": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010411": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202603010412": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030701": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030702": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030703": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030704": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030705": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030706": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030707": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030708": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030709": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030710": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030711": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030712": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030801": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030802": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030803": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030804": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030805": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030806": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030807": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030808": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030809": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030810": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202606030811": {
+    "training": {},
+    "speed_index": {
+      "1": {
+        "horse_name": "カウアレリツツオ",
+        "index_max": 1107,
+        "index_avg5": 1092,
+        "index_dist": 1000,
+        "index_course": 1000,
+        "index_run1": 1107,
+        "index_run2": 1094,
+        "index_run3": 1076
+      },
+      "2": {
+        "horse_name": "サウントムーフ",
+        "index_max": 1096,
+        "index_avg5": 1090,
+        "index_dist": 1000,
+        "index_course": 1096,
+        "index_run1": 1096,
+        "index_run2": 1091,
+        "index_run3": 1094
+      },
+      "3": {
+        "horse_name": "サノノクレーター",
+        "index_max": 1101,
+        "index_avg5": 1091,
+        "index_dist": 1101,
+        "index_course": 1101,
+        "index_run1": 1095,
+        "index_run2": 1090,
+        "index_run3": 1101
+      },
+      "4": {
+        "horse_name": "ロフチエン",
+        "index_max": 1099,
+        "index_avg5": 1081,
+        "index_dist": 1087,
+        "index_course": 1087,
+        "index_run1": 1099,
+        "index_run2": 1087,
+        "index_run3": 1056
+      },
+      "5": {
+        "horse_name": "アスクエシンハラ",
+        "index_max": 1097,
+        "index_avg5": 1086,
+        "index_dist": 1086,
+        "index_course": 1097,
+        "index_run1": 1097,
+        "index_run2": 1085,
+        "index_run3": 1086
+      },
+      "6": {
+        "horse_name": "フオルテアンシエロ",
+        "index_max": 1086,
+        "index_avg5": 1078,
+        "index_dist": 1086,
+        "index_course": 1086,
+        "index_run1": 1086,
+        "index_run2": 1079,
+        "index_run3": 1069
+      },
+      "7": {
+        "horse_name": "ロートフイレール",
+        "index_max": 1096,
+        "index_avg5": 1075,
+        "index_dist": 1096,
+        "index_course": 1000,
+        "index_run1": 1096,
+        "index_run2": 1068,
+        "index_run3": 1060
+      },
+      "8": {
+        "horse_name": "マテンロウケイル",
+        "index_max": 1099,
+        "index_avg5": 1075,
+        "index_dist": 1099,
+        "index_course": 1099,
+        "index_run1": 1099,
+        "index_run2": 1099,
+        "index_run3": 1058
+      },
+      "9": {
+        "horse_name": "ライヒスアトラー",
+        "index_max": 1094,
+        "index_avg5": 1080,
+        "index_dist": 1087,
+        "index_course": 1087,
+        "index_run1": 1087,
+        "index_run2": 1094,
+        "index_run3": 1058
+      },
+      "10": {
+        "horse_name": "ラーシアンサンフル",
+        "index_max": 1099,
+        "index_avg5": 1077,
+        "index_dist": 1078,
+        "index_course": 1074,
+        "index_run1": 1099,
+        "index_run2": 1056,
+        "index_run3": 1074
+      },
+      "11": {
+        "horse_name": "ハントルナイーフ",
+        "index_max": 1095,
+        "index_avg5": 1075,
+        "index_dist": 1000,
+        "index_course": 1068,
+        "index_run1": 1095,
+        "index_run2": 1068,
+        "index_run3": 1063
+      },
+      "12": {
+        "horse_name": "クリーンエナシー",
+        "index_max": 1099,
+        "index_avg5": 1087,
+        "index_dist": 1099,
+        "index_course": 1099,
+        "index_run1": 1099,
+        "index_run2": 1080,
+        "index_run3": 1081
+      },
+      "13": {
+        "horse_name": "アクロフエイス",
+        "index_max": 1097,
+        "index_avg5": 1082,
+        "index_dist": 1081,
+        "index_course": 1097,
+        "index_run1": 1097,
+        "index_run2": 1067,
+        "index_run3": 1081
+      },
+      "14": {
+        "horse_name": "ソロアストロ",
+        "index_max": 1095,
+        "index_avg5": 1082,
+        "index_dist": 1000,
+        "index_course": 1000,
+        "index_run1": 1077,
+        "index_run2": 1095,
+        "index_run3": 1089
+      },
+      "15": {
+        "horse_name": "リアライスシリウス",
+        "index_max": 1099,
+        "index_avg5": 1096,
+        "index_dist": 1000,
+        "index_course": 1000,
+        "index_run1": 1099,
+        "index_run2": 1098,
+        "index_run3": 1096
+      },
+      "16": {
+        "horse_name": "アルトラムス",
+        "index_max": 1101,
+        "index_avg5": 1090,
+        "index_dist": 1000,
+        "index_course": 1000,
+        "index_run1": 1101,
+        "index_run2": 1091,
+        "index_run3": 1078
+      },
+      "17": {
+        "horse_name": "アトマイヤクワツス",
+        "index_max": 1103,
+        "index_avg5": 1092,
+        "index_dist": 1086,
+        "index_course": 1086,
+        "index_run1": 1086,
+        "index_run2": 1103,
+        "index_run3": 1094
+      },
+      "18": {
+        "horse_name": "ハステール",
+        "index_max": 1087,
+        "index_avg5": 1086,
+        "index_dist": 1087,
+        "index_course": 1087,
+        "index_run1": 1087,
+        "index_run2": 1085,
+        "index_run3": 1087
+      }
+    },
+    "comments": {}
+  },
+  "202606030812": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020701": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020702": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020703": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020704": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020705": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020706": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020707": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020708": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020709": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020710": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020711": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020712": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020801": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020802": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020803": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020804": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020805": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020806": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020807": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020808": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020809": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020810": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020811": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  },
+  "202609020812": {
+    "training": {},
+    "speed_index": {},
+    "comments": {}
+  }
+}

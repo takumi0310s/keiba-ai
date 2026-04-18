@@ -1,0 +1,615 @@
+{
+  "generated_at": "2026-04-18T09:12:42",
+  "mode": "sample-extrapolate",
+  "total_features": 150,
+  "cat_non_jrdb_total": 120,
+  "jrdb_total": 30,
+  "sample_results": [
+    {
+      "total": 150,
+      "non_zero": 104,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 100,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202606030701",
+      "course": "中山",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 15
+    },
+    {
+      "total": 150,
+      "non_zero": 104,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 100,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202606030706",
+      "course": "中山",
+      "race_num": 6,
+      "race_name": "3歳1勝クラス",
+      "condition": "E",
+      "num_horses": 6
+    },
+    {
+      "total": 150,
+      "non_zero": 105,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 102,
+      "jrdb_total": 30,
+      "jrdb_hit": 3,
+      "race_id": "202606030712",
+      "course": "中山",
+      "race_num": 12,
+      "race_name": "葛飾特別",
+      "condition": "D",
+      "num_horses": 13
+    },
+    {
+      "total": 150,
+      "non_zero": 104,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 100,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202603010301",
+      "course": "福島",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 16
+    },
+    {
+      "total": 150,
+      "non_zero": 105,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 101,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202603010307",
+      "course": "福島",
+      "race_num": 7,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 15
+    },
+    {
+      "total": 150,
+      "non_zero": 102,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 98,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202603010312",
+      "course": "福島",
+      "race_num": 12,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 16
+    },
+    {
+      "total": 150,
+      "non_zero": 107,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 102,
+      "jrdb_total": 30,
+      "jrdb_hit": 5,
+      "race_id": "202609020701",
+      "course": "阪神",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 15
+    },
+    {
+      "total": 150,
+      "non_zero": 105,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 101,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202609020707",
+      "course": "阪神",
+      "race_num": 7,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "A",
+      "num_horses": 14
+    },
+    {
+      "total": 150,
+      "non_zero": 105,
+      "cat_non_jrdb_total": 120,
+      "cat_non_jrdb_nz": 101,
+      "jrdb_total": 30,
+      "jrdb_hit": 4,
+      "race_id": "202609020712",
+      "course": "阪神",
+      "race_num": 12,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 15
+    }
+  ],
+  "venue_averages": {
+    "中山": {
+      "non_zero_avg": 104.33333333333333,
+      "cat_non_jrdb_nz_avg": 100.66666666666667,
+      "jrdb_hit_avg": 3.6666666666666665,
+      "n_sampled": 3
+    },
+    "福島": {
+      "non_zero_avg": 103.66666666666667,
+      "cat_non_jrdb_nz_avg": 99.66666666666667,
+      "jrdb_hit_avg": 4.0,
+      "n_sampled": 3
+    },
+    "阪神": {
+      "non_zero_avg": 105.66666666666667,
+      "cat_non_jrdb_nz_avg": 101.33333333333333,
+      "jrdb_hit_avg": 4.333333333333333,
+      "n_sampled": 3
+    }
+  },
+  "all_races_extrapolated": [
+    {
+      "race_id": "202606030701",
+      "course": "中山",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030702",
+      "course": "中山",
+      "race_num": 2,
+      "race_name": "3歳未勝利",
+      "condition": "A",
+      "num_horses": 11,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030703",
+      "course": "中山",
+      "race_num": 3,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 14,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030704",
+      "course": "中山",
+      "race_num": 4,
+      "race_name": "3歳未勝利",
+      "condition": "A",
+      "num_horses": 13,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030705",
+      "course": "中山",
+      "race_num": 5,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030706",
+      "course": "中山",
+      "race_num": 6,
+      "race_name": "3歳1勝クラス",
+      "condition": "E",
+      "num_horses": 6,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030707",
+      "course": "中山",
+      "race_num": 7,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "A",
+      "num_horses": 10,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030708",
+      "course": "中山",
+      "race_num": 8,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "C",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030709",
+      "course": "中山",
+      "race_num": 9,
+      "race_name": "袖ケ浦特別",
+      "condition": "D",
+      "num_horses": 12,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030710",
+      "course": "中山",
+      "race_num": 10,
+      "race_name": "下総S",
+      "condition": "A",
+      "num_horses": 13,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202606030712",
+      "course": "中山",
+      "race_num": 12,
+      "race_name": "葛飾特別",
+      "condition": "D",
+      "num_horses": 13,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010301",
+      "course": "福島",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010302",
+      "course": "福島",
+      "race_num": 2,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010303",
+      "course": "福島",
+      "race_num": 3,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010304",
+      "course": "福島",
+      "race_num": 4,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010305",
+      "course": "福島",
+      "race_num": 5,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010306",
+      "course": "福島",
+      "race_num": 6,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010307",
+      "course": "福島",
+      "race_num": 7,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010308",
+      "course": "福島",
+      "race_num": 8,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010309",
+      "course": "福島",
+      "race_num": 9,
+      "race_name": "ひめさゆり賞",
+      "condition": "A",
+      "num_horses": 9,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010310",
+      "course": "福島",
+      "race_num": 10,
+      "race_name": "桑折特別",
+      "condition": "A",
+      "num_horses": 8,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010311",
+      "course": "福島",
+      "race_num": 11,
+      "race_name": "ラジオ福島賞",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202603010312",
+      "course": "福島",
+      "race_num": 12,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 16,
+      "non_zero_estimated": 104,
+      "cat_non_jrdb_nz_estimated": 100,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020701",
+      "course": "阪神",
+      "race_num": 1,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020702",
+      "course": "阪神",
+      "race_num": 2,
+      "race_name": "3歳未勝利",
+      "condition": "D",
+      "num_horses": 16,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020703",
+      "course": "阪神",
+      "race_num": 3,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020704",
+      "course": "阪神",
+      "race_num": 4,
+      "race_name": "3歳未勝利",
+      "condition": "C",
+      "num_horses": 18,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020705",
+      "course": "阪神",
+      "race_num": 5,
+      "race_name": "3歳1勝クラス",
+      "condition": "E",
+      "num_horses": 5,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020706",
+      "course": "阪神",
+      "race_num": 6,
+      "race_name": "3歳1勝クラス",
+      "condition": "C",
+      "num_horses": 15,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020707",
+      "course": "阪神",
+      "race_num": 7,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "A",
+      "num_horses": 14,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020708",
+      "course": "阪神",
+      "race_num": 8,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "A",
+      "num_horses": 9,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020709",
+      "course": "阪神",
+      "race_num": 9,
+      "race_name": "吹田特別",
+      "condition": "D",
+      "num_horses": 14,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020710",
+      "course": "阪神",
+      "race_num": 10,
+      "race_name": "丹波特別",
+      "condition": "D",
+      "num_horses": 9,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020711",
+      "course": "阪神",
+      "race_num": 11,
+      "race_name": "アンタレスS",
+      "condition": "C",
+      "num_horses": 16,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    },
+    {
+      "race_id": "202609020712",
+      "course": "阪神",
+      "race_num": 12,
+      "race_name": "4歳以上1勝クラス",
+      "condition": "D",
+      "num_horses": 15,
+      "non_zero_estimated": 106,
+      "cat_non_jrdb_nz_estimated": 101,
+      "jrdb_hit_estimated": 4,
+      "method": "venue-avg (sample 3/venue)"
+    }
+  ],
+  "jrdb_alerts": [
+    {
+      "race": "中山 1R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "中山 6R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "中山 12R",
+      "jrdb": "3/30"
+    },
+    {
+      "race": "福島 1R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "福島 7R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "福島 12R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "阪神 1R",
+      "jrdb": "5/30"
+    },
+    {
+      "race": "阪神 7R",
+      "jrdb": "4/30"
+    },
+    {
+      "race": "阪神 12R",
+      "jrdb": "4/30"
+    }
+  ]
+}

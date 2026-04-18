@@ -1,5 +1,5 @@
 {
-  "test_date": "2026-04-11 08:12:49",
+  "test_date": "2026-04-15 10:03:53",
   "model_version": "v15_live",
   "model_features": 150,
   "ensemble_weights": {
@@ -9,18 +9,20 @@
   },
   "phase0_2": {
     "total": 20,
-    "pass": 16,
-    "warn": 1,
-    "fail": 3,
+    "pass": 0,
+    "warn": 19,
+    "fail": 0,
     "skip": 1,
     "races": {
       "未勝利_中山ダ1800_重_16頭": {
         "race_id": "202606030501",
         "race_name": "3歳未勝利",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -37,34 +39,30 @@
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "location_enc",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_ze_furi_count",
           "stable_comment_score",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 20,
-        "nonzero_count": 130,
-        "suspicious_zeros": [],
+        "zero_count": 14,
+        "nonzero_count": 136,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 34.1,
@@ -82,7 +80,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 14,
             "total": 16
           }
         },
@@ -90,28 +88,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1247,
-          0.638
+          0.0987,
+          0.753
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 16,
-            "horse_name": "モーリア",
-            "score": 0.638
+            "horse_num": 2,
+            "horse_name": "アスコットヴェール",
+            "score": 0.753
           },
           {
             "rank": 2,
-            "horse_num": 2,
-            "horse_name": "アスコットヴェール",
-            "score": 0.5807
+            "horse_num": 16,
+            "horse_name": "モーリア",
+            "score": 0.6947
           },
           {
             "rank": 3,
-            "horse_num": 10,
-            "horse_name": "ジーティーフクフク",
-            "score": 0.4876
+            "horse_num": 4,
+            "horse_name": "パレホ",
+            "score": 0.3864
           }
         ],
         "condition_key": "X",
@@ -121,36 +119,36 @@
           [
             2,
             4,
-            16
+            5
           ],
           [
             2,
-            8,
-            16
-          ],
-          [
-            2,
-            10,
-            16
-          ],
-          [
-            2,
-            13,
-            16
-          ],
-          [
             4,
-            10,
+            8
+          ],
+          [
+            2,
+            4,
+            10
+          ],
+          [
+            2,
+            4,
             16
           ],
           [
+            2,
+            5,
+            16
+          ],
+          [
+            2,
             8,
-            10,
             16
           ],
           [
+            2,
             10,
-            13,
             16
           ]
         ],
@@ -163,9 +161,11 @@
         "race_id": "202606030502",
         "race_name": "3歳未勝利",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -182,33 +182,30 @@
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "dist_cat",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_ze_furi_count",
           "stable_comment_score",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 19,
-        "nonzero_count": 131,
-        "suspicious_zeros": [],
+        "zero_count": 14,
+        "nonzero_count": 136,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 34.1,
@@ -226,7 +223,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 14,
             "total": 16
           }
         },
@@ -234,8 +231,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1103,
-          0.3842
+          0.0837,
+          0.4397
         ],
         "score_in_01": true,
         "top3": [
@@ -243,19 +240,19 @@
             "rank": 1,
             "horse_num": 12,
             "horse_name": "マイネルテオドロス",
-            "score": 0.3842
+            "score": 0.4397
           },
           {
             "rank": 2,
-            "horse_num": 16,
-            "horse_name": "ハイバーニアン",
-            "score": 0.3554
+            "horse_num": 5,
+            "horse_name": "フェイスリフト",
+            "score": 0.323
           },
           {
             "rank": 3,
-            "horse_num": 11,
-            "horse_name": "ルスト",
-            "score": 0.3147
+            "horse_num": 16,
+            "horse_name": "ハイバーニアン",
+            "score": 0.3064
           }
         ],
         "condition_key": "D",
@@ -263,9 +260,24 @@
         "recommended": true,
         "bets": [
           [
+            2,
             5,
-            11,
             12
+          ],
+          [
+            2,
+            12,
+            16
+          ],
+          [
+            5,
+            6,
+            12
+          ],
+          [
+            5,
+            12,
+            15
           ],
           [
             5,
@@ -274,42 +286,29 @@
           ],
           [
             6,
-            11,
-            12
-          ],
-          [
-            6,
             12,
             16
           ],
           [
-            7,
-            11,
-            12
-          ],
-          [
-            7,
             12,
-            16
-          ],
-          [
-            11,
-            12,
+            15,
             16
           ]
         ],
         "bet_count": 7,
         "pp_stars": 2,
         "pp_matched_count": 4,
-        "confidence": 79
+        "confidence": 90
       },
       "未勝利_阪神芝2000_稍重_16頭": {
         "race_id": "202609020504",
         "race_name": "3歳未勝利",
         "venue": "阪神",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -318,41 +317,37 @@
           "ev_works": true,
           "confidence_works": true
         },
-        "num_horses": 16,
+        "num_horses": 15,
         "distance": 2000,
         "surface": "芝",
         "condition": "稍",
-        "maiden_horse_count": 16,
+        "maiden_horse_count": 15,
         "odds_available": true,
         "df_shape": [
-          16,
-          266
+          15,
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "stable_comment_score",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 19,
-        "nonzero_count": 131,
-        "suspicious_zeros": [],
+        "zero_count": 13,
+        "nonzero_count": 137,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 62.5,
@@ -362,7 +357,7 @@
           },
           "transport_check": {
             "miho_horses": 0,
-            "ritto_horses": 16
+            "ritto_horses": 15
           },
           "course_renovated": {
             "value": 0,
@@ -370,36 +365,36 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
-            "total": 16
+            "changed_count": 14,
+            "total": 15
           }
         },
         "jrdb_coverage": "44/45",
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1501,
-          0.3796
+          0.1175,
+          0.531
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 7,
-            "horse_name": "アリュウ",
-            "score": 0.3796
+            "horse_num": 5,
+            "horse_name": "コスモフィレンツェ",
+            "score": 0.531
           },
           {
             "rank": 2,
-            "horse_num": 8,
-            "horse_name": "サトノアグード",
-            "score": 0.3518
+            "horse_num": 6,
+            "horse_name": "オリオンブレード",
+            "score": 0.4904
           },
           {
             "rank": 3,
-            "horse_num": 5,
-            "horse_name": "コスモフィレンツェ",
-            "score": 0.3339
+            "horse_num": 14,
+            "horse_name": "パンチャマハブータ",
+            "score": 0.3106
           }
         ],
         "condition_key": "C",
@@ -407,24 +402,14 @@
         "recommended": true,
         "bets": [
           [
-            2,
+            3,
             5,
-            7
-          ],
-          [
-            2,
-            7,
-            8
+            6
           ],
           [
             3,
             5,
-            7
-          ],
-          [
-            3,
-            7,
-            8
+            14
           ],
           [
             5,
@@ -433,27 +418,39 @@
           ],
           [
             5,
-            7,
-            8
+            6,
+            14
           ],
           [
+            5,
             6,
+            16
+          ],
+          [
+            5,
             7,
-            8
+            14
+          ],
+          [
+            5,
+            14,
+            16
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 63
+        "confidence": 85
       },
       "未勝利_福島ダ1700_良_15頭": {
         "race_id": "202603010101",
         "race_name": "3歳未勝利",
         "venue": "福島",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -470,10 +467,11 @@
         "odds_available": true,
         "df_shape": [
           15,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
@@ -481,19 +479,16 @@
           "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 16,
-        "nonzero_count": 134,
-        "suspicious_zeros": [],
+        "zero_count": 12,
+        "nonzero_count": 138,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 193.0,
@@ -511,7 +506,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 15,
             "total": 15
           }
         },
@@ -519,28 +514,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1151,
-          0.5869
+          0.0892,
+          0.8012
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 4,
-            "horse_name": "ベストブラザーズ",
-            "score": 0.5869
+            "horse_num": 14,
+            "horse_name": "ウインビギニング",
+            "score": 0.8012
           },
           {
             "rank": 2,
-            "horse_num": 11,
-            "horse_name": "シューティングガイ",
-            "score": 0.4913
+            "horse_num": 4,
+            "horse_name": "ベストブラザーズ",
+            "score": 0.7887
           },
           {
             "rank": 3,
-            "horse_num": 15,
-            "horse_name": "ジャストグレース",
-            "score": 0.4771
+            "horse_num": 11,
+            "horse_name": "シューティングガイ",
+            "score": 0.5896
           }
         ],
         "condition_key": "C",
@@ -548,24 +543,19 @@
         "recommended": true,
         "bets": [
           [
-            1,
+            2,
             4,
-            11
+            14
           ],
           [
-            1,
-            4,
-            15
-          ],
-          [
-            4,
-            8,
-            11
+            2,
+            11,
+            14
           ],
           [
             4,
             8,
-            15
+            14
           ],
           [
             4,
@@ -574,11 +564,16 @@
           ],
           [
             4,
-            11,
+            14,
             15
           ],
           [
-            4,
+            8,
+            11,
+            14
+          ],
+          [
+            11,
             14,
             15
           ]
@@ -586,7 +581,7 @@
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 90
+        "confidence": 71
       },
       "障害_中山4R": {
         "race_id": "202606030504",
@@ -601,15 +596,17 @@
         "num_horses": 14,
         "distance": 3200,
         "surface": "障",
-        "condition": "稍"
+        "condition": "稍/"
       },
       "1勝_中山ダ1200_16頭": {
         "race_id": "202606030507",
         "race_name": "3歳1勝クラス",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -621,39 +618,33 @@
         "num_horses": 16,
         "distance": 1200,
         "surface": "ダ",
-        "condition": "重",
+        "condition": "稍",
         "maiden_horse_count": 16,
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "dist_cat",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_ze_furi_count",
           "stable_comment_score",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
-          "jockey_horse_wr",
-          "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 20,
-        "nonzero_count": 130,
-        "suspicious_zeros": [],
+        "zero_count": 12,
+        "nonzero_count": 138,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 34.1,
@@ -671,7 +662,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 13,
             "total": 16
           }
         },
@@ -679,8 +670,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1726,
-          0.3138
+          0.1424,
+          0.5262
         ],
         "score_in_01": true,
         "top3": [
@@ -688,19 +679,19 @@
             "rank": 1,
             "horse_num": 9,
             "horse_name": "タカスタカスタカス",
-            "score": 0.3138
+            "score": 0.5262
           },
           {
             "rank": 2,
-            "horse_num": 7,
-            "horse_name": "シュテルン",
-            "score": 0.3131
+            "horse_num": 14,
+            "horse_name": "ミルトハーバー",
+            "score": 0.4297
           },
           {
             "rank": 3,
-            "horse_num": 14,
-            "horse_name": "ミルトハーバー",
-            "score": 0.264
+            "horse_num": 10,
+            "horse_name": "サトノエスケープ",
+            "score": 0.4199
           }
         ],
         "condition_key": "D",
@@ -708,53 +699,55 @@
         "recommended": true,
         "bets": [
           [
-            7,
-            8,
-            9
-          ],
-          [
-            7,
+            3,
             9,
-            11
+            10
           ],
           [
-            7,
+            3,
             9,
             14
           ],
           [
-            7,
+            5,
             9,
-            15
+            10
           ],
           [
-            8,
+            5,
+            9,
+            14
+          ],
+          [
+            6,
+            9,
+            10
+          ],
+          [
+            6,
             9,
             14
           ],
           [
             9,
-            11,
+            10,
             14
-          ],
-          [
-            9,
-            14,
-            15
           ]
         ],
         "bet_count": 7,
         "pp_stars": 2,
         "pp_matched_count": 4,
-        "confidence": 40
+        "confidence": 90
       },
       "1勝_阪神ダ1400_16頭": {
         "race_id": "202609020508",
         "race_name": "4歳以上1勝クラス",
         "venue": "阪神",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -771,32 +764,26 @@
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "stable_comment_score",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
-          "jockey_horse_wr",
-          "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 18,
-        "nonzero_count": 132,
-        "suspicious_zeros": [],
+        "zero_count": 10,
+        "nonzero_count": 140,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 62.5,
@@ -814,7 +801,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 14,
             "total": 16
           }
         },
@@ -822,28 +809,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.2203,
-          0.4256
+          0.1516,
+          0.6512
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 3,
-            "horse_name": "パヴィーア",
-            "score": 0.4256
+            "horse_num": 2,
+            "horse_name": "ワイドデコラシオン",
+            "score": 0.6512
           },
           {
             "rank": 2,
-            "horse_num": 6,
-            "horse_name": "エンダードラゴン",
-            "score": 0.4137
+            "horse_num": 3,
+            "horse_name": "パヴィーア",
+            "score": 0.6409
           },
           {
             "rank": 3,
-            "horse_num": 7,
-            "horse_name": "アメリカンビヨンド",
-            "score": 0.3953
+            "horse_num": 9,
+            "horse_name": "モズケイスター",
+            "score": 0.58
           }
         ],
         "condition_key": "D",
@@ -851,14 +838,9 @@
         "recommended": true,
         "bets": [
           [
-            1,
+            2,
             3,
-            6
-          ],
-          [
-            1,
-            3,
-            7
+            4
           ],
           [
             2,
@@ -871,17 +853,22 @@
             7
           ],
           [
+            2,
             3,
-            6,
-            7
+            9
           ],
           [
-            3,
+            2,
+            4,
+            9
+          ],
+          [
+            2,
             6,
             9
           ],
           [
-            3,
+            2,
             7,
             9
           ]
@@ -889,15 +876,17 @@
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 55
+        "confidence": 70
       },
       "1勝_福島ダ1700_15頭": {
         "race_id": "202603010107",
         "race_name": "4歳以上1勝クラス",
         "venue": "福島",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -914,10 +903,11 @@
         "odds_available": true,
         "df_shape": [
           15,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
@@ -925,19 +915,16 @@
           "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 16,
-        "nonzero_count": 134,
-        "suspicious_zeros": [],
+        "zero_count": 12,
+        "nonzero_count": 138,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 193.0,
@@ -955,7 +942,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 15,
             "total": 15
           }
         },
@@ -963,28 +950,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.2077,
-          0.507
+          0.1044,
+          0.542
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 1,
-            "horse_name": "プロスペクト",
-            "score": 0.507
+            "horse_num": 7,
+            "horse_name": "ホウオウバローロ",
+            "score": 0.542
           },
           {
             "rank": 2,
-            "horse_num": 5,
-            "horse_name": "ナインオブレター",
-            "score": 0.4008
+            "horse_num": 6,
+            "horse_name": "プロスペクトパーク",
+            "score": 0.518
           },
           {
             "rank": 3,
-            "horse_num": 6,
-            "horse_name": "プロスペクトパーク",
-            "score": 0.3996
+            "horse_num": 14,
+            "horse_name": "チャチャピンク",
+            "score": 0.4684
           }
         ],
         "condition_key": "C",
@@ -992,53 +979,55 @@
         "recommended": true,
         "bets": [
           [
-            1,
             5,
-            6
+            6,
+            7
           ],
           [
-            1,
             5,
-            8
+            7,
+            14
           ],
           [
-            1,
-            5,
+            6,
+            7,
             10
           ],
           [
-            1,
-            5,
-            11
+            6,
+            7,
+            12
           ],
           [
-            1,
             6,
-            8
+            7,
+            14
           ],
           [
-            1,
-            6,
-            10
+            7,
+            10,
+            14
           ],
           [
-            1,
-            6,
-            11
+            7,
+            12,
+            14
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 90
+        "confidence": 77
       },
       "2勝_中山ダ1200_16頭": {
         "race_id": "202606030512",
         "race_name": "4歳以上2勝クラス",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1050,38 +1039,35 @@
         "num_horses": 16,
         "distance": 1200,
         "surface": "ダ",
-        "condition": "重",
+        "condition": "稍",
         "maiden_horse_count": 16,
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "dist_cat",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_ze_furi_count",
           "stable_comment_score",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 19,
-        "nonzero_count": 131,
-        "suspicious_zeros": [],
+        "zero_count": 14,
+        "nonzero_count": 136,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 34.1,
@@ -1099,7 +1085,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 15,
             "total": 16
           }
         },
@@ -1107,8 +1093,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.183,
-          0.53
+          0.1355,
+          0.7568
         ],
         "score_in_01": true,
         "top3": [
@@ -1116,19 +1102,19 @@
             "rank": 1,
             "horse_num": 4,
             "horse_name": "アスタールフナ",
-            "score": 0.53
+            "score": 0.7568
           },
           {
             "rank": 2,
             "horse_num": 13,
             "horse_name": "エリカカリーナ",
-            "score": 0.4481
+            "score": 0.4465
           },
           {
             "rank": 3,
-            "horse_num": 14,
-            "horse_name": "ベルブリエ",
-            "score": 0.4113
+            "horse_num": 2,
+            "horse_name": "プレアデスグループ",
+            "score": 0.3517
           }
         ],
         "condition_key": "D",
@@ -1138,22 +1124,27 @@
           [
             2,
             4,
-            13
+            7
           ],
           [
             2,
             4,
-            14
+            9
           ],
           [
+            2,
             4,
-            6,
+            11
+          ],
+          [
+            2,
+            4,
             13
           ],
           [
             4,
-            6,
-            14
+            7,
+            13
           ],
           [
             4,
@@ -1162,13 +1153,8 @@
           ],
           [
             4,
-            9,
-            14
-          ],
-          [
-            4,
-            13,
-            14
+            11,
+            13
           ]
         ],
         "bet_count": 7,
@@ -1180,9 +1166,11 @@
         "race_id": "202609020512",
         "race_name": "4歳以上2勝クラス",
         "venue": "阪神",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1199,10 +1187,11 @@
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "dist_cat",
           "season",
           "is_nar",
@@ -1212,20 +1201,17 @@
           "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 19,
-        "nonzero_count": 131,
-        "suspicious_zeros": [],
+        "zero_count": 15,
+        "nonzero_count": 135,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 62.5,
@@ -1243,7 +1229,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 16,
             "total": 16
           }
         },
@@ -1251,28 +1237,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.2116,
-          0.4266
+          0.1292,
+          0.6183
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 6,
-            "horse_name": "ドンパッショーネ",
-            "score": 0.4266
+            "horse_num": 11,
+            "horse_name": "クリノオリーブ",
+            "score": 0.6183
           },
           {
             "rank": 2,
             "horse_num": 7,
             "horse_name": "タイセイディアマン",
-            "score": 0.3965
+            "score": 0.5109
           },
           {
             "rank": 3,
-            "horse_num": 9,
-            "horse_name": "カワキタマナレア",
-            "score": 0.3954
+            "horse_num": 6,
+            "horse_name": "ドンパッショーネ",
+            "score": 0.453
           }
         ],
         "condition_key": "D",
@@ -1280,53 +1266,55 @@
         "recommended": true,
         "bets": [
           [
+            1,
             6,
-            7,
-            8
+            11
           ],
           [
-            6,
-            7,
-            9
-          ],
-          [
-            6,
+            1,
             7,
             11
           ],
           [
             6,
             7,
-            12
+            11
           ],
           [
             6,
             8,
-            9
-          ],
-          [
-            6,
-            9,
             11
           ],
           [
             6,
-            9,
-            12
+            11,
+            16
+          ],
+          [
+            7,
+            8,
+            11
+          ],
+          [
+            7,
+            11,
+            16
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 65
+        "confidence": 90
       },
       "3勝_浄土平特別_福島芝1800_16頭": {
         "race_id": "202603010109",
         "race_name": "浄土平特別",
         "venue": "福島",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1343,31 +1331,27 @@
         "odds_available": true,
         "df_shape": [
           16,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 17,
-        "nonzero_count": 133,
-        "suspicious_zeros": [],
+        "zero_count": 11,
+        "nonzero_count": 139,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 193.0,
@@ -1385,7 +1369,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 15,
             "total": 16
           }
         },
@@ -1393,8 +1377,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1657,
-          0.4514
+          0.1189,
+          0.6372
         ],
         "score_in_01": true,
         "top3": [
@@ -1402,19 +1386,19 @@
             "rank": 1,
             "horse_num": 12,
             "horse_name": "ロットブラータ",
-            "score": 0.4514
+            "score": 0.6372
           },
           {
             "rank": 2,
-            "horse_num": 7,
-            "horse_name": "ラトラース",
-            "score": 0.3919
+            "horse_num": 15,
+            "horse_name": "デイジー",
+            "score": 0.5428
           },
           {
             "rank": 3,
-            "horse_num": 15,
-            "horse_name": "デイジー",
-            "score": 0.3917
+            "horse_num": 7,
+            "horse_name": "ラトラース",
+            "score": 0.5129
           }
         ],
         "condition_key": "C",
@@ -1432,19 +1416,14 @@
             15
           ],
           [
-            6,
-            7,
-            12
-          ],
-          [
-            6,
-            12,
-            15
-          ],
-          [
             7,
             10,
             12
+          ],
+          [
+            7,
+            12,
+            14
           ],
           [
             7,
@@ -1454,6 +1433,11 @@
           [
             10,
             12,
+            15
+          ],
+          [
+            12,
+            14,
             15
           ]
         ],
@@ -1466,9 +1450,11 @@
         "race_id": "202603010111",
         "race_name": "吾妻小富士S",
         "venue": "福島",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1485,28 +1471,26 @@
         "odds_available": true,
         "df_shape": [
           15,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "is_nar",
           "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 14,
-        "nonzero_count": 136,
-        "suspicious_zeros": [],
+        "zero_count": 10,
+        "nonzero_count": 140,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 193.0,
@@ -1524,7 +1508,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 15,
             "total": 15
           }
         },
@@ -1532,8 +1516,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.27,
-          0.5857
+          0.141,
+          0.7309
         ],
         "score_in_01": true,
         "top3": [
@@ -1541,19 +1525,19 @@
             "rank": 1,
             "horse_num": 15,
             "horse_name": "タガノミスト",
-            "score": 0.5857
+            "score": 0.7309
           },
           {
             "rank": 2,
-            "horse_num": 2,
-            "horse_name": "イスラアネーロ",
-            "score": 0.4998
+            "horse_num": 1,
+            "horse_name": "ラタフォレスト",
+            "score": 0.6454
           },
           {
             "rank": 3,
-            "horse_num": 8,
-            "horse_name": "ダイシンピスケス",
-            "score": 0.4785
+            "horse_num": 14,
+            "horse_name": "レアンダー",
+            "score": 0.6221
           }
         ],
         "condition_key": "C",
@@ -1562,37 +1546,37 @@
         "bets": [
           [
             1,
-            2,
+            3,
             15
           ],
           [
             1,
-            8,
-            15
-          ],
-          [
-            2,
-            3,
-            15
-          ],
-          [
-            2,
-            8,
-            15
-          ],
-          [
-            2,
             10,
             15
           ],
           [
-            3,
-            8,
+            1,
+            11,
             15
           ],
           [
-            8,
+            1,
+            14,
+            15
+          ],
+          [
+            3,
+            14,
+            15
+          ],
+          [
             10,
+            14,
+            15
+          ],
+          [
+            11,
+            14,
             15
           ]
         ],
@@ -1605,9 +1589,11 @@
         "race_id": "202606030511",
         "race_name": "ニュージーランドT",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1619,35 +1605,32 @@
         "num_horses": 15,
         "distance": 1600,
         "surface": "芝",
-        "condition": "稍",
+        "condition": "良",
         "maiden_horse_count": 15,
         "odds_available": true,
         "df_shape": [
           15,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 16,
-        "nonzero_count": 134,
-        "suspicious_zeros": [],
+        "zero_count": 11,
+        "nonzero_count": 139,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 34.1,
@@ -1665,7 +1648,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 12,
             "total": 15
           }
         },
@@ -1673,8 +1656,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1638,
-          0.3909
+          0.154,
+          0.6654
         ],
         "score_in_01": true,
         "top3": [
@@ -1682,19 +1665,19 @@
             "rank": 1,
             "horse_num": 11,
             "horse_name": "ゴーラッキー",
-            "score": 0.3909
+            "score": 0.6654
           },
           {
             "rank": 2,
-            "horse_num": 4,
-            "horse_name": "ヒズマスターピース",
-            "score": 0.3833
+            "horse_num": 14,
+            "horse_name": "ディールメーカー",
+            "score": 0.6417
           },
           {
             "rank": 3,
             "horse_num": 3,
             "horse_name": "レザベーション",
-            "score": 0.3623
+            "score": 0.57
           }
         ],
         "condition_key": "C",
@@ -1702,18 +1685,23 @@
         "recommended": true,
         "bets": [
           [
+            1,
             3,
-            4,
             11
           ],
           [
-            3,
-            5,
-            11
+            1,
+            11,
+            14
           ],
           [
             3,
             7,
+            11
+          ],
+          [
+            3,
+            10,
             11
           ],
           [
@@ -1722,17 +1710,12 @@
             14
           ],
           [
-            4,
-            5,
-            11
-          ],
-          [
-            4,
             7,
-            11
+            11,
+            14
           ],
           [
-            4,
+            10,
             11,
             14
           ]
@@ -1740,15 +1723,17 @@
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 43
+        "confidence": 76
       },
       "G2_阪神牝馬S_阪神芝1600_10頭": {
         "race_id": "202609020511",
         "race_name": "阪神牝馬S",
         "venue": "阪神",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1760,36 +1745,31 @@
         "num_horses": 10,
         "distance": 1600,
         "surface": "芝",
-        "condition": "稍",
+        "condition": "良",
         "maiden_horse_count": 10,
         "odds_available": true,
         "df_shape": [
           10,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_late_start",
-          "jockey_horse_rides",
-          "jockey_horse_wr",
-          "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 17,
-        "nonzero_count": 133,
-        "suspicious_zeros": [],
+        "zero_count": 10,
+        "nonzero_count": 140,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
             "min": 62.5,
@@ -1807,7 +1787,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 9,
             "total": 10
           }
         },
@@ -1815,28 +1795,28 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.3264,
-          0.5506
+          0.2717,
+          0.619
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 6,
-            "horse_name": "アスコリピチェーノ",
-            "score": 0.5506
+            "horse_num": 5,
+            "horse_name": "カムニャック",
+            "score": 0.619
           },
           {
             "rank": 2,
-            "horse_num": 7,
-            "horse_name": "クランフォード",
-            "score": 0.3936
+            "horse_num": 6,
+            "horse_name": "アスコリピチェーノ",
+            "score": 0.5977
           },
           {
             "rank": 3,
-            "horse_num": 2,
-            "horse_name": "カピリナ",
-            "score": 0.3933
+            "horse_num": 3,
+            "horse_name": "ルージュソリテール",
+            "score": 0.5738
           }
         ],
         "condition_key": "A",
@@ -1844,53 +1824,55 @@
         "recommended": true,
         "bets": [
           [
-            2,
+            1,
             3,
+            5
+          ],
+          [
+            1,
+            5,
             6
           ],
           [
-            2,
-            4,
+            3,
+            5,
             6
           ],
           [
-            2,
-            6,
+            3,
+            5,
             7
           ],
           [
-            2,
-            6,
+            3,
+            5,
             8
           ],
           [
-            3,
+            5,
             6,
             7
           ],
           [
-            4,
+            5,
             6,
-            7
-          ],
-          [
-            6,
-            7,
             8
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
         "pp_matched_count": 4,
-        "confidence": 90
+        "confidence": 60
       },
       "条件E_山藤賞_中山芝2000_7頭": {
         "race_id": "202606030509",
         "race_name": "山藤賞",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -1902,48 +1884,44 @@
         "num_horses": 7,
         "distance": 2000,
         "surface": "芝",
-        "condition": "稍",
+        "condition": "良",
         "maiden_horse_count": 7,
         "odds_available": true,
         "df_shape": [
           7,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_prev_late_start",
           "jrdb_ze_furi_count",
-          "jockey_horse_rides",
           "jockey_horse_wr",
-          "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 19,
-        "nonzero_count": 131,
-        "suspicious_zeros": [],
+        "zero_count": 13,
+        "nonzero_count": 137,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
-            "min": 0.0,
+            "min": 34.1,
             "max": 372.9,
-            "mean": 77.6,
+            "mean": 130.9,
             "valid": true
           },
           "transport_check": {
             "miho_horses": 5,
-            "ritto_horses": 1
+            "ritto_horses": 2
           },
           "course_renovated": {
             "value": 0,
@@ -1951,7 +1929,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 6,
             "total": 7
           }
         },
@@ -1959,8 +1937,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1532,
-          0.3772
+          0.1483,
+          0.7251
         ],
         "score_in_01": true,
         "top3": [
@@ -1968,19 +1946,19 @@
             "rank": 1,
             "horse_num": 5,
             "horse_name": "コッツォリーノ",
-            "score": 0.3772
+            "score": 0.7251
           },
           {
             "rank": 2,
-            "horse_num": 7,
-            "horse_name": "グランセレスト",
-            "score": 0.3744
+            "horse_num": 3,
+            "horse_name": "ソングオブザバード",
+            "score": 0.4558
           },
           {
             "rank": 3,
             "horse_num": 4,
             "horse_name": "グランアルト",
-            "score": 0.3368
+            "score": 0.4128
           }
         ],
         "condition_key": "E",
@@ -1988,8 +1966,8 @@
         "recommended": true,
         "bets": [
           [
-            5,
-            7
+            3,
+            5
           ],
           [
             4,
@@ -1997,17 +1975,19 @@
           ]
         ],
         "bet_count": 2,
-        "pp_stars": 1,
-        "pp_matched_count": 1,
-        "confidence": 41
+        "pp_stars": 0,
+        "pp_matched_count": 0,
+        "confidence": 90
       },
       "条件B_中山ダ1800_13頭_重": {
         "race_id": "202606030503",
         "race_name": "3歳未勝利",
         "venue": "中山",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
-        "warnings": [],
+        "warnings": [
+          "怪しいゼロ特徴量: ['rest_category']"
+        ],
         "checks": {
           "condition_match": true,
           "bet_count_ok": true,
@@ -2021,47 +2001,41 @@
         "surface": "ダ",
         "condition": "重",
         "maiden_horse_count": 13,
-        "odds_available": false,
+        "odds_available": true,
         "df_shape": [
           13,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
+          "rest_category",
           "season",
           "is_nar",
           "jrdb_prev_interference",
           "jrdb_ze_furi_count",
           "stable_comment_score",
-          "odds_change_rate",
-          "pop_rank_change",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
           "jockey_horse_wr",
           "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 21,
-        "nonzero_count": 129,
-        "suspicious_zeros": [],
+        "zero_count": 13,
+        "nonzero_count": 137,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
         "v15_checks": {
           "transport_distance_km": {
-            "min": 0.0,
+            "min": 34.1,
             "max": 372.9,
-            "mean": 49.7,
+            "mean": 60.2,
             "valid": true
           },
           "transport_check": {
-            "miho_horses": 8,
+            "miho_horses": 12,
             "ritto_horses": 1
           },
           "course_renovated": {
@@ -2070,7 +2044,7 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 11,
             "total": 13
           }
         },
@@ -2078,8 +2052,8 @@
         "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1258,
-          0.7063
+          0.0915,
+          0.8435
         ],
         "score_in_01": true,
         "top3": [
@@ -2087,19 +2061,19 @@
             "rank": 1,
             "horse_num": 1,
             "horse_name": "アイデアユー",
-            "score": 0.7063
+            "score": 0.8435
           },
           {
             "rank": 2,
             "horse_num": 10,
             "horse_name": "アチーヴァー",
-            "score": 0.465
+            "score": 0.6706
           },
           {
             "rank": 3,
             "horse_num": 13,
             "horse_name": "グスク",
-            "score": 0.4376
+            "score": 0.4203
           }
         ],
         "condition_key": "B",
@@ -2128,72 +2102,315 @@
           ],
           [
             1,
-            10,
-            12
+            9,
+            10
           ],
           [
             1,
-            10,
+            9,
             13
           ],
           [
             1,
-            12,
+            10,
             13
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
-        "pp_matched_count": 3,
+        "pp_matched_count": 4,
         "confidence": 90
       },
       "芝短距離_花見山_福島芝1200_16頭": {
         "race_id": "202603010110",
-        "race_name": "レース",
+        "race_name": "花見山特別",
         "venue": "福島",
-        "status": "SKIP_NETKEIBA",
-        "errors": [
-          "KeyError: '斤量'"
-        ],
+        "status": "WARN",
+        "errors": [],
         "warnings": [
-          "netkeiba出馬表一時非公開(テスト環境問題、コードバグではない)"
+          "怪しいゼロ特徴量: ['rest_category']"
         ],
-        "checks": {},
-        "num_horses": 0,
-        "distance": 0,
-        "surface": "ダ",
+        "checks": {
+          "condition_match": true,
+          "bet_count_ok": true,
+          "bets_sorted": true,
+          "kelly_works": false,
+          "ev_works": true,
+          "confidence_works": true
+        },
+        "num_horses": 16,
+        "distance": 1200,
+        "surface": "芝",
         "condition": "良",
-        "maiden_horse_count": 0,
-        "odds_available": false
+        "maiden_horse_count": 16,
+        "odds_available": true,
+        "df_shape": [
+          16,
+          268
+        ],
+        "model_features_count": 150,
+        "zero_features": [
+          "surface_enc",
+          "rest_category",
+          "dist_cat",
+          "season",
+          "surface_dist_enc",
+          "is_nar",
+          "jockey_horse_rides",
+          "jockey_horse_wr",
+          "jockey_horse_top3r",
+          "jockey_change_to_top",
+          "course_renovated",
+          "post_renovation_flag",
+          "gaisha_rank"
+        ],
+        "zero_count": 13,
+        "nonzero_count": 137,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
+        "v15_checks": {
+          "transport_distance_km": {
+            "min": 193.0,
+            "max": 504.9,
+            "mean": 271.0,
+            "valid": true
+          },
+          "transport_check": {
+            "miho_horses": 12,
+            "ritto_horses": 4
+          },
+          "course_renovated": {
+            "value": 0,
+            "expected": 0,
+            "match": true
+          },
+          "jockey_change": {
+            "changed_count": 16,
+            "total": 16
+          }
+        },
+        "jrdb_coverage": "45/45",
+        "training_coverage": "6/6",
+        "speed_index_real": "3/3",
+        "score_range": [
+          0.1937,
+          0.5133
+        ],
+        "score_in_01": true,
+        "top3": [
+          {
+            "rank": 1,
+            "horse_num": 4,
+            "horse_name": "ヴァンヴィーヴ",
+            "score": 0.5133
+          },
+          {
+            "rank": 2,
+            "horse_num": 13,
+            "horse_name": "タマカヅラ",
+            "score": 0.4549
+          },
+          {
+            "rank": 3,
+            "horse_num": 3,
+            "horse_name": "ムチャスグラシアス",
+            "score": 0.4299
+          }
+        ],
+        "condition_key": "D",
+        "bet_type": "trio",
+        "recommended": true,
+        "bets": [
+          [
+            3,
+            4,
+            5
+          ],
+          [
+            3,
+            4,
+            8
+          ],
+          [
+            3,
+            4,
+            12
+          ],
+          [
+            3,
+            4,
+            13
+          ],
+          [
+            4,
+            5,
+            13
+          ],
+          [
+            4,
+            8,
+            13
+          ],
+          [
+            4,
+            12,
+            13
+          ]
+        ],
+        "bet_count": 7,
+        "pp_stars": 2,
+        "pp_matched_count": 4,
+        "confidence": 90
       },
       "芝長距離_明石_阪神芝2400_8頭": {
         "race_id": "202609020509",
-        "race_name": "レース",
+        "race_name": "明石特別",
         "venue": "阪神",
-        "status": "SKIP_NETKEIBA",
-        "errors": [
-          "KeyError: '斤量'"
-        ],
+        "status": "WARN",
+        "errors": [],
         "warnings": [
-          "netkeiba出馬表一時非公開(テスト環境問題、コードバグではない)"
+          "怪しいゼロ特徴量: ['rest_category']"
         ],
-        "checks": {},
-        "num_horses": 0,
-        "distance": 0,
-        "surface": "ダ",
+        "checks": {
+          "condition_match": true,
+          "bet_count_ok": true,
+          "bets_sorted": true,
+          "kelly_works": false,
+          "ev_works": true,
+          "confidence_works": true
+        },
+        "num_horses": 8,
+        "distance": 2400,
+        "surface": "芝",
         "condition": "良",
-        "maiden_horse_count": 0,
-        "odds_available": false
+        "maiden_horse_count": 8,
+        "odds_available": true,
+        "df_shape": [
+          8,
+          268
+        ],
+        "model_features_count": 150,
+        "zero_features": [
+          "surface_enc",
+          "rest_category",
+          "season",
+          "carry_diff",
+          "is_nar",
+          "jrdb_prev_interference",
+          "jockey_change_to_top",
+          "is_long_transport",
+          "course_renovated",
+          "post_renovation_flag",
+          "gaisha_rank"
+        ],
+        "zero_count": 11,
+        "nonzero_count": 139,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
+        "v15_checks": {
+          "transport_distance_km": {
+            "min": 62.5,
+            "max": 458.4,
+            "mean": 112.0,
+            "valid": true
+          },
+          "transport_check": {
+            "miho_horses": 1,
+            "ritto_horses": 7
+          },
+          "course_renovated": {
+            "value": 0,
+            "expected": 0,
+            "match": true
+          },
+          "jockey_change": {
+            "changed_count": 6,
+            "total": 8
+          }
+        },
+        "jrdb_coverage": "44/45",
+        "training_coverage": "6/6",
+        "speed_index_real": "3/3",
+        "score_range": [
+          0.2101,
+          0.6625
+        ],
+        "score_in_01": true,
+        "top3": [
+          {
+            "rank": 1,
+            "horse_num": 4,
+            "horse_name": "アロンズロッド",
+            "score": 0.6625
+          },
+          {
+            "rank": 2,
+            "horse_num": 1,
+            "horse_name": "ファームツエンティ",
+            "score": 0.5669
+          },
+          {
+            "rank": 3,
+            "horse_num": 7,
+            "horse_name": "サトノスカイターフ",
+            "score": 0.4393
+          }
+        ],
+        "condition_key": "A",
+        "bet_type": "trio",
+        "recommended": true,
+        "bets": [
+          [
+            1,
+            2,
+            4
+          ],
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            4,
+            6
+          ],
+          [
+            1,
+            4,
+            7
+          ],
+          [
+            2,
+            4,
+            7
+          ],
+          [
+            4,
+            5,
+            7
+          ],
+          [
+            4,
+            6,
+            7
+          ]
+        ],
+        "bet_count": 7,
+        "pp_stars": 3,
+        "pp_matched_count": 4,
+        "confidence": 90
       },
       "芝中距離_大阪HC_阪神芝2600_13頭": {
         "race_id": "202609020510",
         "race_name": "大阪―ハンブルクC",
         "venue": "阪神",
-        "status": "PASS",
+        "status": "WARN",
         "errors": [],
         "warnings": [
-          "怪しいゼロ特徴量: ['has_wood_training', 'wood_count_2w', 'has_sakaro_training', 'total_training_count', 'training_intensity_enc']",
-          "調教特徴量ゼロ=premium cache未更新(正当)"
+          "怪しいゼロ特徴量: ['rest_category']"
         ],
         "checks": {
           "condition_match": true,
@@ -2206,62 +2423,42 @@
         "num_horses": 13,
         "distance": 2600,
         "surface": "芝",
-        "condition": "稍",
+        "condition": "良",
         "maiden_horse_count": 13,
-        "odds_available": false,
+        "odds_available": true,
         "df_shape": [
           13,
-          266
+          268
         ],
         "model_features_count": 150,
         "zero_features": [
           "surface_enc",
+          "rest_category",
           "season",
           "is_nar",
-          "has_wood_training",
-          "wood_count_2w",
-          "has_sakaro_training",
-          "total_training_count",
-          "training_intensity_enc",
           "jrdb_prev_interference",
           "jrdb_prev_late_start",
-          "stable_comment_score",
-          "odds_change_rate",
-          "pop_rank_change",
-          "odds_sharp_drop",
-          "jockey_horse_rides",
-          "jockey_horse_wr",
-          "jockey_horse_top3r",
-          "jockey_change",
           "jockey_change_to_top",
           "is_long_transport",
           "course_renovated",
           "post_renovation_flag",
-          "gaisha_rank",
-          "paci_sogo_mark",
-          "paci_idm_mark",
-          "paci_jockey_mark",
-          "paci_train_mark"
+          "gaisha_rank"
         ],
-        "zero_count": 27,
-        "nonzero_count": 123,
+        "zero_count": 11,
+        "nonzero_count": 139,
         "suspicious_zeros": [
-          "has_wood_training",
-          "wood_count_2w",
-          "has_sakaro_training",
-          "total_training_count",
-          "training_intensity_enc"
+          "rest_category"
         ],
         "v15_checks": {
           "transport_distance_km": {
-            "min": 0.0,
+            "min": 62.5,
             "max": 458.4,
-            "mean": 174.7,
+            "mean": 184.3,
             "valid": true
           },
           "transport_check": {
             "miho_horses": 4,
-            "ritto_horses": 7
+            "ritto_horses": 9
           },
           "course_renovated": {
             "value": 0,
@@ -2269,36 +2466,36 @@
             "match": true
           },
           "jockey_change": {
-            "changed_count": 0,
+            "changed_count": 11,
             "total": 13
           }
         },
         "jrdb_coverage": "43/45",
-        "training_coverage": "4/6",
+        "training_coverage": "6/6",
         "speed_index_real": "3/3",
         "score_range": [
-          0.1303,
-          0.4409
+          0.1486,
+          0.709
         ],
         "score_in_01": true,
         "top3": [
           {
             "rank": 1,
-            "horse_num": 1,
-            "horse_name": "アマキヒ",
-            "score": 0.4409
+            "horse_num": 10,
+            "horse_name": "ウィクトルウェルス",
+            "score": 0.709
           },
           {
             "rank": 2,
-            "horse_num": 10,
-            "horse_name": "ウィクトルウェルス",
-            "score": 0.2384
+            "horse_num": 1,
+            "horse_name": "アマキヒ",
+            "score": 0.6683
           },
           {
             "rank": 3,
-            "horse_num": 6,
-            "horse_name": "サンライズソレイユ",
-            "score": 0.1991
+            "horse_num": 7,
+            "horse_name": "ウエストナウ",
+            "score": 0.4074
           }
         ],
         "condition_key": "A",
@@ -2307,67 +2504,189 @@
         "bets": [
           [
             1,
-            2,
-            6
-          ],
-          [
-            1,
-            2,
-            10
-          ],
-          [
-            1,
-            3,
-            6
-          ],
-          [
-            1,
             3,
             10
           ],
           [
             1,
-            6,
+            4,
             10
           ],
           [
             1,
-            6,
+            7,
+            10
+          ],
+          [
+            1,
+            10,
             11
           ],
           [
-            1,
+            3,
+            7,
+            10
+          ],
+          [
+            4,
+            7,
+            10
+          ],
+          [
+            7,
             10,
             11
           ]
         ],
         "bet_count": 7,
         "pp_stars": 3,
-        "pp_matched_count": 3,
-        "confidence": 90
+        "pp_matched_count": 4,
+        "confidence": 85
       },
       "未勝利_中山芝1600_16頭": {
         "race_id": "202606030505",
-        "race_name": "レース",
+        "race_name": "3歳未勝利",
         "venue": "中山",
-        "status": "SKIP_NETKEIBA",
-        "errors": [
-          "KeyError: '斤量'"
-        ],
+        "status": "WARN",
+        "errors": [],
         "warnings": [
-          "netkeiba出馬表一時非公開(テスト環境問題、コードバグではない)"
+          "怪しいゼロ特徴量: ['rest_category']"
         ],
-        "checks": {},
-        "num_horses": 0,
-        "distance": 0,
-        "surface": "ダ",
+        "checks": {
+          "condition_match": true,
+          "bet_count_ok": true,
+          "bets_sorted": true,
+          "kelly_works": false,
+          "ev_works": true,
+          "confidence_works": true
+        },
+        "num_horses": 15,
+        "distance": 1600,
+        "surface": "芝",
         "condition": "良",
-        "maiden_horse_count": 0,
-        "odds_available": false
+        "maiden_horse_count": 15,
+        "odds_available": true,
+        "df_shape": [
+          15,
+          268
+        ],
+        "model_features_count": 150,
+        "zero_features": [
+          "surface_enc",
+          "rest_category",
+          "season",
+          "location_enc",
+          "is_nar",
+          "jrdb_prev_interference",
+          "jrdb_ze_furi_count",
+          "stable_comment_score",
+          "jockey_horse_wr",
+          "jockey_change_to_top",
+          "is_long_transport",
+          "course_renovated",
+          "post_renovation_flag",
+          "gaisha_rank"
+        ],
+        "zero_count": 14,
+        "nonzero_count": 136,
+        "suspicious_zeros": [
+          "rest_category"
+        ],
+        "v15_checks": {
+          "transport_distance_km": {
+            "min": 34.1,
+            "max": 34.1,
+            "mean": 34.1,
+            "valid": true
+          },
+          "transport_check": {
+            "miho_horses": 15,
+            "ritto_horses": 0
+          },
+          "course_renovated": {
+            "value": 0,
+            "expected": 0,
+            "match": true
+          },
+          "jockey_change": {
+            "changed_count": 12,
+            "total": 15
+          }
+        },
+        "jrdb_coverage": "43/45",
+        "training_coverage": "6/6",
+        "speed_index_real": "3/3",
+        "score_range": [
+          0.1176,
+          0.7703
+        ],
+        "score_in_01": true,
+        "top3": [
+          {
+            "rank": 1,
+            "horse_num": 6,
+            "horse_name": "アイムイン",
+            "score": 0.7703
+          },
+          {
+            "rank": 2,
+            "horse_num": 16,
+            "horse_name": "ウィズアツインクル",
+            "score": 0.5016
+          },
+          {
+            "rank": 3,
+            "horse_num": 7,
+            "horse_name": "ベアサナエチャン",
+            "score": 0.4082
+          }
+        ],
+        "condition_key": "C",
+        "bet_type": "trio",
+        "recommended": true,
+        "bets": [
+          [
+            2,
+            6,
+            7
+          ],
+          [
+            2,
+            6,
+            16
+          ],
+          [
+            5,
+            6,
+            7
+          ],
+          [
+            5,
+            6,
+            16
+          ],
+          [
+            6,
+            7,
+            15
+          ],
+          [
+            6,
+            7,
+            16
+          ],
+          [
+            6,
+            15,
+            16
+          ]
+        ],
+        "bet_count": 7,
+        "pp_stars": 3,
+        "pp_matched_count": 4,
+        "confidence": 90
       }
-    },
-    "netkeiba_skip": 3,
-    "code_fail": 0
+    }
   },
   "phase3_regression": [
     {
@@ -2522,18 +2841,17 @@
         "特徴量数: 150",
         "LGB: OK",
         "XGB: OK",
-        "重み: LGB=0.504, XGB=0.496",
-        "FAIL: 3レース"
+        "重み: LGB=0.504, XGB=0.496"
       ]
     },
     "鈴木(QA)": {
       "approved": true,
       "notes": [
         "回帰テスト: 15/15 PASS",
-        "全レース: 15 PASS, 1 WARN, 3 FAIL, 1 SKIP",
-        "  中山: 平均ゼロ特徴量 14.9個",
-        "  阪神: 平均ゼロ特徴量 16.7個",
-        "  福島: 平均ゼロ特徴量 12.6個"
+        "全レース: 0 PASS, 19 WARN, 0 FAIL, 1 SKIP",
+        "  中山: 平均ゼロ特徴量 11.7個",
+        "  阪神: 平均ゼロ特徴量 11.7個",
+        "  福島: 平均ゼロ特徴量 11.6個"
       ]
     },
     "佐藤(Sec)": {
@@ -2552,7 +2870,7 @@
       "approved": true,
       "notes": [
         "全レース買い目生成OK",
-        "★★★レース: 12件 ['未勝利_中山ダ1800_重_16頭', '未勝利_阪神芝2000_稍重_16頭', '未勝利_福島ダ1700_良_15頭', '1勝_阪神ダ1400_16頭', '1勝_福島ダ1700_15頭', '2勝_阪神ダ1200_16頭', '3勝_浄土平特別_福島芝1800_16頭', 'OP_吾妻小富士S_福島ダ1700_15頭', 'G2_NZT_中山芝1600_15頭', 'G2_阪神牝馬S_阪神芝1600_10頭', '条件B_中山ダ1800_13頭_重', '芝中距離_大阪HC_阪神芝2600_13頭']"
+        "★★★レース: 14件 ['未勝利_中山ダ1800_重_16頭', '未勝利_阪神芝2000_稍重_16頭', '未勝利_福島ダ1700_良_15頭', '1勝_阪神ダ1400_16頭', '1勝_福島ダ1700_15頭', '2勝_阪神ダ1200_16頭', '3勝_浄土平特別_福島芝1800_16頭', 'OP_吾妻小富士S_福島ダ1700_15頭', 'G2_NZT_中山芝1600_15頭', 'G2_阪神牝馬S_阪神芝1600_10頭', '条件B_中山ダ1800_13頭_重', '芝長距離_明石_阪神芝2400_8頭', '芝中距離_大阪HC_阪神芝2600_13頭', '未勝利_中山芝1600_16頭']"
       ]
     },
     "高橋(自動化)": {
@@ -2565,7 +2883,7 @@
       "approved": true,
       "notes": [
         "Single Source of Truth: OK",
-        "全レースFAIL: 3件"
+        "全レースFAIL: 0件"
       ]
     },
     "中村(SRE)": {
@@ -2585,5 +2903,5 @@
     }
   },
   "final_verdict": "APPROVED",
-  "elapsed_seconds": 821.9
+  "elapsed_seconds": 1106.8
 }
