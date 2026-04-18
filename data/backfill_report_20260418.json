@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-04-18 23:22:09",
+  "backfill_dates": [
+    "20260314",
+    "20260315",
+    "20260321",
+    "20260411",
+    "20260412",
+    "20260418"
+  ],
+  "before": {
+    "n": 488,
+    "investment": 341600,
+    "payout": 365080,
+    "profit": 23480,
+    "roi": 106.87,
+    "hits": 121,
+    "conditions": {
+      "A": {
+        "n": 152,
+        "investment": 106400,
+        "payout": 96960,
+        "profit": -9440,
+        "roi": 91.13
+      },
+      "B": {
+        "n": 9,
+        "investment": 6300,
+        "payout": 0,
+        "profit": -6300,
+        "roi": 0.0
+      },
+      "C": {
+        "n": 130,
+        "investment": 91000,
+        "payout": 61180,
+        "profit": -29820,
+        "roi": 67.23
+      },
+      "D": {
+        "n": 168,
+        "investment": 117600,
+        "payout": 204770,
+        "profit": 87170,
+        "roi": 174.12
+      },
+      "E": {
+        "n": 10,
+        "investment": 7000,
+        "payout": 2170,
+        "profit": -4830,
+        "roi": 31.0
+      },
+      "X": {
+        "n": 19,
+        "investment": 13300,
+        "payout": 0,
+        "profit": -13300,
+        "roi": 0.0
+      }
+    }
+  },
+  "after": {
+    "n": 323,
+    "investment": 226100,
+    "payout": 272720,
+    "profit": 46620,
+    "roi": 120.62,
+    "hits": 76,
+    "conditions": {
+      "A": {
+        "n": 89,
+        "investment": 62300,
+        "payout": 77430,
+        "profit": 15130,
+        "roi": 124.29
+      },
+      "B": {
+        "n": 9,
+        "investment": 6300,
+        "payout": 0,
+        "profit": -6300,
+        "roi": 0.0
+      },
+      "C": {
+        "n": 89,
+        "investment": 62300,
+        "payout": 77150,
+        "profit": 14850,
+        "roi": 123.84
+      },
+      "D": {
+        "n": 115,
+        "investment": 80500,
+        "payout": 116150,
+        "profit": 35650,
+        "roi": 144.29
+      },
+      "E": {
+        "n": 9,
+        "investment": 6300,
+        "payout": 830,
+        "profit": -5470,
+        "roi": 13.17
+      },
+      "X": {
+        "n": 12,
+        "investment": 8400,
+        "payout": 1160,
+        "profit": -7240,
+        "roi": 13.81
+      }
+    }
+  },
+  "delta": {
+    "added_races": -165,
+    "profit_change": 23140,
+    "roi_change": 13.75
+  }
+}

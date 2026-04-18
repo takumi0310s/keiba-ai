@@ -3,18 +3,22 @@
 当日の予測結果と実際のレース結果を照合し、的中判定・ROI計算を行う。
 
 データソース:
-  --source db  : Streamlit DB (keiba_predictions.db) から読み込み（デフォルト）
-  --source csv : daily_predict CSV (data/daily_predictions/) から読み込み
+  --source csv : daily_predict CSV (data/daily_predictions/) から読み込み（デフォルト）
+  --source db  : Streamlit DB (keiba_predictions.db) から読み込み
 
 結果出力:
   - data/daily_results/{date}.csv        — 日別結果
   - data/cumulative_results.csv          — 累積結果
   - data/track_record.csv               — Streamlit Cloud同期用（git管理）
+  - data/actual_roi_results.json         — ROI統計（--recalc-roiで再計算）
 
 Usage:
-    python tools/daily_results.py                  # 今日の結果（DB参照）
-    python tools/daily_results.py --date 20260315  # 日付指定
-    python tools/daily_results.py --source csv     # CSV参照
+    python tools/daily_results.py                     # 今日の結果（CSV参照）
+    python tools/daily_results.py --date 20260315     # 日付指定
+    python tools/daily_results.py --source db         # Streamlit DB参照
+    python tools/daily_results.py --backfill-all      # 全予測CSVをバックフィル
+    python tools/daily_results.py --backfill 20260411,20260418
+    python tools/daily_results.py --recalc-roi        # actual_roi_results.json再計算
 """
 import pandas as pd
 import numpy as np
@@ -28,6 +32,7 @@ import sqlite3
 import argparse
 import time
 import unicodedata
+import glob
 from datetime import datetime
 
 
@@ -49,6 +54,12 @@ STREAMLIT_DB_PATHS = [
     os.path.join(BASE_DIR, "keiba_race_results.db"),   # 予備DB
 ]
 TRACK_RECORD_CSV = os.path.join(BASE_DIR, "data", "track_record.csv")
+CUMUL_CSV = os.path.join(BASE_DIR, "data", "cumulative_results.csv")
+ROI_JSON = os.path.join(BASE_DIR, "data", "actual_roi_results.json")
+PREDICTIONS_DIR = os.path.join(BASE_DIR, "data", "daily_predictions")
+
+# 障害レース/特殊距離の除外判定
+EXCLUDED_DISTANCE_MIN = 1000  # 1000m以下は購入非推奨（予測CSVに含まれる場合もスキップ）
 
 
 def fetch_race_result(race_id):
@@ -57,6 +68,7 @@ def fetch_race_result(race_id):
         'finish_order': {},
         'payouts': {'trio': 0, 'umaren': 0, 'wide': 0, 'tansho': 0},
         'trio_nums': None,
+        'umaren_nums': None,
     }
     url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
     try:
@@ -81,6 +93,7 @@ def fetch_race_result(race_id):
         return None
 
     top3_nums = []
+    top2_nums = []
     for row in result_table.find_all("tr"):
         tds = row.find_all("td")
         if len(tds) < 4:
@@ -113,10 +126,15 @@ def fetch_race_result(race_id):
             result['finish_order'][umaban] = finish
             if finish <= 3:
                 top3_nums.append((finish, umaban))
+            if finish <= 2:
+                top2_nums.append((finish, umaban))
 
     top3_nums.sort()
+    top2_nums.sort()
     if len(top3_nums) >= 3:
         result['trio_nums'] = sorted([n for _, n in top3_nums[:3]])
+    if len(top2_nums) >= 2:
+        result['umaren_nums'] = sorted([n for _, n in top2_nums[:2]])
 
     # 払戻金テーブルの解析
     BET_TYPE_HEX = {
@@ -173,16 +191,34 @@ def fetch_race_result(race_id):
     return result
 
 
-def check_trio_hit(trio_bets_str, actual_trio_nums):
-    """三連複的中判定（文字列形式 "1-2-3; 1-2-4; ..."）"""
-    if not trio_bets_str or not actual_trio_nums:
+def check_trio_hit(bets_str, actual_trio_nums):
+    """三連複的中判定。各買い目 "1-2-3" 形式、セミコロン区切り。"""
+    if not bets_str or not actual_trio_nums:
         return False, None
-
     actual_set = set(actual_trio_nums)
-    bets = trio_bets_str.split("; ")
+    bets = [b.strip() for b in str(bets_str).split(";") if b.strip()]
     for bet in bets:
-        nums = [int(n) for n in bet.split("-")]
-        if set(nums) == actual_set:
+        try:
+            nums = [int(n) for n in bet.split("-")]
+        except ValueError:
+            continue
+        if len(nums) == 3 and set(nums) == actual_set:
+            return True, bet
+    return False, None
+
+
+def check_umaren_hit(bets_str, actual_umaren_nums):
+    """馬連的中判定。各買い目 "1-2" 形式、セミコロン区切り。"""
+    if not bets_str or not actual_umaren_nums:
+        return False, None
+    actual_set = set(actual_umaren_nums)
+    bets = [b.strip() for b in str(bets_str).split(";") if b.strip()]
+    for bet in bets:
+        try:
+            nums = [int(n) for n in bet.split("-")]
+        except ValueError:
+            continue
+        if len(nums) == 2 and set(nums) == actual_set:
             return True, bet
     return False, None
 
@@ -251,16 +287,16 @@ def _try_load_from_db(db_path, race_date):
 
             if bet_type == 'trio' and trio_bets_raw:
                 bets_list = json.loads(trio_bets_raw)
-                trio_bets_str = '; '.join(
+                bets_str = '; '.join(
                     '-'.join(str(n) for n in sorted(b)) for b in bets_list
                 )
             elif bet_type == 'umaren' and umaren_bets_raw:
                 bets_list = json.loads(umaren_bets_raw)
-                trio_bets_str = '; '.join(
+                bets_str = '; '.join(
                     '-'.join(str(n) for n in sorted(b)) for b in bets_list
                 )
             else:
-                trio_bets_str = ''
+                bets_str = ''
 
             race_name = rr['race_name'] or ''
             course = re.sub(r'\d+R$', '', race_name)
@@ -275,12 +311,14 @@ def _try_load_from_db(db_path, race_date):
                 'race_num': race_num,
                 'race_name': race_name,
                 'condition': condition,
-                'trio_bets': trio_bets_str,
+                'trio_bets': bets_str,
                 'bet_type': bet_type,
                 'investment': INVESTMENT_PER_RACE,
                 'top1_num': tops.get(1, 0),
                 'top2_num': tops.get(2, 0),
                 'top3_num': tops.get(3, 0),
+                'distance': 0,
+                'surface': '',
             })
 
         return predictions
@@ -292,25 +330,35 @@ def _try_load_from_db(db_path, race_date):
 
 def load_predictions_from_csv(date_str):
     """daily_predict CSVから予測データを読み込む"""
-    pred_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
+    pred_path = os.path.join(PREDICTIONS_DIR, f"{date_str}.csv")
     if not os.path.exists(pred_path):
         return None
 
     df_pred = pd.read_csv(pred_path, encoding='utf-8-sig')
     predictions = []
     for _, row in df_pred.iterrows():
+        distance = int(row.get('distance', 0) or 0)
+        surface = str(row.get('surface', '') or '')
+        # 1000m以下は除外（ROI 85%で購入非推奨）
+        if 0 < distance <= EXCLUDED_DISTANCE_MIN:
+            continue
+        # 障害は surface に "障" が含まれる想定（予測CSVにはそもそも含まれないはず）
+        if '障' in surface:
+            continue
         predictions.append({
             'race_id': str(row['race_id']),
             'course': row.get('course', ''),
-            'race_num': row.get('race_num', 0),
+            'race_num': int(row.get('race_num', 0) or 0),
             'race_name': row.get('race_name', ''),
             'condition': row.get('condition', ''),
             'trio_bets': row.get('trio_bets', ''),
             'bet_type': row.get('bet_type', 'trio'),
-            'investment': row.get('investment', INVESTMENT_PER_RACE),
-            'top1_num': row.get('top1_num', 0),
-            'top2_num': row.get('top2_num', 0),
-            'top3_num': row.get('top3_num', 0),
+            'investment': int(row.get('investment', INVESTMENT_PER_RACE) or INVESTMENT_PER_RACE),
+            'top1_num': int(row.get('top1_num', 0) or 0),
+            'top2_num': int(row.get('top2_num', 0) or 0),
+            'top3_num': int(row.get('top3_num', 0) or 0),
+            'distance': distance,
+            'surface': surface,
         })
     return predictions
 
@@ -318,11 +366,7 @@ def load_predictions_from_csv(date_str):
 # ===== 結果同期用CSV書き出し =====
 
 def save_track_record_csv(results, date_str):
-    """track_record.csv に結果を追記（Streamlit Cloud同期用）
-
-    このCSVはgit管理されるため、pushすればStreamlit Cloudでも参照可能。
-    app.pyのTRACK RECORDページがこのCSVを読めるようにする。
-    """
+    """track_record.csv に結果を追記（Streamlit Cloud同期用）"""
     settled = [r for r in results if r.get('status') == 'settled']
     if not settled:
         return
@@ -349,8 +393,13 @@ def save_track_record_csv(results, date_str):
 
     if os.path.exists(TRACK_RECORD_CSV):
         df_existing = pd.read_csv(TRACK_RECORD_CSV, encoding='utf-8-sig')
-        # 同日分は上書き
-        df_existing = df_existing[df_existing['date'] != date_str]
+        # 同日分は上書き（date + race_id）
+        df_existing['date'] = df_existing['date'].astype(str)
+        df_existing['race_id'] = df_existing['race_id'].astype(str)
+        keep_mask = ~df_existing.set_index(['date','race_id']).index.isin(
+            df_new.set_index(['date','race_id']).index
+        )
+        df_existing = df_existing[keep_mask]
         df_out = pd.concat([df_existing, df_new], ignore_index=True)
     else:
         df_out = df_new
@@ -359,19 +408,87 @@ def save_track_record_csv(results, date_str):
     print(f"TRACK RECORD CSV更新: {TRACK_RECORD_CSV}")
 
 
+def _upsert_cumulative(results, date_str):
+    """cumulative_results.csv を (date, race_id) キーでupsert。
+
+    既存の settled 行は上書き対象外（結果は変わらない）、
+    pending 行は新規 settled で上書きされる。
+    重複排除も同時に実施（これまでの重複データを片付ける）。
+    """
+    df_new = pd.DataFrame(results)
+    df_new['date'] = date_str
+    df_new['date'] = df_new['date'].astype(str)
+    df_new['race_id'] = df_new['race_id'].astype(str)
+
+    if os.path.exists(CUMUL_CSV):
+        df_cumul = pd.read_csv(CUMUL_CSV, encoding='utf-8-sig')
+        df_cumul['date'] = df_cumul['date'].astype(str)
+        df_cumul['race_id'] = df_cumul['race_id'].astype(str)
+
+        # 全体の重複排除（settled優先）
+        df_cumul['_settled_rank'] = (df_cumul['status'] == 'settled').astype(int)
+        df_cumul = (df_cumul.sort_values('_settled_rank', ascending=False)
+                            .drop_duplicates(subset=['date','race_id'], keep='first')
+                            .drop(columns=['_settled_rank']))
+
+        # 新規分のキーを既存から除去
+        new_keys = set(zip(df_new['date'], df_new['race_id']))
+        mask = df_cumul.apply(lambda r: (r['date'], r['race_id']) not in new_keys, axis=1)
+        df_cumul = df_cumul[mask]
+
+        df_out = pd.concat([df_cumul, df_new], ignore_index=True)
+    else:
+        df_out = df_new
+
+    # 最終デデュプ（念のため）
+    df_out['_settled_rank'] = (df_out['status'] == 'settled').astype(int)
+    df_out = (df_out.sort_values(['date','race_id','_settled_rank'], ascending=[True,True,False])
+                    .drop_duplicates(subset=['date','race_id'], keep='first')
+                    .drop(columns=['_settled_rank']))
+    df_out = df_out.sort_values(['date','race_id']).reset_index(drop=True)
+    df_out.to_csv(CUMUL_CSV, index=False, encoding='utf-8-sig')
+    return df_out
+
+
+def _load_settled_keys():
+    """cumulative_results.csv から既に settled の (date, race_id) キーセットを返す。"""
+    if not os.path.exists(CUMUL_CSV):
+        return set()
+    df = pd.read_csv(CUMUL_CSV, encoding='utf-8-sig')
+    if 'status' not in df.columns:
+        return set()
+    s = df[df['status'] == 'settled'].copy()
+    s['date'] = s['date'].astype(str)
+    s['race_id'] = s['race_id'].astype(str)
+    return set(zip(s['date'], s['race_id']))
+
+
 # ===== メイン処理 =====
 
-def run_daily_results(date_str, source='db'):
-    """指定日の結果照合"""
+def run_daily_results(date_str, source='csv', skip_settled=False):
+    """指定日の結果照合。skip_settledがTrueなら全races settledの場合スキップ。"""
     print(f"{'=' * 60}")
     print(f"KEIBA AI 結果照合 - {date_str}")
     print(f"{'=' * 60}")
 
-    # 予測データ読み込み
     predictions = None
     pred_source = ''
 
-    if source == 'db':
+    if source == 'csv':
+        predictions = load_predictions_from_csv(date_str)
+        if predictions:
+            pred_source = 'daily_predict CSV'
+        else:
+            pred_path = os.path.join(PREDICTIONS_DIR, f"{date_str}.csv")
+            print(f"[WARN] 予測CSVが見つかりません: {pred_path}")
+            # DBフォールバック
+            predictions = load_predictions_from_db(date_str)
+            if predictions:
+                pred_source = 'Streamlit DB (fallback)'
+            else:
+                print(f"[ERROR] CSV/DB両方で予測データなし")
+                return 0
+    elif source == 'db':
         predictions = load_predictions_from_db(date_str)
         if predictions:
             pred_source = 'Streamlit DB'
@@ -380,37 +497,38 @@ def run_daily_results(date_str, source='db'):
             for p in STREAMLIT_DB_PATHS:
                 exists = "存在" if os.path.exists(p) else "なし"
                 print(f"  {os.path.basename(p)}: {exists}")
-            print(f"  Streamlitで予測を実行してください")
-            return
-    elif source == 'csv':
-        predictions = load_predictions_from_csv(date_str)
-        if predictions:
-            pred_source = 'daily_predict CSV'
-        else:
-            pred_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
-            print(f"[ERROR] 予測CSVが見つかりません: {pred_path}")
-            print(f"  daily_predict.pyを実行してください")
-            return
+            return 0
 
     print(f"\n予測ソース: {pred_source}")
     print(f"予測レース数: {len(predictions)}")
 
+    # idempotency: 既にsettled済みレースをスキップ
+    settled_keys = _load_settled_keys()
+    to_process = [p for p in predictions
+                  if (date_str, str(p['race_id'])) not in settled_keys]
+    skipped = len(predictions) - len(to_process)
+    if skipped:
+        print(f"既にsettled済み: {skipped}R（スキップ）")
+
+    if skip_settled and len(to_process) == 0:
+        print(f"[SKIP] {date_str}: 全レース処理済み")
+        return 0
+
     results = []
-    for idx, row in enumerate(predictions):
+    for idx, row in enumerate(to_process):
         race_id = row['race_id']
         course = row['course']
         race_num = row['race_num']
         race_name = row['race_name']
         condition = row['condition']
-        trio_bets_str = row['trio_bets']
+        bets_str = row['trio_bets']
         bet_type = row['bet_type']
         investment = row['investment']
 
-        print(f"\n[{idx+1}/{len(predictions)}] {course} {race_num}R {race_name} (ID={race_id})")
+        print(f"\n[{idx+1}/{len(to_process)}] {course} {race_num}R {race_name} (ID={race_id})")
 
-        # 結果取得
         race_result = fetch_race_result(race_id)
-        time.sleep(1.0)
+        time.sleep(1.2)
 
         if race_result is None:
             print(f"  結果未確定")
@@ -421,39 +539,43 @@ def run_daily_results(date_str, source='db'):
                 'umaren_hit': None, 'umaren_payout': 0,
                 'investment': investment, 'profit': -investment,
                 'status': 'pending', 'bet_type': bet_type,
-                'trio_bets_str': trio_bets_str,
+                'trio_bets_str': bets_str,
+                'distance': row.get('distance', 0),
+                'surface': row.get('surface', ''),
             })
             continue
 
         finish_order = race_result['finish_order']
         payouts = race_result['payouts']
         trio_nums = race_result['trio_nums']
+        umaren_nums = race_result['umaren_nums']
 
-        # 的中判定
         trio_hit = False
         trio_payout = 0
-        hit_combo = None
         umaren_hit = False
         umaren_payout = 0
+        hit_combo = None
 
         if bet_type == 'trio' and trio_nums:
-            trio_hit, hit_combo = check_trio_hit(trio_bets_str, trio_nums)
+            trio_hit, hit_combo = check_trio_hit(bets_str, trio_nums)
             if trio_hit:
                 trio_payout = payouts.get('trio', 0)
         elif bet_type == 'umaren':
-            top1_num = row.get('top1_num', 0)
-            top2_num = row.get('top2_num', 0)
-            top3_num = row.get('top3_num', 0)
-            top2_actual = set(n for n, f in finish_order.items() if f <= 2)
-            umaren_bets = [
-                set([top1_num, top2_num]),
-                set([top1_num, top3_num]),
-            ]
-            for ub in umaren_bets:
-                if ub.issubset(top2_actual) and len(ub) == 2:
-                    umaren_hit = True
-                    umaren_payout = payouts.get('umaren', 0)
-                    break
+            # bets_str で直接判定（"1-2; 1-3" 等）
+            umaren_hit, hit_combo = check_umaren_hit(bets_str, umaren_nums)
+            # top1_num/top2_num/top3_num ベースでもフォールバック判定
+            if not umaren_hit and umaren_nums:
+                top1_num = row.get('top1_num', 0)
+                top2_num = row.get('top2_num', 0)
+                top3_num = row.get('top3_num', 0)
+                actual_set = set(umaren_nums)
+                for pair in [set([top1_num, top2_num]), set([top1_num, top3_num])]:
+                    if len(pair) == 2 and pair == actual_set:
+                        umaren_hit = True
+                        hit_combo = '-'.join(str(n) for n in sorted(pair))
+                        break
+            if umaren_hit:
+                umaren_payout = payouts.get('umaren', 0)
 
         actual_payout = trio_payout if trio_hit else (umaren_payout if umaren_hit else 0)
         profit = actual_payout - investment
@@ -466,7 +588,7 @@ def run_daily_results(date_str, source='db'):
             'race_id': race_id, 'course': course, 'race_num': race_num,
             'race_name': race_name, 'condition': condition,
             'bet_type': bet_type,
-            'trio_bets_str': trio_bets_str,
+            'trio_bets_str': bets_str,
             'trio_hit': 1 if trio_hit else 0,
             'trio_payout': trio_payout,
             'umaren_hit': 1 if umaren_hit else 0,
@@ -478,6 +600,8 @@ def run_daily_results(date_str, source='db'):
             'top2_finish': top2_finish,
             'top3_finish': top3_finish,
             'trio_result': '-'.join(str(n) for n in trio_nums) if trio_nums else '',
+            'distance': row.get('distance', 0),
+            'surface': row.get('surface', ''),
         }
         results.append(result_row)
 
@@ -486,85 +610,332 @@ def run_daily_results(date_str, source='db'):
         print(f"  結果: {hit_mark} {payout_disp}")
         print(f"  三連複結果: {result_row['trio_result']}")
         print(f"  AI TOP3 着順: {top1_finish}着/{top2_finish}着/{top3_finish}着")
-        if trio_hit:
+        if trio_hit or umaren_hit:
             print(f"  的中組合せ: {hit_combo}")
 
-    # 結果保存
-    if results:
-        # 日別CSV
-        out_dir = os.path.join(BASE_DIR, "data", "daily_results")
-        os.makedirs(out_dir, exist_ok=True)
-        out_path = os.path.join(out_dir, f"{date_str}.csv")
-        df_results = pd.DataFrame(results)
-        df_results.to_csv(out_path, index=False, encoding='utf-8-sig')
-        print(f"\n保存先: {out_path}")
+    if not results:
+        print(f"\n[INFO] {date_str}: 処理対象なし")
+        return 0
 
-        # 累積CSV
-        cumul_path = os.path.join(BASE_DIR, "data", "cumulative_results.csv")
-        df_results['date'] = date_str
-        if os.path.exists(cumul_path):
-            df_cumul = pd.read_csv(cumul_path, encoding='utf-8-sig')
-            df_cumul = df_cumul[df_cumul['date'] != date_str]
-            df_cumul = pd.concat([df_cumul, df_results], ignore_index=True)
-        else:
-            df_cumul = df_results
-        df_cumul.to_csv(cumul_path, index=False, encoding='utf-8-sig')
-        print(f"累積結果更新: {cumul_path}")
+    # 日別CSV
+    out_dir = os.path.join(BASE_DIR, "data", "daily_results")
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, f"{date_str}.csv")
+    df_results = pd.DataFrame(results)
+    # 日別CSVは同日分だけ保持
+    df_results.to_csv(out_path, index=False, encoding='utf-8-sig')
+    print(f"\n保存先: {out_path}")
 
-        # track_record.csv（Streamlit Cloud同期用）
-        save_track_record_csv(results, date_str)
+    # 累積CSV（upsert + dedup）
+    _upsert_cumulative(results, date_str)
+    print(f"累積結果更新: {CUMUL_CSV}")
 
-        # サマリー出力
-        settled = [r for r in results if r.get('status') == 'settled']
-        pending = [r for r in results if r.get('status') == 'pending']
-        if settled:
-            total_inv = sum(r['investment'] for r in settled)
-            total_payout = sum(r.get('trio_payout', 0) + r.get('umaren_payout', 0) for r in settled)
-            total_profit = total_payout - total_inv
-            hit_count = sum(1 for r in settled if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1)
-            roi = (total_payout / total_inv * 100) if total_inv > 0 else 0
+    # track_record.csv（Streamlit Cloud同期用）
+    save_track_record_csv(results, date_str)
 
-            print(f"\n{'=' * 60}")
-            print(f"  日次サマリー: {date_str}")
-            print(f"{'=' * 60}")
-            print(f"  予測ソース: {pred_source}")
-            print(f"  対象レース: {len(settled)}R (未確定: {len(pending)}R)")
-            print(f"  的中: {hit_count}/{len(settled)} ({hit_count/len(settled)*100:.1f}%)")
-            print(f"  投資: {total_inv:,}円")
-            print(f"  払戻: {total_payout:,}円")
-            profit_sign = '+' if total_profit >= 0 else ''
-            print(f"  収支: {profit_sign}{total_profit:,}円")
-            print(f"  ROI: {roi:.1f}%")
+    # サマリー出力
+    settled = [r for r in results if r.get('status') == 'settled']
+    pending = [r for r in results if r.get('status') == 'pending']
+    if settled:
+        total_inv = sum(r['investment'] for r in settled)
+        total_payout = sum(r.get('trio_payout', 0) + r.get('umaren_payout', 0) for r in settled)
+        total_profit = total_payout - total_inv
+        hit_count = sum(1 for r in settled if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1)
+        roi = (total_payout / total_inv * 100) if total_inv > 0 else 0
 
-            cond_stats = {}
-            for r in settled:
-                c = r.get('condition', 'X')
-                if c not in cond_stats:
-                    cond_stats[c] = {'count': 0, 'hit': 0, 'inv': 0, 'pay': 0}
-                cond_stats[c]['count'] += 1
-                if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1:
-                    cond_stats[c]['hit'] += 1
-                cond_stats[c]['inv'] += r['investment']
-                cond_stats[c]['pay'] += r.get('trio_payout', 0) + r.get('umaren_payout', 0)
+        print(f"\n{'=' * 60}")
+        print(f"  日次サマリー: {date_str}")
+        print(f"{'=' * 60}")
+        print(f"  予測ソース: {pred_source}")
+        print(f"  対象レース: {len(settled)}R (未確定: {len(pending)}R)")
+        print(f"  的中: {hit_count}/{len(settled)} ({hit_count/len(settled)*100:.1f}%)")
+        print(f"  投資: {total_inv:,}円")
+        print(f"  払戻: {total_payout:,}円")
+        profit_sign = '+' if total_profit >= 0 else ''
+        print(f"  収支: {profit_sign}{total_profit:,}円")
+        print(f"  ROI: {roi:.1f}%")
 
-            print(f"\n  条件別:")
-            for c in sorted(cond_stats.keys()):
-                s = cond_stats[c]
-                c_roi = (s['pay'] / s['inv'] * 100) if s['inv'] > 0 else 0
-                print(f"    {c}: {s['hit']}/{s['count']}的中 ROI {c_roi:.1f}%")
+        cond_stats = {}
+        for r in settled:
+            c = r.get('condition', 'X')
+            if c not in cond_stats:
+                cond_stats[c] = {'count': 0, 'hit': 0, 'inv': 0, 'pay': 0}
+            cond_stats[c]['count'] += 1
+            if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1:
+                cond_stats[c]['hit'] += 1
+            cond_stats[c]['inv'] += r['investment']
+            cond_stats[c]['pay'] += r.get('trio_payout', 0) + r.get('umaren_payout', 0)
 
-            print(f"{'=' * 60}")
+        print(f"\n  条件別:")
+        for c in sorted(cond_stats.keys()):
+            s = cond_stats[c]
+            c_roi = (s['pay'] / s['inv'] * 100) if s['inv'] > 0 else 0
+            print(f"    {c}: {s['hit']}/{s['count']}的中 ROI {c_roi:.1f}%")
+        print(f"{'=' * 60}")
+
+    return len(settled)
+
+
+# ===== バックフィル =====
+
+def run_backfill(dates, source='csv'):
+    """指定日付リスト（YYYYMMDD）を順次処理。"""
+    print(f"\n{'#' * 60}")
+    print(f"# バックフィル開始: {len(dates)}日")
+    print(f"# 対象: {', '.join(dates)}")
+    print(f"{'#' * 60}\n")
+
+    total_settled = 0
+    for date_str in dates:
+        print(f"\n>>> バックフィル: {date_str}")
+        n = run_daily_results(date_str, source=source, skip_settled=True)
+        total_settled += n
+        time.sleep(2.0)  # IP制限対策
+
+    print(f"\n{'#' * 60}")
+    print(f"# バックフィル完了: {total_settled}R 処理")
+    print(f"{'#' * 60}\n")
+    return total_settled
+
+
+def discover_backfill_dates():
+    """daily_predictions/ 配下の全CSVから日付を抽出。_prereceは除外。"""
+    files = sorted(glob.glob(os.path.join(PREDICTIONS_DIR, "*.csv")))
+    dates = []
+    for f in files:
+        name = os.path.splitext(os.path.basename(f))[0]
+        if re.fullmatch(r'\d{8}', name):
+            dates.append(name)
+    return sorted(set(dates))
+
+
+# ===== ROI再計算 =====
+
+def recalc_roi():
+    """cumulative_results.csv から累計・条件別・直近30R ROI を再計算し、
+    data/actual_roi_results.json を更新する。"""
+    if not os.path.exists(CUMUL_CSV):
+        print(f"[ERROR] {CUMUL_CSV} が存在しません")
+        return None
+
+    df = pd.read_csv(CUMUL_CSV, encoding='utf-8-sig')
+    if 'status' not in df.columns:
+        print(f"[ERROR] status列がありません")
+        return None
+
+    settled = df[df['status'] == 'settled'].copy()
+    settled['date'] = settled['date'].astype(str)
+    settled['race_id'] = settled['race_id'].astype(str)
+    # settled もdedup
+    settled = settled.drop_duplicates(subset=['date','race_id'], keep='first')
+
+    def _hit_mask(d):
+        tm = (d['trio_hit'].fillna(0).astype(float) > 0)
+        um = pd.Series([False]*len(d))
+        if 'umaren_hit' in d.columns:
+            um = (d['umaren_hit'].fillna(0).astype(float) > 0)
+        return tm | um
+
+    def _payout_sum(d):
+        p = d['trio_payout'].fillna(0).astype(float).sum()
+        if 'umaren_payout' in d.columns:
+            p += d['umaren_payout'].fillna(0).astype(float).sum()
+        return p
+
+    # 全体
+    n_total = len(settled)
+    inv_total = int(settled['investment'].fillna(0).sum())
+    pay_total = int(_payout_sum(settled))
+    hits_total = int(_hit_mask(settled).sum())
+    roi_total = (pay_total / inv_total * 100) if inv_total > 0 else 0.0
+    profit_total = pay_total - inv_total
+
+    # 条件別
+    conditions = {}
+    for c in sorted(settled['condition'].dropna().unique()):
+        sub = settled[settled['condition'] == c]
+        inv = int(sub['investment'].fillna(0).sum())
+        pay = int(_payout_sum(sub))
+        hits = int(_hit_mask(sub).sum())
+        conditions[str(c)] = {
+            'n': len(sub),
+            'hits': hits,
+            'hit_rate': round(hits / len(sub) * 100, 2) if len(sub) > 0 else 0,
+            'investment': inv,
+            'payout': pay,
+            'profit': pay - inv,
+            'roi': round(pay / inv * 100, 2) if inv > 0 else 0,
+        }
+
+    # 直近30R（date, race_idで昇順の末尾30件）
+    recent = settled.sort_values(['date','race_id']).tail(30)
+    inv_30 = int(recent['investment'].fillna(0).sum())
+    pay_30 = int(_payout_sum(recent))
+    hits_30 = int(_hit_mask(recent).sum())
+    roi_30 = (pay_30 / inv_30 * 100) if inv_30 > 0 else 0.0
+
+    stats = {
+        'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'source': 'data/cumulative_results.csv (settled rows)',
+        'model': 'v13.5b (4-model grid ensemble)',
+        'total': {
+            'n': n_total,
+            'hits': hits_total,
+            'hit_rate': round(hits_total / n_total * 100, 2) if n_total > 0 else 0,
+            'investment': inv_total,
+            'payout': pay_total,
+            'profit': profit_total,
+            'roi': round(roi_total, 2),
+        },
+        'conditions': conditions,
+        'recent_30': {
+            'n': len(recent),
+            'hits': hits_30,
+            'hit_rate': round(hits_30 / len(recent) * 100, 2) if len(recent) > 0 else 0,
+            'investment': inv_30,
+            'payout': pay_30,
+            'profit': pay_30 - inv_30,
+            'roi': round(roi_30, 2),
+        },
+        'dates_covered': sorted(settled['date'].unique().tolist()),
+    }
+
+    with open(ROI_JSON, 'w', encoding='utf-8') as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
+    print(f"[OK] ROI再計算完了: {ROI_JSON}")
+    print(f"  累計: {n_total}R, ROI {roi_total:.1f}%, "
+          f"{'+' if profit_total >= 0 else ''}{profit_total:,}円")
+    print(f"  直近30R: ROI {roi_30:.1f}%")
+    print(f"  条件別:")
+    for c in sorted(conditions.keys()):
+        cs = conditions[c]
+        print(f"    {c}: N={cs['n']}, hit={cs['hits']}/{cs['n']} ({cs['hit_rate']}%), ROI {cs['roi']}%")
+
+    return stats
+
+
+def _snapshot_pre():
+    """バックフィル前のROIスナップショットを取得。"""
+    if not os.path.exists(CUMUL_CSV):
+        return None
+    df = pd.read_csv(CUMUL_CSV, encoding='utf-8-sig')
+    if 'status' not in df.columns:
+        return None
+    s = df[df['status'] == 'settled'].copy()
+    inv = int(s['investment'].fillna(0).sum())
+    pay = int(s['trio_payout'].fillna(0).sum())
+    if 'umaren_payout' in s.columns:
+        pay += int(s['umaren_payout'].fillna(0).sum())
+    hit_mask = (s['trio_hit'].fillna(0).astype(float) > 0)
+    if 'umaren_hit' in s.columns:
+        hit_mask = hit_mask | (s['umaren_hit'].fillna(0).astype(float) > 0)
+    cond_stats = {}
+    for c in sorted(s['condition'].dropna().unique()):
+        sub = s[s['condition'] == c]
+        cinv = int(sub['investment'].fillna(0).sum())
+        cpay = int(sub['trio_payout'].fillna(0).sum())
+        if 'umaren_payout' in sub.columns:
+            cpay += int(sub['umaren_payout'].fillna(0).sum())
+        cond_stats[str(c)] = {
+            'n': len(sub),
+            'investment': cinv,
+            'payout': cpay,
+            'profit': cpay - cinv,
+            'roi': round(cpay/cinv*100, 2) if cinv > 0 else 0,
+        }
+    return {
+        'n': len(s),
+        'investment': inv,
+        'payout': pay,
+        'profit': pay - inv,
+        'roi': round(pay/inv*100, 2) if inv > 0 else 0,
+        'hits': int(hit_mask.sum()),
+        'conditions': cond_stats,
+    }
+
+
+def save_backfill_report(pre_snap, post_stats, processed_dates, today_str):
+    """バックフィル前後の比較レポートをJSONで保存。"""
+    report = {
+        'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'backfill_dates': sorted(processed_dates),
+        'before': pre_snap,
+        'after': {
+            'n': post_stats['total']['n'],
+            'investment': post_stats['total']['investment'],
+            'payout': post_stats['total']['payout'],
+            'profit': post_stats['total']['profit'],
+            'roi': post_stats['total']['roi'],
+            'hits': post_stats['total']['hits'],
+            'conditions': {c: {k: v for k, v in cs.items() if k in ('n','investment','payout','profit','roi')}
+                           for c, cs in post_stats['conditions'].items()},
+        },
+        'delta': {
+            'added_races': post_stats['total']['n'] - (pre_snap['n'] if pre_snap else 0),
+            'profit_change': post_stats['total']['profit'] - (pre_snap['profit'] if pre_snap else 0),
+            'roi_change': round(post_stats['total']['roi'] - (pre_snap['roi'] if pre_snap else 0), 2),
+        },
+    }
+    path = os.path.join(BASE_DIR, "data", f"backfill_report_{today_str}.json")
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    print(f"\n[OK] バックフィルレポート保存: {path}")
+    return path
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="KEIBA AI 結果照合")
     parser.add_argument("--date", type=str, default=None,
                         help="照合日 YYYYMMDD (デフォルト: 今日)")
-    parser.add_argument("--source", type=str, default="db",
+    parser.add_argument("--source", type=str, default="csv",
                         choices=["db", "csv"],
-                        help="予測ソース: db=Streamlit DB（デフォルト）, csv=daily_predict CSV")
+                        help="予測ソース: csv=daily_predict CSV (デフォルト), db=Streamlit DB")
+    parser.add_argument("--backfill", type=str, default=None,
+                        help="日付カンマ区切り指定でバックフィル: 20260411,20260412,...")
+    parser.add_argument("--backfill-all", action="store_true",
+                        help="daily_predictions/ 配下の全CSVをバックフィル")
+    parser.add_argument("--recalc-roi", action="store_true",
+                        help="cumulative_results.csv からactual_roi_results.json再計算のみ")
     args = parser.parse_args()
 
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 開始")
+
+    # --recalc-roi のみなら結果照合スキップ
+    if args.recalc_roi and not (args.backfill or args.backfill_all):
+        recalc_roi()
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
+        sys.exit(0)
+
+    # バックフィル処理
+    if args.backfill_all or args.backfill:
+        today_str = datetime.now().strftime("%Y%m%d")
+        pre_snap = _snapshot_pre()
+
+        if args.backfill_all:
+            dates = discover_backfill_dates()
+        else:
+            dates = [d.strip() for d in args.backfill.split(",") if d.strip()]
+
+        # 日付検証
+        valid_dates = []
+        for d in dates:
+            try:
+                datetime.strptime(d, "%Y%m%d")
+                valid_dates.append(d)
+            except ValueError:
+                print(f"[WARN] 日付形式不正、スキップ: {d}")
+
+        run_backfill(valid_dates, source=args.source)
+
+        # ROI再計算
+        post_stats = recalc_roi()
+        if post_stats:
+            save_backfill_report(pre_snap, post_stats, valid_dates, today_str)
+
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
+        sys.exit(0)
+
+    # 通常モード：指定日（または今日）の結果照合
     if args.date:
         date_str = args.date
     else:
@@ -576,9 +947,7 @@ if __name__ == "__main__":
         print(f"[ERROR] 日付形式が不正です: {date_str} (YYYYMMDD)")
         sys.exit(1)
 
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 開始")
     run_daily_results(date_str, source=args.source)
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")
 
     # ROI監視チェック
     try:
@@ -586,7 +955,6 @@ if __name__ == "__main__":
         run_monitor(dry_run=False)
     except Exception:
         try:
-            # tools/ディレクトリから実行された場合
             from roi_monitor import run_monitor
             run_monitor(dry_run=False)
         except Exception:
@@ -596,7 +964,7 @@ if __name__ == "__main__":
     try:
         from notify import send_discord
         result_path = os.path.join(BASE_DIR, "data", "daily_results", f"{date_str}.csv")
-        cumul_path = os.path.join(BASE_DIR, "data", "cumulative_results.csv")
+        cumul_path = CUMUL_CSV
 
         if os.path.exists(result_path):
             rdf = pd.read_csv(result_path, encoding='utf-8-sig')
@@ -610,14 +978,12 @@ if __name__ == "__main__":
                 roi = pay / inv * 100 if inv > 0 else 0
                 sign = '+' if profit >= 0 else ''
 
-                # Hit details
                 hit_rows = settled[(settled['trio_hit'] == 1) | (settled.get('umaren_hit', 0) == 1)]
                 hit_lines = []
                 for _, hr in hit_rows.iterrows():
                     p = int(hr.get('trio_payout', 0) or hr.get('umaren_payout', 0))
                     hit_lines.append(f"  {hr.get('race_name','')} **{p:,}円**")
 
-                # Cumulative
                 cumul_msg = ''
                 if os.path.exists(cumul_path):
                     cdf = pd.read_csv(cumul_path, encoding='utf-8-sig')
@@ -625,19 +991,21 @@ if __name__ == "__main__":
                     if len(cs) > 0:
                         c_inv = cs['investment'].sum()
                         c_pay = cs['trio_payout'].fillna(0).sum()
+                        if 'umaren_payout' in cs.columns:
+                            c_pay += cs['umaren_payout'].fillna(0).sum()
                         c_roi = c_pay / c_inv * 100 if c_inv > 0 else 0
                         c_profit = c_pay - c_inv
-                        cumul_msg = f"\n累計: ROI {c_roi:.0f}% / {'+' if c_profit>=0 else ''}{c_profit:,}円"
+                        cumul_msg = f"\n累計: ROI {c_roi:.0f}% / {'+' if c_profit>=0 else ''}{c_profit:,.0f}円 ({len(cs)}R)"
 
                 color = "green" if profit >= 0 else "red"
                 msg = (f"**{date_str}** {hits}/{n}的中 ROI **{roi:.0f}%**\n"
-                       f"収支: **{sign}{profit:,}円** ({inv:,}円→{pay:,}円)\n"
+                       f"収支: **{sign}{profit:,.0f}円** ({inv:,.0f}円→{pay:,.0f}円)\n"
                        + ("\n".join(hit_lines) + "\n" if hit_lines else "")
                        + cumul_msg)
                 send_discord(f"結果 {date_str} ({hits}/{n}的中)", msg, color=color)
             else:
                 send_discord("結果照合", f"{date_str} 確定レース0件", color="yellow")
-        else:
-            send_discord("結果照合", f"{date_str} 結果ファイルなし", color="yellow")
     except Exception:
         pass
+
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_results.py 終了")

@@ -1,637 +1,91 @@
 {
-  "generated_at": "2026-03-11 20:55:37",
-  "model": "v9.3_leakfree (Pattern A)",
-  "n_features": 67,
-  "test_years": [
-    2020,
-    2021,
-    2022,
-    2023,
-    2024,
-    2025
-  ],
-  "total_races": 20655,
-  "matched_races": 20579,
-  "match_rate": 99.6,
-  "fold_aucs": {
-    "2020": 0.7947866872150516,
-    "2021": 0.7997100347681878,
-    "2022": 0.7997452302693463,
-    "2023": 0.801632594082008,
-    "2024": 0.8068412931610229,
-    "2025": 0.8064704115115673
+  "generated_at": "2026-04-18 23:22:09",
+  "source": "data/cumulative_results.csv (settled rows)",
+  "model": "v13.5b (4-model grid ensemble)",
+  "total": {
+    "n": 323,
+    "hits": 76,
+    "hit_rate": 23.53,
+    "investment": 226100,
+    "payout": 272720,
+    "profit": 46620,
+    "roi": 120.62
   },
-  "avg_auc": 0.8015,
   "conditions": {
     "A": {
-      "n": 6438,
-      "best_bet": "trio",
-      "best_roi_actual": 205.3,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 2865,
-          "hit_rate": 44.5,
-          "investment": 4506600,
-          "payout": 9254130,
-          "roi": 205.3
-        },
-        "umaren": {
-          "hits": 2081,
-          "hit_rate": 32.3,
-          "investment": 4506600,
-          "payout": 6996185,
-          "roi": 155.2
-        },
-        "wide": {
-          "hits": 3635,
-          "hit_rate": 56.5,
-          "investment": 4506600,
-          "payout": 6097245,
-          "roi": 135.3
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 439.6
-        },
-        "umaren": {
-          "roi": 168.8
-        },
-        "wide": {
-          "roi": 127.2
-        }
-      }
+      "n": 89,
+      "hits": 30,
+      "hit_rate": 33.71,
+      "investment": 62300,
+      "payout": 77430,
+      "profit": 15130,
+      "roi": 124.29
     },
     "B": {
-      "n": 847,
-      "best_bet": "trio",
-      "best_roi_actual": 236.9,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 383,
-          "hit_rate": 45.2,
-          "investment": 592900,
-          "payout": 1404790,
-          "roi": 236.9
-        },
-        "umaren": {
-          "hits": 270,
-          "hit_rate": 31.9,
-          "investment": 592900,
-          "payout": 1056230,
-          "roi": 178.1
-        },
-        "wide": {
-          "hits": 475,
-          "hit_rate": 56.1,
-          "investment": 592900,
-          "payout": 907550,
-          "roi": 153.1
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 445.1
-        },
-        "umaren": {
-          "roi": 191.7
-        },
-        "wide": {
-          "roi": 141.7
-        }
-      }
+      "n": 9,
+      "hits": 0,
+      "hit_rate": 0.0,
+      "investment": 6300,
+      "payout": 0,
+      "profit": -6300,
+      "roi": 0.0
     },
     "C": {
-      "n": 4774,
-      "best_bet": "trio",
-      "best_roi_actual": 285.6,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 1609,
-          "hit_rate": 33.7,
-          "investment": 3341800,
-          "payout": 9542740,
-          "roi": 285.6
-        },
-        "umaren": {
-          "hits": 1297,
-          "hit_rate": 27.2,
-          "investment": 3341800,
-          "payout": 6667255,
-          "roi": 199.5
-        },
-        "wide": {
-          "hits": 2352,
-          "hit_rate": 49.3,
-          "investment": 3341800,
-          "payout": 5678785,
-          "roi": 169.9
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 538.8
-        },
-        "umaren": {
-          "roi": 204.5
-        },
-        "wide": {
-          "roi": 153.5
-        }
-      }
+      "n": 89,
+      "hits": 16,
+      "hit_rate": 17.98,
+      "investment": 62300,
+      "payout": 77150,
+      "profit": 14850,
+      "roi": 123.84
     },
     "D": {
-      "n": 7254,
-      "best_bet": "trio",
-      "best_roi_actual": 136.0,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 1959,
-          "hit_rate": 27.0,
-          "investment": 5077800,
-          "payout": 6906000,
-          "roi": 136.0
-        },
-        "umaren": {
-          "hits": 1582,
-          "hit_rate": 21.8,
-          "investment": 5077800,
-          "payout": 5993050,
-          "roi": 118.0
-        },
-        "wide": {
-          "hits": 3061,
-          "hit_rate": 42.2,
-          "investment": 5077800,
-          "payout": 5775805,
-          "roi": 113.7
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 236.0
-        },
-        "umaren": {
-          "roi": 120.7
-        },
-        "wide": {
-          "roi": 95.3
-        }
-      }
+      "n": 115,
+      "hits": 28,
+      "hit_rate": 24.35,
+      "investment": 80500,
+      "payout": 116150,
+      "profit": 35650,
+      "roi": 144.29
     },
     "E": {
-      "n": 461,
-      "best_bet": "umaren",
-      "best_roi_actual": 118.0,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 344,
-          "hit_rate": 74.6,
-          "investment": 322700,
-          "payout": 331840,
-          "roi": 102.8
-        },
-        "umaren": {
-          "hits": 246,
-          "hit_rate": 53.4,
-          "investment": 322700,
-          "payout": 380730,
-          "roi": 118.0
-        },
-        "wide": {
-          "hits": 351,
-          "hit_rate": 76.1,
-          "investment": 322700,
-          "payout": 330050,
-          "roi": 102.3
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 318.2
-        },
-        "umaren": {
-          "roi": 145.2
-        },
-        "wide": {
-          "roi": 111.1
-        }
-      }
+      "n": 9,
+      "hits": 1,
+      "hit_rate": 11.11,
+      "investment": 6300,
+      "payout": 830,
+      "profit": -5470,
+      "roi": 13.17
     },
     "X": {
-      "n": 805,
-      "best_bet": "trio",
-      "best_roi_actual": 330.5,
-      "recommended": true,
-      "actual_roi": {
-        "trio": {
-          "hits": 286,
-          "hit_rate": 35.5,
-          "investment": 563500,
-          "payout": 1862220,
-          "roi": 330.5
-        },
-        "umaren": {
-          "hits": 221,
-          "hit_rate": 27.5,
-          "investment": 563500,
-          "payout": 1292270,
-          "roi": 229.3
-        },
-        "wide": {
-          "hits": 401,
-          "hit_rate": 49.8,
-          "investment": 563500,
-          "payout": 1058400,
-          "roi": 187.8
-        }
-      },
-      "estimated_roi": {
-        "trio": {
-          "roi": 544.2
-        },
-        "umaren": {
-          "roi": 230.2
-        },
-        "wide": {
-          "roi": 177.4
-        }
-      }
+      "n": 12,
+      "hits": 1,
+      "hit_rate": 8.33,
+      "investment": 8400,
+      "payout": 1160,
+      "profit": -7240,
+      "roi": 13.81
     }
   },
-  "year_stability": {
-    "2020": {
-      "A": {
-        "n": 1002,
-        "trio": {
-          "hits": 419,
-          "hit_rate": 41.8,
-          "actual_roi": 194.1,
-          "estimated_roi": 348.5
-        }
-      },
-      "B": {
-        "n": 184,
-        "trio": {
-          "hits": 82,
-          "hit_rate": 44.6,
-          "actual_roi": 241.4,
-          "estimated_roi": 397.8
-        }
-      },
-      "C": {
-        "n": 784,
-        "trio": {
-          "hits": 264,
-          "hit_rate": 33.7,
-          "actual_roi": 278.4,
-          "estimated_roi": 484.5
-        }
-      },
-      "D": {
-        "n": 1237,
-        "trio": {
-          "hits": 296,
-          "hit_rate": 23.9,
-          "actual_roi": 124.9,
-          "estimated_roi": 216.2
-        }
-      },
-      "E": {
-        "n": 55,
-        "trio": {
-          "hits": 44,
-          "hit_rate": 80.0,
-          "actual_roi": 85.2,
-          "estimated_roi": 208.9
-        }
-      },
-      "X": {
-        "n": 163,
-        "trio": {
-          "hits": 52,
-          "hit_rate": 31.9,
-          "actual_roi": 334.9,
-          "estimated_roi": 622.5
-        }
-      }
-    },
-    "2021": {
-      "A": {
-        "n": 1055,
-        "trio": {
-          "hits": 471,
-          "hit_rate": 44.6,
-          "actual_roi": 217.2,
-          "estimated_roi": 414.1
-        }
-      },
-      "B": {
-        "n": 163,
-        "trio": {
-          "hits": 77,
-          "hit_rate": 47.2,
-          "actual_roi": 256.1,
-          "estimated_roi": 489.4
-        }
-      },
-      "C": {
-        "n": 767,
-        "trio": {
-          "hits": 263,
-          "hit_rate": 34.3,
-          "actual_roi": 280.9,
-          "estimated_roi": 544.2
-        }
-      },
-      "D": {
-        "n": 1229,
-        "trio": {
-          "hits": 307,
-          "hit_rate": 25.0,
-          "actual_roi": 126.8,
-          "estimated_roi": 206.2
-        }
-      },
-      "E": {
-        "n": 62,
-        "trio": {
-          "hits": 43,
-          "hit_rate": 69.4,
-          "actual_roi": 107.8,
-          "estimated_roi": 289.9
-        }
-      },
-      "X": {
-        "n": 143,
-        "trio": {
-          "hits": 53,
-          "hit_rate": 37.1,
-          "actual_roi": 353.1,
-          "estimated_roi": 484.4
-        }
-      }
-    },
-    "2022": {
-      "A": {
-        "n": 1177,
-        "trio": {
-          "hits": 506,
-          "hit_rate": 43.0,
-          "actual_roi": 192.4,
-          "estimated_roi": 425.7
-        }
-      },
-      "B": {
-        "n": 105,
-        "trio": {
-          "hits": 45,
-          "hit_rate": 42.9,
-          "actual_roi": 365.2,
-          "estimated_roi": 725.2
-        }
-      },
-      "C": {
-        "n": 750,
-        "trio": {
-          "hits": 248,
-          "hit_rate": 33.1,
-          "actual_roi": 218.5,
-          "estimated_roi": 341.3
-        }
-      },
-      "D": {
-        "n": 1216,
-        "trio": {
-          "hits": 332,
-          "hit_rate": 27.3,
-          "actual_roi": 123.0,
-          "estimated_roi": 243.8
-        }
-      },
-      "E": {
-        "n": 77,
-        "trio": {
-          "hits": 57,
-          "hit_rate": 74.0,
-          "actual_roi": 129.9,
-          "estimated_roi": 378.7
-        }
-      },
-      "X": {
-        "n": 120,
-        "trio": {
-          "hits": 46,
-          "hit_rate": 38.3,
-          "actual_roi": 235.6,
-          "estimated_roi": 404.2
-        }
-      }
-    },
-    "2023": {
-      "A": {
-        "n": 1038,
-        "trio": {
-          "hits": 449,
-          "hit_rate": 43.3,
-          "actual_roi": 166.0,
-          "estimated_roi": 350.3
-        }
-      },
-      "B": {
-        "n": 189,
-        "trio": {
-          "hits": 79,
-          "hit_rate": 41.8,
-          "actual_roi": 146.6,
-          "estimated_roi": 262.5
-        }
-      },
-      "C": {
-        "n": 787,
-        "trio": {
-          "hits": 267,
-          "hit_rate": 33.9,
-          "actual_roi": 280.2,
-          "estimated_roi": 501.2
-        }
-      },
-      "D": {
-        "n": 1199,
-        "trio": {
-          "hits": 335,
-          "hit_rate": 27.9,
-          "actual_roi": 131.0,
-          "estimated_roi": 228.2
-        }
-      },
-      "E": {
-        "n": 72,
-        "trio": {
-          "hits": 53,
-          "hit_rate": 73.6,
-          "actual_roi": 109.3,
-          "estimated_roi": 347.2
-        }
-      },
-      "X": {
-        "n": 153,
-        "trio": {
-          "hits": 62,
-          "hit_rate": 40.5,
-          "actual_roi": 225.6,
-          "estimated_roi": 356.8
-        }
-      }
-    },
-    "2024": {
-      "A": {
-        "n": 1111,
-        "trio": {
-          "hits": 506,
-          "hit_rate": 45.5,
-          "actual_roi": 247.2,
-          "estimated_roi": 630.2
-        }
-      },
-      "B": {
-        "n": 115,
-        "trio": {
-          "hits": 58,
-          "hit_rate": 50.4,
-          "actual_roi": 277.8,
-          "estimated_roi": 546.5
-        }
-      },
-      "C": {
-        "n": 813,
-        "trio": {
-          "hits": 274,
-          "hit_rate": 33.7,
-          "actual_roi": 251.5,
-          "estimated_roi": 426.2
-        }
-      },
-      "D": {
-        "n": 1191,
-        "trio": {
-          "hits": 367,
-          "hit_rate": 30.8,
-          "actual_roi": 140.4,
-          "estimated_roi": 222.9
-        }
-      },
-      "E": {
-        "n": 95,
-        "trio": {
-          "hits": 64,
-          "hit_rate": 67.4,
-          "actual_roi": 73.4,
-          "estimated_roi": 260.9
-        }
-      },
-      "X": {
-        "n": 114,
-        "trio": {
-          "hits": 33,
-          "hit_rate": 28.9,
-          "actual_roi": 206.7,
-          "estimated_roi": 303.7
-        }
-      }
-    },
-    "2025": {
-      "A": {
-        "n": 1055,
-        "trio": {
-          "hits": 514,
-          "hit_rate": 48.7,
-          "actual_roi": 213.3,
-          "estimated_roi": 454.2
-        }
-      },
-      "B": {
-        "n": 91,
-        "trio": {
-          "hits": 42,
-          "hit_rate": 46.2,
-          "actual_roi": 181.5,
-          "estimated_roi": 389.4
-        }
-      },
-      "C": {
-        "n": 873,
-        "trio": {
-          "hits": 293,
-          "hit_rate": 33.6,
-          "actual_roi": 390.3,
-          "estimated_roi": 891.2
-        }
-      },
-      "D": {
-        "n": 1182,
-        "trio": {
-          "hits": 322,
-          "hit_rate": 27.2,
-          "actual_roi": 171.2,
-          "estimated_roi": 300.6
-        }
-      },
-      "E": {
-        "n": 100,
-        "trio": {
-          "hits": 83,
-          "hit_rate": 83.0,
-          "actual_roi": 111.8,
-          "estimated_roi": 382.9
-        }
-      },
-      "X": {
-        "n": 112,
-        "trio": {
-          "hits": 40,
-          "hit_rate": 35.7,
-          "actual_roi": 666.0,
-          "estimated_roi": 1157.6
-        }
-      }
-    }
+  "recent_30": {
+    "n": 30,
+    "hits": 10,
+    "hit_rate": 33.33,
+    "investment": 21000,
+    "payout": 21560,
+    "profit": 560,
+    "roi": 102.67
   },
-  "optimal_bets": {
-    "A": {
-      "bet_type": "trio",
-      "roi": 205.3,
-      "recommended": true
-    },
-    "B": {
-      "bet_type": "trio",
-      "roi": 236.9,
-      "recommended": true
-    },
-    "C": {
-      "bet_type": "trio",
-      "roi": 285.6,
-      "recommended": true
-    },
-    "D": {
-      "bet_type": "trio",
-      "roi": 136.0,
-      "recommended": true
-    },
-    "E": {
-      "bet_type": "umaren",
-      "roi": 118.0,
-      "recommended": true
-    },
-    "X": {
-      "bet_type": "trio",
-      "roi": 330.5,
-      "recommended": true
-    }
-  }
+  "dates_covered": [
+    "20260314",
+    "20260315",
+    "20260321",
+    "20260328",
+    "20260329",
+    "20260404",
+    "20260405",
+    "20260411",
+    "20260412",
+    "20260418"
+  ]
 }
