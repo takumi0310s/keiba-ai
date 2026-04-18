@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-04-19 01:15:00",
+  "task": "JRDB SED/TYB/CYB パーサー整合性修正",
+  "duration_minutes": 10,
+  "success": true,
+  "rollback_executed": false,
+  "investigation": {
+    "finding": "scrape_jrdb.py は日本語カラム名(場コード/年/月/日/R/馬番/IDM等) で保存、download_parse_jrdb_batch2.py/extra.py は英語カラム名(race_id/umaban/idm/yyyymmdd等) で保存。双方の不整合で、scrape_jrdb.py が append時に既存英語CSVと dedup しきれず 2行だけ残った",
+    "before_state": {
+      "jrdb_sed.csv": {"rows": 2, "cols": 107, "format": "English (batch2産)"},
+      "jrdb_tyb.csv": {"rows": 2, "cols": 55, "format": "English"},
+      "jrdb_cyb.csv": {"rows": 2, "cols": 32, "format": "English+Japanese混在"}
+    },
+    "root_cause": [
+      "1. download_parse_jrdb_batch2.py/extra.py が英語カラムでCSV保存",
+      "2. tools/daily_jrdb_kyi.bat が scrape_jrdb.py (日本語カラム) を走らせる",
+      "3. 両者でカラム名一致せず、append→dedup時にカラム数違いで破綻",
+      "4. さらにjrdb_features.py merge_jrdb_predict_features に SED結合ロジック自体が欠落していた"
+    ]
+  },
+  "fix": {
+    "step1_reparse_csvs": {
+      "action": "scrape_jrdb.py (日本語カラム) でキャッシュlzhから再パース。append=Falseで既存破損CSV置き換え",
+      "files_restored": {
+        "jrdb_sed.csv": {"rows": 105658, "period": "2024-2026 (3年分)", "size_mb": 27},
+        "jrdb_tyb.csv": {"rows": 1983, "period": "直近4週 (TYB=直前データなので過去不要)", "size_kb": 215},
+        "jrdb_cyb.csv": {"rows": 1384, "period": "直近5日", "size_kb": 109}
+      },
+      "script": "ad-hoc Python (tools.scrape_jrdb.fetch_and_parse から直接パース)"
+    },
+    "step2_add_sed_predict_merge": {
+      "action": "tools/jrdb_features.py merge_jrdb_predict_features に SED結合ロジック追加",
+      "description": "KYIから血統登録番号を取得 → SED を _blood_id で最新1件(前走)取得 → jrdb_prev_* 特徴量として horses_df にmerge",
+      "lines_added": 58
+    }
+  },
+  "verification": {
+    "regression_test": "16/16 PASS",
+    "merge_rate_before": {
+      "PRE_RACE(KYI)": "75.9%",
+      "LIVE(TYB)": "0.0% (正常: 当日朝発表)",
+      "PREV(SED)": "0.0% (破損)",
+      "OVERALL": "47.7% (KYI only)"
+    },
+    "merge_rate_after_5races": {
+      "PRE_RACE": "78.8% (+2.9pt)",
+      "PREV": "45.5% (+45.5pt)",
+      "OVERALL": "69.9% (+22.2pt)"
+    },
+    "note_on_target": "目標 PRE 85%+ PREV 50%+ には完全には届かないが、重賞(アンタレスS) では PRE 84% PREV 60% と達成。新馬戦/未勝利戦は前走データのない馬が多く自然に低く出る",
+    "per_race_detail": {
+      "202606030801 中山1R 3歳未勝利": {"PRE": "75%", "PREV": "39%"},
+      "202606030805 中山5R": {"PRE": "80%", "PREV": "45%"},
+      "202606030811 中山11R アンタレスS G3": {"PRE": "84%", "PREV": "60%"},
+      "202603010401 福島1R": {"PRE": "79%", "PREV": "52%"},
+      "202609020801 阪神1R": {"PRE": "75%", "PREV": "28%"}
+    }
+  },
+  "concerns_remaining": [
+    "download_parse_jrdb_batch2.py/extra.py が英語カラムで保存している状態は未修正。今後 kta/cha/kka/jo 等を再取得すると英語カラムになる。現時点では動いているので手をつけず、将来的に scrape_jrdb.py ベースに統一するのが望ましい",
+    "TYB は4週分しかキャッシュない。過去TYBは不要 (LIVEデータなので当日のみ有効)",
+    "CYB は5日分のキャッシュ。直近の調教追切のみ。CHA(追切指数)が別CSVで補完しているので影響軽微",
+    "LIVE(TYB)の0%は正常動作（当日朝発表のため前日時点では未取得）。4/19 AM6時のDailyJrdbKyiで取得予定"
+  ],
+  "morning_checklist": [
+    "AM6:00 DailyJrdbKyi 実行後: jrdb_tyb.csv に4/19分のTYBデータが追記されるか確認",
+    "AM8:00 DailyPredict 実行後: 予測ログで `[JRDB] SED前走特徴量: N/M馬取得` メッセージが出るか確認",
+    "4/19予測のROIが前週比改善しているか確認（PREV特徴量復活効果の実測）"
+  ],
+  "backups": [
+    "data/jrdb_sed.csv.bak_20260419_parser (破損版のバックアップ)",
+    "data/jrdb_tyb.csv.bak_20260419_parser",
+    "data/jrdb_cyb.csv.bak_20260419_parser",
+    "data/jrdb_kyi.csv.bak_20260419_parser (KYIは触っていないが念のため)",
+    "data/jrdb_raw.bak_20260419_parser/ (lzhキャッシュ全部)"
+  ]
+}

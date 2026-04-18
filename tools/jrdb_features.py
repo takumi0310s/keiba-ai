@@ -550,6 +550,66 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
 
     _rid_str = str(race_id_nk).zfill(12)
 
+    # SED: 前走成績データ（jrdb_prev_* 特徴量）
+    # KYIから血統登録番号を取得してSEDの最新履歴を前走データとして結合
+    _sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
+    if os.path.exists(_sed_path) and os.path.exists(kyi_path):
+        try:
+            # 当該レースの馬の血統登録番号をKYIから取得
+            _kyi_all = pd.read_csv(kyi_path, encoding='utf-8-sig', dtype=str, usecols=lambda c: c in ['nk_race_id','馬番','血統登録番号','馬名'])
+            _kyi_race_for_blood = _kyi_all[_kyi_all['nk_race_id'].astype(str) == str(race_id_nk)]
+            _blood_map = {}  # umaban → blood_num
+            if len(_kyi_race_for_blood) > 0:
+                for _, _r in _kyi_race_for_blood.iterrows():
+                    _u = pd.to_numeric(_r.get('馬番'), errors='coerce')
+                    _bn = str(_r.get('血統登録番号', '')).strip()
+                    if pd.notna(_u) and _bn:
+                        _blood_map[int(_u)] = _bn
+            # fallback: 名前ベースで血統番号取得
+            if not _blood_map and _kyi_fallback_blood_map is not None:
+                for _, _r in _kyi_fallback_blood_map.iterrows():
+                    _blood_map[int(_r['_uma_str'])] = str(_r['blood_num']).strip()
+
+            if _blood_map:
+                _sed = pd.read_csv(_sed_path, encoding='utf-8-sig', dtype=str, low_memory=False)
+                # English→Japanese col normalize
+                _rename = {'race_id':'jra_race_id','umaban':'馬番','idm':'IDM','baba_sa':'馬場差',
+                           'furi':'不利','deokure':'出遅','ten_idx':'テン指数','agari_idx':'上がり指数',
+                           'pace_idx':'ペース指数','josho_code':'上昇度コード',
+                           'blood_num':'血統登録番号','yyyymmdd':'年月日'}
+                for en, jp in _rename.items():
+                    if en in _sed.columns and jp not in _sed.columns:
+                        _sed.rename(columns={en: jp}, inplace=True)
+                if '血統登録番号' in _sed.columns and '年月日' in _sed.columns:
+                    _sed['_bn'] = _sed['血統登録番号'].astype(str).str.strip()
+                    _sed['_dt'] = pd.to_numeric(_sed['年月日'], errors='coerce').fillna(0).astype(int)
+                    _sed_sub = _sed[_sed['_bn'].isin(_blood_map.values())].copy()
+                    # 各馬の最新のSEDレコード（前走データ）を取得
+                    _latest = _sed_sub.sort_values(['_bn','_dt']).groupby('_bn').tail(1)
+                    _latest_map = {row['_bn']: row for _, row in _latest.iterrows()}
+                    # 前走特徴量として _uma 行に注入
+                    _prev_rows = []
+                    for _u, _bn in _blood_map.items():
+                        if _bn in _latest_map:
+                            _rec = _latest_map[_bn]
+                            _prev_rows.append({
+                                '_uma': int(_u),
+                                'jrdb_prev_idm': pd.to_numeric(_rec.get('IDM'), errors='coerce'),
+                                'jrdb_prev_track_bias': pd.to_numeric(_rec.get('馬場差'), errors='coerce'),
+                                'jrdb_prev_interference': pd.to_numeric(_rec.get('不利'), errors='coerce'),
+                                'jrdb_prev_late_start': pd.to_numeric(_rec.get('出遅'), errors='coerce'),
+                                'jrdb_prev_ten_idx': pd.to_numeric(_rec.get('テン指数'), errors='coerce'),
+                                'jrdb_prev_agari_idx': pd.to_numeric(_rec.get('上がり指数'), errors='coerce'),
+                                'jrdb_prev_pace_idx': pd.to_numeric(_rec.get('ペース指数'), errors='coerce'),
+                                'jrdb_prev_rise_code': pd.to_numeric(_rec.get('上昇度コード'), errors='coerce'),
+                            })
+                    if _prev_rows:
+                        _prev_df = pd.DataFrame(_prev_rows).drop_duplicates(subset='_uma', keep='last')
+                        horses_df = horses_df.merge(_prev_df, on='_uma', how='left', suffixes=('', '_sedprev'))
+                        print(f"[JRDB] SED前走特徴量: {len(_prev_df)}/{len(_blood_map)}馬取得")
+        except Exception as e:
+            print(f"[WARN] JRDB SED merge failed: {e}")
+
     # CHA: 追切指数
     _cha_path = os.path.join(DATA_DIR, 'jrdb_cha.csv')
     if os.path.exists(_cha_path):
