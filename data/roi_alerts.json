@@ -890,5 +890,29 @@
         "message": "条件C: ROI 123.8%がBT保守199.9%を38%下回る (N=89)"
       }
     ]
+  },
+  {
+    "timestamp": "2026-04-19 00:46:44",
+    "total_races": 324,
+    "roi": 120.2,
+    "losing_streak": 3,
+    "alerts": [
+      {
+        "level": "WARNING",
+        "message": "累積ROI 120.2% < 保守的見積り 142.6% (324R)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件A: ROI 122.9% < 保守的ROI 143.7% (N=90)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 123.8% < 保守的ROI 199.9% (N=89)"
+      },
+      {
+        "level": "WARNING",
+        "message": "条件C: ROI 123.8%がBT保守199.9%を38%下回る (N=89)"
+      }
+    ]
   }
 ]

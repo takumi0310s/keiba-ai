@@ -607,6 +607,9 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
 
         hit_mark = "HIT!" if (trio_hit or umaren_hit) else "miss"
         payout_disp = f"払戻 {actual_payout:,}円" if actual_payout > 0 else ""
+        # HITなのにpayout=0はpayoutテーブル解析失敗の可能性 → 警告
+        if (trio_hit or umaren_hit) and actual_payout == 0:
+            print(f"  [ALERT] HITだがpayout=0 race_id={race_id} ({hit_combo}). Payoutテーブル解析要調査")
         print(f"  結果: {hit_mark} {payout_disp}")
         print(f"  三連複結果: {result_row['trio_result']}")
         print(f"  AI TOP3 着順: {top1_finish}着/{top2_finish}着/{top3_finish}着")

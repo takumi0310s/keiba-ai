@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-04-18 23:22:09",
+  "generated_at": "2026-04-19 00:46:48",
   "source": "data/cumulative_results.csv (settled rows)",
   "model": "v13.5b (4-model grid ensemble)",
   "total": {
-    "n": 323,
+    "n": 324,
     "hits": 76,
-    "hit_rate": 23.53,
-    "investment": 226100,
+    "hit_rate": 23.46,
+    "investment": 226800,
     "payout": 272720,
-    "profit": 46620,
-    "roi": 120.62
+    "profit": 45920,
+    "roi": 120.25
   },
   "conditions": {
     "A": {
-      "n": 89,
+      "n": 90,
       "hits": 30,
-      "hit_rate": 33.71,
-      "investment": 62300,
+      "hit_rate": 33.33,
+      "investment": 63000,
       "payout": 77430,
-      "profit": 15130,
-      "roi": 124.29
+      "profit": 14430,
+      "roi": 122.9
     },
     "B": {
       "n": 9,
