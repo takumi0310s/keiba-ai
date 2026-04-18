@@ -4,7 +4,16 @@ app.py / daily_predict.py / race_auto_notify.py が同一の予測ロジック�
 
 このモジュールが予測結果の唯一の真実 (Single Source of Truth) となる。
 """
+import warnings
+# DataFrame fragmentation警告を抑制（175個のdf代入を全てconcatに書換えるのは工数大）
+warnings.filterwarnings('ignore', message='DataFrame is highly fragmented')
+
 import pandas as pd
+try:
+    from pandas.errors import PerformanceWarning
+    warnings.filterwarnings('ignore', category=PerformanceWarning)
+except Exception:
+    pass
 import numpy as np
 import pickle
 import gzip

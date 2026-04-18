@@ -3,3 +3,7 @@ pandas
 numpy
 beautifulsoup4
 requests
+lightgbm
+xgboost
+scikit-learn
+joblib

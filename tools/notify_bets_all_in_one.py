@@ -189,11 +189,14 @@ def send_all_in_one(date: str = '', channel: str = 'bets') -> int:
     total_parts = len(messages)
     title_base = f"📋 {date_disp} 全{n_races}R一括"
     sent = 0
+    import time as _time
     for i, body in enumerate(messages, 1):
         title = f"{title_base} ({i}/{total_parts})" if total_parts > 1 else title_base
         ok = send_discord(title, body, color='green', channel=channel)
         if ok:
             sent += 1
+        if i < total_parts:
+            _time.sleep(0.5)  # Discord rate limit (5 req/sec) 対策
     return sent
 
 

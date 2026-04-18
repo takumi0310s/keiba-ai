@@ -147,8 +147,8 @@ def fetch_race_list(date_str):
 
 # ===== メイン処理 =====
 
-def run_daily_predict(date_str):
-    """指定日のJRA全レースを予測"""
+def run_daily_predict(date_str, dry_run=False):
+    """指定日のJRA全レースを予測。dry_run=Trueなら CSV保存・Discord通知スキップ"""
     print(f"=" * 60)
     print(f"KEIBA AI 日次予測 - {date_str}")
     print(f"=" * 60)
@@ -346,16 +346,22 @@ def run_daily_predict(date_str):
 
     # CSV保存
     if results:
-        out_dir = os.path.join(BASE_DIR, "data", "daily_predictions")
-        os.makedirs(out_dir, exist_ok=True)
-        out_path = os.path.join(out_dir, f"{date_str}.csv")
-        df_out = pd.DataFrame(results)
-        df_out.to_csv(out_path, index=False, encoding='utf-8-sig')
-        print(f"\n{'=' * 60}")
-        print(f"予測完了: {len(results)}レース")
-        print(f"保存先: {out_path}")
-        print(f"総投資額: {sum(r['investment'] for r in results):,}円")
-        print(f"{'=' * 60}")
+        if dry_run:
+            print(f"\n{'=' * 60}")
+            print(f"[DRY-RUN] 予測完了: {len(results)}レース (CSV保存スキップ)")
+            print(f"総投資額: {sum(r['investment'] for r in results):,}円")
+            print(f"{'=' * 60}")
+        else:
+            out_dir = os.path.join(BASE_DIR, "data", "daily_predictions")
+            os.makedirs(out_dir, exist_ok=True)
+            out_path = os.path.join(out_dir, f"{date_str}.csv")
+            df_out = pd.DataFrame(results)
+            df_out.to_csv(out_path, index=False, encoding='utf-8-sig')
+            print(f"\n{'=' * 60}")
+            print(f"予測完了: {len(results)}レース")
+            print(f"保存先: {out_path}")
+            print(f"総投資額: {sum(r['investment'] for r in results):,}円")
+            print(f"{'=' * 60}")
     else:
         print(f"\n[INFO] 予測結果なし")
 
@@ -379,11 +385,12 @@ def run_daily_predict(date_str):
             lines.append(f"...他 {len(failed_races)-10} 件")
         msg = "\n".join(lines)
         print(f"\n[WARNING] {msg}")
-        try:
-            from notify import send_discord
-            send_discord(f"⚠️ 予測取り漏れ ({miss}件)", msg, color="red", channel="updates")
-        except Exception as e:
-            print(f"[WARN] Discord通知失敗: {e}")
+        if not dry_run:
+            try:
+                from notify import send_discord
+                send_discord(f"⚠️ 予測取り漏れ ({miss}件)", msg, color="red", channel="updates")
+            except Exception as e:
+                print(f"[WARN] Discord通知失敗: {e}")
     else:
         print(f"  [OK] 全予測対象レースの取得完了")
 
@@ -392,6 +399,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="KEIBA AI 日次予測")
     parser.add_argument("--date", type=str, default=None,
                         help="予測日 YYYYMMDD (デフォルト: 今日)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="予測は実行するがCSV保存・Discord通知をスキップ")
     args = parser.parse_args()
 
     if args.date:
@@ -405,9 +414,12 @@ if __name__ == "__main__":
         print(f"[ERROR] 日付形式が不正です: {date_str} (YYYYMMDD)")
         sys.exit(1)
 
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始")
-    run_daily_predict(date_str)
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始 (dry_run={args.dry_run})")
+    run_daily_predict(date_str, dry_run=args.dry_run)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 終了")
+
+    if args.dry_run:
+        sys.exit(0)
 
     # Discord通知
     try:

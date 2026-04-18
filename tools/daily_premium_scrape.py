@@ -359,5 +359,8 @@ def main():
 
 
 if __name__ == '__main__':
-    from tools.scraper_guard import check_scraping_allowed; check_scraping_allowed()
+    # SCRAPER-GUARD内なら即終了 (mode="exit")。デフォルトのwait modeはタスクスケジューラ
+    # との相性が悪く、4/13/4/18等で600秒ループが走り続け次回起動を妨げていた。
+    from tools.scraper_guard import check_scraping_allowed
+    check_scraping_allowed(mode="exit")
     main()

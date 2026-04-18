@@ -4,15 +4,14 @@ setlocal
 
 cd /d c:\Users\takum\keiba-ai
 
-set LOGFILE=logs\jrdb_kyi_auto_%date:~-4,4%%date:~-10,2%%date:~-7,2%.log
+REM Windows 11 24H2+ deprecates wmic; use PowerShell
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"`) do set TODAY=%%I
+
+set LOGFILE=logs\jrdb_kyi_auto_%TODAY%.log
 set PYTHONIOENCODING=utf-8
 set PYTHONUNBUFFERED=1
 
-echo [%date% %time%] Daily JRDB KYI Fetch Start >> %LOGFILE%
-
-REM 今日分と明日分の両方を取得（翌日開催の前日情報はKYI{今日}.lzhに入る）
-for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set dt=%%I
-set TODAY=%dt:~0,8%
+echo [%date% %time%] Daily JRDB KYI Fetch Start (TODAY=%TODAY%) >> %LOGFILE%
 
 python tools\scrape_jrdb.py --type KYI --force --date %TODAY% >> %LOGFILE% 2>&1
 python tools\scrape_jrdb.py --type SED --force --date %TODAY% >> %LOGFILE% 2>&1
