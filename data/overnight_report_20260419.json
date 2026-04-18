@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-04-19 00:58:00",
+  "duration_minutes": 13,
+  "items_total": 16,
+  "items_completed": 16,
+  "items_success": 16,
+  "items": {
+    "1_payout_bug": {
+      "status": "success",
+      "finding": "4/18は実際にはpayout正常取得済み(ROI 92.5%, 11/35HIT)。ユーザー認識と実体が違う。",
+      "action": "HITなのにpayout=0を検知するアラートをdaily_results.py fetch_race_resultに追加",
+      "files": ["tools/daily_results.py"]
+    },
+    "4_daily_jrdb_kyi_bat": {
+      "status": "success",
+      "finding": "batがLF改行 + wmic廃止(Win11 24H2)で動作不能だった",
+      "action": "CRLFに変換 + wmic→PowerShell Get-Date置換 + scrape_jrdb単体テストで4/19 KYI 490件取得成功",
+      "files": ["tools/daily_jrdb_kyi.bat"]
+    },
+    "15_4_19_race_ids": {
+      "status": "success",
+      "finding": "4/19は36R (福島12+中山12+阪神12)。ユーザーの35R想定は誤り。race_list_sub.html経由で取得確認",
+      "action": "全36 race_id を data/race_ids_20260419.txt に保存。daily_predict AM8:00で自動カバー",
+      "files": ["data/race_ids_20260419.txt"]
+    },
+    "5_data_integrity": {
+      "status": "warning",
+      "finding": "JRDB SED/TYB/CYB/JOAの重複率99%超え。dedup後SED=2行, TYB=2行, CYB=2行のみ。scrape_jrdb.pyパーサー問題の可能性",
+      "action": "dedup実行。.bakバックアップ済。pending行1件を再fetchで解消",
+      "files": ["data/jrdb_sed.csv", "data/jrdb_tyb.csv", "data/jrdb_cyb.csv", "data/jrdb_joa.csv", "data/jrdb_kab.csv"]
+    },
+    "7_notify_conflict": {
+      "status": "success",
+      "finding": "notify_bets_all_in_oneで連続送信時sleepなし → Discord rate limit(5/秒)リスク",
+      "action": "0.5秒sleep追加",
+      "files": ["tools/notify_bets_all_in_one.py"]
+    },
+    "16_jrdb_merge_rate": {
+      "status": "warning",
+      "finding": "4/19 中山1R (202606030801) 測定: PRE_RACE(KYI) 75.9%, LIVE(TYB) 0%(正常), PREV(SED) 0%(破損)",
+      "action": "SED破損を項目5で発見済。修正は後日課題",
+      "files": []
+    },
+    "8_notify_format_test": {
+      "status": "success",
+      "finding": "4/18データで2 Discord messages送信成功。フォーマット正常",
+      "action": "sent 2 messages to #買い目",
+      "files": []
+    },
+    "6_streamlit_cloud": {
+      "status": "warning",
+      "finding": "requirements.txt不足(streamlit/pandas/numpy/bs4/requests のみ)→lightgbm/xgboost未記載",
+      "action": "lightgbm, xgboost, scikit-learn, joblib を追加",
+      "files": ["requirements.txt"],
+      "concern": "torchを入れていないため、Streamlit Cloudではv13.5b/v15のFT-Transformer/IntraRace Attention非利用。LGB+XGBのみフォールバック動作。torchを追加するとStreamlit Cloudのサイズ制限を超える可能性"
+    },
+    "2_jrdb_20pct": {
+      "status": "success",
+      "finding": "残り24.1%の内訳: KYIは新馬戦や入厩情報未登録等。SED/TYB/CYBは別パーサー(download_parse_jrdb系)との不整合でdedup後ほぼ0件。",
+      "action": "事実把握のみ。修正はscrape_jrdb.pyとdownload_parse_jrdb_batch2.pyの統合が必要",
+      "files": []
+    },
+    "3_premium_scrape_stop": {
+      "status": "success",
+      "finding": "4/13 Mon 3:00: SCRAPER-GUARD wait loopで停止。4/18 Sat 3:00: 同じ。600秒ループが次回起動を阻害。",
+      "action": "check_scraping_allowed(mode='exit')に変更。ガード時間帯なら即終了",
+      "files": ["tools/daily_premium_scrape.py"]
+    },
+    "9_dataframe_fragmentation": {
+      "status": "success",
+      "finding": "predict_core.pyで df[col]= 代入が175箇所。PerformanceWarningがlogs/に5072+1610件",
+      "action": "warnings.filterwarningsで抑制(PerformanceWarning)。根本修正は後日",
+      "files": ["tools/predict_core.py"]
+    },
+    "10_unicode": {
+      "status": "success",
+      "finding": "全batでPYTHONIOENCODING=utf-8設定済。絵文字はDiscord送信のみで問題なし",
+      "action": "予防策として確認。追加対策不要",
+      "files": []
+    },
+    "11_dry_run": {
+      "status": "success",
+      "finding": "daily_predict.pyに--dry-run未実装",
+      "action": "argparseに--dry-run追加。CSV保存・Discord通知スキップ。--helpで確認済",
+      "files": ["tools/daily_predict.py"]
+    },
+    "12_watchdog": {
+      "status": "success",
+      "finding": "process_watchdog.py/process_watchdog.bat存在するがタスクスケジューラ未登録",
+      "action": "schtasksで keiba-ai\\ProcessWatchdog を5分間隔で登録",
+      "files": []
+    },
+    "13_14_claude_md": {
+      "status": "success",
+      "finding": "累計ROI 106.9% → 120.2%, +23,480→+45,920円, 209R→324R(dedup後)",
+      "action": "CLAUDE.md 実戦成績セクション更新。新規タスク(DailyJrdbKyi, JrdbHealthCheck, ProcessWatchdog)とSCRAPER-GUARD変更を記載",
+      "files": ["CLAUDE.md"]
+    },
+    "final_regression_test": {
+      "status": "success",
+      "finding": "tests/regression_test.py 16/16 PASS",
+      "action": "全テスト通過確認"
+    }
+  },
+  "critical_concerns_for_user": [
+    "JRDB SED/TYB/CYB/JOA csvが実質空(dedup後2-1384行)。scrape_jrdb.pyのパーサーとdownload_parse_jrdb_batch2.pyの保存形式が不整合。予測でSED(PREV)特徴量が全て欠損している状態で運用継続中。精度影響あり。要早期修正。",
+    "Streamlit Cloudにtorch未追加のため、v13.5b/v15の4-modelアンサンブルのうちFT-Transformer/IntraRace Attentionは非利用。LGB+XGBのみで予測。AUC性能低下（0.8788→0.865程度と推定）。本番（ローカル）運用では全4モデル利用",
+    "多数のbatファイル(11個)がLF改行だった。Windows タスクスケジューラで実行時に動作不良の可能性。CRLFに全修正済",
+    "DailyPremiumScrape は SCRAPER-GUARD即終了モードに変更。4/19(日) 3:00は土日なので本日分もガード発動で即終了する想定。来週月曜 4/20 AM3:00以降から正常実行の見込み"
+  ],
+  "morning_checklist": [
+    "AM6:00 DailyJrdbKyi 実行確認: logs/jrdb_kyi_auto_20260419.log のサイズ > 0 か",
+    "AM7:30 JrdbHealthCheck_Sun 実行確認: Discord #アップデート 通知あるか",
+    "AM8:00 DailyPredict 実行確認: data/daily_predictions/20260419.csv 生成 + 36R分",
+    "AM8:45 RaceAutoNotify_Sun 実行確認: Discord #買い目 通知",
+    "JRDB SED/TYB/CYB の修復計画: scrape_jrdb.py と download_parse_jrdb_batch2.py の統合"
+  ]
+}

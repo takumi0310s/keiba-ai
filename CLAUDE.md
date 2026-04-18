@@ -3,7 +3,7 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-04-12
+Last updated: 2026-04-19
 
 ---
 
@@ -907,7 +907,7 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 |------|--------|---------|--------|
 | 毎日 03:00 | プレミアムデータ事前取得 | `python tools/daily_premium_scrape.py` | `daily_premium_scrape.bat` |
 | 毎日 08:00 | 当日全レース予測 | `python tools/daily_predict.py` | `daily_predict.bat` |
-| 土日 09:30 | レース5分前自動予測＆Discord通知 | `python tools/race_auto_notify.py` | `race_auto_notify.bat` |
+| 土日 08:45 | レース5分前自動予測＆Discord通知 | `python tools/race_auto_notify.py` | `race_auto_notify.bat` |
 | 土日 18:00 | 結果照合・ROI計算 | `python tools/daily_results.py` | `daily_results.bat` |
 | 毎晩 20:00 | 結果照合（平日含む） | `python tools/daily_results.py` | `daily_results.bat` |
 | 月曜 08:00 | 週次レポート | `python tools/weekly_report.py` | `weekly_report.bat` |
@@ -1092,21 +1092,36 @@ v13.4 (LGB+XGB) → v13.5b (LGB+XGB+FT-Transformer+IntraRace Attention) への�
 
 ---
 
-## 実戦成績（2026-03-22〜29, 4日間, 209レース）
+## 実戦成績（2026-03-14〜04-18, dedup後 324レース）
 
-| 条件 | N | 的中 | 的中率 | 投資 | 払戻 | ROI |
-|------|---|------|--------|------|------|-----|
-| A | 63 | 25 | 39.7% | 44,100 | 38,830 | 88.0% |
-| B | 6 | 4 | 66.7% | 4,200 | 1,960 | 46.7% |
-| C | 56 | 17 | 30.4% | 39,200 | 29,090 | 74.2% |
-| D | 69 | 18 | 26.1% | 48,300 | 57,290 | 118.6% |
-| E | 7 | 3 | 42.9% | 4,900 | 5,600 | 114.3% |
-| X | 8 | 3 | 37.5% | 5,600 | 0 | 0.0% |
-| **全体** | **209** | **70** | **33.5%** | **146,300** | **132,770** | **90.8%** |
+| 条件 | N | 的中 | 的中率 | ROI | 保守的見積り |
+|------|---|------|--------|-----|-------------|
+| A | 90 | 30 | 33.3% | 122.9% | 143.7% |
+| B | 9 | 0 | 0.0% | 0.0% | 165.8% |
+| C | 89 | 16 | 18.0% | 123.8% | 199.9% |
+| D | 115 | 28 | 24.4% | 144.3% | 95.2% |
+| E | 9 | 1 | 11.1% | 13.2% | 82.6% |
+| X | 12 | 1 | 8.3% | 13.8% | 231.3% |
+| **全体** | **324** | **76** | **23.5%** | **120.2%** (**+45,920円**) | 142.6% |
 
-- 全体ROI 90.8% — 保守的見積り142.6%を下回る（サンプル小、要継続監視）
-- 条件D 118.6%は保守的見積り95.2%を上回る
-- 条件X N=8で統計的に不十分
+- 全体ROI 120.2% — 保守的見積り142.6%には届かないが +45,920円のプラス運用
+- 条件D 144.3% は保守的見積り95.2%を大きく上回る（好調）
+- 条件B/E/X は N が小さく統計的に不十分（継続監視）
+- JRDB結合率: KYI(PRE_RACE) 75.9%, TYB(LIVE) 0%(正常, 当日朝発表), SED(PREV) 0%(SED csv破損-要修正)
+
+### SCRAPER-GUARD の動作変更（2026-04-19）
+
+DailyPremiumScrape AM3:00 は金22時〜月6時の SCRAPER-GUARD で停止する。
+旧仕様: 600秒おきチェックで許可まで wait ループ → タスクスケジューラと相性悪く数日停止
+新仕様: `check_scraping_allowed(mode="exit")` で即終了 → 翌日の起動で正常再開
+
+### 新規タスクスケジューラ登録（2026-04-18〜19）
+
+| タスク名 | 内容 |
+|----------|------|
+| DailyJrdbKyi | AM6:00 JRDB全種別ダウンロード（Windows 11 24H2対応、wmic→PowerShell置換済） |
+| JrdbHealthCheck_Sat/Sun | AM7:30 JRDB取得健全性チェック |
+| ProcessWatchdog | 5分おき プロセス死活監視・自動再起動 |
 
 ---
 
