@@ -1,0 +1,114 @@
+{
+  "version": "1.0",
+  "created": "2026-04-19",
+  "incidents": [
+    {
+      "incident_id": "inc-20260419-001",
+      "date": "2026-04-19",
+      "time": "03:00",
+      "severity": "critical",
+      "symptom": "AM3:00 DailyPremiumScrape 起動したが SCRAPER-GUARD で即停止",
+      "root_cause": "scraper_guard.py の週末停止ロジックに daily_premium_scrape の早朝スロット特例なし",
+      "fix_commit": "e173f40d",
+      "regression_test": "tests/test_scraper_guard.py::test_premium_scrape_sat_early_allowed",
+      "detection_rule": "logs/premium_scrape_*.log に 'SCRAPER-GUARD' + '週末レース時間帯' を含み size < 2000B",
+      "recovery": "SCRAPER_GUARD_DISABLE=1 python tools/daily_premium_scrape.py"
+    },
+    {
+      "incident_id": "inc-20260419-002",
+      "date": "2026-04-19",
+      "time": "08:00",
+      "severity": "critical",
+      "symptom": "AM8:00 DailyPredict が起動したが内部の scrape 呼出で SCRAPER-GUARD 停止",
+      "root_cause": "OPERATIONAL_CALLERS ホワイトリスト未実装、運用タスクが週末ブロック対象に巻き込まれた",
+      "fix_commit": "e173f40d",
+      "regression_test": "tests/test_scraper_guard.py::test_operational_callers_always_allowed",
+      "detection_rule": "data/daily_predictions/{YYYYMMDD}.csv 未生成 + AM8:30 時点でログにTraceback",
+      "recovery": "KEIBA_OPERATIONAL_MODE=1 python tools/daily_predict.py"
+    },
+    {
+      "incident_id": "inc-20260419-003",
+      "date": "2026-04-19",
+      "time": "08:47",
+      "severity": "high",
+      "symptom": "daily_predict.py が Windows コンソール Ctrl+C で強制終了",
+      "root_cause": "Python 3.14 の Windows 対話型コンソールで長時間プロセスが干渉される",
+      "fix_commit": "1e208b97",
+      "regression_test": "tests/test_predict_core.py",
+      "detection_rule": "LastResult = 3221225786 (0xC000013A = STATUS_CONTROL_C_EXIT)",
+      "recovery": "python tools/daily_predict.py --resume"
+    },
+    {
+      "incident_id": "inc-20260419-004",
+      "date": "2026-04-19",
+      "time": "08:47",
+      "severity": "high",
+      "symptom": "race_auto_notify が AM8:47 で中断、午前レース通知送信できず",
+      "root_cause": "inc-20260419-003 と同根、Windows コンソール強制終了",
+      "fix_commit": "1e208b97",
+      "regression_test": "manual",
+      "detection_rule": "LastResult = 3221225786 + logs/race_auto_notify.log が不完全",
+      "recovery": "python tools/race_auto_notify.py"
+    },
+    {
+      "incident_id": "inc-20260419-005",
+      "date": "2026-04-19",
+      "time": "09:00",
+      "severity": "high",
+      "symptom": "ProcessWatchdog が daily_predict の停止を検知できず",
+      "root_cause": "旧版 watchdog は PID ベース、プロセス終了後の検知不可",
+      "fix_commit": "17e3f044",
+      "regression_test": "tests/test_process_watchdog.py",
+      "detection_rule": "logs/process_watchdog.log に CRITICAL 通知なし",
+      "recovery": "process_watchdog v2 へ更新済み (ログ鮮度ベース)"
+    },
+    {
+      "incident_id": "inc-20260419-006",
+      "date": "2026-04-19",
+      "time": "N/A",
+      "severity": "medium",
+      "symptom": "JRDB SED/TYB/CYB の PREV 特徴量結合率 0%",
+      "root_cause": "JRDB カラム名がパーサー生成時と本番で不一致 (jra_race_id vs race_id)",
+      "fix_commit": "642de657",
+      "regression_test": "tests/test_jrdb_column_mapping.py",
+      "detection_rule": "data/jrdb_sed.csv の列が race_id でなく nk_race_id のみ",
+      "recovery": "tools/scrape_jrdb.py 再実行"
+    },
+    {
+      "incident_id": "inc-20260419-007",
+      "date": "2026-04-19",
+      "time": "03:00 (4/13 Mon も同様)",
+      "severity": "critical",
+      "symptom": "月曜 AM3:00 DailyPremiumScrape が誤停止 (inc-001の Mon 版)",
+      "root_cause": "_premium_scrape_early_slot が Sat/Sun のみ、Mon 早朝を含まず",
+      "fix_commit": "4f613a03",
+      "regression_test": "tests/test_scraper_guard.py::test_premium_scrape_mon_early_allowed",
+      "detection_rule": "Mon の logs/premium_scrape_*.log に 'SCRAPER-GUARD 停止' + size<2000",
+      "recovery": "SCRAPER_GUARD_DISABLE=1 python tools/daily_premium_scrape.py"
+    },
+    {
+      "incident_id": "inc-20260419-008",
+      "date": "2026-04-19",
+      "time": "N/A",
+      "severity": "low",
+      "symptom": "daily_results.py が OPERATIONAL_CALLERS 未登録で将来 guard ブロックリスク",
+      "root_cause": "daily_results.py 内部で netkeiba scrape 実行するが caller 指定なし",
+      "fix_commit": "4f613a03",
+      "regression_test": "tests/test_scraper_guard.py",
+      "detection_rule": "OPERATIONAL_CALLERS frozenset に 'daily_results' が含まれるか静的チェック",
+      "recovery": "OPERATIONAL_CALLERS に追加済み"
+    },
+    {
+      "incident_id": "inc-20260419-009",
+      "date": "2026-04-19",
+      "time": "10:00-12:30",
+      "severity": "low",
+      "symptom": "一括買い目通知と 5 分前通知の内容に乖離 (誤報疑い)",
+      "root_cause": "予測キャッシュの更新タイミング差 (実害なし、通知内容に矛盾なし)",
+      "fix_commit": "N/A (誤報と判明)",
+      "regression_test": "N/A",
+      "detection_rule": "Discord #買い目 の一括送信と 5分前送信の馬番が異なる",
+      "recovery": "不要 (誤報)"
+    }
+  ]
+}
