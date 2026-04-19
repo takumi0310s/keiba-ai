@@ -96,9 +96,27 @@ def test_premium_scrape_sat_mid_blocked():
     assert is_scraping_allowed(now=T_SAT_08, caller="daily_premium_scrape") is False
 
 
-def test_premium_scrape_mon_early_blocked():
-    """月曜05:59 は premium_scrape 特例対象外 (土日のみ)"""
-    assert is_scraping_allowed(now=T_MON_0559, caller="daily_premium_scrape") is False
+def test_premium_scrape_mon_early_allowed():
+    """月曜05:59 は premium_scrape 特例で許可 (Mon早朝もガード窓内のため特例対象)。
+
+    Daily AM3:00 タスクが Mon に起動した際の誤停止を防ぐ。4/13 (Mon) と 4/19 (Sun) で
+    実害発生 → 4/19 修正で Sat/Sun のみ追加だったが Mon を漏らしていたため再修正。
+    """
+    assert is_scraping_allowed(now=T_MON_0559, caller="daily_premium_scrape") is True
+
+
+def test_premium_scrape_mon_03_allowed():
+    """月曜03:00 (タスクスケジューラ実発火時刻) は premium_scrape 特例で許可"""
+    t = datetime(2026, 4, 20, 3, 0)
+    assert is_scraping_allowed(now=t, caller="daily_premium_scrape") is True
+
+
+def test_premium_scrape_mon_06_blocked_for_default():
+    """月曜06:00 はガード抜けるが、05:59は引数なしだとガード"""
+    # Mon 05:59 引数なし → ブロック (回帰)
+    assert is_scraping_allowed(now=T_MON_0559) is False
+    # Mon 06:01 引数なし → 許可 (回帰)
+    assert is_scraping_allowed(now=T_MON_0601) is True
 
 
 def test_premium_scrape_weekday_normal_allowed():

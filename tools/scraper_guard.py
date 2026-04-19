@@ -11,8 +11,9 @@
     - daily_jrdb_kyi
 環境変数 KEIBA_OPERATIONAL_MODE=1 でも同様にバイパスされる。
 
-daily_premium_scrape は特例: 土日でも 03:00-05:00 の早朝スロットのみ許可
-（タスクスケジューラ AM3:00 起動が誤停止する事故を防止）。
+daily_premium_scrape は特例: 土日月の 03:00-05:59 の早朝スロットのみ許可
+（タスクスケジューラ AM3:00 daily起動が誤停止する事故を防止。
+ Mon 早朝はガード窓 Mon00:00-06:00 と重なるため Mon も特例対象）。
 
 使い方:
     from tools.scraper_guard import check_scraping_allowed
@@ -41,6 +42,7 @@ OPERATIONAL_CALLERS = frozenset({
     "notify_bets_all_in_one",
     "jrdb_health_check",
     "daily_jrdb_kyi",
+    "daily_results",
 })
 
 
@@ -49,8 +51,13 @@ def _is_operational_mode() -> bool:
 
 
 def _premium_scrape_early_slot(now: datetime) -> bool:
-    """daily_premium_scrape 特例: 土日の03:00-05:59は許可"""
-    return now.weekday() in (5, 6) and 3 <= now.hour < 6
+    """daily_premium_scrape 特例: 土日月の03:00-05:59は許可。
+
+    タスクスケジューラ AM3:00 daily起動が SCRAPER-GUARD で誤停止する事故を防ぐ。
+    Sat/Sun/Mon の早朝 (00:00-05:59) はガード窓内のため特例対象。
+    平日 Tue-Fri 03:00 はガード対象外なので特例不要。
+    """
+    return now.weekday() in (5, 6, 0) and 3 <= now.hour < 6
 
 
 def is_scraping_allowed(now: datetime | None = None, caller: str | None = None) -> bool:
