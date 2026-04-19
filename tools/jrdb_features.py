@@ -23,6 +23,15 @@ import numpy as np
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
+
+def _resolve_jrdb_csv(basename: str) -> str:
+    """v2 サフィックス付きCSV (data/<name>_v2.csv) があればそれを優先、
+    なければ既存 data/<name>.csv をフォールバックとして返す。
+    どちらも存在しない場合は既存パスを返す (OSError は呼出側が処理)。"""
+    v2 = os.path.join(DATA_DIR, f'{basename}_v2.csv')
+    legacy = os.path.join(DATA_DIR, f'{basename}.csv')
+    return v2 if os.path.exists(v2) else legacy
+
 # =====================================================
 # JRDB特徴量候補リスト
 # =====================================================
@@ -519,8 +528,8 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB KYI merge failed: {e}")
 
-    # TYBからの特徴量
-    tyb_path = os.path.join(DATA_DIR, 'jrdb_tyb.csv')
+    # TYBからの特徴量 (v2優先、なければ旧CSVフォールバック)
+    tyb_path = _resolve_jrdb_csv('jrdb_tyb')
     if os.path.exists(tyb_path):
         try:
             tyb = pd.read_csv(tyb_path, encoding='utf-8-sig', dtype=str)
@@ -550,9 +559,9 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
 
     _rid_str = str(race_id_nk).zfill(12)
 
-    # SED: 前走成績データ（jrdb_prev_* 特徴量）
+    # SED: 前走成績データ（jrdb_prev_* 特徴量） v2優先
     # KYIから血統登録番号を取得してSEDの最新履歴を前走データとして結合
-    _sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
+    _sed_path = _resolve_jrdb_csv('jrdb_sed')
     if os.path.exists(_sed_path) and os.path.exists(kyi_path):
         try:
             # 当該レースの馬の血統登録番号をKYIから取得
@@ -765,8 +774,8 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB ZE merge failed: {e}")
 
-    # SED: 前走データ（馬場差/不利/出遅/IDM/ペース指数/上昇度）— blood_num経由で最新行を取得
-    _sed_path = os.path.join(DATA_DIR, 'jrdb_sed.csv')
+    # SED: 前走データ（馬場差/不利/出遅/IDM/ペース指数/上昇度）— blood_num経由で最新行を取得 v2優先
+    _sed_path = _resolve_jrdb_csv('jrdb_sed')
     _sed_feats_needed = [
         'jrdb_prev_track_bias', 'jrdb_prev_interference', 'jrdb_prev_late_start',
         'jrdb_prev_idm', 'jrdb_prev_pace_idx', 'jrdb_prev_rise_code',
@@ -1063,8 +1072,8 @@ def get_jrdb_coverage():
     """JRDBデータのカバレッジを確認"""
     info = {}
     for ft, path in [('KYI', os.path.join(DATA_DIR, 'jrdb_kyi.csv')),
-                      ('TYB', os.path.join(DATA_DIR, 'jrdb_tyb.csv')),
-                      ('SED', os.path.join(DATA_DIR, 'jrdb_sed.csv'))]:
+                      ('TYB', _resolve_jrdb_csv('jrdb_tyb')),
+                      ('SED', _resolve_jrdb_csv('jrdb_sed'))]:
         if os.path.exists(path):
             df = pd.read_csv(path, encoding='utf-8-sig', dtype=str, nrows=0)
             n = sum(1 for _ in open(path, encoding='utf-8-sig')) - 1
