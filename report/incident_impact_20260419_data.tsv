@@ -1,0 +1,8 @@
+period	condition	n_races	invested	expected_roi	expected_return	expected_profit
+morning	A	5	3500	1.229	4301.5	801.5
+morning	C	6	4200	1.238	5199.6	999.6000000000004
+morning	D	5	3500	1.443	5050.5	1550.5
+morning	E	1	700	0.132	92.4	-607.6
+afternoon	A	9	6300	1.229	7742.700000000001	1442.7000000000007
+afternoon	C	4	2800	1.238	3466.4	666.4000000000001
+afternoon	D	5	3500	1.443	5050.5	1550.5
