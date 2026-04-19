@@ -359,8 +359,8 @@ def main():
 
 
 if __name__ == '__main__':
-    # SCRAPER-GUARD内なら即終了 (mode="exit")。デフォルトのwait modeはタスクスケジューラ
-    # との相性が悪く、4/13/4/18等で600秒ループが走り続け次回起動を妨げていた。
+    # SCRAPER-GUARD: 土日でも 03:00-05:59 の早朝スロットは許可 (caller="daily_premium_scrape")。
+    # それ以外の時間帯 (土日 06:00+ 等) は即終了し、次回起動を妨げない。
     from tools.scraper_guard import check_scraping_allowed
-    check_scraping_allowed(mode="exit")
+    check_scraping_allowed(caller="daily_premium_scrape", mode="exit")
     main()
