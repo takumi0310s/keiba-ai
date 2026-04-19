@@ -1,0 +1,79 @@
+source	year	count	race_count	coverage_horse	coverage_race	display
+training_eval	2020	64425	3456	133.4	7.2	調教評価
+training_eval	2021	47821	3456	100.0	7.2	調教評価
+training_eval	2022	47220	3456	100.0	7.3	調教評価
+training_eval	2023	47672	3456	100.0	7.2	調教評価
+training_eval	2024	47181	3454	100.0	7.3	調教評価
+training_eval	2025	47884	3455	100.0	7.2	調教評価
+master_index	2020	0	0	0.0	0.0	マスターインデックス
+master_index	2021	0	0	0.0	0.0	マスターインデックス
+master_index	2022	0	0	0.0	0.0	マスターインデックス
+master_index	2023	2888	129	6.1	0.3	マスターインデックス
+master_index	2024	90639	3326	192.1	7.0	マスターインデックス
+master_index	2025	46146	3334	96.4	7.0	マスターインデックス
+upset	2020	6914	3456	14.3	7.2	波乱度 (race-level)
+upset	2021	1737	880	3.6	1.8	波乱度 (race-level)
+upset	2022	3950	1978	8.4	4.2	波乱度 (race-level)
+upset	2023	5116	2551	10.7	5.4	波乱度 (race-level)
+upset	2024	8403	3454	17.8	7.3	波乱度 (race-level)
+upset	2025	10365	3455	21.6	7.2	波乱度 (race-level)
+training_times	2020	48282	3456	100.0	7.2	調教タイム
+training_times	2021	62334	3456	130.3	7.2	調教タイム
+training_times	2022	47220	3456	100.0	7.3	調教タイム
+training_times	2023	47672	3456	100.0	7.2	調教タイム
+training_times	2024	47181	3454	100.0	7.3	調教タイム
+training_times	2025	47884	3455	100.0	7.2	調教タイム
+speed_index	2020	44038	3154	91.2	6.5	タイム指数
+speed_index	2021	43874	3159	91.7	6.6	タイム指数
+speed_index	2022	43272	3155	91.6	6.7	タイム指数
+speed_index	2023	43741	3154	91.8	6.6	タイム指数
+speed_index	2024	43199	3152	91.6	6.7	タイム指数
+speed_index	2025	43852	3151	91.6	6.6	タイム指数
+stable_comments	2020	33232	1231	68.8	2.5	厩舎コメント
+stable_comments	2021	16561	1228	34.6	2.6	厩舎コメント
+stable_comments	2022	17986	1233	38.1	2.6	厩舎コメント
+stable_comments	2023	16641	1235	34.9	2.6	厩舎コメント
+stable_comments	2024	27992	1235	59.3	2.6	厩舎コメント
+stable_comments	2025	16463	1233	34.4	2.6	厩舎コメント
+race_review	2020	48249	3454	99.9	7.2	レース短評
+race_review	2021	47805	3455	100.0	7.2	レース短評
+race_review	2022	46853	3431	99.2	7.3	レース短評
+race_review	2023	44594	3227	93.5	6.8	レース短評
+race_review	2024	42186	3091	89.4	6.6	レース短評
+race_review	2025	47779	3448	99.8	7.2	レース短評
+shinba_eval	2020	0	0	0.0	0.0	新馬評価
+shinba_eval	2021	0	0	0.0	0.0	新馬評価
+shinba_eval	2022	0	0	0.0	0.0	新馬評価
+shinba_eval	2023	0	0	0.0	0.0	新馬評価
+shinba_eval	2024	3982	302	8.4	0.6	新馬評価
+shinba_eval	2025	4016	303	8.4	0.6	新馬評価
+jrdb_kyi	2020	46458	3326	96.2	6.9	JRDB KYI
+jrdb_kyi	2021	46449	3360	97.1	7.0	JRDB KYI
+jrdb_kyi	2022	45259	3312	95.8	7.0	JRDB KYI
+jrdb_kyi	2023	45995	3336	96.5	7.0	JRDB KYI
+jrdb_kyi	2024	46200	3382	97.9	7.2	JRDB KYI
+jrdb_kyi	2025	45988	3323	96.0	6.9	JRDB KYI
+jrdb_sed	2020	0	0	0.0	0.0	JRDB SED
+jrdb_sed	2021	0	0	0.0	0.0	JRDB SED
+jrdb_sed	2022	0	0	0.0	0.0	JRDB SED
+jrdb_sed	2023	0	0	0.0	0.0	JRDB SED
+jrdb_sed	2024	47039	3382	99.7	7.2	JRDB SED
+jrdb_sed	2025	46756	3323	97.6	6.9	JRDB SED
+jrdb_tyb	2020	0	0	0.0	0.0	JRDB TYB
+jrdb_tyb	2021	0	0	0.0	0.0	JRDB TYB
+jrdb_tyb	2022	0	0	0.0	0.0	JRDB TYB
+jrdb_tyb	2023	0	0	0.0	0.0	JRDB TYB
+jrdb_tyb	2024	0	0	0.0	0.0	JRDB TYB
+jrdb_tyb	2025	0	0	0.0	0.0	JRDB TYB
+jrdb_cyb	2020	0	0	0.0	0.0	JRDB CYB
+jrdb_cyb	2021	0	0	0.0	0.0	JRDB CYB
+jrdb_cyb	2022	0	0	0.0	0.0	JRDB CYB
+jrdb_cyb	2023	0	0	0.0	0.0	JRDB CYB
+jrdb_cyb	2024	0	0	0.0	0.0	JRDB CYB
+jrdb_cyb	2025	0	0	0.0	0.0	JRDB CYB
+jrdb_joa	2020	0	0	0.0	0.0	JRDB JOA
+jrdb_joa	2021	0	0	0.0	0.0	JRDB JOA
+jrdb_joa	2022	0	0	0.0	0.0	JRDB JOA
+jrdb_joa	2023	0	0	0.0	0.0	JRDB JOA
+jrdb_joa	2024	0	0	0.0	0.0	JRDB JOA
+jrdb_joa	2025	0	0	0.0	0.0	JRDB JOA
