@@ -5,14 +5,23 @@
 Usage:
     python tools/daily_predict.py                  # 今日の予測
     python tools/daily_predict.py --date 20260315  # 日付指定
+    python tools/daily_predict.py --resume         # 既存CSVから未予測レースだけ再実行
 """
+# === Windows コンソール CLOSE イベント対策 (Intel Fortran/LightGBM/OpenMP) ===
+# この設定は import 前に済ませる必要がある。forrtl error (200) 回避用。
+import os
+if os.name == "nt":
+    os.environ.setdefault("FOR_DISABLE_CONSOLE_CTRL_HANDLER", "1")
+    os.environ.setdefault("OMP_NUM_THREADS", "4")
+    os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 import pandas as pd
 import numpy as np
 import re
 import time
-import os
 import sys
 import argparse
+import signal
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -36,6 +45,80 @@ from predict_core import (
     save_odds_base, is_race_started, fetch_result_odds,
     fetch_jra_and_weather, set_horse_defaults, apply_horse_stats,
 )
+
+
+# ===== 逐次CSV書き込み =====
+
+PREDICTIONS_DIR = os.path.join(BASE_DIR, "data", "daily_predictions")
+
+# CSV列順（新規作成時のヘッダ + append時の整合性確保用）
+_CSV_COLUMNS = [
+    'race_id', 'course', 'race_num', 'race_name', 'condition', 'num_horses',
+    'distance', 'surface', 'track_condition',
+    'top1_num', 'top1_name', 'top1_score',
+    'top2_num', 'top2_name', 'top3_num', 'top3_name',
+    'trio_bets', 'bet_type', 'investment',
+]
+
+
+def _csv_path_for(date_str):
+    return os.path.join(PREDICTIONS_DIR, f"{date_str}.csv")
+
+
+def _load_existing_race_ids(date_str):
+    """既存CSVから race_id セットを返す。ファイル無ければ空set。"""
+    path = _csv_path_for(date_str)
+    if not os.path.exists(path):
+        return set()
+    try:
+        df = pd.read_csv(path, encoding='utf-8-sig', dtype={'race_id': str})
+        return set(df['race_id'].astype(str).tolist())
+    except Exception as e:
+        print(f"[WARN] 既存CSV読み込み失敗 ({path}): {e}")
+        return set()
+
+
+def _append_prediction_to_csv(row, date_str):
+    """1レース分の予測結果をCSVに即時append。クラッシュ耐性のためflush付。"""
+    os.makedirs(PREDICTIONS_DIR, exist_ok=True)
+    path = _csv_path_for(date_str)
+    new_file = not os.path.exists(path)
+    df_row = pd.DataFrame([row], columns=_CSV_COLUMNS)
+    with open(path, 'a', encoding='utf-8-sig', newline='') as f:
+        df_row.to_csv(f, index=False, header=new_file)
+        f.flush()
+        try:
+            os.fsync(f.fileno())
+        except OSError:
+            pass
+
+
+# ===== シグナルハンドラ（Ctrl+C / CLOSE 時の緊急停止） =====
+
+_SHUTDOWN_STATE = {'requested': False, 'date': None}
+
+
+def _install_signal_handlers(date_str):
+    """SIGINT / SIGBREAK を捕捉して graceful shutdown する。"""
+    _SHUTDOWN_STATE['date'] = date_str
+
+    def _graceful(signum, frame):
+        _SHUTDOWN_STATE['requested'] = True
+        name = {signal.SIGINT: 'SIGINT'}.get(signum, f'signal={signum}')
+        if hasattr(signal, 'SIGBREAK') and signum == signal.SIGBREAK:
+            name = 'SIGBREAK'
+        print(f"\n[SHUTDOWN] {name} 受信。既書込CSVを温存して終了します。")
+        sys.exit(0)
+
+    try:
+        signal.signal(signal.SIGINT, _graceful)
+    except (ValueError, OSError):
+        pass
+    if hasattr(signal, "SIGBREAK"):
+        try:
+            signal.signal(signal.SIGBREAK, _graceful)
+        except (ValueError, OSError):
+            pass
 
 
 # ===== リトライユーティリティ =====
@@ -147,11 +230,23 @@ def fetch_race_list(date_str):
 
 # ===== メイン処理 =====
 
-def run_daily_predict(date_str, dry_run=False):
-    """指定日のJRA全レースを予測。dry_run=Trueなら CSV保存・Discord通知スキップ"""
+def run_daily_predict(date_str, dry_run=False, resume=False):
+    """指定日のJRA全レースを予測。
+
+    Args:
+        dry_run: CSV保存・Discord通知をスキップ
+        resume: 既存CSVに記録済みのrace_idはスキップ（途中再開モード）
+    """
     print(f"=" * 60)
-    print(f"KEIBA AI 日次予測 - {date_str}")
+    print(f"KEIBA AI 日次予測 - {date_str} (resume={resume})")
     print(f"=" * 60)
+
+    # resume時: 既存CSVから済みrace_id収集
+    done_race_ids = set()
+    if resume and not dry_run:
+        done_race_ids = _load_existing_race_ids(date_str)
+        if done_race_ids:
+            print(f"[RESUME] 既存CSVから {len(done_race_ids)} レース処理済を検出、スキップします")
 
     # Cookie検証＋自動更新
     print(f"\n[STEP 0] Cookie有効性チェック...")
@@ -182,6 +277,12 @@ def run_daily_predict(date_str, dry_run=False):
 
     for idx, race in enumerate(races):
         race_id = race['race_id']
+        if _SHUTDOWN_STATE['requested']:
+            print(f"[SHUTDOWN] ループ中断 ({idx}/{len(races)} 時点)")
+            break
+        if resume and str(race_id) in done_race_ids:
+            print(f"\n[STEP 2-{idx+1}/{len(races)}] {race['course']} {race['race_num']}R (ID={race_id}) -> [SKIP] resume済")
+            continue
         print(f"\n[STEP 2-{idx+1}/{len(races)}] {race['course']} {race['race_num']}R (ID={race_id})")
 
         try:
@@ -322,6 +423,13 @@ def run_daily_predict(date_str, dry_run=False):
             }
             results.append(row)
 
+            # 逐次CSV書き込み（途中クラッシュ耐性）
+            if not dry_run:
+                try:
+                    _append_prediction_to_csv(row, date_str)
+                except Exception as _e:
+                    print(f"  [WARN] 逐次CSV書込失敗: {_e}")
+
             # コンソール出力
             print(f"  条件: {cond_key} ({cond_profile['desc']})")
             if not cond_profile.get('recommended', True):
@@ -344,7 +452,7 @@ def run_daily_predict(date_str, dry_run=False):
                                  'race_num': race['race_num'], 'reason': str(e)[:120]})
             continue
 
-    # CSV保存
+    # CSV最終化（逐次appendで既に書き込み済。ここでは全体dedup + カラム順正規化）
     if results:
         if dry_run:
             print(f"\n{'=' * 60}")
@@ -352,15 +460,26 @@ def run_daily_predict(date_str, dry_run=False):
             print(f"総投資額: {sum(r['investment'] for r in results):,}円")
             print(f"{'=' * 60}")
         else:
-            out_dir = os.path.join(BASE_DIR, "data", "daily_predictions")
-            os.makedirs(out_dir, exist_ok=True)
-            out_path = os.path.join(out_dir, f"{date_str}.csv")
-            df_out = pd.DataFrame(results)
-            df_out.to_csv(out_path, index=False, encoding='utf-8-sig')
+            out_path = _csv_path_for(date_str)
+            try:
+                df_all = pd.read_csv(out_path, encoding='utf-8-sig', dtype={'race_id': str})
+                df_all = df_all.drop_duplicates(subset='race_id', keep='last')
+                df_all = df_all.reindex(columns=_CSV_COLUMNS)
+                df_all.to_csv(out_path, index=False, encoding='utf-8-sig')
+            except Exception as _e:
+                print(f"[WARN] CSV最終化失敗（逐次appendは残存）: {_e}")
+            # サマリ用: 最終CSVから総投資額再集計
+            try:
+                df_final = pd.read_csv(out_path, encoding='utf-8-sig')
+                n_final = len(df_final)
+                inv_final = int(df_final['investment'].sum())
+            except Exception:
+                n_final = len(results)
+                inv_final = sum(r['investment'] for r in results)
             print(f"\n{'=' * 60}")
-            print(f"予測完了: {len(results)}レース")
+            print(f"予測完了: 今回{len(results)}レース / CSV累計{n_final}レース")
             print(f"保存先: {out_path}")
-            print(f"総投資額: {sum(r['investment'] for r in results):,}円")
+            print(f"総投資額: {inv_final:,}円")
             print(f"{'=' * 60}")
     else:
         print(f"\n[INFO] 予測結果なし")
@@ -401,6 +520,8 @@ if __name__ == "__main__":
                         help="予測日 YYYYMMDD (デフォルト: 今日)")
     parser.add_argument("--dry-run", action="store_true",
                         help="予測は実行するがCSV保存・Discord通知をスキップ")
+    parser.add_argument("--resume", action="store_true",
+                        help="既存CSVから未予測レースだけ再実行（途中再開モード）")
     args = parser.parse_args()
 
     if args.date:
@@ -414,8 +535,11 @@ if __name__ == "__main__":
         print(f"[ERROR] 日付形式が不正です: {date_str} (YYYYMMDD)")
         sys.exit(1)
 
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始 (dry_run={args.dry_run})")
-    run_daily_predict(date_str, dry_run=args.dry_run)
+    # シグナルハンドラ設定（SIGINT/SIGBREAK でCSV温存終了）
+    _install_signal_handlers(date_str)
+
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 開始 (dry_run={args.dry_run}, resume={args.resume})")
+    run_daily_predict(date_str, dry_run=args.dry_run, resume=args.resume)
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] daily_predict.py 終了")
 
     if args.dry_run:
