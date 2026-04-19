@@ -1115,6 +1115,29 @@ DailyPremiumScrape AM3:00 は金22時〜月6時の SCRAPER-GUARD で停止する
 旧仕様: 600秒おきチェックで許可まで wait ループ → タスクスケジューラと相性悪く数日停止
 新仕様: `check_scraping_allowed(mode="exit")` で即終了 → 翌日の起動で正常再開
 
+OPERATIONAL_CALLERS ホワイトリスト導入 (daily_predict / race_auto_notify /
+notify_bets_all_in_one / jrdb_health_check / daily_jrdb_kyi / daily_results)。
+daily_premium_scrape は Sat/Sun/**Mon** の 03:00-05:59 早朝スロット特例で許可。
+
+### 2026/04/19 事故と修正の記録
+
+**事故**: Sun 03:00 DailyPremiumScrape と 08:00 DailyPredict が SCRAPER-GUARD で誤停止。
+AM8:27 手動救出まで午前レース全ロス。機会損失 推定 +2,745円 (17R)。
+
+**対応**: 11 commits で完全修正完了 (e173f40d〜本commit)
+- OPERATIONAL_CALLERS ホワイトリスト導入
+- Mon 早朝特例追加 (4/13 Mon 03:00 にも同じ誤停止履歴あり)
+- daily_premium_scrape の mode="exit" 化 (wait ループ廃止)
+- process_watchdog v2 (ログ鮮度ベース)
+- daily_predict Windows Ctrl+C 対策 + resume 対応
+- 事前検証: verify_scraper_guard_sunday.py / dryrun_weekend_full.py / nightly_sanity_check.py
+
+### 来週末の運用体制
+
+- **v15 継続運用** (v16 はデータ不足で未学習 — master_index 2020-2022 が 0%)
+- **手動介入不要** (E2E検証 17タスク ALL PASS)
+- 毎晩 23:00 Keiba-NightlySanity が自動で翌日タスクを事前チェック → Discord通知
+
 ### 新規タスクスケジューラ登録（2026-04-18〜19）
 
 | タスク名 | 内容 |
@@ -1122,6 +1145,7 @@ DailyPremiumScrape AM3:00 は金22時〜月6時の SCRAPER-GUARD で停止する
 | DailyJrdbKyi | AM6:00 JRDB全種別ダウンロード（Windows 11 24H2対応、wmic→PowerShell置換済） |
 | JrdbHealthCheck_Sat/Sun | AM7:30 JRDB取得健全性チェック |
 | ProcessWatchdog | 5分おき プロセス死活監視・自動再起動 |
+| **Keiba-NightlySanity** | **毎日23:00 翌日発火予定タスクの事前チェック + Discord通知** |
 
 ---
 
