@@ -232,6 +232,9 @@ def walk_forward_4model(df, features, years=WF_YEARS, label='v15'):
 
     Returns list of per-year result dicts.
     """
+    if 'race_id_unique' not in df.columns:
+        df = build_race_id(df)
+        print(f"  [WF] race_id_unique created: {df['race_id_unique'].nunique()} races")
     results = []
     for test_year in years:
         ty = test_year - 2000
