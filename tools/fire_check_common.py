@@ -78,6 +78,15 @@ def _check_log(cfg: FireCheckConfig, now: datetime.datetime) -> dict:
             tail = log_file.read_text(encoding="utf-8", errors="replace")[-500:]
         except Exception as e:
             tail = f"(read err: {e})"
+        # 平日 (非開催日) は "No races found" で正常早期終了する場合あり → OK
+        if "No races found" in tail:
+            return {
+                "status": "ok",
+                "message": f"{cfg.task_name}: 非開催日のため正常早期終了",
+                "size": size,
+                "mtime": mtime.isoformat(),
+                "log": str(log_file),
+            }
         return {
             "status": "critical",
             "message": f"{cfg.task_name}: ログサイズ異常 {size}B (min {cfg.min_size}B)",

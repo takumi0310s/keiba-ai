@@ -77,12 +77,21 @@ def check_am3_fire(target_date: str | None = None, now: datetime.datetime | None
             "recovery": "SCRAPER_GUARD_DISABLE=1 python tools/daily_premium_scrape.py",
         }
 
-    # サイズで成功判定
+    # サイズが小さい場合: 平日「No races found」(正常な早期終了) を識別
     if size < 2000:
         try:
             tail = log_file.read_text(encoding="utf-8", errors="replace")[-500:]
         except Exception as e:
             tail = f"(read err: {e})"
+        # 平日 (非開催日) は "No races found. Exiting." で正常終了するので OK 判定
+        if "No races found" in tail:
+            return {
+                "status": "ok",
+                "message": "平日 (非開催日) のため正常早期終了",
+                "size": size,
+                "mtime": mtime.isoformat(),
+                "log": str(log_file),
+            }
         return {
             "status": "critical",
             "message": f"ログサイズ異常 {size}B (最低 2000B 期待)",
