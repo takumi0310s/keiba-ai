@@ -593,6 +593,7 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
             'trio_payout': trio_payout,
             'umaren_hit': 1 if umaren_hit else 0,
             'umaren_payout': umaren_payout,
+            'actual_payout': actual_payout,
             'investment': investment,
             'profit': profit,
             'status': 'settled',
@@ -607,9 +608,21 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
 
         hit_mark = "HIT!" if (trio_hit or umaren_hit) else "miss"
         payout_disp = f"払戻 {actual_payout:,}円" if actual_payout > 0 else ""
-        # HITなのにpayout=0はpayoutテーブル解析失敗の可能性 → 警告
+        # HITなのにpayout=0はpayoutテーブル解析失敗の可能性 → 警告 + Discord通知
         if (trio_hit or umaren_hit) and actual_payout == 0:
             print(f"  [ALERT] HITだがpayout=0 race_id={race_id} ({hit_combo}). Payoutテーブル解析要調査")
+            try:
+                from notify import send_discord
+                send_discord(
+                    '🔴 CRITICAL payout=0 検知',
+                    (f'race_id={race_id} ({course} {race_num}R)\n'
+                     f'的中: {hit_combo}\n'
+                     f'trio_payout={trio_payout} umaren_payout={umaren_payout}\n'
+                     f'payout テーブル解析失敗の可能性。手動再取得を検討。'),
+                    color='red', channel='updates',
+                )
+            except Exception:
+                pass
         print(f"  結果: {hit_mark} {payout_disp}")
         print(f"  三連複結果: {result_row['trio_result']}")
         print(f"  AI TOP3 着順: {top1_finish}着/{top2_finish}着/{top3_finish}着")
