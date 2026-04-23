@@ -301,6 +301,17 @@ def test_odds_base_perday_csv():
     assert 'odds_base_20260412.csv' in p, f"unexpected path: {p}"
 
 
+def test_payout_integrity_suite():
+    """tests/test_payout_integrity.py の4テストが全PASSすること (4/23 payout=0バグ再発防止)"""
+    import subprocess
+    fp = os.path.join(BASE_DIR, 'tests', 'test_payout_integrity.py')
+    assert os.path.exists(fp), 'test_payout_integrity.py 不在'
+    r = subprocess.run([sys.executable, fp], capture_output=True, text=True, timeout=60)
+    out = r.stdout + r.stderr
+    assert r.returncode == 0, f'payout integrity FAIL:\n{out[-500:]}'
+    assert '0 failed' in out or '4 passed' in out, f'payout integrity 不完全:\n{out[-300:]}'
+
+
 if __name__ == '__main__':
     tests = [v for k, v in sorted(globals().items()) if k.startswith('test_')]
     passed = 0
