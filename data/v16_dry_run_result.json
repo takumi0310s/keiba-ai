@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-04-23T18:43:28.260395",
+  "steps": [
+    {
+      "step": "cache_load",
+      "shape": [
+        527280,
+        233
+      ],
+      "features": 145
+    },
+    {
+      "step": "build_race_id",
+      "n_races": 25302,
+      "ok": true
+    },
+    {
+      "step": "lgb_train",
+      "auc": 0.86382184752163,
+      "ok": true,
+      "n_train": 140867,
+      "n_test": 47497,
+      "n_features": 120
+    },
+    {
+      "step": "catboost_train",
+      "auc": 0.8428045144505109,
+      "ok": true
+    },
+    {
+      "step": "race_id_unique_access",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "elapsed_sec": 14.2,
+  "ended_at": "2026-04-23T18:43:42.480842"
+}

@@ -109,6 +109,128 @@
       "regression_test": "N/A",
       "detection_rule": "Discord #買い目 の一括送信と 5分前送信の馬番が異なる",
       "recovery": "不要 (誤報)"
+    },
+    {
+      "incident_id": "inc-20260422-001",
+      "date": "2026-04-22",
+      "time": "06:30",
+      "severity": "high",
+      "symptom": "CatBoost WF 学習で race_id_unique KeyError が出て v16 学習が中断",
+      "root_cause": "wf_catboost_5model.py が race_id_unique 列の存在を期待するが、v15 train cache には含まれない",
+      "fix_commit": "739b1cce",
+      "regression_test": "tests/test_catboost_keyerror.py",
+      "detection_rule": "logs/v16_wf.log に 'KeyError: race_id_unique' を含む",
+      "recovery": "python tools/v16_dry_run.py で build_race_id() 呼出を確認、本番は train_v135b_intra_ensemble.build_race_id() で対応",
+      "related_incidents": [
+        "inc-20260423-001"
+      ]
+    },
+    {
+      "incident_id": "inc-20260422-002",
+      "date": "2026-04-22",
+      "time": "auto-detected",
+      "severity": "medium",
+      "symptom": "スクレイピング5日停止、master_index カバレッジ 0% で v16 学習トリガ未達",
+      "root_cause": "週末 SCRAPER-GUARD 停止が連鎖、月曜AM6:30 自動再開ロジック未実装",
+      "fix_commit": "739b1cce",
+      "regression_test": "tests/test_scraper_guard.py",
+      "detection_rule": "data_health_check.py で master_index coverage_pct = 0",
+      "recovery": "python tools/scrape_master_index.py で手動再開、自動化は月曜AM6:30 schtask 追加",
+      "related_incidents": [
+        "inc-20260419-001"
+      ]
+    },
+    {
+      "incident_id": "inc-20260423-001",
+      "date": "2026-04-23",
+      "time": "12:00",
+      "severity": "high",
+      "symptom": "JRDB SED merge で IDM が NaN になり前走特徴量カバレッジが大きく下がる",
+      "root_cause": "SED CSV の IDM 列が空欄のレコードがあり、merge 時 NaN になり以降の特徴量計算で 0 扱い",
+      "fix_commit": "3ea7d4ca",
+      "regression_test": "tests/test_jrdb_sed_merge.py (推定)",
+      "detection_rule": "feature_coverage_report.json で prev_idm coverage が前日比 -10pt 以上",
+      "recovery": "predict_core.py の SED merge 後に IDM=50 (中央値) でフォールバック",
+      "related_incidents": [
+        "inc-20260423-002"
+      ]
+    },
+    {
+      "incident_id": "inc-20260423-002",
+      "date": "2026-04-23",
+      "time": "13:35",
+      "severity": "low",
+      "symptom": "data/jra_races_full.csv が 2026-03-27 から更新停止、新規レースデータ未反映",
+      "root_cause": "tools/extract_jvdata.py が C:\\TFJV (TARGET Frontier JV) 依存で完全手動運用、TARGET 不在",
+      "fix_commit": "なし (技術的に自動化不可)",
+      "regression_test": "なし",
+      "detection_rule": "data/jra_races_full.csv の最終更新日が 7日以上前",
+      "recovery": "TARGET 再インストール → 手動エクスポート → python tools/extract_jvdata.py",
+      "related_incidents": [
+        "inc-20260423-003"
+      ]
+    },
+    {
+      "incident_id": "inc-20260423-003",
+      "date": "2026-04-23",
+      "time": "18:55",
+      "severity": "low",
+      "symptom": "data/target_odds.csv が 2026-03-11 から更新停止",
+      "root_cause": "TARGET エクスポート由来、生成スクリプト不在、手動運用",
+      "fix_commit": "なし (inc-20260423-002 と同根)",
+      "regression_test": "なし",
+      "detection_rule": "data/target_odds.csv の最終更新日が 14日以上前",
+      "recovery": "TARGET 再インストール → 手動エクスポート",
+      "related_incidents": [
+        "inc-20260423-002"
+      ]
+    },
+    {
+      "incident_id": "inc-20260423-004",
+      "date": "2026-04-23",
+      "time": "13:50",
+      "severity": "medium",
+      "symptom": "netkeiba Cookie 期限切れ、Premium データ取得失敗",
+      "root_cause": "Cookie の自動更新フロー未整備、認証情報も .env 未保存で --auto 不可",
+      "fix_commit": "なし (運用手順で対応)",
+      "regression_test": "python tools/refresh_cookie.py --check",
+      "detection_rule": "tools/refresh_cookie.py --check が 'NG: ログインセッション切れ' を返す",
+      "recovery": "python tools/refresh_cookie.py で対話的に再ログイン (Playwright 使用)",
+      "related_incidents": []
+    },
+    {
+      "incident_id": "inc-20260423-005",
+      "date": "2026-04-23",
+      "time": "03:00",
+      "severity": "low",
+      "symptom": "AM3FireCheck が平日でも誤通知 (ログサイズ判定が緩い)",
+      "root_cause": "fire_check の size<2000 判定が「停止」誤検出、平日早朝の正常終了でも引っかかる",
+      "fix_commit": "前パックで修正済み (詳細未確認)",
+      "regression_test": "tests/test_fire_check.py",
+      "detection_rule": "Discord #updates に AM3FireCheck 警告が連日出る",
+      "recovery": "fire_check の判定基準見直し、size基準 + 完了タグ判定の両立",
+      "related_incidents": []
+    },
+    {
+      "incident_id": "inc-20260423-006",
+      "date": "2026-04-23",
+      "time": "13:33",
+      "severity": "low",
+      "symptom": "tests/test_features.py が KeyError 'actual_roi' で起動時クラッシュ",
+      "root_cause": "app.py:6621 が data/actual_roi_results.json の旧フォーマット参照、新JSON では 'actual_roi' キー無し",
+      "fix_commit": "未修正 (test 専用、本番未影響)",
+      "regression_test": "なし",
+      "detection_rule": "python tests/test_features.py が test_condition_classification import 直前で KeyError",
+      "recovery": "actual_roi_results.json のスキーマを app.py:6621 に合わせる、または app.py 側で新スキーマ吸収",
+      "related_incidents": []
+    }
+  ],
+  "updated": "2026-04-23 18:46",
+  "history": [
+    {
+      "date": "2026-04-23 18:46",
+      "added": 8,
+      "note": "4/22-23 8件追加"
     }
   ]
 }
