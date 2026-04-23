@@ -594,24 +594,51 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
                     _sed['_dt'] = pd.to_numeric(_sed['年月日'], errors='coerce').fillna(0).astype(int)
                     _sed_sub = _sed[_sed['_bn'].isin(_blood_map.values())].copy()
                     # 各馬の最新のSEDレコード（前走データ）を取得
-                    _latest = _sed_sub.sort_values(['_bn','_dt']).groupby('_bn').tail(1)
-                    _latest_map = {row['_bn']: row for _, row in _latest.iterrows()}
-                    # 前走特徴量として _uma 行に注入
+                    # IMPROVEMENT: SEDの IDM が NaN な行が増えているため、
+                    # 馬ごとに「IDMが有効な最新行」「不利/出遅/タイム指数が有効な最新行」を
+                    # 個別に拾ってマージ。最新ではあるが NaN だらけの行で上書きされて
+                    # default に戻る現象を防ぐ。
+                    _sed_sub = _sed_sub.sort_values(['_bn','_dt'])
+                    _latest_overall = _sed_sub.groupby('_bn').tail(1).set_index('_bn')
+                    _sed_cols_for_prev = [
+                        ('jrdb_prev_idm',          'IDM'),
+                        ('jrdb_prev_track_bias',   '馬場差'),
+                        ('jrdb_prev_interference', '不利'),
+                        ('jrdb_prev_late_start',   '出遅'),
+                        ('jrdb_prev_ten_idx',      'テン指数'),
+                        ('jrdb_prev_agari_idx',    '上がり指数'),
+                        ('jrdb_prev_pace_idx',     'ペース指数'),
+                        ('jrdb_prev_rise_code',    '上昇度コード'),
+                    ]
+                    # 各 SED 列について、馬ごとに「数値変換可能な最新値」を拾う map
+                    _per_col_latest = {}
+                    for _feat, _src in _sed_cols_for_prev:
+                        if _src not in _sed_sub.columns:
+                            continue
+                        _vals = pd.to_numeric(_sed_sub[_src], errors='coerce')
+                        _valid = _sed_sub[_vals.notna()]
+                        if len(_valid) == 0:
+                            continue
+                        _per_col_latest[_feat] = _valid.groupby('_bn').tail(1).set_index('_bn')[_src]
+
                     _prev_rows = []
                     for _u, _bn in _blood_map.items():
-                        if _bn in _latest_map:
-                            _rec = _latest_map[_bn]
-                            _prev_rows.append({
-                                '_uma': int(_u),
-                                'jrdb_prev_idm': pd.to_numeric(_rec.get('IDM'), errors='coerce'),
-                                'jrdb_prev_track_bias': pd.to_numeric(_rec.get('馬場差'), errors='coerce'),
-                                'jrdb_prev_interference': pd.to_numeric(_rec.get('不利'), errors='coerce'),
-                                'jrdb_prev_late_start': pd.to_numeric(_rec.get('出遅'), errors='coerce'),
-                                'jrdb_prev_ten_idx': pd.to_numeric(_rec.get('テン指数'), errors='coerce'),
-                                'jrdb_prev_agari_idx': pd.to_numeric(_rec.get('上がり指数'), errors='coerce'),
-                                'jrdb_prev_pace_idx': pd.to_numeric(_rec.get('ペース指数'), errors='coerce'),
-                                'jrdb_prev_rise_code': pd.to_numeric(_rec.get('上昇度コード'), errors='coerce'),
-                            })
+                        if _bn not in _latest_overall.index:
+                            continue
+                        _row = {'_uma': int(_u)}
+                        for _feat, _src in _sed_cols_for_prev:
+                            _val = float('nan')
+                            _series = _per_col_latest.get(_feat)
+                            if _series is not None and _bn in _series.index:
+                                _val = pd.to_numeric(_series.loc[_bn], errors='coerce')
+                                if hasattr(_val, '__len__'):
+                                    _val = pd.to_numeric(pd.Series(_val).iloc[-1], errors='coerce')
+                            if pd.isna(_val):
+                                _val = pd.to_numeric(_latest_overall.loc[_bn].get(_src), errors='coerce')
+                                if hasattr(_val, '__len__'):
+                                    _val = pd.to_numeric(pd.Series(_val).iloc[-1], errors='coerce')
+                            _row[_feat] = _val
+                        _prev_rows.append(_row)
                     if _prev_rows:
                         _prev_df = pd.DataFrame(_prev_rows).drop_duplicates(subset='_uma', keep='last')
                         horses_df = horses_df.merge(_prev_df, on='_uma', how='left', suffixes=('', '_sedprev'))
