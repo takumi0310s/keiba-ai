@@ -179,31 +179,31 @@ def main() -> int:
     # まとめ
     print("\n" + "=" * 60)
     if issues:
-        print(f"❌ ISSUES: {len(issues)}")
+        print(f"[NG] ISSUES: {len(issues)}")
         for i in issues:
             print(f"  - {i}")
     if warnings:
-        print(f"⚠ WARNINGS: {len(warnings)}")
+        print(f"[WARN] WARNINGS: {len(warnings)}")
         for w in warnings:
             print(f"  - {w}")
     if not issues and not warnings:
-        print("✅ 全チェック PASS")
+        print("[OK] 全チェック PASS")
     print("=" * 60)
 
     # Discord 通知
     if not args.silent:
         title = f"nightly_sanity_check {target.strftime('%Y-%m-%d')}"
         if issues:
-            body = f"❌ {len(issues)}件の問題:\n" + "\n".join(f"- {x}" for x in issues)
+            body = f"[NG] {len(issues)}件の問題:\n" + "\n".join(f"- {x}" for x in issues)
             if warnings:
-                body += f"\n⚠ {len(warnings)}件の警告:\n" + "\n".join(f"- {x}" for x in warnings)
+                body += f"\n[WARN] {len(warnings)}件の警告:\n" + "\n".join(f"- {x}" for x in warnings)
             notify_discord(title, body, color="red")
         elif warnings:
-            body = f"⚠ {len(warnings)}件の警告 (動作継続):\n" + "\n".join(f"- {x}" for x in warnings)
+            body = f"[WARN] {len(warnings)}件の警告 (動作継続):\n" + "\n".join(f"- {x}" for x in warnings)
             body += f"\n\n翌日発火予定タスク {len(tasks)} 件は ALL READY"
             notify_discord(title, body, color="yellow")
         else:
-            notify_discord(title, f"✅ 翌日発火予定 {len(tasks)} 件 ALL READY", color="green")
+            notify_discord(title, f"[OK] 翌日発火予定 {len(tasks)} 件 ALL READY", color="green")
 
     return 0 if not issues else 2
 
