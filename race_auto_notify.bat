@@ -21,3 +21,4 @@ echo [%date% %time%] Race Auto-Notify End (exit=%EXITCODE%) >> %LOGFILE%
 
 REM Restore sleep timeout (default 30 min)
 powercfg /change standby-timeout-ac 30 2>nul
+exit /B %EXITCODE%
