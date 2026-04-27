@@ -1171,3 +1171,155 @@ python tools/notify_done.py "タスク名" "完了内容"
 
 Claude Codeのコンテキスト圧縮時に失われやすい重要情報はこのCLAUDE.mdに集約。
 特に「現行モデルのベースライン」「リーク厳禁ルール」「過去の失敗教訓」は常に参照すること。
+
+---
+
+##  v16 Development Status (2026-04-27 更新)
+
+###  v15 現状の最終確定
+- **AUC**: 0.8939 (LightGBM Booster), 0.8858 (4-model ensemble)
+- **特徴量数**: 150 (Booster実効145)
+- **訓練データ**: 527,280行 (2015/01 - 2025/12)
+- **本番運用ROI**: 119.2% (未勝利除外、298R)
+
+###  死特徴量の最終分析
+| 特徴量 | 状態 | v16 対応 |
+|--------|------|------|
+| `prev_race_pace_diff` | 0%充填 | **削除** (JRDB SED は15.2%しかカバーできず修復困難) |
+| `gaisha_rank` | 0%充填 | **削除** (`jrdb_ranch_rank` 94.2%充填で代替済み) |
+| `course_renovated` | 1.3%充填 | **永久化適用済 (4/27)** (京都2万件を活性化) |
+| `jrdb_tb_homestr_inner` | 99.7%充填 | **健全** (修復不要) |
+
+###  戦略 自動化 (4/27 適用済)
+**実装場所**: `tools/race_auto_notify.py` (`predict_and_notify` 関数内)
+
+**フィルタ内容**:
+- `06_特別` (G/L/OPEN特別 ではない平場特別) を除外: -9,470円損失源
+- `京都` を除外: データ蓄積待ち、5/11 以降に再評価
+- `条件E` (頭数<=7) を除外: サンプル少
+- `条件B` (重~不馬場) を除外: サンプル少
+
+**期待効果**: ROI 119.2%  140.3% (+21.1pt)
+**シミュレーション**: 298R  242R, 損益 +28,240円改善
+
+###  1レース再予測ツール (4/26 動作確認)
+**ファイル**: `tools/predict_one_race.py`
+**用途**: 取消発生時、1レース指定で予測再実行
+**動作確認**: 4/26 東京11Rフローラ Sで成功
+
+```bash
+python tools/predict_one_race.py 202605020211
+```
+
+###  v16 ロードマップ
+- **Week 1 (4/27-5/3)**: 基盤修正 + 戦略運用開始
+- **Week 2 (5/4-5/10)**: 死特徴量整理 + 訓練データ拡張
+- **Week 3 (5/11-5/17)**: v16 学習実行 (Ryzen 7 + 32GB + 16GB GPU で2-3時間)
+- **Week 4 (5/18-5/24)**: A/B検証  5/末 v16 本番投入
+
+###  v16 目標
+- **AUC**: 0.895+ (v15: 0.8939)
+- **特徴量数**: 148 (-2)
+- **ROI** (戦略込み): 140%+
+- **京都ROI**: 80%+ (course_renovated 永久化効果)
+- **本番切替**: 5月末
+
+###  既知のバグ
+- jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復)
+- predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
+- cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)
+- nightly_sanity の SCRAPER-GUARD 認識バグ (誤検知)
+- jra_payouts.csv が4/6で更新停止
+- JRDB データの2026年分が未取得 (race_id 列なしの可能性)
+
+###  重要ファイル
+- 1レース予測: `tools/predict_one_race.py`
+- 戦略適用: `tools/race_auto_notify.py` (4/27 修正)
+- course_renovated: `tools/predict_core.py` 2061-2073 (4/27 修正)
+- v16訓練ベース: `train/train_v15_master.py`, `train/retrain_v16.py`
+- 訓練データ: `data/_v15_optuna_df_cache.pkl.gz` (104MB)
+- TODO: `V16_TODO_NEXT_WEEK.md`
+
+###  バックアップ
+- 4/27 修正前のバックアップ: `*.bak_20260427`
+  - tools/race_auto_notify.py
+  - tools/predict_core.py
+  - train/features_v15_new.py
+  - data/cumulative_results.csv
+  - CLAUDE.md
+
+---
+
+## 🚀 v16 Development Status (2026-04-27 更新)
+
+### 📊 v15 現状の最終確定
+- **AUC**: 0.8939 (LightGBM Booster), 0.8858 (4-model ensemble)
+- **特徴量数**: 150 (Booster実効145)
+- **訓練データ**: 527,280行 (2015/01 - 2025/12)
+- **本番運用ROI**: 119.2% (未勝利除外、298R)
+
+### 🔬 死特徴量の最終分析
+| 特徴量 | 状態 | v16 対応 |
+|--------|------|------|
+| `prev_race_pace_diff` | 0%充填 | **削除** (JRDB SED は15.2%しかカバーできず修復困難) |
+| `gaisha_rank` | 0%充填 | **削除** (`jrdb_ranch_rank` 94.2%充填で代替済み) |
+| `course_renovated` | 1.3%充填 | **永久化適用済 (4/27)** (京都2万件を活性化) |
+| `jrdb_tb_homestr_inner` | 99.7%充填 | **健全** (修復不要) |
+
+### 🛠 戦略⑦ 自動化 (4/27 適用済)
+**実装場所**: `tools/race_auto_notify.py` (`predict_and_notify` 関数内)
+
+**フィルタ内容**:
+- `06_特別` (G/L/OPEN特別 ではない平場特別) を除外: -9,470円損失源
+- `京都` を除外: データ蓄積待ち、5/11 以降に再評価
+- `条件E` (頭数<=7) を除外: サンプル少
+- `条件B` (重~不馬場) を除外: サンプル少
+
+**期待効果**: ROI 119.2% → 140.3% (+21.1pt)
+**シミュレーション**: 298R → 242R, 損益 +28,240円改善
+
+### 🎯 1レース再予測ツール (4/26 動作確認)
+**ファイル**: `tools/predict_one_race.py`
+**用途**: 取消発生時、1レース指定で予測再実行
+**動作確認**: 4/26 東京11Rフローラ Sで成功
+
+```bash
+python tools/predict_one_race.py 202605020211
+```
+
+### 📋 v16 ロードマップ
+- **Week 1 (4/27-5/3)**: 基盤修正 + 戦略⑦運用開始
+- **Week 2 (5/4-5/10)**: 死特徴量整理 + 訓練データ拡張
+- **Week 3 (5/11-5/17)**: v16 学習実行 (Ryzen 7 + 32GB + 16GB GPU で2-3時間)
+- **Week 4 (5/18-5/24)**: A/B検証 → 5/末 v16 本番投入
+
+### 🎯 v16 目標
+- **AUC**: 0.895+ (v15: 0.8939)
+- **特徴量数**: 148 (-2)
+- **ROI** (戦略⑦込み): 140%+
+- **京都ROI**: 80%+ (course_renovated 永久化効果)
+- **本番切替**: 5月末
+
+### 🔍 既知のバグ
+- jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復)
+- predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
+- cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)
+- nightly_sanity の SCRAPER-GUARD 認識バグ (誤検知)
+- jra_payouts.csv が4/6で更新停止
+- JRDB データの2026年分が未取得 (race_id 列なしの可能性)
+
+### 📁 重要ファイル
+- 1レース予測: `tools/predict_one_race.py`
+- 戦略⑦適用: `tools/race_auto_notify.py` (4/27 修正)
+- course_renovated: `tools/predict_core.py` 2061-2073 (4/27 修正)
+- v16訓練ベース: `train/train_v15_master.py`, `train/retrain_v16.py`
+- 訓練データ: `data/_v15_optuna_df_cache.pkl.gz` (104MB)
+- TODO: `V16_TODO_NEXT_WEEK.md`
+
+### 💾 バックアップ
+- 4/27 修正前のバックアップ: `*.bak_20260427`
+  - tools/race_auto_notify.py
+  - tools/predict_core.py
+  - train/features_v15_new.py
+  - data/cumulative_results.csv
+  - CLAUDE.md

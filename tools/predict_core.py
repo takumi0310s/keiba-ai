@@ -1559,8 +1559,8 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['prev_last3f'] = df.get('上がり3F', pd.Series([35.5] * len(df))).fillna(35.5)
         df['prev_pass1'] = df.get('通過順平均', pd.Series([8.0] * len(df))).fillna(8.0)
         df['prev_pass4'] = df.get('通過順4', pd.Series([8] * len(df))).fillna(8)
-        df['prev_margin'] = 0
-        df['prev_prize'] = 0
+        df['prev_margin'] = 0.0
+        df['prev_prize'] = 0.0
 
         df['prev2_finish'] = df['prev2_finish'].fillna(5) if 'prev2_finish' in df.columns else 5
         df['prev3_finish'] = df['prev3_finish'].fillna(5) if 'prev3_finish' in df.columns else 5
@@ -1575,8 +1575,8 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['top3_count_3r'] = df['top3_count_3r'].fillna(0) if 'top3_count_3r' in df.columns else 0
         df['top3_count_5r'] = df['top3_count_5r'].fillna(0) if 'top3_count_5r' in df.columns else 0
         df['finish_trend'] = df['finish_trend'].fillna(0) if 'finish_trend' in df.columns else 0
-        df['dist_change'] = 0
-        df['dist_change_abs'] = 0
+        df['dist_change'] = 0.0
+        df['dist_change_abs'] = 0.0
         df['rest_days'] = df.get('前走間隔', pd.Series([30] * len(df))).fillna(30)
         if '前走間隔' in df.columns:
             df['rest_days'] = df['前走間隔']
@@ -1667,7 +1667,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                 df.loc[df.index[idx_h], 'prev_prize'] = hs.get('last_prize', 0)
         df['dist_change_abs'] = df['dist_change'].abs()
 
-        df['prev_agari_relative'] = 0
+        df['prev_agari_relative'] = 0.0
 
         # Training features
         if 'training_time_filled' not in df.columns or (df.get('training_time_filled', pd.Series([0])) == 0).all():
@@ -1717,7 +1717,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
 
         # ===== Stable comment score =====
         if 'stable_comment_score' not in df.columns:
-            df['stable_comment_score'] = 0
+            df['stable_comment_score'] = 0.0
         if race_id and (df['stable_comment_score'] == 0).all():
             try:
                 from scrape_training import fetch_stable_comments
@@ -1810,7 +1810,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['age_season'] = df['馬齢'] * 10 + df['season']
         df['carry_per_weight'] = df['斤量'] / df['馬体重'].clip(1) * 100
         df['horse_num_ratio'] = df['馬番'] / df['頭数'].clip(1)
-        df['weight_diff_abs'] = 0
+        df['weight_diff_abs'] = 0.0
         df['surface_enc'] = df['芝ダート_enc']
         df['jockey_wr_calc'] = df['騎手勝率']
         df['jockey_course_wr_calc'] = df['騎手勝率']
@@ -1855,10 +1855,10 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                 mr = get_moisture_rate(jra_track_info, surface_type)
                 df['moisture_rate'] = mr if mr is not None else 0
             except Exception:
-                df['moisture_rate'] = 0
+                df['moisture_rate'] = 0.0
         else:
-            df['cushion_value'] = 0
-            df['moisture_rate'] = 0
+            df['cushion_value'] = 0.0
+            df['moisture_rate'] = 0.0
 
         if weather_info:
             df['temperature'] = weather_info.get('temperature', 0)
@@ -1866,10 +1866,10 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
             df['wind_speed'] = weather_info.get('wind_speed', 0)
             df['precipitation'] = weather_info.get('precipitation', 0)
         else:
-            df['temperature'] = 0
-            df['humidity'] = 0
-            df['wind_speed'] = 0
-            df['precipitation'] = 0
+            df['temperature'] = 0.0
+            df['humidity'] = 0.0
+            df['wind_speed'] = 0.0
+            df['precipitation'] = 0.0
 
     # ===== V12新特徴量 =====
 
@@ -2069,8 +2069,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                 if cur_course == _rc:
                     if _race_ym >= _reno_ym:
                         df['post_renovation_flag'] = 1
-                    if _reno_ym <= _race_ym < _reno_ym + 12:
-                        df['course_renovated'] = 1
+                        df['course_renovated'] = 1  # v16: 永久フラグ化
 
         # 騎手変更 + 騎手×馬相性（get_horse_statsで取得済みのjockey_resultsを使用）
         # リーディング上位騎手リスト（jockey_change_to_top判定用）

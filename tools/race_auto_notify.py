@@ -168,6 +168,24 @@ def predict_and_notify(race_info, date_str):
             print("    Skipping <=1000m")
             return
 
+        # ===== 戦略⑦ フィルタ (race_name + course) =====
+        race_name_str = str(race_name)
+        course_str = str(rinfo.get('course', ''))
+
+        # 1. 06_特別 (G/L/OPEN特別 ではない平場特別) を除外
+        is_graded = any(g in race_name_str for g in ['G1', 'G2', 'G3', 'GⅠ', 'GⅡ', 'GⅢ'])
+        is_listed = any(s in race_name_str for s in ['L)', '(L)', 'OP)', '(OP)'])
+        is_open_tokubetsu = any(s in race_name_str for s in ['杯', '賞', 'ステークス', 'カップ', 'ハンデ'])
+        if '特別' in race_name_str and not (is_graded or is_listed or is_open_tokubetsu):
+            print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
+            return
+
+        # 2. 京都を除外 (データ蓄積待ち、5/11 以降に再評価)
+        if course_str == '京都':
+            print(f"    [STRATEGY7] Skip 京都: データ蓄積待ち")
+            return
+        # ===== 戦略⑦ フィルタ ここまで =====
+
         # Fetch odds (full = odds + pop_rank, save base cache for change features)
         odds_full = fetch_realtime_odds_full(race_id)
         odds_dict = {u: v['odds'] for u, v in odds_full.items()}
@@ -247,6 +265,16 @@ def predict_and_notify(race_info, date_str):
 
         # Condition
         cond_key, cond_profile = classify_race_condition(rinfo, num_horses)
+
+        # ===== 戦略⑦ フィルタ続き (条件判定後) =====
+        if cond_key == 'E':
+            print(f"    [STRATEGY7] Skip 条件E (頭数<=7)")
+            return
+        if cond_key == 'B':
+            print(f"    [STRATEGY7] Skip 条件B (重~不馬場)")
+            return
+        # ===== 戦略⑦ フィルタ続き ここまで =====
+
         bet_type = cond_profile['bet_type']
 
         # Generate bets
