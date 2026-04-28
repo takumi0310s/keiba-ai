@@ -126,7 +126,7 @@ def compute_weekly_auc(df, n_weeks=4):
         return None, "No date column found"
 
     df = df.copy()
-    df['_date'] = pd.to_datetime(df[date_col], errors='coerce')
+    df['_date'] = pd.to_datetime(df[date_col].astype(str), format='%Y%m%d', errors='coerce')
     df = df.dropna(subset=['_date', score_col, hit_col])
 
     df[score_col] = pd.to_numeric(df[score_col], errors='coerce')
@@ -207,7 +207,7 @@ def compute_weekly_roi(df, n_weeks=4):
         return None
 
     df = df.copy()
-    df['_date'] = pd.to_datetime(df[date_col], errors='coerce')
+    df['_date'] = pd.to_datetime(df[date_col].astype(str), format='%Y%m%d', errors='coerce')
     df = df.dropna(subset=['_date'])
 
     df['_week'] = df['_date'].dt.isocalendar().week.astype(int)
@@ -366,7 +366,7 @@ def run_drift_detection(dry_run=False, n_weeks=4):
 
         if date_col:
             df_copy = df.copy()
-            df_copy['_date'] = pd.to_datetime(df_copy[date_col], errors='coerce')
+            df_copy['_date'] = pd.to_datetime(df_copy[date_col].astype(str), format='%Y%m%d', errors='coerce')
             df_copy = df_copy.dropna(subset=['_date'])
             cutoff = df_copy['_date'].max() - timedelta(weeks=n_weeks)
             recent = df_copy[df_copy['_date'] >= cutoff]
