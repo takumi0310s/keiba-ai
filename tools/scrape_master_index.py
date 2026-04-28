@@ -323,9 +323,11 @@ def main():
     if args.limit > 0:
         all_ids = all_ids[:args.limit]
 
-    # Load existing to skip (check all 3 CSVs)
+    # Load existing to skip (check ONLY MASTER_INDEX_CSV - bug fix 4/28)
+    # Old code: checked all 3 CSVs, but TRACK_BIAS/RACE_LAP had 2020-2025 race_ids
+    # while MASTER_INDEX only had 2023-2025, causing 2020-2022 to be wrongly skipped
     existing_ids = set()
-    for csv_path in [MASTER_INDEX_CSV, TRACK_BIAS_CSV, RACE_LAP_CSV]:
+    for csv_path in [MASTER_INDEX_CSV]:  # bug fix: master_index only
         if os.path.exists(csv_path):
             try:
                 df_exist = pd.read_csv(csv_path, encoding='utf-8-sig',
