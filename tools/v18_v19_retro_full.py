@@ -73,14 +73,14 @@ def predict_one_race(race_id, model_data, v18_lgb, v18_xgb, v19_lgb, v19_xgb):
             race_df = add_v162_safe(race_df)
             race_df = add_v17_features_to_race_df(race_df, has_nk_race_id=True)
 
-            # v18 inference
+            # v18 inference (DMatrix with feature_names for xgb)
             feats_18 = v18_lgb.feature_name()
             for f in feats_18:
                 if f not in race_df.columns:
                     race_df[f] = 0
-            X18 = race_df[feats_18].fillna(0).values
-            p18_lgb = v18_lgb.predict(X18)
-            p18_xgb = v18_xgb.predict(xgb.DMatrix(X18))
+            X18df = race_df[feats_18].apply(pd.to_numeric, errors='coerce').fillna(0)
+            p18_lgb = v18_lgb.predict(X18df.values)
+            p18_xgb = v18_xgb.predict(xgb.DMatrix(X18df.values, feature_names=feats_18))
             p18 = (p18_lgb + p18_xgb) / 2
 
             # v19 inference
@@ -88,10 +88,10 @@ def predict_one_race(race_id, model_data, v18_lgb, v18_xgb, v19_lgb, v19_xgb):
             for f in feats_19:
                 if f not in race_df.columns:
                     race_df[f] = 0
-            X19 = race_df[feats_19].fillna(0).values
-            p19_lgb = v19_lgb.predict(X19)
+            X19df = race_df[feats_19].apply(pd.to_numeric, errors='coerce').fillna(0)
+            p19_lgb = v19_lgb.predict(X19df.values)
             if v19_xgb is not None:
-                p19_xgb = v19_xgb.predict(xgb.DMatrix(X19))
+                p19_xgb = v19_xgb.predict(xgb.DMatrix(X19df.values, feature_names=feats_19))
                 p19 = (p19_lgb + p19_xgb) / 2
             else:
                 p19 = p19_lgb
