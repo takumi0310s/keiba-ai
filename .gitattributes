@@ -1,0 +1,8 @@
+# LightGBM model files: prevent CRLF conversion (causes "Model format error")
+data/v17/models/*.txt -text
+data/v18/models/*.txt -text
+data/_model_bak_*/*.txt -text
+
+# XGBoost model JSON: keep as-is
+data/v17/models/*.json -text
+data/v18/models/*.json -text
