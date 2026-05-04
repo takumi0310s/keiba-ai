@@ -1,0 +1,130 @@
+﻿[
+    {
+        "TaskName":  "Keiba-AM3FireCheck",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\am3_fire_check.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  "C:\\Users\\takum\\keiba-ai"
+    },
+    {
+        "TaskName":  "Keiba-AM6FireCheck",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "\"C:\\Users\\takum\\keiba-ai\\am6_fire_check.bat\"",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-AM8FireCheck",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "\"C:\\Users\\takum\\keiba-ai\\am8_fire_check.bat\"",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-FridayWeekendScrape",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\friday_weekend_scrape.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-MorningDigest",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "\"C:\\Users\\takum\\keiba-ai\\morning_dashboard.bat\"",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-Morning_Sat",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\tools\\morning_top_races.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-Morning_Sun",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\tools\\morning_top_races.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-NightlySanity",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "\"C:\\Users\\takum\\keiba-ai\\nightly_sanity_check.bat\"",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-PreFireCheck",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "\"C:\\Users\\takum\\keiba-ai\\pre_fire_check.bat\"",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "Keiba-TybPublishMonitor",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\tools\\tyb_publish_monitor.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "KeibaAI_DriftDetector",
+        "TaskPath":  "\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\drift_detector.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "DailyJrdbKyi",
+        "TaskPath":  "\\keiba-ai\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\tools\\daily_jrdb_kyi.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "DailyPredict",
+        "TaskPath":  "\\keiba-ai\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\daily_predict_watchdog.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "DailyPremiumScrape",
+        "TaskPath":  "\\keiba-ai\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\daily_premium_scrape.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "DailyResultsEvening",
+        "TaskPath":  "\\keiba-ai\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\daily_results.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    },
+    {
+        "TaskName":  "DailyResults_Sat",
+        "TaskPath":  "\\keiba-ai\\",
+        "ActionId":  "",
+        "Execute":  "C:\\Users\\takum\\keiba-ai\\daily_results.bat",
+        "Arguments":  null,
+        "WorkingDirectory":  null
+    }
+]
