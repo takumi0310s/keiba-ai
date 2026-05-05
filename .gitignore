@@ -92,6 +92,19 @@ data/_emergency_backup/
 # Archive directory (old logs / backups / unused models)
 archive/old_logs/
 archive/old_backups/
+archive/old_models_*/*.pkl
+archive/old_models_*/*.pkl.gz
+
+# Old model files (archived 5/5, Session #19)
+keiba_model_v9_nar.pkl
+keiba_model_v12_*.pkl*
+keiba_model_v13_*.pkl*
+keiba_model_v131_*.pkl*
+keiba_model_v132_*.pkl*
+keiba_model_v133_*.pkl*
+keiba_model_v134_*.pkl*
+keiba_model_v135_*.pkl*
+keiba_model_v141_*.pkl*
 
 # Prototype scripts (now in tools/)
 predict_one_race_test.py
