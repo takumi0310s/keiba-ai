@@ -1,0 +1,441 @@
+{
+  "generated": "2026-05-05 18:31:04",
+  "user_cumulative": [
+    {
+      "date": "2026-04-12",
+      "cumulative_jpy": 23480,
+      "label": "GW前 累計"
+    },
+    {
+      "date": "2026-05-02",
+      "cumulative_jpy": 14660,
+      "label": "5/2 USER 投資 -8,820"
+    },
+    {
+      "date": "2026-05-03",
+      "cumulative_jpy": 14140,
+      "label": "5/3 USER 投資 -520"
+    },
+    {
+      "date": "2026-05-09",
+      "cumulative_jpy": 14140,
+      "label": "5/9 投資前 (現在)"
+    }
+  ],
+  "withdraw": {
+    "line_jpy": -50000,
+    "current_jpy": 14140,
+    "margin_jpy": 64140,
+    "margin_ratio": 0.8728905824714208
+  },
+  "phase_25": {
+    "total_planned": 47,
+    "session_done": 33,
+    "remaining_total": 14,
+    "remaining_done": 2,
+    "remaining_pending": 11,
+    "remaining_manual": 1,
+    "completion_pct": 74.5,
+    "tasks": [
+      {
+        "prio": "高",
+        "id": "H1",
+        "task": "tools/scrape_nar_today.py 実装",
+        "status": "done"
+      },
+      {
+        "prio": "高",
+        "id": "H2",
+        "task": "tools/scrape_nar_results.py 実装",
+        "status": "done"
+      },
+      {
+        "prio": "高",
+        "id": "H3",
+        "task": "5/8 21:00 後 12R race_name 確認",
+        "status": "manual"
+      },
+      {
+        "prio": "中",
+        "id": "M1",
+        "task": "TYB publish 観測 完了判定",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M2",
+        "task": "feature distribution shift 調査 (BT vs prod)",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M3",
+        "task": "race-level normalize 本番統合 (predict_core.py)",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M4",
+        "task": "chihou_races_2020_2025.csv 生成",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M5",
+        "task": "条件別 NAR ROI 計算",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M6",
+        "task": "v18/v19 5/16 試行 (条件達成後)",
+        "status": "pending"
+      },
+      {
+        "prio": "中",
+        "id": "M7",
+        "task": "NAR 5/12-5/15 paper → 5/16 試行",
+        "status": "pending"
+      },
+      {
+        "prio": "低",
+        "id": "L1",
+        "task": "v15.1 features 拡張 (ra_score/sc_score 復活)",
+        "status": "pending"
+      },
+      {
+        "prio": "低",
+        "id": "L2",
+        "task": "v20 統合モデル 設計 (JRA + NAR 共通 52+)",
+        "status": "pending"
+      },
+      {
+        "prio": "低",
+        "id": "L3",
+        "task": "古いモデル削除 (v9/v12/v134)",
+        "status": "pending"
+      },
+      {
+        "prio": "低",
+        "id": "L4",
+        "task": "predict_v20.py 統合 inference",
+        "status": "pending"
+      }
+    ]
+  },
+  "batch_daily": [
+    {
+      "date": "2026-03-14",
+      "races": 36,
+      "investment": 25200,
+      "payout": 0,
+      "profit": -25200,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-03-15",
+      "races": 35,
+      "investment": 24500,
+      "payout": 0,
+      "profit": -24500,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-03-21",
+      "races": 35,
+      "investment": 24500,
+      "payout": 0,
+      "profit": -24500,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-03-28",
+      "races": 32,
+      "investment": 22400,
+      "payout": 0,
+      "profit": -22400,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-04",
+      "races": 22,
+      "investment": 15400,
+      "payout": 0,
+      "profit": -15400,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-05",
+      "races": 1,
+      "investment": 700,
+      "payout": 0,
+      "profit": -700,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-11",
+      "races": 35,
+      "investment": 24500,
+      "payout": 0,
+      "profit": -24500,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-12",
+      "races": 34,
+      "investment": 23800,
+      "payout": 0,
+      "profit": -23800,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-18",
+      "races": 35,
+      "investment": 24500,
+      "payout": 0,
+      "profit": -24500,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-19",
+      "races": 35,
+      "investment": 24500,
+      "payout": 0,
+      "profit": -24500,
+      "roi_pct": 0.0
+    },
+    {
+      "date": "2026-04-25",
+      "races": 35,
+      "investment": 24500,
+      "payout": 6120,
+      "profit": -18380,
+      "roi_pct": 25.0
+    },
+    {
+      "date": "2026-04-26",
+      "races": 50,
+      "investment": 35000,
+      "payout": 18530,
+      "profit": -16470,
+      "roi_pct": 52.9
+    },
+    {
+      "date": "2026-05-02",
+      "races": 33,
+      "investment": 23100,
+      "payout": 7410,
+      "profit": -15690,
+      "roi_pct": 32.1
+    },
+    {
+      "date": "2026-05-03",
+      "races": 34,
+      "investment": 23800,
+      "payout": 7450,
+      "profit": -16350,
+      "roi_pct": 31.3
+    }
+  ],
+  "schtasks": {
+    "total": 32,
+    "nar_count": 5,
+    "jra_count": 27,
+    "ready": 0,
+    "disabled": 0,
+    "tasks": [
+      {
+        "name": "Keiba-AM3FireCheck",
+        "next": "2026/05/06 3:15:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-AM6FireCheck",
+        "next": "2026/05/06 6:15:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-AM8FireCheck",
+        "next": "2026/05/06 8:50:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-FridayWeekendScrape",
+        "next": "2026/05/08 10:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-MorningDigest",
+        "next": "2026/05/06 7:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-Morning_Sat",
+        "next": "2026/05/09 6:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-Morning_Sun",
+        "next": "2026/05/10 6:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-NarDailyPredict",
+        "next": "2026/05/06 17:00:00",
+        "status": "準備完了",
+        "kind": "NAR"
+      },
+      {
+        "name": "Keiba-NarDailyResults",
+        "next": "2026/05/05 21:30:00",
+        "status": "準備完了",
+        "kind": "NAR"
+      },
+      {
+        "name": "Keiba-NarDailyScrape",
+        "next": "2026/05/06 16:30:00",
+        "status": "準備完了",
+        "kind": "NAR"
+      },
+      {
+        "name": "Keiba-NarLiveOddsRefresh",
+        "next": "2026/05/05 19:00:00",
+        "status": "準備完了",
+        "kind": "NAR"
+      },
+      {
+        "name": "Keiba-NarMidDayCalendar",
+        "next": "2026/05/06 13:00:00",
+        "status": "準備完了",
+        "kind": "NAR"
+      },
+      {
+        "name": "Keiba-NightlySanity",
+        "next": "2026/05/05 23:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-PreFireCheck",
+        "next": "2026/05/06 2:55:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-RaceDayReport_Sat",
+        "next": "2026/05/09 18:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-RaceDayReport_Sun",
+        "next": "2026/05/10 18:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "Keiba-TybPublishMonitor",
+        "next": "2026/05/05 19:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "KeibaAI_DriftDetector",
+        "next": "2026/05/11 8:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyJrdbKyi",
+        "next": "2026/05/06 6:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyPredict",
+        "next": "2026/05/06 8:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyPremiumScrape",
+        "next": "2026/05/06 3:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyResultsEvening",
+        "next": "2026/05/05 20:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyResults_Sat",
+        "next": "2026/05/09 18:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\DailyResults_Sun",
+        "next": "2026/05/10 18:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\JrdbHealthCheck_Sat",
+        "next": "2026/05/09 7:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\JrdbHealthCheck_Sun",
+        "next": "2026/05/10 7:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\Keiba-ScrapeProgress",
+        "next": "2026/05/06 7:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\Keiba-WeeklyScrapeResume",
+        "next": "2026/05/11 6:30:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\ProcessWatchdog",
+        "next": "N/A",
+        "status": "無効",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\RaceAutoNotify_Sat",
+        "next": "2026/05/09 8:45:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\RaceAutoNotify_Sun",
+        "next": "2026/05/10 8:45:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      },
+      {
+        "name": "keiba-ai\\WeeklyReport",
+        "next": "2026/05/11 8:00:00",
+        "status": "準備完了",
+        "kind": "JRA"
+      }
+    ]
+  }
+}
