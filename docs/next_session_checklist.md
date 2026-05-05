@@ -1,20 +1,110 @@
 # 次セッション 起動チェックリスト
 
-**用途**: 5/8 夜 or 5/9 朝、もしくはそれ以降のセッション 開始時
+**最終更新**: 2026-05-06 00:30 (Session #25 = Phase 2.5+ 最終総括後)
+**ベース commit**: 86cd1da5 (緊急 3 件対応) + Session #25 commit
 
 ---
 
 ## 0. 即読み (1 分)
 
 ```
-docs/HANDOFF_5_5_TO_5_9.md     ← 引き継ぎ書 v2 (これ 1 つで現状把握)
+docs/PHASE_2_5_PLUS_FINAL_RECAP_5_5.md     ← 51.5h 全総括 (寝る前最終、これ 1 つで全体像)
+docs/UPDATE_INVENTORY_20260505.md          ← 6 領域棚卸し (緊急 3 件は対応済)
+docs/HANDOFF_5_5_TO_5_9.md                 ← 引き継ぎ書 v2 (5/9 投資詳細)
+docs/system_self_diagnosis_5_5.md          ← システム自己診断 (改善余地 リスト)
 ```
-
-特に section 0 (v1 訂正)、section 1 (累計)、section 3 (5/9 戦略) を確認。
 
 ---
 
-## 1. 環境 同期 (2 分)
+## 1. 5/6 (火) 朝 - admin 1 コマンドのみ
+
+### 必須 (1 分)
+
+```powershell
+# 管理者として PowerShell を起動して実行
+PowerShell -ExecutionPolicy Bypass -File C:\Users\takum\keiba-ai\tools\register_process_watchdog_v2.ps1
+```
+
+これで ProcessWatchdog v2 切替完了 (Disabled v1 → Enable + 静音化済 v2)。
+
+### 確認 (任意、3 分)
+
+```powershell
+Get-ScheduledTask -TaskName "ProcessWatchdog" | Select TaskName, State
+# State=Ready で OK
+
+# 5 分後にログ確認
+Get-Content C:\Users\takum\keiba-ai\logs\watchdog_v2_20260506.log -Tail 20
+```
+
+---
+
+## 2. 5/6 (火) 平日 隙間時間 推奨 (~3h で済む quick wins)
+
+`docs/system_self_diagnosis_5_5.md` C 推奨アクション参照。
+
+| # | タスク | 工数 |
+|---|--------|------|
+| 1 | 累計閾値 Discord alert 実装 (-10k/-30k/-50k) | 30min |
+| 2 | memory/MEMORY.md 新設 (Claude session 圧縮対策) | 30min |
+| 3 | data/v18/index.md + data/results/index.md | 45min |
+| 4 | Cookie 失効時 Discord alert | 30min |
+
+これらは 5/9 当日に必須ではないが、心理安全装置として効果絶大。
+
+---
+
+## 3. 5/7 (水) - 5/8 (金) 平日
+
+### 高優先度 (5/9 投入準備)
+
+- 🟠 SED260503 取得 + KKA/KAB 連結再実行 (15min、5/9 朝の前走成績結合率に直結)
+- 🟠 speed_index 4-5 月 backfill (30min、条件 C/D 予測精度に直結)
+- 🟠 戦略⑦ 5/2-5/3 retro 完全版 (2h、5/9 投入直前必須)
+- 🟠 cumulative_results.csv 書き込みバグ修正 (4h、top1_num/score 95% 欠損)
+
+### 5/8 (金) 21:00 後 (1 度だけ、必須)
+
+```bash
+cd C:\Users\takum\keiba-ai
+
+# 12R race_name 確認
+python -c "
+import requests, re
+for rid in ['202604010312','202605020512','202608030512']:
+    r = requests.get(f'https://race.netkeiba.com/race/shutuba.html?race_id={rid}', headers={'User-Agent':'Mozilla/5.0'})
+    m = re.search(r'<h1[^>]*>([^<]+)</h1>', r.text)
+    print(rid, '→', (m.group(1).strip() if m else 'NOT_FOUND'))
+"
+
+# Cookie 健全性
+python tools/refresh_cookie.py --check
+```
+
+---
+
+## 4. 5/9 (土) 本番フロー
+
+### 朝 (06:30 - 09:00)
+
+1. `data/results/20260509_pat_checklist.md` を**最初に開く** (順番に従って投票完了まで進める)
+2. 06:30 Keiba-Morning_Sat 自動 → Discord #bets 通知 確認
+3. 08:00 DailyPredict (watchdog) 自動 → 35 races 完了
+4. 09:00 12R race_name 確認 (1 勝クラスかどうか目視)
+
+### 昼 (14:00 - 15:30)
+
+- PAT 投票 (採用 R × 700 円、上限 2,100 円)
+- 11R 全 3 場除外 (新潟駿風 S 距離不適合 / 東京エプソム C G3 / 京都京都新聞杯 G2)
+
+### 夜 (18:00 - 20:30)
+
+- 18:00 DailyResults_Sat + Keiba-RaceDayReport_Sat 自動 → Discord 結果通知
+- 20:30 `data/v18/post_5_9_improvement_template.md` 振り返り埋め (5/16 改善材料化)
+
+---
+
+## 5. 環境同期 (毎セッション開始時、2 分)
 
 ```bash
 cd C:\Users\takum\keiba-ai
@@ -22,144 +112,43 @@ git pull --rebase --autostash origin main
 git log --oneline -5
 ```
 
-最新 commit が **2b6dc4eb (Phase 2.5+: 5/9 本番最終調整)** か、それより新しいか確認。
-本書 base = 2b6dc4eb (Session #14)。
-
-Session #15 (本 振り返り) commit を含む場合は **次の number** が最新。
+最新 commit が **86cd1da5 以降** か確認。
 
 ---
 
-## 2. 重要 doc 確認 (5 分)
+## 6. 状態 chk (5/9 朝なら必須)
 
-5/9 投資 セッション なら:
-
-| 順 | doc | 用途 |
-|----|-----|------|
-| 1 | `data/results/20260509_pat_checklist.md` | **5/9 朝 まずこれ** (投票チェックリスト) |
-| 2 | `data/results/20260509_operation_guide.md` | 時系列フロー |
-| 3 | `data/results/20260509_pre_check.md` | 5/8 21:00 後 確認手順 |
-| 4 | `data/v18/risk_management_5_9.md` | 撤退ライン |
-| 5 | `data/results/20260509_final_plan_v2.md` | 採用方針 確定 |
-
-5/9 後 振り返り セッション なら:
-
-| 順 | doc | 用途 |
-|----|-----|------|
-| 1 | `data/results/20260509_summary.md` (or _auto.md) | 当日結果 |
-| 2 | `data/v18/post_5_9_improvement_template.md` | 振り返りテンプレ (埋めて 5/16 改善材料化) |
-| 3 | `data/v18/risk_management_5_9.md` | 5/10 判断基準 |
-
-5/12+ NAR / Phase 2.5+ セッション なら:
-
-| 順 | doc | 用途 |
-|----|-----|------|
-| 1 | `data/v18/jra_nar_integration_plan.md` | 5/12-5/24 並列運用 plan |
-| 2 | `data/v18/nar_pipeline_design.md` | NAR pipeline 詳細 |
-| 3 | `docs/HANDOFF_5_5_TO_5_9.md` section 4 | Phase 2.5 残タスク |
-
----
-
-## 3. 状態 chk (3 分、5/9 朝なら必須)
-
-### 3.1 Cookie 健全性
+### 6.1 Cookie
 
 ```bash
 python tools/refresh_cookie.py --check
 # expected: [OK] Premium 認証 OK
-# 切れていたら: python tools/refresh_cookie.py --auto (期限切れ時のみ自動)
+# 切れていたら: python tools/refresh_cookie.py --auto
 ```
 
-### 3.2 schtasks Ready 状態
+### 6.2 schtasks Ready 状態
 
 ```powershell
-Get-ScheduledTask -TaskName 'Keiba-Morning_Sat','DailyPredict','DailyResults_Sat','Keiba-RaceDayReport_Sat','Keiba-NarDailyPredict' | ft TaskName, State, @{N='NextRun';E={(Get-ScheduledTaskInfo $_).NextRunTime}}
+Get-ScheduledTask -TaskName 'Keiba-Morning_Sat','DailyPredict','DailyResults_Sat','Keiba-RaceDayReport_Sat','Keiba-NarDailyPredict','ProcessWatchdog' | ft TaskName, State, @{N='NextRun';E={(Get-ScheduledTaskInfo $_).NextRunTime}}
 ```
 
-5/9 当日 必要なのは Morning_Sat (06:30) / DailyPredict (08:00) / DailyResults_Sat (18:00) / RaceDayReport_Sat (18:00)。
-全 Ready で next が 5/9 当日であれば OK。
+5/9 (土) 朝なら Morning_Sat / DailyPredict / DailyResults_Sat / RaceDayReport_Sat の State=Ready かつ NextRun が 5/9 当日。
+ProcessWatchdog は 5/6 admin 実行後に State=Ready 確認。
 
-### 3.3 Discord 直近通知 確認
-
-- Discord アプリ で #bets / #updates タブ 開く
-- 最新通知が 24 時間以内 (Cookie/morning/results notify_done.py 等の trace)
-- 5/8 21:00 後 / 5/9 06:30+ で受信あれば OK
-
-### 3.4 daily_predictions/2026MMDD.csv 直近確認
+### 6.3 daily_predictions/2026MMDD.csv 直近確認
 
 ```bash
 ls -la data/daily_predictions/ | tail -5
 ```
 
-5/9 09:00 以降なら 20260509.csv が 7-11 KB で存在 期待。
+### 6.4 Discord 直近通知 確認
+
+- Discord アプリで #bets / #updates タブ開く
+- 最新通知が 24 時間以内 (Cookie/morning/results notify_done.py 等の trace)
 
 ---
 
-## 4. 静音化動作確認 (1 分、任意)
-
-最近 ターミナルが見えてないこと:
-
-```powershell
-# 過去 24 時間で TYB monitor が 何回発火したか (毎時 X:30 = 24 回 想定)
-Get-EventLog -LogName 'Microsoft-Windows-TaskScheduler/Operational' -After (Get-Date).AddDays(-1) | Where-Object {$_.Message -match 'TybPublishMonitor'} | Measure-Object
-# OR
-ls logs/tyb_publish*.log -lt | head -3
-```
-
-または `data/tyb_publish_log.csv` の rows が 5/4 以降で増えているか:
-
-```bash
-python -c "import pandas as pd; df = pd.read_csv('data/tyb_publish_log.csv'); print(len(df), 'rows'); print(df.tail(5))"
-```
-
----
-
-## 5. 並行 session 確認 (任意)
-
-別 session が pre/post で動いている可能性:
-
-```bash
-git log --oneline --since="6 hours ago" 2>&1
-# 自分の commit + 他 session commit が混在していたら rebase 必要 (autostash で OK)
-```
-
----
-
-## 6. tasks (TaskCreate) 確認
-
-前回 session の TaskList が残っているか:
-
-```
-TaskList の出力を確認 (in_progress / pending あれば 引き継ぎ)
-```
-
-通常 session 越しに tasks は維持されるが、コンテキスト切り替え時 TaskGet 失敗するなら無視 OK。
-
----
-
-## 7. ストイック作業時 (引き継ぎ密度 高)
-
-長時間作業の繰り返しなら:
-
-| step | doc |
-|------|-----|
-| 0 開始 | 本 chk list |
-| 0 確認 | `docs/HANDOFF_5_5_TO_5_9.md` |
-| 0 v1 訂正 | `docs/handoff_v1_v2_diff.md` |
-| 履歴 詳細 | `docs/sessions_5_3_5_5_recap.md` |
-| 教訓 | `docs/lessons_learned_5_5.md` |
-| 5/9 当日 | `data/results/20260509_pat_checklist.md` |
-| Phase 2.5 progress | `data/v18/phase_2_5_session10_final.md` |
-
----
-
-## 8. 起動 完了
-
-5 分で section 0-3 完了。10 分で section 0-7 完了。
-迷ったら **`docs/HANDOFF_5_5_TO_5_9.md`** に戻る。
-
----
-
-## 9. 緊急時のみ
+## 7. 緊急時のみ
 
 | 症状 | 対応 |
 |------|------|
@@ -169,20 +158,54 @@ TaskList の出力を確認 (in_progress / pending あれば 引き継ぎ)
 | schtasks 発火せず | Get-ScheduledTask で State=Ready 確認、`Start-ScheduledTask` で手動発火 |
 | git pull 衝突 | `--autostash` で auto stash → rebase → unstash |
 | python module 不在 | `pip install -r requirements.txt` |
+| ProcessWatchdog v2 動かない | `tools/register_process_watchdog_v2.ps1 -Rollback` で v1 に戻す |
+| pre_fire_check が cp932 で落ちる | 修正済 (Session #24)、最新 commit 確認 |
 
 ---
 
-## 10. NEVER list (禁止行為)
+## 8. NEVER list (禁止行為)
 
 - ❌ 11R 投票 (重賞 + 距離不適合 全除外)
-- ❌ 1R 700円 超え (案B改 上限)
-- ❌ 1日 2,100円 超え
-- ❌ TYB midday script 実行 (5/3 で 404 確認、Phase 2.5 観測待ち)
-- ❌ v18/v19 5/9 投入 (5/16 以降)
+- ❌ 1R 700 円超え (案B改 上限)
+- ❌ 1 日 2,100 円超え
+- ❌ TYB midday script 実行 (5/3 で 404、Phase 2.5 観測待ち)
+- ❌ V18/V19 5/9 投入 (5/16 以降、条件達成後)
 - ❌ NAR 5/9 投入 (5/12 paper 開始)
-- ❌ 累計 -50,000円 超え (絶対)
+- ❌ 累計 -50,000 円超え (絶対撤退ライン)
 - ❌ 数字を v1 引き継ぎから transfusion (`docs/handoff_v1_v2_diff.md` 確認)
 
 ---
 
-これだけで セッション 復帰 確実。
+## 9. ストイック作業時 (引き継ぎ密度 高)
+
+| step | doc |
+|------|-----|
+| 0 開始 | 本 chk list |
+| 0 全体像 | `docs/PHASE_2_5_PLUS_FINAL_RECAP_5_5.md` |
+| 0 改善余地 | `docs/system_self_diagnosis_5_5.md` |
+| 0 棚卸し | `docs/UPDATE_INVENTORY_20260505.md` |
+| 0 引き継ぎ | `docs/HANDOFF_5_5_TO_5_9.md` |
+| 0 v1 訂正 | `docs/handoff_v1_v2_diff.md` |
+| 履歴 詳細 | `docs/sessions_5_3_5_5_recap.md` |
+| 教訓 | `docs/lessons_learned_5_5.md` |
+| 5/9 当日 | `data/results/20260509_pat_checklist.md` |
+| Phase 2.5 progress | `data/v18/phase_2_5_session10_final.md` |
+
+---
+
+## 10. ユーザー方針 (絶対遵守)
+
+- 取り返し禁止
+- 累計 +14,140 円 死守 (5/5 朝時点)
+- 撤退ライン -50,000 円 (絶対)
+- 5/9 案B改 維持 (12R 1 勝のみ、上限 2,100 円)
+- V18/V19 投入は 5/16 以降 (条件達成後)
+- NAR 投入は 5/12 paper 開始、5/16 試行 500 円/日
+- 静音化済 + admin elevation の手順書あり
+
+---
+
+## 11. 起動 完了
+
+5 分で section 0-1 完了。10 分で section 0-6 完了。
+迷ったら **`docs/PHASE_2_5_PLUS_FINAL_RECAP_5_5.md`** に戻る。
