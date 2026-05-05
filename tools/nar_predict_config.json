@@ -1,0 +1,36 @@
+{
+  "model_path": "data/nar/models/keiba_model_nar_v4.pkl",
+  "default_horse_weight": 480.0,
+  "investment_rules": {
+    "phase_5_12_to_5_15": {"per_race": 0, "max_per_day": 0, "mode": "paper"},
+    "phase_5_16_to_5_22": {"per_race": 100, "max_per_day": 500, "mode": "live_light"},
+    "phase_5_23_to_5_29": {"per_race": 200, "max_per_day": 1400, "mode": "live"},
+    "phase_6_onwards":    {"per_race": 300, "max_per_day": 2100, "mode": "live_full"}
+  },
+  "filter_thresholds": {
+    "min_p_ens_top1": 0.30,
+    "max_pop_rank_top1": 10,
+    "min_num_horses": 5,
+    "max_num_horses": 16
+  },
+  "conditions": {
+    "A": {"num_horses": [8, 14], "distance_min": 1600, "condition_max": 1, "bet_type": "trio_7"},
+    "B": {"num_horses": [8, 14], "distance_min": 1600, "condition_min": 2, "bet_type": "trio_7"},
+    "C": {"num_horses": [15, 99], "distance_min": 1600, "condition_max": 1, "bet_type": "trio_7"},
+    "D": {"distance_max": 1500, "bet_type": "trio_7"},
+    "E": {"num_horses": [0, 7], "bet_type": "umaren_2"},
+    "X": {"num_horses": [15, 99], "condition_min": 2, "bet_type": "trio_7"}
+  },
+  "stop_loss": {
+    "single_race_no_odds": "skip",
+    "single_race_high_weight_missing_pct": 60,
+    "daily_loss_yen": -1000,
+    "weekly_loss_yen": -3000,
+    "cumulative_jra_nar_yen": -50000
+  },
+  "discord": {
+    "webhook_env_var": "DISCORD_WEBHOOK_BETS",
+    "fallback_env_var": "DISCORD_WEBHOOK_URL"
+  },
+  "_notes": "NAR v4 22-features Pattern B model. Pattern A (リークフリー) は未学習。Phase 3 で再学習候補."
+}
