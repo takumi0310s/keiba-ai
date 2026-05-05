@@ -1,48 +1,92 @@
 @echo off
-REM nar_daily_pipeline.bat — NAR 当日 pipeline (scrape → predict)
-REM Usage: nar_daily_pipeline.bat [YYYYMMDD]
-REM   引数なし: 今日
-REM タスクスケジューラからは silent_runner.vbs 経由で起動推奨 (静音化)
+REM nar_daily_pipeline.bat - NAR pipeline stage dispatcher
+REM
+REM Usage:
+REM   nar_daily_pipeline.bat <stage> [YYYYMMDD]
+REM
+REM stages:
+REM   scrape_today    16:30 - shutuba + estimated odds
+REM   predict         17:00 - NAR v4 inference + candidates
+REM   scrape_results  21:30 - results + payouts
+REM   calendar        13:00 - placeholder (no-op)
+REM   live_odds       19:00 - placeholder (no-op)
+REM   all             one-shot test (scrape_today + predict)
+REM
+REM No arg or unknown stage falls back to "all"
+REM scheduled tasks call this via silent_runner.vbs (hidden window)
 
 setlocal enabledelayedexpansion
 
 set BASE=C:\Users\takum\keiba-ai
 cd /d "%BASE%"
 
-REM 引数 → DATE
-if "%~1"=="" (
-    for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value 2^>nul ^| find "="') do set DT=%%I
-    if not defined DT (
-        REM Windows 11 24H2 wmic 不在 fallback
-        for /f "delims=" %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set DT=%%I
-    )
-    set DATE_ARG=!DT:~0,8!
+set STAGE=%~1
+if "%STAGE%"=="" set STAGE=all
+
+if "%~2"=="" (
+    for /f "delims=" %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set DATE_ARG=%%I
 ) else (
-    set DATE_ARG=%~1
+    set DATE_ARG=%~2
 )
 
 set LOG_DIR=%BASE%\logs
 if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
-set LOG=%LOG_DIR%\nar_daily_!DATE_ARG!.log
+set LOG=%LOG_DIR%\nar_daily_!STAGE!_!DATE_ARG!.log
 
-echo [%DATE% %TIME%] === NAR daily pipeline START (date=!DATE_ARG!) === >> "%LOG%" 2>&1
+echo [%DATE% %TIME%] === NAR pipeline stage=!STAGE! date=!DATE_ARG! START === >> "%LOG%" 2>&1
 
-REM SCRAPER-GUARD は既存 (tools/scraper_guard.py)。NAR scrape は別チャネル想定なので明示 skip 可能
-REM 必要なら下記 1 行を有効化:
-REM python tools\scraper_guard.py --caller nar_daily_pipeline --mode exit >> "%LOG%" 2>&1
-REM if errorlevel 1 ( echo SCRAPER-GUARD blocked >> "%LOG%" & exit /b 0 )
+if /i "!STAGE!"=="scrape_today" goto stage_scrape_today
+if /i "!STAGE!"=="predict" goto stage_predict
+if /i "!STAGE!"=="scrape_results" goto stage_scrape_results
+if /i "!STAGE!"=="calendar" goto stage_noop
+if /i "!STAGE!"=="live_odds" goto stage_noop
+if /i "!STAGE!"=="all" goto stage_all
+echo [WARN] unknown stage, fallback to all >> "%LOG%"
+goto stage_all
 
-REM 1. 当日 race 出馬表 + odds 取得 (script は将来追加、今は predict のみ)
-REM python tools\scrape_nar_today.py --date !DATE_ARG! >> "%LOG%" 2>&1
-REM if errorlevel 1 ( echo NAR scrape failed >> "%LOG%" & exit /b 1 )
-
-REM 2. predict 実行
-python tools\predict_nar.py --date !DATE_ARG! --output-csv data\daily_predictions\nar_!DATE_ARG!.csv >> "%LOG%" 2>&1
+:stage_scrape_today
+echo [STAGE scrape_today] >> "%LOG%"
+python tools\scrape_nar_today.py --date !DATE_ARG! >> "%LOG%" 2>&1
 if errorlevel 1 (
-    echo [%DATE% %TIME%] predict_nar failed >> "%LOG%"
-    python tools\notify_done.py "NAR predict 失敗 !DATE_ARG!" "tools\predict_nar.py がエラー終了。logs\nar_daily_!DATE_ARG!.log を確認。" --color red >> "%LOG%" 2>&1
+    echo scrape_nar_today failed >> "%LOG%"
+    python tools\notify_done.py "NAR scrape_today FAIL !DATE_ARG!" "scrape_nar_today error - check log" --color red >> "%LOG%" 2>&1
     exit /b 1
 )
+goto end
 
-echo [%DATE% %TIME%] === NAR daily pipeline END === >> "%LOG%"
+:stage_predict
+echo [STAGE predict] >> "%LOG%"
+python tools\predict_nar.py --date !DATE_ARG! --output-csv data\daily_predictions\nar_!DATE_ARG!.csv >> "%LOG%" 2>&1
+if errorlevel 1 (
+    echo predict_nar failed >> "%LOG%"
+    python tools\notify_done.py "NAR predict FAIL !DATE_ARG!" "predict_nar error - check log" --color red >> "%LOG%" 2>&1
+    exit /b 1
+)
+goto end
+
+:stage_scrape_results
+echo [STAGE scrape_results] >> "%LOG%"
+python tools\scrape_nar_results.py --date !DATE_ARG! >> "%LOG%" 2>&1
+if errorlevel 1 (
+    echo scrape_nar_results failed >> "%LOG%"
+    python tools\notify_done.py "NAR scrape_results FAIL !DATE_ARG!" "scrape_nar_results error - check log" --color red >> "%LOG%" 2>&1
+    exit /b 1
+)
+goto end
+
+:stage_noop
+echo [STAGE !STAGE! noop placeholder] >> "%LOG%"
+goto end
+
+:stage_all
+echo [STAGE all - test mode] >> "%LOG%"
+python tools\scrape_nar_today.py --date !DATE_ARG! >> "%LOG%" 2>&1
+if errorlevel 1 echo scrape_today failed (continuing) >> "%LOG%"
+python tools\predict_nar.py --date !DATE_ARG! --output-csv data\daily_predictions\nar_!DATE_ARG!.csv >> "%LOG%" 2>&1
+if errorlevel 1 echo predict failed >> "%LOG%"
+goto end
+
+:end
+echo [%DATE% %TIME%] === NAR pipeline stage=!STAGE! END === >> "%LOG%"
 endlocal
+exit /b 0

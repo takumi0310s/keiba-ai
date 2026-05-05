@@ -58,11 +58,11 @@ if (-not (Test-Path $NarDailyBat)) {
 }
 
 $tasks = @(
-    @{ Name="Keiba-NarMidDayCalendar"; Time="13:00"; Bat=$NarDailyBat; Desc="NAR 当日カレンダー取得 (placeholder, 将来 scrape_nar_calendar)" },
-    @{ Name="Keiba-NarDailyScrape";    Time="16:30"; Bat=$NarDailyBat; Desc="NAR 当日出馬表 + 前夜オッズ (placeholder, 将来 scrape_nar_today)" },
-    @{ Name="Keiba-NarDailyPredict";   Time="17:00"; Bat=$NarDailyBat; Desc="NAR 推論 + 候補抽出" },
-    @{ Name="Keiba-NarLiveOddsRefresh"; Time="19:00"; Bat=$NarDailyBat; Desc="NAR live odds (placeholder, 将来 race 単位 refresh)" },
-    @{ Name="Keiba-NarDailyResults";   Time="21:30"; Bat=$NarDailyBat; Desc="NAR 結果照合 (placeholder, 将来 nar_daily_results)" }
+    @{ Name="Keiba-NarMidDayCalendar";  Time="13:00"; Stage="calendar";       Desc="NAR 当日カレンダー (placeholder)" },
+    @{ Name="Keiba-NarDailyScrape";     Time="16:30"; Stage="scrape_today";   Desc="NAR 当日出馬表 + 予想オッズ" },
+    @{ Name="Keiba-NarDailyPredict";    Time="17:00"; Stage="predict";        Desc="NAR v4 推論 + 候補抽出" },
+    @{ Name="Keiba-NarLiveOddsRefresh"; Time="19:00"; Stage="live_odds";      Desc="NAR 確定オッズ refresh (placeholder)" },
+    @{ Name="Keiba-NarDailyResults";    Time="21:30"; Stage="scrape_results"; Desc="NAR 結果照合 + payouts" }
 )
 
 $success = 0
@@ -85,7 +85,7 @@ foreach ($t in $tasks) {
         # 新規作成
         $action = New-ScheduledTaskAction `
             -Execute "wscript.exe" `
-            -Argument "`"$VbsPath`" `"$($t.Bat)`"" `
+            -Argument "`"$VbsPath`" `"$NarDailyBat`" `"$($t.Stage)`"" `
             -WorkingDirectory $BaseDir
         $trigger = New-ScheduledTaskTrigger -Daily -At $t.Time
         $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::FromHours(1))

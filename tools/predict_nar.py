@@ -284,18 +284,18 @@ def main():
             print(f"\n  [OK] Saved {args.output_csv}")
         return
 
-    # --- date 指定: 当日全 NAR (placeholder) ---
+    # --- date 指定: 当日全 NAR (scrape_nar_today.py 経由で生成された CSV を読む) ---
     if args.date:
         shutuba_path = f'data/nar_today_shutuba_{args.date}.csv'
         if not os.path.exists(shutuba_path):
-            print(f"[WARN] {shutuba_path} not found. scrape_nar_today.py 未実装のため当日 全レース予測はスキップ。")
-            print(f"       柏記念形式のレース別 CSV を --shutuba-csv で指定する暫定運用が可能。")
-            # 出力 CSV を空 で作る (pipeline 次 step エラー回避)
+            print(f"[WARN] {shutuba_path} not found.")
+            print(f"       先に scrape_nar_today.py --date {args.date} を実行するか、")
+            print(f"       --shutuba-csv で出馬表 CSV を直接指定してください。")
             if args.output_csv:
                 out_dir = os.path.dirname(args.output_csv)
                 if out_dir and not os.path.exists(out_dir): os.makedirs(out_dir)
                 pd.DataFrame(columns=['race_id','horse_num','p_ens','rank']).to_csv(args.output_csv, index=False, encoding='utf-8-sig')
-                print(f"       [empty] {args.output_csv} 生成")
+                print(f"       [empty] {args.output_csv} 生成 (pipeline 次 step エラー回避)")
             return
         # 実装: race_id 単位で group 化して predict
         all_results = []
