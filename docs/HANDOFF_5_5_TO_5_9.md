@@ -386,7 +386,7 @@ TOP1-TOP2, TOP1-TOP3
 | ot/ov/ow/oz 4 種 33日 stale | V15 学習に未使用、影響軽微 | Phase 3 v15.1 で再評価 |
 | jra_payouts.csv 4/26 まで | 5/2-5/3 は別途 verify_real_roi で得た | 自動取得復旧待ち |
 | FridayWeekendScrape 10:00 | 元想定 21:00 → 補完で 5/8 21:00 後 手動 scrape 推奨 | 別 task |
-| chihou_races_2020_2025.csv 不在 | NAR strict OOS 評価 不能 | 別 60min task |
+| chihou_races_2020_2025.csv 不在 | **5/5 Session #24 で誤情報と判明**: `train_nar_v4.py` は `nar_all_races.csv` のみ実使用、blocker ではない (`data/v18/chihou_races_recovery_5_5.md`) | 解決済 |
 | daily_predict_watchdog 火-金で fatal alert (誤報) | 0 races (JRA 開催なし) で正常終了→ alert | 仕様、土日のみ alert を信じる |
 
 ---

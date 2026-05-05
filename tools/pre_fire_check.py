@@ -231,13 +231,24 @@ def main() -> int:
     p.add_argument("--silent", action="store_true", help="Discord 通知しない")
     args = p.parse_args()
 
+    # Windows cp932 で ✓/⚠/✗ が UnicodeEncodeError になるため stdout を utf-8 に切替
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
     checks, overall = run_all_checks()
 
     print("=" * 60)
     print(f"PRE-FIRE-CHECK @ {datetime.datetime.now().isoformat()}")
     print("=" * 60)
     for name, r in checks:
-        icon = "✓" if r["ok"] else ("⚠" if r["severity"] == "warning" else "✗")
+        if r["ok"]:
+            icon = "OK"
+        elif r["severity"] == "warning":
+            icon = "WARN"
+        else:
+            icon = "NG"
         print(f" [{icon}] {name}: {r['msg']}")
         if not r["ok"] and r.get("recovery"):
             print(f"      recovery: {r['recovery']}")

@@ -36,6 +36,23 @@ def main() -> int:
     is_weekend = today.weekday() >= 5
     min_rows = 30 if is_weekend else 0
 
+    # 平日 (Mon-Fri) で当日 CSV 未生成は「非開催日」として早期 OK 返す。
+    # logs/daily_predict.log が前日の mtime のままでも critical 誤判定しない。
+    if not is_weekend:
+        csv_today = BASE / f"data/daily_predictions/{ymd}.csv"
+        if not csv_today.exists():
+            r = {
+                "status": "ok",
+                "message": "DailyPredict: 平日 (非開催日) のため発火スキップ",
+                "csv": str(csv_today),
+                "weekday": today.strftime("%A"),
+            }
+            print(json.dumps(r, ensure_ascii=False, indent=2, default=str))
+            save_result("DailyPredict", r)
+            if not args.silent:
+                notify_result("DailyPredict", r)
+            return 0
+
     cfg = FireCheckConfig(
         task_name="DailyPredict",
         log_candidates=[
