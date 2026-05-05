@@ -71,8 +71,9 @@ $failed = @()
 foreach ($t in $tasks) {
     Write-Log "[$($t.Name)] 登録"
     Write-Log "  Schedule: DAILY $($t.Time)"
-    Write-Log "  Bat: $($t.Bat)"
-    Write-Log "  Desc: $($t.Desc)"
+    Write-Log "  Stage:    $($t.Stage)"
+    Write-Log "  Bat:      $NarDailyBat"
+    Write-Log "  Desc:     $($t.Desc)"
 
     try {
         # 既存 task 削除 (再登録)
