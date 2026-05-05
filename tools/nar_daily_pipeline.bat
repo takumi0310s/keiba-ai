@@ -8,8 +8,8 @@ REM stages:
 REM   scrape_today    16:30 - shutuba + estimated odds
 REM   predict         17:00 - NAR v4 inference + candidates
 REM   scrape_results  21:30 - results + payouts
-REM   calendar        13:00 - placeholder (no-op)
-REM   live_odds       19:00 - placeholder (no-op)
+REM   calendar        13:00 - scrape_nar_calendar (light list scrape)
+REM   live_odds       19:00 - scrape_nar_live_odds (確定 odds refresh)
 REM   all             one-shot test (scrape_today + predict)
 REM
 REM No arg or unknown stage falls back to "all"
@@ -38,8 +38,8 @@ echo [%DATE% %TIME%] === NAR pipeline stage=!STAGE! date=!DATE_ARG! START === >>
 if /i "!STAGE!"=="scrape_today" goto stage_scrape_today
 if /i "!STAGE!"=="predict" goto stage_predict
 if /i "!STAGE!"=="scrape_results" goto stage_scrape_results
-if /i "!STAGE!"=="calendar" goto stage_noop
-if /i "!STAGE!"=="live_odds" goto stage_noop
+if /i "!STAGE!"=="calendar" goto stage_calendar
+if /i "!STAGE!"=="live_odds" goto stage_live_odds
 if /i "!STAGE!"=="all" goto stage_all
 echo [WARN] unknown stage, fallback to all >> "%LOG%"
 goto stage_all
@@ -74,8 +74,24 @@ if errorlevel 1 (
 )
 goto end
 
-:stage_noop
-echo [STAGE !STAGE! noop placeholder] >> "%LOG%"
+:stage_calendar
+echo [STAGE calendar] >> "%LOG%"
+python tools\scrape_nar_calendar.py --date !DATE_ARG! >> "%LOG%" 2>&1
+if errorlevel 1 (
+    echo scrape_nar_calendar failed >> "%LOG%"
+    python tools\notify_done.py "NAR calendar FAIL !DATE_ARG!" "scrape_nar_calendar error - check log" --color red >> "%LOG%" 2>&1
+    exit /b 1
+)
+goto end
+
+:stage_live_odds
+echo [STAGE live_odds] >> "%LOG%"
+python tools\scrape_nar_live_odds.py --date !DATE_ARG! --update-shutuba >> "%LOG%" 2>&1
+if errorlevel 1 (
+    echo scrape_nar_live_odds failed >> "%LOG%"
+    python tools\notify_done.py "NAR live_odds FAIL !DATE_ARG!" "scrape_nar_live_odds error - check log" --color red >> "%LOG%" 2>&1
+    exit /b 1
+)
 goto end
 
 :stage_all
