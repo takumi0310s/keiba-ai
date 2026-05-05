@@ -1,11 +1,34 @@
 # 引き継ぎ書 v2: 5/5 PM → 5/9 (土) 本番 + Phase 2.5+
 
 **作成**: 2026-05-05 17:35 (Session #15)
-**ベース commit**: 2b6dc4eb (5/9 本番最終調整)
+**最終更新**: 2026-05-05 18:25 (Session #18 で 5 task cleanup commit 追記)
+**ベース commit**: c7fdce57 (Session #18 D: 5/9 ドライラン完了)
 **ユーザー方針** (絶対):
 - 取り返し禁止
 - 累計損失拡大NG (現在 +14,140円)
 - 撤退ライン -50,000円
+
+## 更新履歴 (Session #15 以降)
+
+| Session | commit | 内容 |
+|--------:|--------|------|
+| #15 | edfa9897 | 引き継ぎ書 v2 + 振り返り 5 docs |
+| #16 | (admin) | NAR/RaceDayReport schtasks 登録 (user 手動) |
+| #17 | eeb48e45 | NAR pipeline 未実装 script 2 個 (scrape_today/scrape_results) |
+| #18 A | 06081e26 | tasks 整理 (Phase 1-A クローズ確認、5/5 PM スナップショット) |
+| #18 B | d761a257 | 静音化 28 task 動作完全検証 |
+| #18 C | 3e4b5fa2 | 古いログ + stale CSV → archive (291 MB) |
+| #18 D | c7fdce57 | 5/9 ドライラン リハーサル完了 |
+| #18 E | (本 commit) | HANDOFF v2 微更新 (Session #16-18 反映) |
+
+5/5 PM 時点 5/12 NAR paper 開始準備:
+- ✅ scrape_nar_today.py / scrape_nar_results.py 実装
+- ✅ pipeline.bat stage dispatch
+- ✅ register_nar_schtasks.ps1 admin 5/5 18:07 再登録 (stage 引数 反映)
+- ✅ 28 task 静音化 + 動作確認
+- ✅ 古い backup → archive
+
+→ **5/12 火 17:00 NAR paper 自動発火 待機状態 確立**。
 
 ---
 
