@@ -47,6 +47,20 @@ TANSHO_THRESH_GRID = [(0.3, 1.0), (0.4, 1.2), (0.5, 1.2)]
 FUKUSHO_THRESH_GRID = [(0.5, 1.0), (0.6, 1.1), (0.7, 1.1)]
 
 
+def maybe_normalize(df, prob_col, race_col='race_id', method=None, T=1.0):
+    """Apply race-level normalization in-place if method is set.
+
+    Returns the column name to use for downstream bet evaluation.
+    """
+    if not method or method == 'none':
+        return prob_col
+    # local import to keep retro lean if normalize not used
+    from race_normalize import normalize_per_race
+    norm_col = prob_col + '_norm'
+    df[norm_col] = normalize_per_race(df, prob_col=prob_col, race_col=race_col, method=method, T=T)
+    return norm_col
+
+
 def load_v18_v19():
     v18_lgb = lgb.Booster(model_file='data/v18/models/v18_tansho_lgb.txt')
     v18_xgb = xgb.Booster(); v18_xgb.load_model('data/v18/models/v18_tansho_xgb.json')
@@ -107,7 +121,107 @@ def predict_one_race(race_id, model_data, v18_lgb, v18_xgb, v19_lgb, v19_xgb):
         return {'race_id': race_id, 'error': str(e)[:120]}
 
 
+def evaluate_from_csv(predictions_csv, normalize_method='none', T=1.0, output_md='data/v18/v18_v19_retro_full_result.md', BET=100):
+    """既存 predictions CSV から normalize + ROI 評価のみ実行。inference スキップ。"""
+    df = pd.read_csv(predictions_csv, dtype={'race_id': str})
+    print(f"loaded {len(df)} rows from {predictions_csv}")
+
+    # normalize
+    p_tansho_col = maybe_normalize(df, 'p_tansho', 'race_id', normalize_method, T)
+    p_fukusho_col = maybe_normalize(df, 'p_fukusho', 'race_id', normalize_method, T)
+    if normalize_method and normalize_method != 'none':
+        df['ev_tansho_eval'] = df[p_tansho_col] * df['odds']
+        df['ev_fukusho_eval'] = df[p_fukusho_col] * df['odds'] * 0.3
+        ev_t_col = 'ev_tansho_eval'
+        ev_f_col = 'ev_fukusho_eval'
+    else:
+        ev_t_col = 'ev_tansho'
+        ev_f_col = 'ev_fukusho'
+
+    print(f"\n=== normalize: {normalize_method} (T={T}) ===")
+    if normalize_method and normalize_method != 'none':
+        g = df.groupby('race_id')[p_tansho_col].agg(['max','sum'])
+        print(f"  tansho race max mean: {g['max'].mean():.3f}, sum mean: {g['sum'].mean():.3f}")
+
+    df_w = df[df['winner_known'] == 1].copy()
+    n_winner_known = df_w['race_id'].nunique()
+    print(f"\nwinner_known: {df['winner_known'].sum()}/{len(df)} horses, {n_winner_known} races")
+
+    print(f"\n=== v18 単勝 retro (winner_known races: {n_winner_known}) ===")
+    tansho_results = []
+    for prob_t, ev_t in TANSHO_THRESH_GRID:
+        m = (df_w[p_tansho_col] >= prob_t) & (df_w[ev_t_col] >= ev_t) & (df_w['odds'] > 0)
+        n_bet = int(m.sum())
+        if n_bet == 0:
+            print(f"  p>={prob_t} ev>={ev_t}: bet=0")
+            tansho_results.append({'prob': prob_t, 'ev': ev_t, 'bet': 0, 'win': 0, 'inv': 0, 'pay': 0, 'roi': None})
+            continue
+        wins = m & (df_w['is_win'] == 1)
+        n_win = int(wins.sum())
+        inv = n_bet * BET
+        pay = float((wins.astype(int) * df_w['odds'] * BET).sum())
+        roi = pay / inv * 100 if inv > 0 else 0
+        print(f"  p>={prob_t} ev>={ev_t}: bet={n_bet} win={n_win} hit={n_win/n_bet*100:.1f}% inv={inv} pay={int(pay):,} ROI={roi:.1f}%")
+        tansho_results.append({'prob': prob_t, 'ev': ev_t, 'bet': n_bet, 'win': n_win, 'inv': inv, 'pay': pay, 'roi': roi})
+
+    print(f"\n=== v19 複勝 retro (全レース、is_top3 from trio_result) ===")
+    fukusho_results = []
+    for prob_f, ev_f in FUKUSHO_THRESH_GRID:
+        m = (df[p_fukusho_col] >= prob_f) & (df[ev_f_col] >= ev_f) & (df['odds'] > 0)
+        n_bet = int(m.sum())
+        if n_bet == 0:
+            print(f"  p>={prob_f} ev>={ev_f}: bet=0")
+            fukusho_results.append({'prob': prob_f, 'ev': ev_f, 'bet': 0, 'hit': 0, 'inv': 0, 'pay': 0, 'roi': None})
+            continue
+        hits = m & (df['is_top3'] == 1)
+        n_hit = int(hits.sum())
+        inv = n_bet * BET
+        pay = float((hits.astype(int) * df['odds'] * 0.3 * BET).sum())
+        roi = pay / inv * 100 if inv > 0 else 0
+        print(f"  p>={prob_f} ev>={ev_f}: bet={n_bet} hit={n_hit} hit%={n_hit/n_bet*100:.1f}% inv={inv} pay~={int(pay):,} ROI~={roi:.1f}%")
+        fukusho_results.append({'prob': prob_f, 'ev': ev_f, 'bet': n_bet, 'hit': n_hit, 'inv': inv, 'pay': pay, 'roi': roi})
+
+    # write report
+    with open(output_md, 'w', encoding='utf-8') as f:
+        f.write('# v18/v19 完全 retro (5/2-5/3) — race-level normalization 版\n\n')
+        f.write(f'生成: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n')
+        f.write(f'## 設定\n\n- 期間: {DATES}\n- 全 horses: {len(df)}\n- winner_known races: {n_winner_known}\n- normalize method: {normalize_method} (T={T})\n\n')
+        f.write('## 単勝 (v18) retro\n\n')
+        f.write('| prob_min | ev_min | bet | win | hit% | inv | pay | ROI |\n')
+        f.write('|---:|---:|---:|---:|---:|---:|---:|---:|\n')
+        for r in tansho_results:
+            if r['bet'] == 0:
+                f.write(f'| {r["prob"]} | {r["ev"]} | 0 | - | - | - | - | - |\n')
+            else:
+                hit = r['win'] / r['bet'] * 100
+                f.write(f'| {r["prob"]} | {r["ev"]} | {r["bet"]} | {r["win"]} | {hit:.1f}% | {r["inv"]:,} | {int(r["pay"]):,} | **{r["roi"]:.1f}%** |\n')
+        f.write('\n## 複勝 (v19) retro (簡易: 複勝odds = tansho × 0.3 仮定)\n\n')
+        f.write('| prob_min | ev_min | bet | hit | hit% | inv | pay~ | ROI~ |\n')
+        f.write('|---:|---:|---:|---:|---:|---:|---:|---:|\n')
+        for r in fukusho_results:
+            if r['bet'] == 0:
+                f.write(f'| {r["prob"]} | {r["ev"]} | 0 | - | - | - | - | - |\n')
+            else:
+                hit = r['hit'] / r['bet'] * 100
+                f.write(f'| {r["prob"]} | {r["ev"]} | {r["bet"]} | {r["hit"]} | {hit:.1f}% | {r["inv"]:,} | {int(r["pay"]):,} | **{r["roi"]:.1f}%** |\n')
+    print(f"\n[OK] {output_md}")
+    return {'tansho': tansho_results, 'fukusho': fukusho_results}
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--normalize', choices=['none','softmax','power','rank'], default='none',
+                        help='race-level normalization method')
+    parser.add_argument('--T', type=float, default=1.0, help='temperature for softmax/power')
+    parser.add_argument('--from-csv', default=None,
+                        help='既存 predictions CSV から評価のみ (inference skip)')
+    parser.add_argument('--output-md', default='data/v18/v18_v19_retro_full_result.md')
+    args = parser.parse_args()
+
+    if args.from_csv:
+        evaluate_from_csv(args.from_csv, normalize_method=args.normalize, T=args.T, output_md=args.output_md)
+        return
+
     print(f"=== v18/v19 full retro START {datetime.now()} ===")
     md = load_models()
     v18_lgb, v18_xgb, v19_lgb, v19_xgb = load_v18_v19()

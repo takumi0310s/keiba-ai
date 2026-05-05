@@ -1,0 +1,317 @@
+{
+  "baseline_evals": {
+    "baseline": {
+      "method": "BASELINE_raw",
+      "race_max_p_mean": 0.01633880386445031,
+      "race_max_p_p95": 0.037396285359669275,
+      "race_max_p_max": 0.1538153889567028,
+      "race_sum_p_mean": 0.029054322265712463,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "softmax_T=0.3": {
+      "method": "softmax_T=0.3",
+      "race_max_p_mean": 0.7954047941226267,
+      "race_max_p_p95": 0.9948769155473827,
+      "race_max_p_max": 0.9999998622251894,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "softmax_T=0.5": {
+      "method": "softmax_T=0.5",
+      "race_max_p_mean": 0.6713003534797327,
+      "race_max_p_p95": 0.941689161085731,
+      "race_max_p_max": 0.99984793847881,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "softmax_T=0.7": {
+      "method": "softmax_T=0.7",
+      "race_max_p_mean": 0.5634595682407404,
+      "race_max_p_p95": 0.8295412681736657,
+      "race_max_p_max": 0.9966005724388874,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "softmax_T=1.0": {
+      "method": "softmax_T=1.0",
+      "race_max_p_mean": 0.4398033364633375,
+      "race_max_p_p95": 0.6323748835597769,
+      "race_max_p_max": 0.9637669543996217,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "softmax_T=1.5": {
+      "method": "softmax_T=1.5",
+      "race_max_p_mean": 0.3134159678575838,
+      "race_max_p_p95": 0.4278040823754035,
+      "race_max_p_max": 0.796276535363386,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=0.3": {
+      "method": "power_T=0.3",
+      "race_max_p_mean": 0.7942455922221454,
+      "race_max_p_p95": 0.9946257097575454,
+      "race_max_p_max": 0.9999997604555617,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=0.5": {
+      "method": "power_T=0.5",
+      "race_max_p_mean": 0.6694662327625784,
+      "race_max_p_p95": 0.9398841245430593,
+      "race_max_p_max": 0.9997880378433598,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=0.7": {
+      "method": "power_T=0.7",
+      "race_max_p_mean": 0.5613354872109341,
+      "race_max_p_p95": 0.8260768165971869,
+      "race_max_p_max": 0.9956935537761212,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=1.0": {
+      "method": "power_T=1.0",
+      "race_max_p_mean": 0.437672250261784,
+      "race_max_p_p95": 0.6282594045996845,
+      "race_max_p_max": 0.9574907822335391,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=1.5": {
+      "method": "power_T=1.5",
+      "race_max_p_mean": 0.31146728890089576,
+      "race_max_p_p95": 0.42377397487854074,
+      "race_max_p_max": 0.7776934258524217,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "power_T=2.0": {
+      "method": "power_T=2.0",
+      "race_max_p_mean": 0.24214608580427538,
+      "race_max_p_p95": 0.325254382812657,
+      "race_max_p_max": 0.5748352463053382,
+      "race_sum_p_mean": 1.0,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "rank_tgt=0.347": {
+      "method": "rank_tgt=0.347",
+      "race_max_p_mean": 0.3469999999999999,
+      "race_max_p_p95": 0.34700000000000003,
+      "race_max_p_max": 0.34700000000000003,
+      "race_sum_p_mean": 0.9033936820916655,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "rank_tgt=0.5": {
+      "method": "rank_tgt=0.5",
+      "race_max_p_mean": 0.5,
+      "race_max_p_p95": 0.5,
+      "race_max_p_max": 0.5,
+      "race_sum_p_mean": 1.3017200030139273,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "rank_tgt=0.7": {
+      "method": "rank_tgt=0.7",
+      "race_max_p_mean": 0.6999999999999997,
+      "race_max_p_p95": 0.7,
+      "race_max_p_max": 0.7000000000000001,
+      "race_sum_p_mean": 1.8224080042194983,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    },
+    "rank_tgt=0.9": {
+      "method": "rank_tgt=0.9",
+      "race_max_p_mean": 0.8999999999999998,
+      "race_max_p_p95": 0.9000000000000001,
+      "race_max_p_max": 0.9000000000000001,
+      "race_sum_p_mean": 2.3430960054250694,
+      "winner_top1_rate": 0.3448275862068966,
+      "n_winner_known": 29
+    }
+  },
+  "bet_simulations": {
+    "baseline_tansho": {
+      "label": "baseline_tansho",
+      "bet": 0,
+      "win": 0,
+      "inv": 0,
+      "pay": 0,
+      "roi": null
+    },
+    "softmax_T=0.3": {
+      "label": "softmax_T=0.3",
+      "bet": 27,
+      "win": 10,
+      "inv": 2700,
+      "pay": 48230.0,
+      "roi": 1786.2962962962963,
+      "hit_rate": 0.37037037037037035
+    },
+    "softmax_T=0.5": {
+      "label": "softmax_T=0.5",
+      "bet": 22,
+      "win": 9,
+      "inv": 2200,
+      "pay": 47100.0,
+      "roi": 2140.909090909091,
+      "hit_rate": 0.4090909090909091
+    },
+    "softmax_T=0.7": {
+      "label": "softmax_T=0.7",
+      "bet": 16,
+      "win": 6,
+      "inv": 1600,
+      "pay": 38170.0,
+      "roi": 2385.625,
+      "hit_rate": 0.375
+    },
+    "softmax_T=1.0": {
+      "label": "softmax_T=1.0",
+      "bet": 9,
+      "win": 3,
+      "inv": 900,
+      "pay": 13050.0,
+      "roi": 1450.0,
+      "hit_rate": 0.3333333333333333
+    },
+    "softmax_T=1.5": {
+      "label": "softmax_T=1.5",
+      "bet": 1,
+      "win": 1,
+      "inv": 100,
+      "pay": 2660.0,
+      "roi": 2660.0,
+      "hit_rate": 1.0
+    },
+    "power_T=0.3": {
+      "label": "power_T=0.3",
+      "bet": 27,
+      "win": 10,
+      "inv": 2700,
+      "pay": 48230.0,
+      "roi": 1786.2962962962963,
+      "hit_rate": 0.37037037037037035
+    },
+    "power_T=0.5": {
+      "label": "power_T=0.5",
+      "bet": 22,
+      "win": 9,
+      "inv": 2200,
+      "pay": 47100.0,
+      "roi": 2140.909090909091,
+      "hit_rate": 0.4090909090909091
+    },
+    "power_T=0.7": {
+      "label": "power_T=0.7",
+      "bet": 16,
+      "win": 6,
+      "inv": 1600,
+      "pay": 38170.0,
+      "roi": 2385.625,
+      "hit_rate": 0.375
+    },
+    "power_T=1.0": {
+      "label": "power_T=1.0",
+      "bet": 9,
+      "win": 3,
+      "inv": 900,
+      "pay": 13050.0,
+      "roi": 1450.0,
+      "hit_rate": 0.3333333333333333
+    },
+    "power_T=1.5": {
+      "label": "power_T=1.5",
+      "bet": 1,
+      "win": 1,
+      "inv": 100,
+      "pay": 2660.0,
+      "roi": 2660.0,
+      "hit_rate": 1.0
+    },
+    "power_T=2.0": {
+      "label": "power_T=2.0",
+      "bet": 1,
+      "win": 1,
+      "inv": 100,
+      "pay": 2660.0,
+      "roi": 2660.0,
+      "hit_rate": 1.0
+    },
+    "rank_tgt=0.347": {
+      "label": "rank_tgt=0.347",
+      "bet": 0,
+      "win": 0,
+      "inv": 0,
+      "pay": 0,
+      "roi": null
+    },
+    "rank_tgt=0.5": {
+      "label": "rank_tgt=0.5",
+      "bet": 26,
+      "win": 8,
+      "inv": 2600,
+      "pay": 31470.0,
+      "roi": 1210.3846153846155,
+      "hit_rate": 0.3076923076923077
+    },
+    "rank_tgt=0.7": {
+      "label": "rank_tgt=0.7",
+      "bet": 43,
+      "win": 14,
+      "inv": 4300,
+      "pay": 65020.0,
+      "roi": 1512.093023255814,
+      "hit_rate": 0.32558139534883723
+    },
+    "rank_tgt=0.9": {
+      "label": "rank_tgt=0.9",
+      "bet": 49,
+      "win": 16,
+      "inv": 4900,
+      "pay": 69670.0,
+      "roi": 1421.8367346938776,
+      "hit_rate": 0.32653061224489793
+    },
+    "fuk_power_T=0.5": {
+      "bet": 7,
+      "hit": 5,
+      "roi": 1604.5714285714287
+    },
+    "fuk_power_T=1.0": {
+      "bet": 1,
+      "hit": 1,
+      "roi": 798.0
+    },
+    "fuk_power_T=1.5": {
+      "bet": 1,
+      "hit": 1,
+      "roi": 798.0
+    }
+  },
+  "BT_target": {
+    "race_max_p_mean": 0.347,
+    "race_sum_p_mean": 0.753,
+    "winner_top1": 0.478
+  },
+  "best_tansho": {
+    "method": "softmax_T=0.7",
+    "roi": 2385.625,
+    "bet": 16
+  }
+}
