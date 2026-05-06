@@ -1,32 +1,37 @@
 {
-  "generated": "2026-05-05 18:31:04",
+  "generated": "2026-05-06 11:47:36",
   "user_cumulative": [
     {
-      "date": "2026-04-12",
-      "cumulative_jpy": 23480,
-      "label": "GW前 累計"
+      "date": "2026-05-01",
+      "cumulative_jpy": 30520,
+      "label": "GW前 累計起点 (5/2 直前、逆算)"
     },
     {
       "date": "2026-05-02",
-      "cumulative_jpy": 14660,
-      "label": "5/2 USER 投資 -8,820"
+      "cumulative_jpy": 21170,
+      "label": "5/2 USER 実投資 -9,350 (15R 1 hit)"
     },
     {
       "date": "2026-05-03",
-      "cumulative_jpy": 14140,
-      "label": "5/3 USER 投資 -520"
+      "cumulative_jpy": 13220,
+      "label": "5/3 USER 実投資 -7,950 (22R 4 hits)"
+    },
+    {
+      "date": "2026-05-05",
+      "cumulative_jpy": 13530,
+      "label": "5/5 NAR 柏記念 +310 (累計 +13,530)"
     },
     {
       "date": "2026-05-09",
-      "cumulative_jpy": 14140,
-      "label": "5/9 投資前 (現在)"
+      "cumulative_jpy": 13530,
+      "label": "5/9 投資前 (現在、撤退余裕 +63,530)"
     }
   ],
   "withdraw": {
     "line_jpy": -50000,
-    "current_jpy": 14140,
-    "margin_jpy": 64140,
-    "margin_ratio": 0.8728905824714208
+    "current_jpy": 13530,
+    "margin_jpy": 63530,
+    "margin_ratio": 0.8645890038105607
   },
   "phase_25": {
     "total_planned": 47,
@@ -235,6 +240,14 @@
       "payout": 7450,
       "profit": -16350,
       "roi_pct": 31.3
+    },
+    {
+      "date": "2026-05-05",
+      "races": 1,
+      "investment": 700,
+      "payout": 1010,
+      "profit": 310,
+      "roi_pct": 144.3
     }
   ],
   "schtasks": {
@@ -246,19 +259,19 @@
     "tasks": [
       {
         "name": "Keiba-AM3FireCheck",
-        "next": "2026/05/06 3:15:00",
+        "next": "2026/05/07 3:15:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "Keiba-AM6FireCheck",
-        "next": "2026/05/06 6:15:00",
+        "next": "2026/05/07 6:15:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "Keiba-AM8FireCheck",
-        "next": "2026/05/06 8:50:00",
+        "next": "2026/05/07 8:50:00",
         "status": "準備完了",
         "kind": "JRA"
       },
@@ -270,7 +283,7 @@
       },
       {
         "name": "Keiba-MorningDigest",
-        "next": "2026/05/06 7:00:00",
+        "next": "2026/05/07 7:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
@@ -294,7 +307,7 @@
       },
       {
         "name": "Keiba-NarDailyResults",
-        "next": "2026/05/05 21:30:00",
+        "next": "2026/05/06 21:30:00",
         "status": "準備完了",
         "kind": "NAR"
       },
@@ -306,7 +319,7 @@
       },
       {
         "name": "Keiba-NarLiveOddsRefresh",
-        "next": "2026/05/05 19:00:00",
+        "next": "2026/05/06 19:00:00",
         "status": "準備完了",
         "kind": "NAR"
       },
@@ -318,13 +331,13 @@
       },
       {
         "name": "Keiba-NightlySanity",
-        "next": "2026/05/05 23:00:00",
+        "next": "2026/05/06 23:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "Keiba-PreFireCheck",
-        "next": "2026/05/06 2:55:00",
+        "next": "2026/05/07 2:55:00",
         "status": "準備完了",
         "kind": "JRA"
       },
@@ -342,7 +355,7 @@
       },
       {
         "name": "Keiba-TybPublishMonitor",
-        "next": "2026/05/05 19:30:00",
+        "next": "2026/05/06 12:30:00",
         "status": "準備完了",
         "kind": "JRA"
       },
@@ -354,25 +367,25 @@
       },
       {
         "name": "keiba-ai\\DailyJrdbKyi",
-        "next": "2026/05/06 6:00:00",
+        "next": "2026/05/07 6:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "keiba-ai\\DailyPredict",
-        "next": "2026/05/06 8:00:00",
+        "next": "2026/05/07 8:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "keiba-ai\\DailyPremiumScrape",
-        "next": "2026/05/06 3:00:00",
+        "next": "2026/05/07 3:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
       {
         "name": "keiba-ai\\DailyResultsEvening",
-        "next": "2026/05/05 20:00:00",
+        "next": "2026/05/06 20:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },
@@ -402,7 +415,7 @@
       },
       {
         "name": "keiba-ai\\Keiba-ScrapeProgress",
-        "next": "2026/05/06 7:00:00",
+        "next": "2026/05/07 7:00:00",
         "status": "準備完了",
         "kind": "JRA"
       },

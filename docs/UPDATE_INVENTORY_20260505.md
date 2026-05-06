@@ -19,6 +19,8 @@
 
 → **これ以外は 5/10 以降 でよい**。 V15 model 関連は 5/9 で何も触らない (現状維持で投資完遂)。
 
+> **5/6 Session #27 訂正**: 累計 +14,140 円 (USER 申告) は生データで再検証すると **+13,530 円** (`data/v18/may_2_3_truth_audit_5_6.md`)。 ±610 円差は要 USER 確認 (5/4 月曜の何か)。 5/9 投資判断 (撤退余裕 +63,530 円) は変化なし。
+
 ### 🔴緊急 (5/9 当日リスク) - **3 件 → 全対応済 (5/5 夜 Session #24)**
 1. **`ProcessWatchdog v2` schtasks 未登録** ✅ → ps1 + 手順書作成完了 (`tools/register_process_watchdog_v2.ps1` + `data/v18/process_watchdog_v2_setup.md`)。 admin 権限での実行のみユーザー手動。
 2. **fire_check 系 caller 引数監査** ✅ → 4 種すべて健全と確認 (`pre_fire_check.py` L47 で `caller="daily_premium_scrape"` 渡し済)。 dry-run で発見した cp932 バグ + am8 平日誤判定 を修正済 (`data/v18/fire_check_audit_5_5.md`)。
