@@ -862,6 +862,11 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
             print(f"[WARN] JRDB SED prev fallback failed: {e}")
 
     # SR: トラックバイアス（当該レースのバイアス）
+    # Session #35 拡張: 既存 jrdb_tb_homestr_inner 維持 + V162_FEATURES 4件追加
+    #   - sr_first3f_avg: harlon_1-3 の平均 (race-level、F1-F3 通過タイム平均)
+    #   - sr_bias_homestr / sr_bias_4corner: tb_*** 文字列を数値変換
+    #   - sr_pace_up_pos: pace_up_pos 直接 numeric
+    # → V18/V19 学習時 features list と整合、5/16 試行で +2-4pt 期待
     _sr_path = os.path.join(DATA_DIR, 'jrdb_sr.csv')
     if os.path.exists(_sr_path):
         try:
@@ -869,9 +874,30 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
             _sr_race = _sr[_sr['race_id'].astype(str).str.zfill(12) == _rid_str]
             if len(_sr_race) > 0:
                 _sr_row = _sr_race.iloc[-1]
+                # 既存 (1 feature) - 動作不変保証
                 _tb = str(_sr_row.get('tb_homestr', ''))
                 _inner = int(_tb[0]) if _tb and len(_tb) >= 1 and _tb[0].isdigit() else 2
                 horses_df['jrdb_tb_homestr_inner'] = _inner
+
+                # Session #35 拡張: 新 4 features (race-level、全馬同値)
+                # sr_first3f_avg: harlon_1, harlon_2, harlon_3 の平均
+                _h1 = pd.to_numeric(_sr_row.get('harlon_1', None), errors='coerce')
+                _h2 = pd.to_numeric(_sr_row.get('harlon_2', None), errors='coerce')
+                _h3 = pd.to_numeric(_sr_row.get('harlon_3', None), errors='coerce')
+                _vals = [v for v in [_h1, _h2, _h3] if pd.notna(v)]
+                horses_df['sr_first3f_avg'] = (sum(_vals) / len(_vals)) if _vals else 0.0
+
+                # sr_bias_homestr / sr_bias_4corner: tb_*** 文字列の数値合計 (各位の和)
+                def _tb_to_numeric(s):
+                    """例: '11133' → 1+1+1+3+3 = 9 / '00000' → 0"""
+                    s = str(s or '')
+                    return sum(int(c) for c in s if c.isdigit())
+                horses_df['sr_bias_homestr'] = _tb_to_numeric(_sr_row.get('tb_homestr', ''))
+                horses_df['sr_bias_4corner'] = _tb_to_numeric(_sr_row.get('tb_4corner', ''))
+
+                # sr_pace_up_pos: 数値変換 (例: "0.0" or 数値)
+                _pup = pd.to_numeric(_sr_row.get('pace_up_pos', None), errors='coerce')
+                horses_df['sr_pace_up_pos'] = float(_pup) if pd.notna(_pup) else 0.0
         except Exception as e:
             print(f"[WARN] JRDB SR merge failed: {e}")
 
