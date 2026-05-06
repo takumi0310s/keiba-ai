@@ -54,12 +54,15 @@ class WatchTarget:
     restart_log_pattern: str     # 再起動時に書き出すログ (YYYYMMDD 置換可)
 
 
-# --- 監視対象定義 ---
+# --- 監視対象定義 (Session #31 A3+D で閾値最適化) ---
+# stale_sec: 各 task の想定実行時間 + 余裕 (誤発火防止):
+#   daily_predict: ~30 min 実行 + 余裕 → 60 min stale で再起動
+#   race_auto_notify: ~10 min 実行 + 余裕 → 30 min stale で再起動
 TARGETS: list[WatchTarget] = [
     WatchTarget(
         name='daily_predict',
         log_glob='daily_predict*.log',
-        stale_sec=30 * 60,
+        stale_sec=60 * 60,  # 30 → 60 min (Session #31 誤発火防止)
         process_match='tools\\daily_predict.py',
         restart_cmd=['python', '-u', 'tools/daily_predict.py', '--resume'],
         restart_log_pattern='daily_predict_watchdog_restart_{date}.log',
@@ -67,12 +70,28 @@ TARGETS: list[WatchTarget] = [
     WatchTarget(
         name='race_auto_notify',
         log_glob='race_auto_notify*.log',
-        stale_sec=10 * 60,
+        stale_sec=30 * 60,  # 10 → 30 min (Session #31 誤発火防止)
         process_match='tools\\race_auto_notify.py',
         restart_cmd=['python', '-u', 'tools/race_auto_notify.py'],
         restart_log_pattern='race_auto_notify_watchdog_restart_{date}.log',
     ),
 ]
+
+
+def _log_misfire(target_name: str, status: str, action: str, mtime: Optional[float]) -> None:
+    """誤発火ログ記録 (Session #31 A3 強化)。
+    再起動した記録を data/v18/process_watchdog_v2_misfires.log に追記。
+    後で偽陽性判定の検証用。
+    """
+    try:
+        log_path = os.path.join(BASE_DIR, 'data/v18/process_watchdog_v2_misfires.log')
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        ts = datetime.now().isoformat()
+        mt_str = datetime.fromtimestamp(mtime).isoformat() if mtime else "None"
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(f"[{ts}] target={target_name} status={status} action={action} last_mtime={mt_str}\n")
+    except Exception:
+        pass
 
 
 # ===== 時間帯 =====
@@ -241,6 +260,10 @@ def run_once(dry_run: bool = False, now: Optional[datetime] = None) -> dict:
             continue
         # STALE or MISSING → 再起動 or 警告
         rr = restart_target(target, dry_run=dry_run, now=now)
+        # Session #31 A3: 全アクション (再起動 / 時間外スキップ) を misfire log へ
+        _log_misfire(target.name, r['status'],
+                     'restarted' if rr['restarted'] else (rr.get('skipped_reason') or 'no_action'),
+                     r.get('mtime'))
         if rr['restarted']:
             restarted.append(target.name)
             notify_critical(
