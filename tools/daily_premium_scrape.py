@@ -303,12 +303,27 @@ def main():
     with open(cache_file, 'w', encoding='utf-8') as f:
         json.dump(all_data, f, ensure_ascii=False, indent=2, default=str)
 
+    # Session #27 修正: cache JSON → CSV 自動転換 (bug 修正)
+    # cache に書き込むだけでは CSV 反映されない bug の恒久対策
+    csv_to_csv_result = {"speed_index_new": 0, "training_new": 0, "stable_comments_new": 0}
+    try:
+        from premium_cache_to_csv import process_cache_dir
+        csv_to_csv_result = process_cache_dir(date_str, dry_run=False)
+        print(f"  [CSV append] speed_index +{csv_to_csv_result.get('speed_index_new', 0)}, "
+              f"training +{csv_to_csv_result.get('training_new', 0)}, "
+              f"comments +{csv_to_csv_result.get('stable_comments_new', 0)}")
+    except Exception as e:
+        print(f"  [WARN] cache→CSV append 失敗: {e}")
+
     print(f"\n\n{'=' * 60}")
     print(f"  COMPLETE")
     print(f"  Training: {n_training}/{len(new_ids)}")
     print(f"  Speed Index: {n_si}/{len(new_ids)}")
     print(f"  Comments: {n_comment}/{len(new_ids)}")
     print(f"  Shinba Eval: {n_shinba}/{len(new_ids)}")
+    print(f"  CSV append: si+{csv_to_csv_result.get('speed_index_new', 0)} / "
+          f"tr+{csv_to_csv_result.get('training_new', 0)} / "
+          f"sc+{csv_to_csv_result.get('stable_comments_new', 0)}")
     if jrdb_results:
         jrdb_str = ', '.join(f"{k}:{v}" for k, v in jrdb_results.items() if v > 0)
         print(f"  JRDB: {jrdb_str or 'なし'}")
