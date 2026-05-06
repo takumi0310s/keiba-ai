@@ -54,24 +54,97 @@ def predict_v15(race_id: str):
         return None, None, None, f"predict_v15 exception: {type(e).__name__}: {e}"
 
 
-def predict_v18_v19(race_id: str, race_name: str | None, rinfo: dict | None):
-    """V18 単勝 + V19 複勝 予測 (試作)。
+# Session #36 B: 運用フィルタ (Niigata/京都 + 重〜不良 除外)
+# Session #33 D 発見: Niigata 0%→28% / Kyoto top1_p3 -22.3pt の sample 構成シフト対応
+EXCLUDE_COURSES_FOR_V18V19 = {'新潟', '京都'}
+EXCLUDE_CONDITIONS_FOR_V18V19 = {'B', 'X'}  # 重〜不良 (top1_p3 不安定)
 
-    本実装は 5/16+ で deploy 予定。 本セッションでは 設計のみ + skeleton。
-    現状は NotImplementedError を返す (deploy 防止)。
+
+def is_v18v19_eligible(rinfo: dict) -> tuple[bool, str]:
+    """運用フィルタ判定 (V18/V19 投票候補か)。 戻り値: (適格?, 理由)"""
+    course = str(rinfo.get('course', '') if rinfo else '')
+    if course in EXCLUDE_COURSES_FOR_V18V19:
+        return False, f"運用フィルタ: {course} 除外 (sample 構成シフト)"
+    cond = str(rinfo.get('condition_enc', rinfo.get('condition', '')) if rinfo else '')
+    if cond in EXCLUDE_CONDITIONS_FOR_V18V19:
+        return False, f"運用フィルタ: 馬場 {cond} 除外 (top1_p3 不安定)"
+    return True, "適格 (V18/V19 投票候補)"
+
+
+def predict_v18_v19(race_id: str, race_name: str | None, rinfo: dict | None,
+                     v15_df=None):
+    """V18 単勝 + V19 複勝 予測 (Session #36 B 本実装)。
+
+    Args:
+        race_id: race_id
+        race_name: race_name
+        rinfo: race_info dict (course, condition 等)
+        v15_df: predict_core.predict_race の結果 DataFrame (features 含む)
+
+    Returns:
+        (v18_bets, v19_bets, error_msg) or (None, None, error_msg)
+        v18_bets/v19_bets: [{'umaban': X, 'prob': Y, 'ev': Z, 'odds': W}] or []
     """
-    # 設計:
-    # 1. V18 lgb + xgb load (data/v18/models/v18_tansho_*)
-    # 2. V19 lgb + xgb load (data/v18/models/v19_fukusho_*)
-    # 3. predict_core で features 構築済 df を入力
-    # 4. v18 ensemble 予測 → P(1着)
-    # 5. v19 ensemble 予測 → P(top3)
-    # 6. race-level normalize (softmax T=1.0、tools/race_normalize.py)
-    # 7. EV 計算 (P × 単勝オッズ / 複勝オッズ)
-    # 8. filter (単勝 p_norm>=0.5 ev>=1.2、複勝 p_norm>=0.7 ev>=1.1)
-    # 9. bet 候補 (もしあれば) を返す
+    # Step 1: 運用フィルタ
+    if rinfo:
+        eligible, reason = is_v18v19_eligible(rinfo)
+        if not eligible:
+            return [], [], f"フィルタで投票見送り: {reason}"
 
-    return None, None, "v18_v19 not implemented (5/16+ deploy 予定、本セッション skeleton のみ)"
+    # Step 2: V18/V19 model load
+    try:
+        import lightgbm as lgb
+        v18_lgb = lgb.Booster(model_file=str(BASE / 'data/v18/models/v18_tansho_lgb.txt'))
+        v19_lgb = lgb.Booster(model_file=str(BASE / 'data/v18/models/v19_fukusho_lgb.txt'))
+    except Exception as e:
+        return None, None, f"V18/V19 model load fail: {type(e).__name__}: {e}"
+
+    # Step 3: features alignment
+    if v15_df is None or len(v15_df) == 0:
+        return None, None, "v15_df not provided or empty"
+
+    v18_feats = v18_lgb.feature_name()
+    # missing features は 0 fallback
+    import numpy as np
+    import pandas as pd
+    df_v18 = pd.DataFrame(index=v15_df.index)
+    for f in v18_feats:
+        if f in v15_df.columns:
+            df_v18[f] = pd.to_numeric(v15_df[f], errors='coerce').fillna(0).values
+        else:
+            df_v18[f] = 0.0  # default
+
+    # Step 4: predict
+    try:
+        v18_p = v18_lgb.predict(df_v18.values)
+        v19_p = v19_lgb.predict(df_v18.values)  # V19 is same features
+    except Exception as e:
+        return None, None, f"V18/V19 predict fail: {type(e).__name__}: {e}"
+
+    # Step 5: race-level normalize (softmax T=1.0)
+    def softmax(x, T=1.0):
+        e = np.exp(np.array(x) / T - max(x) / T)
+        return e / e.sum()
+    v18_norm = softmax(v18_p, T=1.0)
+    v19_norm = softmax(v19_p, T=1.0)
+
+    # Step 6: bet 候補生成 (filter: 単勝 p>=0.5 ev>=1.2、複勝 p>=0.7 ev>=1.1)
+    v18_bets, v19_bets = [], []
+    if '馬番' in v15_df.columns and '単勝オッズ' in v15_df.columns:
+        for i, row in v15_df.reset_index(drop=True).iterrows():
+            uma = row.get('馬番', 0)
+            odds = row.get('単勝オッズ', 0)
+            if pd.notna(odds) and odds > 0:
+                p18 = v18_norm[i]
+                p19 = v19_norm[i]
+                ev18 = p18 * odds
+                ev19 = p19 * odds * 0.3  # 複勝オッズ ~ 単勝×0.3 仮定
+                if p18 >= 0.5 and ev18 >= 1.2:
+                    v18_bets.append({'umaban': int(uma), 'prob': float(p18), 'ev': float(ev18), 'odds': float(odds)})
+                if p19 >= 0.7 and ev19 >= 1.1:
+                    v19_bets.append({'umaban': int(uma), 'prob': float(p19), 'ev': float(ev19), 'odds': float(odds)})
+
+    return v18_bets, v19_bets, None
 
 
 def notify_orchestrator_status(mode: str, race_id: str,

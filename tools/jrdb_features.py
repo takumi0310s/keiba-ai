@@ -901,6 +901,32 @@ def merge_jrdb_predict_features(horses_df, race_id_nk):
         except Exception as e:
             print(f"[WARN] JRDB SR merge failed: {e}")
 
+    # SRB: トラックバイアス詳細 (V162_FEATURES['jrdb_srb'] 7件、Session #36 B 追加)
+    # V18/V19 model に 7件含まれ、未merge と判明。 race-level、全馬同値 broadcast。
+    _srb_path = os.path.join(DATA_DIR, 'jrdb_srb.csv')
+    if os.path.exists(_srb_path):
+        try:
+            _srb = pd.read_csv(_srb_path, encoding='utf-8-sig', dtype=str)
+            _srb_race = _srb[_srb['race_id'].astype(str).str.zfill(12) == _rid_str]
+            if len(_srb_race) > 0:
+                _srb_row = _srb_race.iloc[-1]
+                # bias_*: 直接 numeric (例: "5" or "0")、欠損は 0
+                for _src_col, _dst_col in [
+                    ('bias_1corner', 'srb_bias_1corner'),
+                    ('bias_2corner', 'srb_bias_2corner'),
+                    ('bias_backstr', 'srb_bias_backstr'),
+                    ('bias_3corner', 'srb_bias_3corner'),
+                    ('bias_4corner', 'srb_bias_4corner'),
+                    ('bias_straight', 'srb_bias_straight'),
+                ]:
+                    _v = pd.to_numeric(_srb_row.get(_src_col, None), errors='coerce')
+                    horses_df[_dst_col] = float(_v) if pd.notna(_v) else 0.0
+                # pace_up_pos: 同名
+                _pup = pd.to_numeric(_srb_row.get('pace_up_pos', None), errors='coerce')
+                horses_df['srb_pace_up_pos'] = float(_pup) if pd.notna(_pup) else 0.0
+        except Exception as e:
+            print(f"[WARN] JRDB SRB merge failed: {e}")
+
     # SKB: パドック観察データ（構造化コード）
     _skb_path = os.path.join(DATA_DIR, 'jrdb_skb.csv')
     if os.path.exists(_skb_path):
