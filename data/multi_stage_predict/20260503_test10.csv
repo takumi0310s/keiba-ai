@@ -1,0 +1,4 @@
+race_id,course,race_num,race_name,adopted,reason,morning_top1_num,morning_top1_score,current_top1_num,current_top1_score,current_top1_weight_diff,diff_score,top1_changed
+202604010202,新潟,2,3歳未勝利,False,情報提供のみ,7,0.2448465776982704,10,0.502384961818602,0,0.25753838412033164,True
+202605020402,東京,2,3歳未勝利,False,情報提供のみ,5,0.2966555596821338,10,0.5048827185762632,4,0.2082271588941294,True
+202608030402,京都,2,3歳未勝利,False,情報提供のみ,2,0.1938546330372878,4,0.5022459020423727,-8,0.30839126900508496,True

@@ -1,0 +1,40 @@
+{
+  "_comment": "multi_stage_predict.py 用 stage 別設定。Session #28 (5/6) 新設。",
+  "stages": {
+    "test10": {
+      "label": "10:00 テスト予測",
+      "description": "全開催場の 2R 馬体重補正 + 3R-12R 朝予測通知 (情報取得正常性 + 機構動作確認)",
+      "target_races": [2],
+      "morning_only_races": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "filter_mode": "none",
+      "buying_enabled": false,
+      "icon": "🔍"
+    },
+    "race11_1450": {
+      "label": "14:50 11R 一括予測",
+      "description": "全開催場の 11R 予測 (重賞含む)、買い目は 1勝クラスのみ",
+      "target_races": [11],
+      "morning_only_races": [],
+      "filter_mode": "11r_planb",
+      "buying_enabled": true,
+      "icon": "🏇"
+    },
+    "race12_1545": {
+      "label": "15:45 12R 一括予測 (主戦場)",
+      "description": "全開催場の 12R 予測、買い目は 1勝クラスのみ (案B改 主戦場)",
+      "target_races": [12],
+      "morning_only_races": [],
+      "filter_mode": "12r_planb",
+      "buying_enabled": true,
+      "icon": "🏇"
+    }
+  },
+  "thresholds": {
+    "top1_diff_alert": 0.10,
+    "top1_diff_note": 0.05,
+    "weight_diff_alert": 15,
+    "weight_diff_note": 10
+  },
+  "investment_per_race_jpy": 700,
+  "withdraw_line_jpy": -50000
+}

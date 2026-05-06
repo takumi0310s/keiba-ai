@@ -1,0 +1,4 @@
+race_id,course,race_num,race_name,adopted,reason,morning_top1_num,morning_top1_score,current_top1_num,current_top1_score,current_top1_weight_diff,diff_score,top1_changed
+202604010211,新潟,11,越後S,False,OP/特別,10,0.3425454470258699,10,0.7367509640117401,-4,0.3942055169858702,False
+202605020411,東京,11,プリンシパルS,False,OP/特別,4,0.2365616122037172,5,0.43215007337082956,4,0.19558846116711237,True
+202608030411,京都,11,天皇賞(春),False,重賞/特別,1,0.2689288943350572,7,0.8649476039229841,-8,0.5960187095879269,True

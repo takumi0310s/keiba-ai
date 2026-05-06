@@ -1,0 +1,4 @@
+race_id,course,race_num,race_name,adopted,reason,morning_top1_num,morning_top1_score,current_top1_num,current_top1_score,current_top1_weight_diff,diff_score,top1_changed
+202604010212,新潟,12,4歳以上1勝クラス,True,1勝クラス,3,0.2489419685705297,3,0.5861364430951923,0,0.3371944745246626,False
+202605020412,東京,12,4歳以上2勝クラス,False,2勝/3勝,5,0.2822456747230059,5,0.6664848051253951,0,0.3842391304023892,False
+202608030412,京都,12,東大路S,False,特別/OP,1,0.2583926490209112,6,0.6344085474652305,2,0.37601589844431926,True
