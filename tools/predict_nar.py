@@ -101,7 +101,11 @@ def encode_one(row, *, num_horses, distance, surface_enc, condition_enc, course_
     except Exception:
         odds = None
     odds_log = math.log(odds) if (odds is not None and odds > 0) else 0.0
-    pop_rank = int(row.get('pop_rank', 99) or 99)
+    # Session #31 C fix: '--' 等の不正値で ValueError → 99 で fallback
+    try:
+        pop_rank = int(row.get('pop_rank', 99) or 99)
+    except (ValueError, TypeError):
+        pop_rank = 99
 
     # 騎手
     j = str(row.get('jockey', '')).strip()
