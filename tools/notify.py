@@ -59,14 +59,37 @@ def _get_webhook_url(channel="updates"):
     return url if url.startswith('https://') else None
 
 
-def send_discord(title, message, color="green", fields=None, channel="updates"):
-    """Discord Webhook通知を送信。URLが未設定ならスキップ。
+def _log_failure(title: str, message: str, channel: str, reason: str) -> None:
+    """Discord 失敗を logs/discord_failures.log に記録 (Session #31 A2 強化)"""
+    try:
+        log_dir = os.path.join(BASE_DIR, 'logs')
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, 'discord_failures.log')
+        ts = datetime.now().isoformat()
+        with open(log_path, 'a', encoding='utf-8') as f:
+            f.write(f"[{ts}] channel={channel} reason={reason}\n")
+            f.write(f"  title: {title[:200]}\n")
+            f.write(f"  msg: {message[:300]}\n")
+            f.write("---\n")
+    except Exception:
+        pass  # ログ失敗は silent fail (recursion 防止)
+
+
+def send_discord(title, message, color="green", fields=None, channel="updates",
+                 max_retries=3, retry_backoff=(1, 2, 4)):
+    """Discord Webhook通知を送信 (retry + log、Session #31 A2 強化)。
+    URLが未設定ならスキップ。
 
     Args:
         channel: "bets" (買い目) or "updates" (システム通知)
+        max_retries: 最大 retry 回数 (default 3)
+        retry_backoff: 各 retry 間の sleep 秒 (default 1/2/4)
     """
+    import time as _time
+
     url = _get_webhook_url(channel)
     if not url:
+        _log_failure(title, message, channel, "url_not_set")
         return False
 
     embed = {
@@ -78,11 +101,25 @@ def send_discord(title, message, color="green", fields=None, channel="updates"):
         embed["fields"] = [{"name": str(k)[:256], "value": str(v)[:200], "inline": True}
                            for k, v in list(fields.items())[:10]]
 
-    try:
-        resp = requests.post(url, json={"embeds": [embed]}, timeout=10)
-        return resp.status_code in (200, 204)
-    except Exception:
-        return False
+    last_reason = "unknown"
+    for attempt in range(max_retries):
+        try:
+            resp = requests.post(url, json={"embeds": [embed]}, timeout=10)
+            if resp.status_code in (200, 204):
+                return True
+            last_reason = f"http_{resp.status_code}"
+            # 429 (rate limit) は backoff、4xx の他は retry 無意味なので break
+            if 400 <= resp.status_code < 500 and resp.status_code != 429:
+                break
+        except Exception as e:
+            last_reason = f"exc:{type(e).__name__}"
+        # backoff (最後の試行は不要)
+        if attempt < max_retries - 1:
+            sleep_sec = retry_backoff[attempt] if attempt < len(retry_backoff) else 4
+            _time.sleep(sleep_sec)
+
+    _log_failure(title, message, channel, last_reason)
+    return False
 
 
 def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
