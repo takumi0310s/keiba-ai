@@ -1,8 +1,41 @@
-# V18/V19 5/16 試行 GO/no-go 計画書
+# V18/V19 5/16 試行 GO/no-go 計画書 (Session #33 大幅更新)
 
-**作成**: 2026-05-06 PM (Session #31)
+**作成**: 2026-05-06 PM (Session #31 → Session #33 真因確定で更新)
 **判定日**: 2026-05-15 (金) 22:00
 **目的**: V18 単勝 / V19 複勝 試行投入の前提条件 達成度評価
+**Session #33 更新**: 真因 Pattern A 確定 → 5/16 GO 確率 30% → **75%** に大幅上昇
+
+---
+
+## ★ Session #33 (5/6 PM) 重大更新
+
+### 真因確定: Pattern A (features pipeline 破綻、model 健全)
+
+詳細: `data/v18/v18_v19_root_cause_resolution_5_6.md`
+
+| 真因 | 検証 |
+|------|------|
+| 1. features 分布差 (12 features 破綻、gain 16.7%) | **主因** ✓ |
+| 2. ラベル分布差 | 否定 (false hypothesis、1着率 0.06pt 差のみ) |
+| 3. data leakage | 否定 (明確な leakage 不検出) |
+| 4. sample 構成シフト (Niigata 0%→28% 等) | 副因 |
+| 5. PACI 取得停止 (gain ~30%) | **主因** ✓ |
+
+→ **monotonic 変換で改善しない理由**: 12+ features が default 同値で **rank 自体が崩壊**、calibration / softmax では不変。 解決には **predict 側 pipeline 修正のみ** (model 触らない、再学習不要)。
+
+### 解決策: 4 group patch (5/13-15、11-18h)
+
+| group | 内容 | 工数 | 期待 winner_top1 改善 |
+|-------|------|------|------|
+| 1 | PACI 復旧 (jrdb_paci.csv 取得経路) | 3-5h | +5-8pt |
+| 2 | sib_*/sr_* 生成 (predict_core 拡張) | 4-6h | +3-5pt |
+| 3 | sire/bms lookup table fallback | 2-3h | +1-3pt |
+| 4 | premium fallback (training_time_filled 等) | 2-4h | +2-4pt |
+| **合計** | | **11-18h** | **+11-20pt** |
+
+→ winner_top1 **34.5% → 45-55%** (45% 基準クリア、BT 47.8% 近い)
+
+---
 
 ---
 
@@ -78,9 +111,9 @@
 | 2/5 | 🔴 NO-GO | V18/V19 投入 一切なし、Phase 3 (5/24+) で再検討 |
 | 0-1/5 | 🔴 NO-GO | 同上 |
 
-**5/6 時点予測**: 5/15 までに #1 (normalize) + #5 (shift 調査) で 2/5 達成、#2/#3 paper 蓄積で 4/5 まで届く可能性、#4 (winner_top1 ≥ 40%) は不透明。
+**5/6 時点予測** (Session #33 更新): 5/13-15 で Pattern A 4 group patch 完遂 → winner_top1 45-55% 達成見込み、#1-#5 全達成可能。
 
-→ **暫定 NO-GO 寄り**、Phase 3 (5/24+) で V15.1 本格採用が優先。
+→ **暫定 GO 寄り (確率 75%)**、Pattern A 修正範囲達成時。 Phase 3 (5/24+) で V15.1 と並行運用 候補。
 
 ---
 
