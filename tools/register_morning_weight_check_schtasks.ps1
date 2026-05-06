@@ -1,4 +1,4 @@
-# register_morning_weight_check_schtasks.ps1
+﻿# register_morning_weight_check_schtasks.ps1
 #
 # 09:30 (土・日) で morning_weight_check.bat を発火する schtasks 登録。
 # silent_runner.vbs 経由で静音化。

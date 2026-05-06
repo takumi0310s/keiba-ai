@@ -1,4 +1,4 @@
-# register_multi_stage_predict_schtasks.ps1
+﻿# register_multi_stage_predict_schtasks.ps1
 #
 # 当日 3 段階予測 schtasks 登録 (土日各 3 = 計 6 タスク)
 #   - 10:00 Test10 (2R 馬体重補正 + 3R-12R 朝予測通知)

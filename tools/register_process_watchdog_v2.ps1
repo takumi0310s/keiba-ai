@@ -1,4 +1,4 @@
-# register_process_watchdog_v2.ps1
+﻿# register_process_watchdog_v2.ps1
 #
 # 既存 ProcessWatchdog (Disabled, v1) を v2 (ログ鮮度ベース) に切替えて Enable。
 # silent_runner.vbs 経由で静音化して 5 分間隔で発火。

@@ -1,4 +1,4 @@
-# register_jrdb_retry_schtasks.ps1
+﻿# register_jrdb_retry_schtasks.ps1
 #
 # JRDB AM 9:00 retry タスクを 土・日 で登録
 # 06:00 の DailyJrdbKyi で 404 だった (TYB/SED/KYI 等) を retry
