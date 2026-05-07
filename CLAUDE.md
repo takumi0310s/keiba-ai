@@ -3,7 +3,16 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: 2026-05-06 (Session #31、Phase 3 計画完了 + リスク対策強化)
+Last updated: **2026-05-07 (Session #39、SKB LEAK 確定 + Phase 3-4 全前倒し)**
+
+> Session #39 deluxe (5/7) で 10 領域同時前倒し:
+> - **A**: sib expanding window 修正版 PoC ([data/v18/sib_expanding_window_design_5_7.md](data/v18/sib_expanding_window_design_5_7.md))
+> - **B**: JV-Link 統合 plan + 試作 ([docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md](docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md))
+> - **C**: SKB 完全除外 patch ([data/v18/skb_complete_exclusion_5_7.md](data/v18/skb_complete_exclusion_5_7.md))
+> - **D**: 全 4 source 役割分担 ([docs/PHASE_3_DATA_SOURCE_STRATEGY.md](docs/PHASE_3_DATA_SOURCE_STRATEGY.md))
+> - **E**: V20 architecture 更新 ([docs/PHASE_3_V20_DETAILED_DESIGN.md](docs/PHASE_3_V20_DETAILED_DESIGN.md) §17-18)
+> - **F-G**: Phase 4 動画解析 PoC + 技術調査 ([docs/PHASE_4_VIDEO_AI_DESIGN.md](docs/PHASE_4_VIDEO_AI_DESIGN.md), [docs/PHASE_4_TECH_RESEARCH.md](docs/PHASE_4_TECH_RESEARCH.md))
+> - **J**: Phase 3-4 統合 roadmap ([docs/PHASE_3_4_INTEGRATED_ROADMAP.md](docs/PHASE_3_4_INTEGRATED_ROADMAP.md))
 
 ---
 
@@ -18,10 +27,20 @@ LGB+XGB+FT-Transformer+IntraRace Attention 4モデルアンサンブルで複勝
 - **GitHub**: https://github.com/takumi0310s/keiba-ai
 - **現行モデル**: **V15** (本番、150 特徴量、AUC 0.8939、本番運用 ROI 119.2%、戦略⑦込み 140%+ 想定)
 - 旧モデル: v13.5b は historical reference (124 特徴量、Grid Ensemble、WF AUC 0.8788)
-- Phase 3 (5/24+) 採用候補: V15.1 SKB +0.0699 (`docs/PHASE_3_V15_1_PLAN.md`)
-- 現行 累計収支: **+13,530 円** (生データ、5/6 真相確定) / 撤退余裕 +63,530 円
+- 5/9 V15 案B改 単独継続 (絶対)。 5/16 V15.1 / V18/V19 共に NO-GO 確定 (Session #38)
+- Phase 3 (5/24+): sib_*_exp 修正版 + V20 学習 + JV-Link 加入 → 7/1 V20 投入候補
+- Phase 4 (7-8 月): 調教動画 AI 解析 PoC → 9/1 V21 投入候補
+- 現行 累計収支: **+13,530 円** / 撤退余裕 +63,530 円
 - **2段階モデル**: Pattern A（リークフリー評価用）+ Pattern B（当日情報込み実運用）
 - **検証済み**: WF 2020-2025, 実配当ROI 428.4%, 全条件PASS
+
+### Session #38 確定事項 (2026-05-07)
+
+| # | 確定 | 影響 |
+|---|------|------|
+| 1 | **V15.1 SKB POST-RACE LEAK 確定** (skb_kishi_code_3 +480bp / corr_target 0.137 / monotonic 1着→364, 10着→176) | V15.1 採用 NO-GO、 V20 で SKB 全 10 features 完全除外 |
+| 2 | **V18/V19 sib抜き hybrid** (LIVE winner_top1 -10.3pt + shift 30.4x→8.3x) | sib = リーク + 識別能力 hybrid、 expanding window 修正版が必要 |
+| 3 | **5/16 V18/V19 投入 NO-GO** | V15 案B改 単独継続、 6/15+ sib_*_exp 版で再判定 |
 
 ---
 
@@ -561,6 +580,20 @@ LEAK_FEATURES_A = {
 }
 ```
 
+### V20 で追加除外する特徴量（Session #38 確定、計 18 個）
+```python
+# train/v15_1_features.py V20_LEAK_FEATURES (Session #39 C で実装)
+SKB_LEAK_FEATURES = [  # Session #38 で SKB POST-RACE LEAK 確定
+    'skb_kishi_code_1', 'skb_kishi_code_2', 'skb_kishi_code_3',
+    'skb_baba_code_1',  'skb_baba_code_2',  'skb_baba_code_3',
+    'skb_kyaku_code_1', 'skb_kyaku_code_2', 'skb_kyaku_code_3',
+    'skb_turf_hoof',
+]  # 10 features (V15.1 SKB 全体)
+V20_LEAK_FEATURES = LEAK_FEATURES_A | SKB_LEAK_FEATURES  # 8 + 10 = 18
+```
+
+V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
+
 ### 過去の失敗から学んだ教訓
 | 失敗 | 詳細 | 教訓 |
 |------|------|------|
@@ -571,6 +604,8 @@ LEAK_FEATURES_A = {
 | **坂路調教マッチ率** | horse_name→horse_id変換が27%しか成功しない | AUC改善なし。現在はmean fillで対応 |
 | **Optuna過信** | 100試行で+0.0006のみ | 微改善は本番環境で消える可能性大 |
 | **dam_top3rリーク** | 全年データで母産駒成績を計算→WF AUC+0.023の大半がリーク | 外部CSVの集計値は必ずexpanding windowで。静的CSVをそのまま使うな |
+| **SKB POST-RACE LEAK** (Session #38, 5/7) | skb_kishi_code_3 単独 +480bp、 corr_target 0.137、 1着馬 0-rate 15% / 敗者 49%、 finish と monotonic | JRDB SKB ファイル = "成績拡張" = post-race。 **V20 で全 10 features 完全除外**、 LEAK_FEATURES の追加 list 化 |
+| **sib_top3_rate hybrid** (Session #38) | 旧 sib_top3_rate corr_target 0.2939 → 新 sib_top3_rate_exp 0.1689 (-0.125 リーク除去後の真の信号 0.169 残存) | 静的 CSV の集計値は必ず date 順 cumsum-current で expanding 化。 dam_top3r 教訓と同根の再発 |
 
 ### リークフリー設計原則
 1. 全統計特徴量は**expanding window**（cumsum - current、当該レース除外）
@@ -1215,12 +1250,77 @@ python tools/predict_one_race.py 202605020211
 - **本番切替**: 5月末
 
 ### 🔍 既知のバグ
-- jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復)
+- jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復) → **JV-Link O1 で代替経路 (Session #39 B)**
 - predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
 - cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)
 - nightly_sanity の SCRAPER-GUARD 認識バグ (誤検知)
-- jra_payouts.csv が4/6で更新停止
+- jra_payouts.csv が4/6で更新停止 → **JV-Link HR で代替経路 (Session #39 B)**
 - JRDB データの2026年分が未取得 (race_id 列なしの可能性)
+
+---
+
+## Phase 3-4 統合 roadmap (Session #39 J、 5/24-8月)
+
+### Phase 3 前半 (5/24-6/8): 基盤整備 + sib_*_exp 統合
+
+| 期間 | 内容 |
+|------|------|
+| 5/24 | JRA-VAN DataLab 加入、 JV-Link DLL インストール、 jvlink_fetcher.py 動作確認 |
+| 5/25-5/27 | sib_expanding_features.py を train/features_v15_new.py に統合 (旧 sib_top3_rate / sib_shinba_wr 入れ替え) |
+| 5/28-5/30 | V18/V19 sib_*_exp 版 6-fold WF (LGB+XGB) |
+| 6/1-6/5 | V18/V19 LIVE retro (5/30 + 5/31 + 6/1)、 winner_top1 ≥ 30% / shift ≤ 12x 検証 |
+| 6/6-6/8 | sib_*_exp GO/no-go 判定。 GO なら 6/15+ V18/V19 段階投入 (週末のみ、 上限 5,000円/日) |
+
+### Phase 3 後半 (6/9-6/30): V20 構築
+
+| 期間 | 内容 |
+|------|------|
+| 6/9-6/13 | JV-Link parser 実装 (RACE/HR/O1/TCOV/WOOD/BLOD)、 過去 1 年 bulk fetch + 整合チェック |
+| 6/14-6/20 | V20 学習 data spec 確定 (JRA + NAR 統合、 共通 80 features、 SKB 完全除外、 sib_*_exp 込み)、 V20 v1 学習 (4-model ensemble) |
+| 6/21-6/25 | V20 WF 検証 (6-fold、 2020-2025)、 LIVE retro |
+| 6/26-6/28 | V20 paper trading (週末) |
+| 6/29-6/30 | GO/no-go 最終判定 (WF AUC ≥ 0.880 / LIVE retro ≥ 30% / shift ≤ 12x / NAR AUC ≥ 0.83 / paper ROI ≥ 110% / LEAK 監査 PASS) |
+
+### Phase 3 投入 (7/1+): V20 production
+
+- 7/1: V20 段階投入 (週末のみ、 上限 5,000円/日)
+- 7/15: 順調なら投資額 増額 (週末 1万円/日 + 平日 5,000円/日)
+- 8/1: V15 archive 判定 (1 か月並行運用後)
+
+### Phase 4 (7-8 月): 動画解析 PoC
+
+| 期間 | 内容 |
+|------|------|
+| 7/1-7/14 | データ蓄積 (JRA-VAN ネクスト + netkeiba 動画、 50 レース 1,500 動画) |
+| 7/15-7/31 | YOLOv8 馬体検出 + DLC SuperAnimal 姿勢推定 動作確認 (zero-shot) |
+| 8/1-8/15 | 時系列特徴量抽出 (stride / gait_symmetry / head_bobbing / ear_pos / posture / 5 件)、 fine-tune 必要なら DLC HORSE-10 ベース |
+| 8/16-8/31 | V21 学習 (V20 + VIDEO_FEATURES) + WF 検証 |
+| 9/1 | V21 投入判定 (WF AUC ≥ V20 + 0.005 / LIVE retro winner_top1 ≥ V20 + 1pt) |
+
+### 投資保護 (絶対遵守)
+
+- **5/9 V15 案B改 単独継続** (Session #38 NO-GO 確定後の唯一 path)
+- **撤退ライン**: 累計 -50,000円 (現在 +13,530円、 撤退余裕 +63,530円)
+- **取り返し禁止** (損切り後 翌日へ持ち越さない)
+- **Phase 3-4 着手中も V15 production 完全不変保証**
+
+### 月額コスト + ROI 試算
+
+| source | 月額 | 開始 |
+|--------|------|------|
+| netkeiba Premium | 4,500円 | 既存 |
+| JRDB Advance | 約 2,000円 | 既存 |
+| JV-Link (DataLab) | 2,090円 | 5/24 |
+| JRA-VAN ネクスト (Phase 4 用) | +1,000円 | 7/1 |
+| Colab Pro (Phase 4 GPU) | 1,178円 | 7/1 |
+| **合計** | **約 10,768円/月** (7/1 以降) | — |
+
+ROI 想定:
+- V15 (現状): 119.2% (戦略⑦込み 140%) → 月利 約 2-3 万円
+- V20 (7/1+): WF AUC 0.880-0.890 / 戦略⑦込み 145-150% 想定 → 月利 5-10 万円
+- V21 (9/1+): V20 + 動画 features 中位想定で 145-150% → 月利 6-11 万円
+
+→ 月額コスト 約 1万円は V20 以降の月利増分で十分回収。
 
 ### 📁 重要ファイル
 - 1レース予測: `tools/predict_one_race.py`
