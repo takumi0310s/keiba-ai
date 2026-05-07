@@ -3,16 +3,27 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-07 (Session #39、SKB LEAK 確定 + Phase 3-4 全前倒し)**
+Last updated: **2026-05-08 (Session #41 巨大マラソン、 Phase 3 前倒し実装、 JV-Link 加入完了反映)**
 
-> Session #39 deluxe (5/7) で 10 領域同時前倒し:
-> - **A**: sib expanding window 修正版 PoC ([data/v18/sib_expanding_window_design_5_7.md](data/v18/sib_expanding_window_design_5_7.md))
-> - **B**: JV-Link 統合 plan + 試作 ([docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md](docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md))
-> - **C**: SKB 完全除外 patch ([data/v18/skb_complete_exclusion_5_7.md](data/v18/skb_complete_exclusion_5_7.md))
-> - **D**: 全 4 source 役割分担 ([docs/PHASE_3_DATA_SOURCE_STRATEGY.md](docs/PHASE_3_DATA_SOURCE_STRATEGY.md))
-> - **E**: V20 architecture 更新 ([docs/PHASE_3_V20_DETAILED_DESIGN.md](docs/PHASE_3_V20_DETAILED_DESIGN.md) §17-18)
-> - **F-G**: Phase 4 動画解析 PoC + 技術調査 ([docs/PHASE_4_VIDEO_AI_DESIGN.md](docs/PHASE_4_VIDEO_AI_DESIGN.md), [docs/PHASE_4_TECH_RESEARCH.md](docs/PHASE_4_TECH_RESEARCH.md))
-> - **J**: Phase 3-4 統合 roadmap ([docs/PHASE_3_4_INTEGRATED_ROADMAP.md](docs/PHASE_3_4_INTEGRATED_ROADMAP.md))
+> Session #41 (5/8 深夜) で 8 領域 同時前倒し実装:
+> - **A**: 32-bit Python 環境 plan ([data/v18/jvlink_python32_setup_5_7.md](data/v18/jvlink_python32_setup_5_7.md))
+> - **B**: jvlink_fetcher_v2.py 本実装 ([data/v18/jvlink_fetcher_implementation_5_7.md](data/v18/jvlink_fetcher_implementation_5_7.md))
+> - **C**: 5/1-5/7 backfill script ([data/v18/jvlink_backfill_5_1_5_7.md](data/v18/jvlink_backfill_5_1_5_7.md))
+> - **D**: sib_exp PoC 完成 + V18/V19 LIVE retro ([data/v18/sib_expanding_v1_retro_5_7.md] 別 commit)
+> - **E**: V20 学習 data 準備 plan ([data/v18/v20_data_preparation_plan_5_7.md](data/v18/v20_data_preparation_plan_5_7.md))
+>
+> Session #39 deluxe (5/7) で 10 領域 設計済 ([Phase 3-4 統合 roadmap](docs/PHASE_3_4_INTEGRATED_ROADMAP.md))。
+
+### JRA-VAN 加入 + JV-Link 環境 (2026-05-07 夜 確定)
+
+| 項目 | 値 |
+|------|----|
+| JRA-VAN DataLab | 加入完了 |
+| JV-Link DLL | C:\\Windows\\SysWow64\\JVDTLAB\\JVDTLab.dll (32-bit only, ver 1.18) |
+| ProgID | JVDTLab.JVLink |
+| 動作確認 (5/7 夜) | 過去日付 5/3 で 29 ファイル取得 OK |
+| 32-bit Python venv | C:\\Users\\takum\\jvlink-venv\\ (推奨、 5/24+ 着手) |
+| 既存 64-bit 環境 | 完全維持 (predict_core / daily_predict 含む) |
 
 ---
 

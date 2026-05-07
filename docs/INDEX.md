@@ -116,6 +116,18 @@
 
 ## I. 関連 data/v18/ doc (重要)
 
+### Session #41 (5/8) deliverables
+
+| doc | tag | 内容 |
+|-----|-----|------|
+| `data/v18/jvlink_python32_setup_5_7.md` | 📋🛠 | 32-bit Python 環境 plan (Session #41 A) |
+| `data/v18/jvlink_fetcher_implementation_5_7.md` | 📋 | jvlink_fetcher_v2 本実装 (Session #41 B) |
+| `data/v18/jvlink_backfill_5_1_5_7.md` | 📋🛠 | 5/1-5/7 backfill plan (Session #41 C) |
+| `data/v18/sib_expanding_v1_retro_5_7.md` | 🔍📋 | sib_exp PoC + LIVE retro 結果 (Session #41 D) |
+| `data/v18/v20_data_preparation_plan_5_7.md` | 📋 | V20 6 年分 backfill plan (Session #41 E) |
+
+### Session #39-40 deliverables
+
 | doc | tag | 内容 |
 |-----|-----|------|
 | `data/v18/sib_expanding_window_design_5_7.md` | 📋🧪 | sib expanding window 設計 + PoC (Session #39 A) |
@@ -131,6 +143,7 @@
 | `data/v18/v18_v19_leakage_audit_5_6.md` | 🔍🧪 | V18/V19 leak audit (Session #38 前) |
 | `data/v18/v18_v19_retro_full_result.md` | 🔍 | V18/V19 retro 結果 (Session #38) |
 | `data/v18/session_39_summary_5_7.md` | 🔍📚 | Session #39 deluxe 統合 summary |
+| `data/v18/session_40_summary_5_7.md` | 🔍📚 | Session #40 マスター 統合 summary |
 
 ---
 
