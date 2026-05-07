@@ -110,3 +110,5 @@ keiba_model_v141_*.pkl*
 predict_one_race_test.py
 predict_one_race_v2.py
 predict_one_race_v3.py
+data/netkeiba_siblings.csv
+data/netkeiba_siblings_expanding.csv
