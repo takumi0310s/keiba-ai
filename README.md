@@ -2,9 +2,12 @@
 
 JRA (中央競馬) + NAR (地方競馬) 予測 AI システム
 
-> 最終更新: 2026-05-05 (Session #19, Phase 2.5+)
-> 累計収支: **+14,140円** (`data/cumulative_results.csv`)
-> 撤退ライン: **-50,000円** (絶対遵守)
+> 最終更新: **2026-05-07 (Session #39 deluxe、 Phase 3-4 全前倒し)**
+> 累計収支: **+13,530円** (`data/cumulative_results.csv`、 5/6 真相確定値)
+> 撤退ライン: **-50,000円** (絶対遵守) — 撤退余裕 +63,530円
+
+> **Session #38 確定 (5/7)**: V15.1 SKB POST-RACE LEAK 確定 → 採用 NO-GO。 V18/V19 sib抜き = リーク + 識別能力 hybrid → 5/16 NO-GO。 5/9 V15 案B改 単独継続 (絶対)。
+> **Session #39 deluxe (5/7)**: Phase 3 (5/24+) 修正版 + V20 (6/9-30) architecture + Phase 4 (7-8月) 動画解析 PoC を全前倒し設計。 詳細 → [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md)
 
 ---
 
@@ -35,10 +38,19 @@ JRA (中央競馬) + NAR (地方競馬) 予測 AI システム
 | モデル | ファイル | 状態 | 備考 |
 |--------|---------|------|------|
 | V17 morning | `train/train_v17_*.py` | 試作 (土日 06:30 morning_top_races) | 11R/12R 用 |
-| V18 単勝 | `data/v18/models/v18_tansho_lgb.txt` + `_xgb.json` | 5/16 試行候補 | distribution shift で全 bet=0 → race-level normalize 試作中 |
-| V19 複勝 | `data/v18/models/v19_fukusho_lgb.txt` + `_xgb.json` | 5/16 試行候補 | 同上 |
+| V18 単勝 | `data/v18/models/v18_tansho_lgb.txt` + `_xgb.json` | **5/16 NO-GO 確定** (Session #38) | sib抜き で winner_top1 -10pt、 6/15+ sib_*_exp 版で再判定 |
+| V19 複勝 | `data/v18/models/v19_fukusho_lgb.txt` + `_xgb.json` | **5/16 NO-GO 確定** (Session #38) | 同上 |
+| V15.1 (KKA+SKB+SRB) | — | **採用 NO-GO 確定** (Session #38) | SKB POST-RACE LEAK 確定 (skb_kishi_code_3 +480bp) |
 
-### 2.3 アーカイブ済 (5/5 Session #19)
+### 2.3 計画中 (Phase 3-4)
+
+| モデル | 期間 | 内容 |
+|--------|------|------|
+| V18/V19 v2 (sib_*_exp 版) | 5/28-6/8 学習、 6/15+ 投入候補 | Session #39 A の sib expanding window で hybrid 解消 |
+| **V20** (JRA + NAR 統合) | **6/9-6/30 学習、 7/1+ 投入候補** | JV-Link 主軸 + SKB 完全除外 + sib_*_exp、 4-model ensemble、 共通 80 features |
+| **V21** (V20 + 動画解析) | **7-8 月 PoC、 9/1+ 投入候補** | YOLOv8 + DLC SuperAnimal で歩様 / 仕上がり / 集中度 features 追加 |
+
+### 2.4 アーカイブ済 (5/5 Session #19)
 
 `archive/old_models_20260505/` に 23 ファイル / 87 MB 移動。
 v8 / v9 / v92b / v12 / v13 / v131-v135 / v141 / v9_nar 系。
@@ -197,6 +209,21 @@ python tools/notify_done.py "タスク名" "詳細"
 ---
 
 ## 8. 重要ドキュメント
+
+### 8.1 Phase 3-4 (Session #39 deluxe、 5/24+ 着手)
+
+| 用途 | path |
+|------|------|
+| **Phase 3-4 統合 roadmap (5/24-8月)** | [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md) |
+| V20 architecture 詳細設計 (807 行) | [`docs/PHASE_3_V20_DETAILED_DESIGN.md`](docs/PHASE_3_V20_DETAILED_DESIGN.md) |
+| JV-Link 統合 plan + 試作 | [`docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md`](docs/PHASE_3_JVLINK_INTEGRATION_PLAN.md) |
+| 全 4 source 役割分担 | [`docs/PHASE_3_DATA_SOURCE_STRATEGY.md`](docs/PHASE_3_DATA_SOURCE_STRATEGY.md) |
+| sib expanding window 設計 + PoC | [`data/v18/sib_expanding_window_design_5_7.md`](data/v18/sib_expanding_window_design_5_7.md) |
+| SKB 完全除外 patch 設計 | [`data/v18/skb_complete_exclusion_5_7.md`](data/v18/skb_complete_exclusion_5_7.md) |
+| Phase 4 動画解析 PoC 設計 | [`docs/PHASE_4_VIDEO_AI_DESIGN.md`](docs/PHASE_4_VIDEO_AI_DESIGN.md) |
+| Phase 4 馬体検出 + 姿勢推定 技術調査 | [`docs/PHASE_4_TECH_RESEARCH.md`](docs/PHASE_4_TECH_RESEARCH.md) |
+
+### 8.2 Phase 2.5+ + 過去 引き継ぎ
 
 | 用途 | path |
 |------|------|
