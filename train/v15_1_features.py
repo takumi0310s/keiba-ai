@@ -82,6 +82,36 @@ V15_1_SRB_FEATURES = [
 V15_1_NEW_FEATURES = V15_1_KKA_FEATURES + V15_1_SKB_FEATURES + V15_1_SRB_FEATURES
 
 
+# ===== Session #38 SKB POST-RACE LEAK 確定 (2026-05-07) =====
+# skb_kishi_code_3 単独 +480bp の異常 AUC gain、 corr_target=0.137、
+# finish 順位と monotonic (1着→364, 10着→176)、 1着馬の 0-rate 15% / 敗者 49%。
+# JRDB SKB ファイル仕様 = "成績拡張" = post-race。 物理的に学習特徴量として不可。
+# → V20 (6/9+) では SKB 全 10 features を完全除外。
+SKB_LEAK_FEATURES = list(V15_1_SKB_FEATURES)  # 10 features (kishi/baba/kyaku ×3 + turf_hoof)
+
+# 既存 odds リーク (V12 〜) と統合した V20 用 LEAK list
+V20_LEAK_FEATURES = [
+    # === V12 から継承 (確定オッズ系 + 当日情報、 Pattern A 除外用) ===
+    'odds_log',           # 確定オッズ
+    'horse_weight',       # 当日馬体重
+    'condition_enc',      # 馬場状態
+    'weight_change', 'weight_change_abs', 'weight_cat', 'weight_cat_dist',
+    'cond_surface',
+    # === Session #38 確定 SKB POST-RACE LEAK (10) ===
+    *SKB_LEAK_FEATURES,
+]
+
+
+def filter_v15_1_features(features: list, *, skip_skb: bool = False) -> list:
+    """V15.1 features list から SKB を除外 (V20 構築時用)。
+
+    skip_skb=True で SKB 10 features を除外、 KKA + SRB のみ返す。
+    """
+    if not skip_skb:
+        return list(features)
+    return [f for f in features if f not in SKB_LEAK_FEATURES]
+
+
 # ===== KKA 取込 =====
 
 KKA_SOURCE_COLS = {
@@ -190,8 +220,14 @@ def load_srb(path: str = 'data/jrdb_srb.csv') -> pd.DataFrame:
 def merge_v15_1_features(df: pd.DataFrame,
                           kka_path: str = 'data/jrdb_kka.csv',
                           skb_path: str = 'data/jrdb_skb.csv',
-                          srb_path: str = 'data/jrdb_srb.csv') -> pd.DataFrame:
-    """V15 学習データに KKA/SKB/SR features を merge."""
+                          srb_path: str = 'data/jrdb_srb.csv',
+                          *,
+                          skip_skb: bool = False) -> pd.DataFrame:
+    """V15 学習データに KKA/SKB/SR features を merge.
+
+    skip_skb=True (Session #38 SKB POST-RACE LEAK 確定後の V20 用):
+      SKB merge を完全 skip、 SKB 列は付与しない。 学習時にも feature_names から除外。
+    """
     df_local = df.copy()
     df_local['race_id'] = df_local['race_id'].astype(str)
     # cache race_id は jrdb-internal 8-char + umaban 2-char zero-padded suffix
@@ -200,20 +236,22 @@ def merge_v15_1_features(df: pd.DataFrame,
         df_local['umaban'] = pd.to_numeric(df_local['umaban'], errors='coerce').astype('Int64').astype(str)
 
     kka = load_kka(kka_path)
-    skb = load_skb(skb_path)
     srb = load_srb(srb_path)
 
     n0 = len(df_local)
 
     df_local = df_local.merge(kka, on=['race_part', 'umaban'], how='left')
-    df_local = df_local.merge(skb, on=['race_part', 'umaban'], how='left')
+    if not skip_skb:
+        skb = load_skb(skb_path)
+        df_local = df_local.merge(skb, on=['race_part', 'umaban'], how='left')
     df_local = df_local.merge(srb, on='race_part', how='left')
 
     assert len(df_local) == n0, f"merge changed row count {n0} → {len(df_local)}"
     df_local = df_local.drop(columns=['race_part'])
 
     # numeric 化 + missing → 0 (V15 と同じ方針)
-    for col in V15_1_NEW_FEATURES:
+    target_features = filter_v15_1_features(V15_1_NEW_FEATURES, skip_skb=skip_skb)
+    for col in target_features:
         if col in df_local.columns:
             df_local[col] = pd.to_numeric(df_local[col], errors='coerce').fillna(0)
         else:
