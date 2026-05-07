@@ -1,0 +1,119 @@
+{
+  "generated": "2026-05-07T23:39:33.856691",
+  "inventory": {
+    "jra_races_full": {
+      "exists": true,
+      "total_rows": 532004,
+      "by_year": {
+        "2015": 49992,
+        "2016": 50076,
+        "2017": 49299,
+        "2018": 48618,
+        "2019": 47574,
+        "2020": 48282,
+        "2021": 47821,
+        "2022": 47220,
+        "2023": 47672,
+        "2024": 47181,
+        "2025": 47884,
+        "2026": 385
+      },
+      "min_year": 2015,
+      "max_year": 2026
+    },
+    "jrdb_kyi": {
+      "exists": true,
+      "size_mb": 89.4,
+      "mtime": "2026-05-03T09:42:50.487086"
+    },
+    "jra_payouts": {
+      "exists": true,
+      "rows": 12333,
+      "min_date": "20230105",
+      "max_date": "20260503"
+    },
+    "blood": {
+      "exists": true,
+      "horse_count": 58921
+    },
+    "netkeiba_speed_index": {
+      "exists": true,
+      "rows": 270436,
+      "by_year": {
+        "2019": 7955,
+        "2020": 44038,
+        "2021": 43874,
+        "2022": 43272,
+        "2023": 43741,
+        "2024": 43199,
+        "2025": 43852,
+        "2026": 505
+      }
+    }
+  },
+  "jvlink_targets": [
+    {
+      "datatype": "RACE",
+      "purpose": "公式 race 詳細 (override jra_races_full.csv)",
+      "from": "20100101",
+      "to": "20260507",
+      "estimated_records": 800000,
+      "priority": 1,
+      "phase": "Phase 3 後半 (6/9-13)"
+    },
+    {
+      "datatype": "HR",
+      "purpose": "公式 払戻 (jra_payouts.csv 4/6 停止 解消)",
+      "from": "20180101",
+      "to": "20260507",
+      "estimated_records": 30000,
+      "priority": 1,
+      "phase": "Phase 3 前半 (5/24-31)"
+    },
+    {
+      "datatype": "O1",
+      "purpose": "公式 オッズ (paci_* 自前算出 + 当日リアルタイム)",
+      "from": "20250507",
+      "to": "20260507",
+      "estimated_records": 100000,
+      "priority": 2,
+      "phase": "Phase 3 前半 (5/27-)"
+    },
+    {
+      "datatype": "TCOV",
+      "purpose": "公式 調教 (netkeiba 調教と整合チェック / 補完)",
+      "from": "20250507",
+      "to": "20260507",
+      "estimated_records": 200000,
+      "priority": 3,
+      "phase": "Phase 3 後半 (6/9-13)"
+    },
+    {
+      "datatype": "WOOD",
+      "purpose": "公式 木馬場 (netkeiba と整合チェック / 補完)",
+      "from": "20250507",
+      "to": "20260507",
+      "estimated_records": 50000,
+      "priority": 3,
+      "phase": "Phase 3 後半 (6/9-13)"
+    },
+    {
+      "datatype": "BLOD",
+      "purpose": "公式 血統 (blood_full.csv override)",
+      "from": "20100101",
+      "to": "20260507",
+      "estimated_records": 80000,
+      "priority": 2,
+      "phase": "Phase 3 後半 (6/14-20)"
+    },
+    {
+      "datatype": "WF",
+      "purpose": "馬体重 (Pattern B 当日情報)",
+      "from": "20250507",
+      "to": "20260507",
+      "estimated_records": 100000,
+      "priority": 2,
+      "phase": "Phase 3 後半 (6/14-20)"
+    }
+  ]
+}

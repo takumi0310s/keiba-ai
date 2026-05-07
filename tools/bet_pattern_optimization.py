@@ -77,29 +77,48 @@ def parse_top_n(rec: dict, max_n: int = 7) -> List[int]:
 
 
 def gen_bets_from_top(tops: List[int], pattern: str) -> List[Tuple[int, int, int]]:
-    """3 つの top list から bet pattern 別に三連複買い目 list を生成."""
+    """3 つの top list から bet pattern 別に三連複買い目 list を生成.
+
+    formation 定義 (axis = TOP1):
+    - 5pt: TOP1, TOP2 軸 + TOP3〜TOP7 流し (5 通り)
+    - 7pt: TOP1 軸 - TOP2,TOP3 - TOP2〜TOP6 (本番 baseline)
+    - 9pt: TOP1 軸 - TOP2,TOP3,TOP4 - TOP2〜TOP7
+    """
     if len(tops) < 3:
         return []
     a = tops[0]
-    if pattern == "5pt":
-        # TOP1 軸 × TOP2/3 × TOP2/3/4
-        col2 = tops[1:3]
-        col3 = tops[1:4] if len(tops) >= 4 else tops[1:3]
-    elif pattern == "9pt":
-        col2 = tops[1:4] if len(tops) >= 4 else tops[1:3]
-        col3 = tops[1:7] if len(tops) >= 7 else tops[1:]
-    else:  # "7pt" baseline
-        col2 = tops[1:3]
-        col3 = tops[1:6] if len(tops) >= 6 else tops[1:]
     out = []
     seen = set()
-    for x in col2:
-        for y in col3:
-            if x == a or y == a or x == y: continue
-            tri = tuple(sorted([a, x, y]))
+    if pattern == "5pt":
+        # TOP1 + TOP2 軸 + TOP3〜TOP7 (5 頭流し)
+        if len(tops) < 2: return []
+        b = tops[1]
+        for c in tops[2:7]:
+            if c in (a, b): continue
+            tri = tuple(sorted([a, b, c]))
             if tri in seen: continue
             seen.add(tri)
             out.append(tri)
+    elif pattern == "9pt":
+        col2 = tops[1:4] if len(tops) >= 4 else tops[1:]
+        col3 = tops[1:7] if len(tops) >= 7 else tops[1:]
+        for x in col2:
+            for y in col3:
+                if x == a or y == a or x == y: continue
+                tri = tuple(sorted([a, x, y]))
+                if tri in seen: continue
+                seen.add(tri)
+                out.append(tri)
+    else:  # "7pt" baseline
+        col2 = tops[1:3]
+        col3 = tops[1:6] if len(tops) >= 6 else tops[1:]
+        for x in col2:
+            for y in col3:
+                if x == a or y == a or x == y: continue
+                tri = tuple(sorted([a, x, y]))
+                if tri in seen: continue
+                seen.add(tri)
+                out.append(tri)
     return out
 
 

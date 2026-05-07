@@ -7,12 +7,12 @@
       "pattern": "5pt",
       "n_eval": 101,
       "cost_per_race": 500,
-      "hit": 10,
-      "hit_rate": 9.9,
+      "hit": 9,
+      "hit_rate": 8.91,
       "inv": 50500,
-      "pay": 15300,
-      "profit": -35200,
-      "roi": 30.3
+      "pay": 10570,
+      "profit": -39930,
+      "roi": 20.93
     },
     {
       "pattern": "7pt",

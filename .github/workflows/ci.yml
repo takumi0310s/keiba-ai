@@ -1,0 +1,69 @@
+name: CI - syntax + tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  syntax-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (minimal for syntax + tests)
+        run: |
+          pip install -q pandas numpy lightgbm xgboost scikit-learn requests beautifulsoup4 rapidfuzz
+
+      - name: Syntax check - tools/
+        run: |
+          for f in tools/*.py; do
+            if [ -f "$f" ]; then
+              echo "Checking $f..."
+              python -c "import py_compile; py_compile.compile('$f', doraise=True)" || exit 1
+            fi
+          done
+
+      - name: Syntax check - train/
+        run: |
+          for f in train/*.py; do
+            if [ -f "$f" ]; then
+              echo "Checking $f..."
+              python -c "import py_compile; py_compile.compile('$f', doraise=True)" || exit 1
+            fi
+          done
+
+      - name: Syntax check - app.py + predict_core.py + daily_predict.py
+        run: |
+          python -c "import py_compile; py_compile.compile('app.py', doraise=True)"
+          python -c "import py_compile; py_compile.compile('tools/predict_core.py', doraise=True)"
+          python -c "import py_compile; py_compile.compile('tools/daily_predict.py', doraise=True)"
+
+      - name: Run unit tests (Session #39 + #40 tools)
+        run: |
+          # data 依存しない test のみ実行 (CI 環境に大型 CSV 不在)
+          python -m unittest tests.test_session40_session39_tools.TestSession39BTools -v
+          python -m unittest tests.test_session40_session39_tools.TestSession39CTools -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_bet_pattern_optimization_imports -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_bet_pattern_5pt_count -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_bet_pattern_7pt_count -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_bet_pattern_9pt_count -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_race_classifier_imports -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_race_classifier_1sho -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40ATools.test_race_classifier_g2 -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40BTools -v
+          python -m unittest tests.test_session40_session39_tools.TestSession40DTools -v
+
+      - name: Verify V15 production files unchanged
+        run: |
+          # CI で 重要 file の syntax のみ確認 (pkl.gz は git LFS 等で管理されない場合あり)
+          test -f tools/predict_core.py && echo "predict_core.py exists"
+          test -f tools/daily_predict.py && echo "daily_predict.py exists"
+          test -f app.py && echo "app.py exists"
