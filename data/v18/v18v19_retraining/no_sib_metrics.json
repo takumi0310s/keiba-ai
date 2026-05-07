@@ -1,0 +1,48 @@
+{
+  "v18_no_sib": {
+    "auc": 0.8854696096012852,
+    "logloss": 0.18503177711513744,
+    "winner_top1": 0.4575976845151954,
+    "mean_p18": 0.05495421252772173,
+    "max_p18": 0.9108066987158766,
+    "feature_count": 188
+  },
+  "v19_no_sib": {
+    "auc": 0.8753670429137148,
+    "logloss": 0.34826171965698716,
+    "mean_p19": 0.199884971750143,
+    "max_p19": 0.9806856993931321,
+    "feature_count": 188
+  },
+  "v18_compare": {
+    "existing_auc_ens": 0.8948245478227486,
+    "existing_winner_top1": 0.072867760069057,
+    "delta_auc": -0.009354938221463382,
+    "delta_winner_top1": 0.0,
+    "existing_winner_top1_lgb": 0.48277858176555716,
+    "existing_winner_top1_xgb": 0.48104196816208394,
+    "existing_winner_top1_ens": 0.47785817655571633,
+    "delta_winner_top1_vs_ens": -0.02026049204052094,
+    "delta_winner_top1_vs_lgb": -0.025180897250361767
+  },
+  "v19_compare": {
+    "existing_auc_ens": 0.8873112101858149,
+    "delta_auc": -0.011944167272100126
+  },
+  "meta": {
+    "timestamp": "2026-05-07 17:21:04.717917",
+    "session": "37_A",
+    "purpose": "V18/V19 sib\u629c\u304d \u5358\u4e00-fold \u518d\u5b66\u7fd2",
+    "fold": "train 2015-2024, test 2025",
+    "leak_excluded_count": 31,
+    "sib_excluded": [
+      "sib_top3_rate",
+      "sib_shinba_wr"
+    ],
+    "feature_count": 188,
+    "elapsed_min": 1.1130069732666015,
+    "n_train": 479783,
+    "n_test": 47497
+  },
+  "note_winner_top1_correction": "race_id is 10-char (race_part 8 + umaban 2). Race-level group via str[:-2]"
+}
