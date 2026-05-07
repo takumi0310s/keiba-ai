@@ -629,3 +629,179 @@ keiba-ai/
 V20 は Phase 3 後半 (6/9-6/30) 集中構築、 Session #37 で前倒し並行 (V18/V19 sib抜き + V15.1 LGB+XGB) で土台作り完了。
 GO 条件 4/6 PASS で 7/15 以降 V20 段階投入、 失敗で V15.1 + V18/V19 + NAR v4 三 path 継続。
 取り返し禁止ルール下、 段階的 + fallback 完備で安全。
+
+---
+
+## 17. Session #38 → #39 反映 (2026-05-07 更新)
+
+Session #38 検証結果 + Session #39 設計群 (A-D) を反映した V20 architecture の確定版。
+
+### 17.1 Session #38 の 3 大確定事項
+
+| # | 確定事項 | V20 への影響 |
+|---|---------|-------------|
+| 1 | **V15.1 SKB POST-RACE LEAK 確定** | V20 で SKB 全 10 features 完全除外 → §17.2 |
+| 2 | **V18/V19 sib抜き = リーク + 識別能力 hybrid** | sib_*_exp 版 (Session #39 A) で復活 → §17.3 |
+| 3 | **5/16 V18/V19 投入 NO-GO** | 6/15+ sib_*_exp 版 で再判定 → §17.6 |
+
+### 17.2 SKB 完全除外 (V20)
+
+Session #38 で確定した SKB POST-RACE LEAK (skb_kishi_code_3 +480bp / corr_target 0.137 / monotonic 1着→364, 10着→176) を V20 で完全除外。
+
+```python
+# train/v15_1_features.py (Session #39 C で実装)
+SKB_LEAK_FEATURES = [
+    'skb_kishi_code_1', 'skb_kishi_code_2', 'skb_kishi_code_3',
+    'skb_baba_code_1',  'skb_baba_code_2',  'skb_baba_code_3',
+    'skb_kyaku_code_1', 'skb_kyaku_code_2', 'skb_kyaku_code_3',
+    'skb_turf_hoof',
+]
+
+V20_LEAK_FEATURES = [
+    # V12 から継承
+    'odds_log', 'horse_weight', 'condition_enc',
+    'weight_change', 'weight_change_abs', 'weight_cat', 'weight_cat_dist',
+    'cond_surface',
+    # SKB POST-RACE LEAK
+    *SKB_LEAK_FEATURES,
+]  # total 18 features 除外
+
+# V20 学習時
+df = merge_v15_1_features(df, skip_skb=True)
+v20_features = [f for f in v15_1_features if f not in V20_LEAK_FEATURES]
+```
+
+代替戦略 (kishi/baba/kyaku):
+- **kishi**: `jockey_wr_calc`, `jockey_horse_top3r` (既存 V15 expanding)
+- **baba**: `horse_surface_top3r`, `sire_surface_wr` (既存 V15 expanding)
+- **kyaku**: `prev_pass4` (前走 4 角位置) + 6/9-30 で kyi 経由の expanding `running_style_code` 集計
+
+→ 既存 V15 features で代替可能、 LEAK FREE。
+
+### 17.3 sib_*_exp 統合 (Session #39 A)
+
+```python
+# tools/sib_expanding_features.py (Session #39 A 実装)
+# date 順 cumsum で当該 horse 除外、 mother 単位 expanding
+sib_top3_rate_exp:  cumsum(top3) - current  / cumsum(races) + α
+sib_shinba_wr_exp:  cumsum(shinba_win) - current / cumsum(shinba_runs) + α
+
+# corr(target) 検証結果 (5/7)
+OLD sib_top3_rate (リーク版) :  0.2939
+NEW sib_top3_rate_exp (expanding) :  0.1689   # -0.125 リーク除去
+OLD sib_shinba_win_rate    :  0.0797
+NEW sib_shinba_wr_exp      :  0.0512
+```
+
+V20 features に追加:
+```python
+COMMON_FEATURES['blood'] += ['sib_top3_rate_exp', 'sib_shinba_wr_exp']
+COMMON_FEATURES['blood_extras'] = ['sib_total_races_exp', 'sib_total_offspring_exp']
+```
+
+→ +4 features, V20 の血統経由信号 +0.169 corr (リーク除去後の真の信号)。
+
+### 17.4 JV-Link 公式 data 統合 (Session #39 B)
+
+V20 学習 data の主軸を JV-Link (公式) へ切替。
+
+| データ | 旧 source | V20 主 source | 旧 source |
+|--------|-----------|--------------|----------|
+| race 詳細 (date/距離/馬場) | netkeiba | **JV-Link RACE** | netkeiba (補助) |
+| 払戻 | scrape_jra_payouts (4/6 停止) | **JV-Link HR** | netkeiba (補助) |
+| 単勝/馬連/三連複 オッズ | netkeiba + jrdb_kyi | **JV-Link O1〜O6** | jrdb_kyi (補助) |
+| 馬体重 (当日) | netkeiba | **JV-Link WF** | netkeiba (補助) |
+| 血統 | netkeiba blood_full | **JV-Link BLOD** | netkeiba (補助) |
+| 調教 | netkeiba | **netkeiba** (継続) | JV-Link TCOV/WOOD (補完) |
+| speed_index | netkeiba | **netkeiba** (代替不可) | — |
+| training_eval | netkeiba | **netkeiba** (代替不可) | — |
+| パドック | netkeiba | **netkeiba** (代替不可) | — |
+
+paci_* 復活経路:
+- 旧: jrdb_paci.csv (4/4 から取得停止、 V18/V19 winner_top1 -13.3pt の主因)
+- 新: JV-Link O1 早朝取得 → 自前で paci_jockey_exp_wr / paci_ninki_idx 算出
+- 5/24+ で実装
+
+### 17.5 全 4 source 役割分担 (Session #39 D)
+
+```
+JRA subset (50 万 horse):
+  primary: JV-Link (RACE/HR/O1-O6/TCOV/WOOD/BLOD/SNPN/WF)
+  supplementary: netkeiba (speed_index/training_eval/paddock) + JRDB (kyi)
+NAR subset (5 万 horse):
+  primary: NAR scraping (代替なし)
+  supplementary: JV-Link blood (NAR 馬の中央移籍時)
+
+合計月額: 約 8,590円
+  - netkeiba Premium 4,500円
+  - JRDB Advance ~2,000円
+  - JV-Link 2,090円 (5/24+)
+```
+
+### 17.6 V20 学習 schedule (6/9-6/30 確定版)
+
+| 期間 | 内容 | 出力 |
+|------|------|------|
+| 5/24-26 | JRA-VAN 加入 + JV-Link DLL + jvlink_fetcher.py 動作確認 | data/jvlink/ 1 日分 |
+| 5/27-31 | parser 実装 (RACE/HR/O1/TCOV/WOOD/BLOD) | data/jvlink_parsed/*.csv |
+| 6/1-5 | 過去 1 年分 bulk fetch (5/24/2025〜5/23/2026) + 旧 master 整合チェック | jra_races_full_v2.csv |
+| 6/6-8 | sib_*_exp 統合 + V18/V19 sib_*_exp 版 6-fold WF (LGB+XGB) | V18/V19_v2 model |
+| 6/9-13 | V20 学習 data spec 確定 (JRA + NAR 統合 master、 共通 80 features) | v20_train.pkl |
+| 6/14-20 | V20 v1 学習 (4-model ensemble: LGB+XGB+FT+IR) | keiba_model_v20*.pkl |
+| 6/21-25 | V20 WF 検証 (6-fold、 2020-2025 平均 AUC) + LIVE retro (6/22-23) | v20_validation_*.json |
+| 6/26-28 | V20 paper trading (6/27-28 weekend) | v20_paper_trading.json |
+| 6/29-30 | GO/no-go 最終判定 + production deploy 準備 | V20 deploy decision |
+| 7/1+ | V20 段階投入 (週末のみ、 上限 5,000円/日 → 段階増額) | V20 production |
+
+### 17.7 GO 条件 (V20 7/1 投入判定)
+
+| # | 条件 | 必要値 |
+|---|------|--------|
+| 1 | WF AUC | ≥ 0.880 (V15 0.8939 と同水準、 SKB 抜きで -10〜30bp 想定) |
+| 2 | LIVE retro winner_top1 | ≥ 30% (sib_*_exp 込み) |
+| 3 | shift_factor | ≤ 12x (sib_*_exp で大幅改善見込) |
+| 4 | NAR subset AUC | ≥ 0.83 (NAR v4 0.8145 と同等以上) |
+| 5 | paper trading ROI | ≥ 110% (3 日間 SUM) |
+| 6 | feature LEAK 監査 | PASS (V20_LEAK_FEATURES 含まないこと assert) |
+
+→ 6/6 PASS で 7/1 V20 投入、 失敗で 7/15 延期 or V15 単独継続。
+
+### 17.8 fallback 戦略
+
+V20 投入後も V15 model file は保持:
+- production: V20 メイン、 V20 失敗時に V15 自動 fallback
+- daily_predict: 両 model で予測 → V20 を採用、 V15 を comparison ログ
+- 1 か月運用後 (8/1+) で V15 archive 判定
+
+### 17.9 Session #39 → Phase 3 連携
+
+Session #39 (5/7) deliverable:
+- ✅ A: sib_expanding_features.py PoC + 効果見込み (-0.125 corr リーク除去確認)
+- ✅ B: JV-Link 統合 plan + jvlink_fetcher.py 試作
+- ✅ C: SKB 完全除外 patch (filter_v15_1_features(skip_skb=True))
+- ✅ D: 全 4 source 役割分担確定
+- ✅ E: V20 architecture 更新 (本 §17)
+- ✅ F-J: Phase 4 動画解析 PoC + roadmap (別 doc)
+
+→ **5/24 加入 → 即着手可能**。 Phase 3 後半 (6/9-30) で V20 構築完了見込み。
+
+---
+
+## 18. V20 risk + mitigation (Session #39 反映)
+
+| # | risk | impact | mitigation |
+|---|------|--------|----------|
+| 1 | JV-Link DLL trouble (COM 登録失敗) | V20 学習 data 取得遅延 → 6/9 後ろ倒し | 5/24 即試行 + pywin32 環境分離 venv |
+| 2 | 公式 data と既存 master の不整合 | V20 学習 data 不正確 | 5/27 に 1 か月分整合チェック (raceid / 着順 sample 100 races) |
+| 3 | sib_*_exp の corr 0.169 が WF で消える | V18/V19 復活ならず → V20 影響軽微 | sib_*_exp は補助 features 扱い、 主導は V15 base + JRDB kyi |
+| 4 | paci_* 自前算出の精度不足 | V18/V19 winner_top1 復活ならず | paci 復活は best-effort、 NG なら V15 base のみで V20 構築 |
+| 5 | NAR 学習 data 不足 (1 年 stale) | NAR subset AUC < 0.83 | NAR scraping を 5/24-6/8 で update、 6/9 学習開始時に最新化 |
+| 6 | 6/30 GO 判定で NG | V20 投入延期、 V15 単独継続 | V15 案B改 維持で 7 月も +13,530 円ベース、 撤退余裕 +63,530 円 |
+
+→ 全 risk 対策済、 V20 失敗でも V15 単独継続で資産保護確実。
+
+---
+
+V20 architecture Session #38 + #39 反映により、 SKB 完全除外 + sib_*_exp + JV-Link 主軸 で構築。
+6/9-30 学習 + 7/1 投入の schedule は Session #39 deliverable で **即着手可能**。
+取り返し禁止ルール下、 V20 失敗時 V15 単独継続 fallback で 安全。
