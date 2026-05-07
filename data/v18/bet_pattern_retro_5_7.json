@@ -1,0 +1,40 @@
+{
+  "from": "20260426",
+  "to": "20260503",
+  "n_total": 102,
+  "results": [
+    {
+      "pattern": "5pt",
+      "n_eval": 101,
+      "cost_per_race": 500,
+      "hit": 10,
+      "hit_rate": 9.9,
+      "inv": 50500,
+      "pay": 15300,
+      "profit": -35200,
+      "roi": 30.3
+    },
+    {
+      "pattern": "7pt",
+      "n_eval": 101,
+      "cost_per_race": 700,
+      "hit": 19,
+      "hit_rate": 18.81,
+      "inv": 70700,
+      "pay": 29950,
+      "profit": -40750,
+      "roi": 42.36
+    },
+    {
+      "pattern": "9pt",
+      "n_eval": 101,
+      "cost_per_race": 900,
+      "hit": 20,
+      "hit_rate": 19.8,
+      "inv": 90900,
+      "pay": 32830,
+      "profit": -58070,
+      "roi": 36.12
+    }
+  ]
+}
