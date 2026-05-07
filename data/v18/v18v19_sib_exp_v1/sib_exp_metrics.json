@@ -1,0 +1,50 @@
+{
+  "v18_sib_exp": {
+    "auc": 0.8845203849263201,
+    "logloss": 0.18667481751666912,
+    "winner_top1": 0.072867760069057,
+    "mean_p18": 0.05318231768312582,
+    "max_p18": 0.9271912828729343,
+    "feature_count": 192
+  },
+  "v19_sib_exp": {
+    "auc": 0.8753667625162223,
+    "logloss": 0.3480869946429783,
+    "mean_p19": 0.2006096072353709,
+    "max_p19": 0.9824518627964145,
+    "feature_count": 192
+  },
+  "v18_compare_existing": {
+    "existing_auc_ens": 0.8948245478227486,
+    "existing_winner_top1": 0.072867760069057,
+    "delta_auc": -0.010304162896428437,
+    "delta_winner_top1": 0.0
+  },
+  "v18_compare_no_sib": {
+    "no_sib_auc": 0.8854696096012852,
+    "no_sib_winner_top1": 0.4575976845151954,
+    "delta_auc": -0.0009492246749650546,
+    "delta_winner_top1": -0.3847299244461384
+  },
+  "meta": {
+    "timestamp": "2026-05-08 00:32:59.093693",
+    "session": "41_D",
+    "purpose": "V18/V19 sib_exp 統合 単一-fold 再学習",
+    "fold": "train 2015-2024, test 2025",
+    "leak_excluded_count": 31,
+    "sib_old_excluded": [
+      "sib_top3_rate",
+      "sib_shinba_wr"
+    ],
+    "sib_new_added": [
+      "sib_top3_rate_exp",
+      "sib_shinba_wr_exp",
+      "sib_total_races_exp",
+      "sib_total_offspring_exp"
+    ],
+    "feature_count": 192,
+    "elapsed_min": 1.2539365808169047,
+    "n_train": 479783,
+    "n_test": 47497
+  }
+}
