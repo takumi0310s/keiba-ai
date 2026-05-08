@@ -1,0 +1,45 @@
+{
+  "dates": [
+    "20260418",
+    "20260419",
+    "20260425",
+    "20260426",
+    "20260502",
+    "20260503",
+    "20260505"
+  ],
+  "v15": {
+    "n_races_total": 222,
+    "v15_full": {
+      "inv": 155400,
+      "pay": 39510,
+      "profit": -83990,
+      "trio_hit": 40,
+      "hit_rate_pct": 18.02,
+      "roi_pct": 25.42
+    },
+    "v15_case_b": {
+      "n_races": 39,
+      "inv": 27300,
+      "pay": 12140,
+      "profit": -4380,
+      "trio_hit": 11,
+      "hit_rate_pct": 28.21,
+      "roi_pct": 44.47
+    }
+  },
+  "v18_existing": {
+    "available": true,
+    "n_races": 29,
+    "no_sib_winner_top1_pct": 24.14,
+    "old_winner_top1_pct": 34.48
+  },
+  "v18_sib_exp": {
+    "available": true,
+    "n_races": 29,
+    "winner_top1_pct": 31.03,
+    "top3_hit_rate_pct": 82.76,
+    "p_tansho_mean": 0.011,
+    "p_tansho_max": 0.4894
+  }
+}
