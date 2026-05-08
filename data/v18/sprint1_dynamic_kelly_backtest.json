@@ -1,0 +1,29 @@
+{
+  "available": true,
+  "n_total": 39,
+  "baseline": {
+    "n_races": 39,
+    "investment": 27300,
+    "payout": 22920,
+    "profit": -4380,
+    "roi_pct": 83.96,
+    "trio_hit": 11
+  },
+  "dynamic_kelly": {
+    "n_invested": 28,
+    "n_skip": 11,
+    "n_high_conf": 5,
+    "n_baseline": 18,
+    "n_low_conf": 5,
+    "investment": 21350,
+    "payout": 29860,
+    "profit": 8510,
+    "roi_pct": 139.86
+  },
+  "comparison": {
+    "roi_diff": 55.9,
+    "investment_diff": -5950,
+    "profit_diff": 12890
+  },
+  "note": "top1_prob は retro data に無いため simulation。 production では predict_core 出力使用。"
+}
