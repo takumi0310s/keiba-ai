@@ -3,8 +3,17 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-08 (Session #43、 ★ V15 ROI 真因 83.96% 発見 ★ + sib_w5 本実装 + 動画 PoC 拡張、 5/16 GO 75-85%)**
+Last updated: **2026-05-08 (Session #44、 ★ TFJV フル data 即活用 → V20 1 ヶ月前倒し ★)**
 
+> Session #44 (5/8) で 7 領域 並行実行 + ★ TFJV フル data 即活用 ★:
+> - **A**: TFJV 構造把握 (43,000 files / 6 GB / 14 datatypes) ([data/v18/tfjv_data_inventory_5_8.md](data/v18/tfjv_data_inventory_5_8.md))
+> - **B**: tools/tfjv_parser.py 本実装 (RA/SE/HR/H1/UM/WF parser、 Shift-JIS 漢字 OK)
+> - **C**: 6 source 体制確定、 TFJV 主軸 ([data/v18/tfjv_jrdb_merge_5_8.md](data/v18/tfjv_jrdb_merge_5_8.md))
+> - **D**: V20 学習 data 6 年分 一括 parse (320K records / 10 秒) ([data/v18/v20_data_construction_5_8.md](data/v18/v20_data_construction_5_8.md))
+> - **E**: V20 PoC AUC 0.8752 (LGB single fold、 ensemble は Phase 3 で) ([data/v18/v20_poc_5_8.md](data/v18/v20_poc_5_8.md))
+> - **F**: ★ Phase 3-5 v3、 V20 投入 7/1 → **6/8** に 1 ヶ月前倒し ★ ([docs/PHASE_3_4_5_INTEGRATED_ROADMAP_v3.md](docs/PHASE_3_4_5_INTEGRATED_ROADMAP_v3.md))
+> - **G**: doc 全更新 (本 commit)
+>
 > Session #43 (5/8) で 7 領域 並行実行 + ★ V15 ROI 真因発見 ★:
 > - **A**: ★ V15 ROI 44% 真因 = actual_payout NaN 集計 bug、 **真の ROI 83.96%** ([data/v18/v15_roi44_root_cause_5_8.md](data/v18/v15_roi44_root_cause_5_8.md))
 > - **B**: V20 2025-04 backfill plan (60-90 min) ([data/v18/jvlink_backfill_2025_04_actual_5_8.md](data/v18/jvlink_backfill_2025_04_actual_5_8.md))

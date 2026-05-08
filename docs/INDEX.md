@@ -116,6 +116,17 @@
 
 ## I. 関連 data/v18/ doc (重要)
 
+### Session #44 (5/8) deliverables ★ TFJV フル data 即活用 ★
+
+| doc | tag | 内容 |
+|-----|-----|------|
+| `data/v18/tfjv_data_inventory_5_8.md` | 📋🔍 | TFJV 全 inventory (43,000 files / 6 GB / 14 datatypes) (Session #44 A) |
+| `tools/tfjv_parser.py` | 🛠 | binary 直 parse (RA/SE/HR/H1/UM/WF) (Session #44 B) |
+| `data/v18/tfjv_jrdb_merge_5_8.md` | 📋 | 6 source 体制 (TFJV 主軸) (Session #44 C) |
+| `data/v18/v20_data_construction_5_8.md` | 📋 | V20 6 年分 一括 parse (320K records / 10 秒) (Session #44 D) |
+| `data/v18/v20_poc_5_8.md` | 📋🧪 | V20 PoC LGB AUC 0.8752 (Session #44 E) |
+| `docs/PHASE_3_4_5_INTEGRATED_ROADMAP_v3.md` | 🚀📋 | ★ V20 投入 6/8 (1 ヶ月前倒し) ★ (Session #44 F) |
+
 ### Session #43 (5/8) deliverables
 
 | doc | tag | 内容 |
