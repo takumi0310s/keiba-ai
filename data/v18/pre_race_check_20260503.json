@@ -1,0 +1,270 @@
+{
+  "target_date": "20260503",
+  "calendar": {
+    "available": true,
+    "races": [
+      {
+        "race_id": "202608030401",
+        "course": "京都",
+        "race_num": "1",
+        "race_name": "3歳未勝利",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202608030402",
+        "course": "京都",
+        "race_num": "2",
+        "race_name": "3歳未勝利",
+        "num_horses": "12"
+      },
+      {
+        "race_id": "202608030403",
+        "course": "京都",
+        "race_num": "3",
+        "race_name": "3歳未勝利",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202608030404",
+        "course": "京都",
+        "race_num": "4",
+        "race_name": "3歳未勝利",
+        "num_horses": "11"
+      },
+      {
+        "race_id": "202608030405",
+        "course": "京都",
+        "race_num": "5",
+        "race_name": "3歳未勝利",
+        "num_horses": "11"
+      },
+      {
+        "race_id": "202608030406",
+        "course": "京都",
+        "race_num": "6",
+        "race_name": "3歳1勝クラス",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202608030407",
+        "course": "京都",
+        "race_num": "7",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "8"
+      },
+      {
+        "race_id": "202608030408",
+        "course": "京都",
+        "race_num": "8",
+        "race_name": "御池特別",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202608030409",
+        "course": "京都",
+        "race_num": "9",
+        "race_name": "六波羅特別",
+        "num_horses": "9"
+      },
+      {
+        "race_id": "202608030410",
+        "course": "京都",
+        "race_num": "10",
+        "race_name": "朱雀S",
+        "num_horses": "18"
+      },
+      {
+        "race_id": "202608030411",
+        "course": "京都",
+        "race_num": "11",
+        "race_name": "天皇賞(春)",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202608030412",
+        "course": "京都",
+        "race_num": "12",
+        "race_name": "東大路S",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202604010201",
+        "course": "新潟",
+        "race_num": "1",
+        "race_name": "3歳未勝利",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202604010202",
+        "course": "新潟",
+        "race_num": "2",
+        "race_name": "3歳未勝利",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202604010203",
+        "course": "新潟",
+        "race_num": "3",
+        "race_name": "3歳未勝利",
+        "num_horses": "14"
+      },
+      {
+        "race_id": "202604010205",
+        "course": "新潟",
+        "race_num": "5",
+        "race_name": "3歳未勝利",
+        "num_horses": "14"
+      },
+      {
+        "race_id": "202604010206",
+        "course": "新潟",
+        "race_num": "6",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "13"
+      },
+      {
+        "race_id": "202604010207",
+        "course": "新潟",
+        "race_num": "7",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202604010208",
+        "course": "新潟",
+        "race_num": "8",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "12"
+      },
+      {
+        "race_id": "202604010209",
+        "course": "新潟",
+        "race_num": "9",
+        "race_name": "咲花特別",
+        "num_horses": "12"
+      },
+      {
+        "race_id": "202604010210",
+        "course": "新潟",
+        "race_num": "10",
+        "race_name": "邁進特別",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202604010211",
+        "course": "新潟",
+        "race_num": "11",
+        "race_name": "越後S",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202604010212",
+        "course": "新潟",
+        "race_num": "12",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202605020401",
+        "course": "東京",
+        "race_num": "1",
+        "race_name": "3歳未勝利",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202605020402",
+        "course": "東京",
+        "race_num": "2",
+        "race_name": "3歳未勝利",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202605020403",
+        "course": "東京",
+        "race_num": "3",
+        "race_name": "3歳未勝利",
+        "num_horses": "12"
+      },
+      {
+        "race_id": "202605020404",
+        "course": "東京",
+        "race_num": "4",
+        "race_name": "3歳未勝利",
+        "num_horses": "18"
+      },
+      {
+        "race_id": "202605020405",
+        "course": "東京",
+        "race_num": "5",
+        "race_name": "3歳未勝利",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202605020406",
+        "course": "東京",
+        "race_num": "6",
+        "race_name": "3歳1勝クラス",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202605020407",
+        "course": "東京",
+        "race_num": "7",
+        "race_name": "4歳以上1勝クラス",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202605020408",
+        "course": "東京",
+        "race_num": "8",
+        "race_name": "4歳以上2勝クラス",
+        "num_horses": "9"
+      },
+      {
+        "race_id": "202605020409",
+        "course": "東京",
+        "race_num": "9",
+        "race_name": "府中S",
+        "num_horses": "18"
+      },
+      {
+        "race_id": "202605020410",
+        "course": "東京",
+        "race_num": "10",
+        "race_name": "ブリリアントS",
+        "num_horses": "16"
+      },
+      {
+        "race_id": "202605020411",
+        "course": "東京",
+        "race_num": "11",
+        "race_name": "プリンシパルS",
+        "num_horses": "15"
+      },
+      {
+        "race_id": "202605020412",
+        "course": "東京",
+        "race_num": "12",
+        "race_name": "4歳以上2勝クラス",
+        "num_horses": "13"
+      }
+    ],
+    "courses": [],
+    "source": "data/daily_predictions/"
+  },
+  "flagged_grade": [],
+  "candidates_12r_1sho": [
+    {
+      "race_id": "202604010212",
+      "course": "新潟",
+      "race_num": "12",
+      "race_name": "4歳以上1勝クラス",
+      "num_horses": "15"
+    }
+  ],
+  "cookie": {
+    "status": "missing",
+    "warning": "data/cookies.json 不在"
+  },
+  "severity": "red"
+}

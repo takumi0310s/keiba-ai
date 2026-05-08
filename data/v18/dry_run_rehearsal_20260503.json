@@ -1,0 +1,106 @@
+{
+  "sample": "20260503",
+  "v15_md5": {
+    "status": "ok",
+    "expected": "842b9a5f305c793ed8fa54a74e06b836",
+    "actual": "842b9a5f305c793ed8fa54a74e06b836",
+    "match": true,
+    "size_mb": 2.0,
+    "mtime": "2026-04-08T23:32:38.178622",
+    "alert": null
+  },
+  "v15_load": {
+    "status": "ok",
+    "n_features": 150,
+    "features_first_5": [
+      "weight_carry",
+      "age",
+      "distance",
+      "course_enc",
+      "surface_enc"
+    ],
+    "model_type": "dict"
+  },
+  "syntax": {
+    "tools/predict_core.py": {
+      "status": "ok"
+    },
+    "tools/daily_predict.py": {
+      "status": "ok"
+    },
+    "app.py": {
+      "status": "ok"
+    }
+  },
+  "predict": {
+    "status": "ok",
+    "n_predictions": 35,
+    "n_races": 35,
+    "sample_first_3": [
+      {
+        "race_id": "202608030401",
+        "course": "京都",
+        "race_num": "1",
+        "race_name": "3歳未勝利",
+        "condition": "D",
+        "num_horses": "15",
+        "distance": "1400",
+        "surface": "ダ",
+        "track_condition": "稍",
+        "top1_num": "6",
+        "top1_name": "スマッシング",
+        "top1_score": "0.2356795148631495",
+        "top2_num": "10",
+        "top2_name": "プリンセスアツコ",
+        "top3_num": "13",
+        "top3_name": "ストリートクイーン",
+        "trio_bets": "5-6-10; 5-6-13; 6-9-10; 6-9-13; 6-10-13; 6-10-15; 6-13-15",
+        "bet_type": "trio",
+        "investment": "700"
+      },
+      {
+        "race_id": "202608030402",
+        "course": "京都",
+        "race_num": "2",
+        "race_name": "3歳未勝利",
+        "condition": "A",
+        "num_horses": "12",
+        "distance": "1900",
+        "surface": "ダ",
+        "track_condition": "稍",
+        "top1_num": "2",
+        "top1_name": "エクストラプッシュ",
+        "top1_score": "0.1938546330372878",
+        "top2_num": "11",
+        "top2_name": "グランシャン",
+        "top3_num": "9",
+        "top3_name": "グランワールド",
+        "trio_bets": "2-5-9; 2-5-11; 2-7-9; 2-7-11; 2-9-11; 2-9-12; 2-11-12",
+        "bet_type": "trio",
+        "investment": "700"
+      },
+      {
+        "race_id": "202608030403",
+        "course": "京都",
+        "race_num": "3",
+        "race_name": "3歳未勝利",
+        "condition": "C",
+        "num_horses": "15",
+        "distance": "1800",
+        "surface": "ダ",
+        "track_condition": "稍",
+        "top1_num": "5",
+        "top1_name": "コイタマチャン",
+        "top1_score": "0.2581903618691863",
+        "top2_num": "6",
+        "top2_name": "ジーティービキニ",
+        "top3_num": "11",
+        "top3_name": "ウンナターシャ",
+        "trio_bets": "5-6-7; 5-6-11; 5-6-12; 5-6-15; 5-7-11; 5-11-12; 5-11-15",
+        "bet_type": "trio",
+        "investment": "700"
+      }
+    ]
+  },
+  "overall_ok": true
+}

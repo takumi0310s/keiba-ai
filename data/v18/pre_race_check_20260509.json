@@ -1,0 +1,16 @@
+{
+  "target_date": "20260509",
+  "calendar": {
+    "available": false,
+    "races": [],
+    "courses": [],
+    "source": ""
+  },
+  "flagged_grade": [],
+  "candidates_12r_1sho": [],
+  "cookie": {
+    "status": "missing",
+    "warning": "data/cookies.json 不在"
+  },
+  "severity": "red"
+}

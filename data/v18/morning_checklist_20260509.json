@@ -1,0 +1,48 @@
+{
+  "date": "20260509",
+  "n_ok": 7,
+  "n_ng": 1,
+  "results": [
+    {
+      "label": "1. schtasks 36 tasks",
+      "ok": true,
+      "msg": "Keiba-* tasks: 39"
+    },
+    {
+      "label": "2. V15 md5 verify (842b9a5f...)",
+      "ok": true,
+      "msg": "md5 MATCH: 842b9a5f305c793e..."
+    },
+    {
+      "label": "3. Cookie expiry",
+      "ok": false,
+      "msg": "cookies.json 不在"
+    },
+    {
+      "label": "4. Discord webhook",
+      "ok": true,
+      "msg": "bets=True, updates=True, fb=True"
+    },
+    {
+      "label": "5. JRDB freshness (>= 20260503)",
+      "ok": true,
+      "msg": "latest 20260503"
+    },
+    {
+      "label": "6. netkeiba HEAD request",
+      "ok": true,
+      "msg": "status 200"
+    },
+    {
+      "label": "7. predict schtasks (multi_stage etc)",
+      "ok": true,
+      "msg": "found: ['RaceAutoNotify', 'DailyPredict']"
+    },
+    {
+      "label": "8. disk space >= 5GB",
+      "ok": true,
+      "msg": "free 724.7 GB"
+    }
+  ],
+  "overall_ok": false
+}
