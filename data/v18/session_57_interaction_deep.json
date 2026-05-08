@@ -1,0 +1,53 @@
+{
+  "session": "Session #57 D",
+  "ts": "2026-05-09T00:34:17.128982",
+  "experiments": [
+    {
+      "name": "baseline_V15",
+      "auc": 0.8686664852944914,
+      "n_features": 150
+    },
+    {
+      "name": "3-way",
+      "auc": 0.8683839848209829,
+      "delta_auc": -0.000282500473508529,
+      "n_features": 153,
+      "ranks": [
+        {
+          "feature": "int3_jky_crs_dist",
+          "rank": 50,
+          "gain": 3628.639253139496
+        },
+        {
+          "feature": "int3_jky_crs_baba",
+          "rank": 48,
+          "gain": 3745.1928219795227
+        },
+        {
+          "feature": "int3_sire_crs_dist",
+          "rank": 41,
+          "gain": 4011.632106781006
+        }
+      ]
+    },
+    {
+      "name": "shrinkage_x0.5",
+      "auc": 0.8688511893537351,
+      "delta_auc": 0.00018470405924364552,
+      "n_features": 155
+    },
+    {
+      "name": "shrinkage_x1.0",
+      "auc": 0.8681743020184652,
+      "delta_auc": -0.0004921832760261813,
+      "n_features": 155
+    },
+    {
+      "name": "shrinkage_x2.0",
+      "auc": 0.8680177960811108,
+      "delta_auc": -0.0006486892133805711,
+      "n_features": 155
+    }
+  ],
+  "class_breakdown": []
+}
