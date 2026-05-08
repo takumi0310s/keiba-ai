@@ -1,0 +1,156 @@
+{
+  "date": "20260509",
+  "majors": [
+    {
+      "race": {
+        "course": "東京",
+        "race_num": 11,
+        "race_name": "エプソムカップ (G3)",
+        "start": "15:45"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/9 朝 08:00 自動)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2)",
+          "status": "deferred",
+          "design": "Sprint 2 horse_weight + race_interval + running_style merge"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "design": "TFJV TM_DATA から 公式調教タイム features"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "design": "5/9 各 R 70 分前 当日体重 polling、 Session #48 B"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features",
+          "status": "partial",
+          "n_videos_processed": 3,
+          "design": "video features (size/conf/aspect) を V15 prediction に補正係数として加算"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "n_systems_responding": 0,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      },
+      "recommendation": {
+        "if_buying": "skip (合議 不一致 or deferred)"
+      }
+    },
+    {
+      "race": {
+        "course": "京都",
+        "race_num": 11,
+        "race_name": "京都新聞杯 (G2)",
+        "start": "15:30"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/9 朝 08:00 自動)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2)",
+          "status": "deferred",
+          "design": "Sprint 2 horse_weight + race_interval + running_style merge"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "design": "TFJV TM_DATA から 公式調教タイム features"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "design": "5/9 各 R 70 分前 当日体重 polling、 Session #48 B"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features",
+          "status": "partial",
+          "n_videos_processed": 3,
+          "design": "video features (size/conf/aspect) を V15 prediction に補正係数として加算"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "n_systems_responding": 0,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      },
+      "recommendation": {
+        "if_buying": "skip (合議 不一致 or deferred)"
+      }
+    },
+    {
+      "race": {
+        "course": "新潟",
+        "race_num": 11,
+        "race_name": "駿風 S (OP)",
+        "start": "15:20"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/9 朝 08:00 自動)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2)",
+          "status": "deferred",
+          "design": "Sprint 2 horse_weight + race_interval + running_style merge"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "design": "TFJV TM_DATA から 公式調教タイム features"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "design": "5/9 各 R 70 分前 当日体重 polling、 Session #48 B"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features",
+          "status": "partial",
+          "n_videos_processed": 3,
+          "design": "video features (size/conf/aspect) を V15 prediction に補正係数として加算"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "n_systems_responding": 0,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      },
+      "recommendation": {
+        "if_buying": "skip (合議 不一致 or deferred)"
+      }
+    }
+  ],
+  "note": "★★ 5/9 重賞 投票なし、 verdict + 5 system 比較学習データ ★★"
+}
