@@ -1,0 +1,41 @@
+{
+  "feature_group": "master_index 5 (expanding prev)",
+  "features": [
+    "mi_time_idx_prev",
+    "mi_master_idx_prev",
+    "mi_start_idx_prev",
+    "mi_chase_idx_prev",
+    "mi_agari_idx_prev"
+  ],
+  "coverage_raw": {
+    "time_index": 0.23428905138077305,
+    "master_index": 0.23428905138077305,
+    "start_index": 0.23428905138077305,
+    "chase_index": 0.23428905138077305,
+    "agari_index": 0.23428905138077305
+  },
+  "coverage_prev": {
+    "mi_time_idx_prev": 0.2164423369456888,
+    "mi_master_idx_prev": 0.2164423369456888,
+    "mi_start_idx_prev": 0.2164423369456888,
+    "mi_chase_idx_prev": 0.2164423369456888,
+    "mi_agari_idx_prev": 0.2164423369456888
+  },
+  "baseline_auc": {
+    "2023": 0.8677280029901081,
+    "2024": 0.8707524796002669,
+    "2025": 0.8679952863935331
+  },
+  "augmented_auc": {
+    "2023": 0.8677280029901081,
+    "2024": 0.870799285872331,
+    "2025": 0.8665692496544414
+  },
+  "contribution": {
+    "2023": 0.0,
+    "2024": 4.6806272064103815e-05,
+    "2025": -0.0014260367390916961
+  },
+  "mean_contribution": -0.0004597434890091974,
+  "leak_warnings": []
+}
