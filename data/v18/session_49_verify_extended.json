@@ -1,0 +1,22 @@
+{
+  "date": "20260509",
+  "predictions_loaded": true,
+  "actual_loaded": false,
+  "system_evaluation": {
+    "status": "results_unavailable"
+  },
+  "consensus_evaluation": {
+    "status": "deferred"
+  },
+  "estimated_roi": {
+    "status": "deferred",
+    "design": {
+      "scenario": "全 3 重賞 高信頼時 馬連 軸 1 頭流し 2 点 (200 円/R)",
+      "max_loss": "600 円 (3 R × 200 円、 全外し時)",
+      "expected_max_payout": "300-1500 円/R hit (G2/G3 馬連)",
+      "calc": "5/10 朝 結果照合後 自動計算"
+    },
+    "note": "★ 5/9 重賞 投票なし、 計算のみ (絶対遵守) ★"
+  },
+  "note": "★ 5/9 重賞 投票なし、 verdict 用学習データ ★"
+}
