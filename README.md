@@ -2,7 +2,7 @@
 
 JRA (中央競馬) + NAR (地方競馬) 予測 AI システム
 
-> 最終更新: **2026-05-08 (Session #42、 拡張 retro + 動画 feasibility + sib_exp window=5、 5/16 GO 65-80%)**
+> 最終更新: **2026-05-08 (Session #43、 ★ V15 真の ROI 83.96% 発見 ★ + sib_w5 本実装、 5/16 GO 75-85%)**
 > 累計収支: **+13,530円** (`data/cumulative_results.csv`、 5/6 真相確定値)
 > 撤退ライン: **-50,000円** (絶対遵守) — 撤退余裕 +63,530円
 
@@ -10,7 +10,8 @@ JRA (中央競馬) + NAR (地方競馬) 予測 AI システム
 > **Session #39 deluxe (5/7)**: Phase 3 (5/24+) 修正版 + V20 (6/9-30) architecture + Phase 4 (7-8月) 動画解析 PoC を全前倒し設計。
 > **Session #40 マスター (5/7)**: 5 領域 (PAT 7pt baseline confirm、 race_classifier、 Kelly、 health check、 EMERGENCY runbook 15 シナリオ、 docs/INDEX.md、 voting design)。
 > **Session #41 巨大マラソン (5/8)**: 8 領域。 sib_exp PoC LIVE retro **+6.89pt 改善大成功** (24.14% → 31.03%)、 32-bit Python plan、 JV-Link fetcher v2、 V20 6 年分 backfill plan。
-> **Session #42 (5/8)**: 10 領域。 拡張 retro 4/18-5/5 (V15 案B改 ROI 44.47%)、 動画解析 feasibility GO、 sib_exp **window=5 最適化 (corr 0.2010)**、 5/16 V18/V19 GO 65-80%。 詳細 → [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md)
+> **Session #42 (5/8)**: 10 領域。 拡張 retro 4/18-5/5 (V15 案B改 ROI 44.47%)、 動画解析 feasibility GO、 sib_exp **window=5 最適化 (corr 0.2010)**、 5/16 V18/V19 GO 65-80%。
+> **Session #43 (5/8)**: 7 領域。 ★ **V15 ROI 真因発見**: 44% は actual_payout NaN 集計 bug、 **真の ROI 83.96% (通常期 91.62%)**。 sib_w5 本実装 (V18 BT AUC 0.8847)、 動画 PoC 拡張、 orchestrator 5 case test、 5/9 戦略 final v3 確定 (案 A 維持)、 5/16 GO **75-85%** に上方修正。 詳細 → [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md)
 
 ### JRA-VAN 加入完了 (5/7 夜)
 

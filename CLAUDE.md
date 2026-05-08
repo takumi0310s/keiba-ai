@@ -3,8 +3,16 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-08 (Session #42、 拡張 retro + 動画 feasibility + sib_exp window=5、 5/16 GO 65-80%)**
+Last updated: **2026-05-08 (Session #43、 ★ V15 ROI 真因 83.96% 発見 ★ + sib_w5 本実装 + 動画 PoC 拡張、 5/16 GO 75-85%)**
 
+> Session #43 (5/8) で 7 領域 並行実行 + ★ V15 ROI 真因発見 ★:
+> - **A**: ★ V15 ROI 44% 真因 = actual_payout NaN 集計 bug、 **真の ROI 83.96%** ([data/v18/v15_roi44_root_cause_5_8.md](data/v18/v15_roi44_root_cause_5_8.md))
+> - **B**: V20 2025-04 backfill plan (60-90 min) ([data/v18/jvlink_backfill_2025_04_actual_5_8.md](data/v18/jvlink_backfill_2025_04_actual_5_8.md))
+> - **C**: sib_exp w5 本実装 + V18/V19 再学習 + LIVE retro (BT AUC 0.8847、 LIVE 進行中)
+> - **D**: 動画 PoC 拡張 (frame 抽出 + YOLOv8 95-138ms) ([data/v18/video_poc_extended_5_8.md](data/v18/video_poc_extended_5_8.md))
+> - **E**: orchestrator 5 case test (case 1+4 動作 OK) ([tools/test_orchestrator_5_cases.py](tools/test_orchestrator_5_cases.py))
+> - **F**: 5/9 戦略 final v3 (案 A 維持 700円×3R) ([docs/PLAN_5_9_FINAL_v3.md](docs/PLAN_5_9_FINAL_v3.md))
+>
 > Session #42 (5/8 日中) で 10 領域 並行 + 動画 PoC 実行:
 > - **A**: 32-bit Python quickstart 1 ページ ([docs/SETUP_PYTHON32_QUICKSTART.md](docs/SETUP_PYTHON32_QUICKSTART.md))
 > - **B+G**: 5/1-5/7 actual + V20 phased backfill ([data/v18/v20_backfill_phased_5_8.md](data/v18/v20_backfill_phased_5_8.md))

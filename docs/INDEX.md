@@ -116,6 +116,17 @@
 
 ## I. 関連 data/v18/ doc (重要)
 
+### Session #43 (5/8) deliverables
+
+| doc | tag | 内容 |
+|-----|-----|------|
+| `data/v18/v15_roi44_root_cause_5_8.md` | 🚀🔍 | ★ **V15 ROI 真因 = 集計 bug、 真の 83.96%** ★ (Session #43 A) |
+| `data/v18/jvlink_backfill_2025_04_actual_5_8.md` | 📋 | V20 2025-04 backfill plan (Session #43 B) |
+| `data/v18/v18v19_sib_exp_w5/` | 📋🧪 | sib_exp w5 本実装 + V18/V19 再学習 (Session #43 C) |
+| `data/v18/video_poc_extended_5_8.md` | 🧪📋 | 動画 PoC 拡張 (Session #43 D) |
+| `tools/test_orchestrator_5_cases.py` | 🛠 | orchestrator 5 case test (Session #43 E) |
+| `docs/PLAN_5_9_FINAL_v3.md` | 🚀📋 | 5/9 戦略 final v3 (案 A 維持) (Session #43 F) |
+
 ### Session #42 (5/8) deliverables
 
 | doc | tag | 内容 |
