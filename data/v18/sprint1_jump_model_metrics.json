@@ -1,0 +1,20 @@
+{
+  "n_jump_total": 14257,
+  "n_train": 11867,
+  "n_test": 2390,
+  "AUC_test_2024_plus": 0.7535521511189082,
+  "features": [
+    "weight_carry_num",
+    "age_num",
+    "num_horses_num",
+    "popularity_num",
+    "distance_num",
+    "horse_weight_num",
+    "sex_enc",
+    "surface_enc",
+    "condition_enc",
+    "course_code_num"
+  ],
+  "feature_count": 10,
+  "elapsed_sec": 3.2
+}
