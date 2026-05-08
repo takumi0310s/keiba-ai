@@ -1,0 +1,6 @@
+{
+  "available": true,
+  "n": 531619,
+  "horse_weight_std_corr_target": 0.0493,
+  "interpretation": "high std = unstable horse、 corr negative if 不安定 → top3 less"
+}
