@@ -1,0 +1,17 @@
+{
+  "date": "20260509",
+  "dry_run": true,
+  "sib_w5": {
+    "status": "dry_run",
+    "would_run": "sib_expanding_variants.py --variant a (window=5)"
+  },
+  "horse_career": {
+    "status": "dry_run",
+    "note": "production では V15 学習 pipeline の expanding 計算 と同じ logic"
+  },
+  "result_verification": {
+    "status": "integrated",
+    "tool": "tools/result_verification_5_10.py",
+    "5_10_morning": "result_verification_5_10.py --date 20260509 で 結果集計 + 5/16 verdict"
+  }
+}
