@@ -1,0 +1,31 @@
+{
+  "available": true,
+  "n_total_with_prev": 472552,
+  "by_category": {
+    "連闘": {
+      "code": 0,
+      "n_races": 3626,
+      "top3_rate": 17.65
+    },
+    "中1週": {
+      "code": 1,
+      "n_races": 29391,
+      "top3_rate": 20.29
+    },
+    "中2-4週": {
+      "code": 2,
+      "n_races": 155215,
+      "top3_rate": 24.71
+    },
+    "中5-8週": {
+      "code": 3,
+      "n_races": 123152,
+      "top3_rate": 23.03
+    },
+    "休み明け": {
+      "code": 4,
+      "n_races": 161135,
+      "top3_rate": 20.48
+    }
+  }
+}
