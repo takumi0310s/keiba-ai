@@ -1,0 +1,8 @@
+{
+  "available": true,
+  "n_total": 531619,
+  "n_with_prev_weight": 472542,
+  "weight_corr_target": 0.0155,
+  "weight_change_corr_target": -0.0509,
+  "interpretation": "weight_change > 0 (増量) は top3 率に弱い relation"
+}
