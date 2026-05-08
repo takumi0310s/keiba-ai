@@ -1,0 +1,26 @@
+{
+  "n_jump_total": 14257,
+  "n_train": 11867,
+  "n_test": 2390,
+  "AUC_test_2024_plus": 0.677787478835601,
+  "vs_sprint1_e": 0.7536,
+  "delta_auc": -0.0758,
+  "features": [
+    "weight_carry_num",
+    "age_num",
+    "num_horses_num",
+    "distance_num",
+    "horse_weight_num",
+    "umaban_num",
+    "sex_enc",
+    "surface_enc",
+    "condition_enc",
+    "course_code_num",
+    "horse_jump_top3_rate_exp",
+    "is_grand_jump",
+    "jockey_jump_top3_rate_exp"
+  ],
+  "feature_count": 13,
+  "popularity_excluded": true,
+  "elapsed_sec": 3.4
+}
