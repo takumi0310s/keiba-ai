@@ -1,0 +1,20 @@
+{
+  "n_targets": 3,
+  "results": [
+    {
+      "race": "京都新聞杯_G2",
+      "status": "dry_run",
+      "url": "https://race.netkeiba.com/race/movie.html?race_id=PLACEHOLDER_KYOTO"
+    },
+    {
+      "race": "エプソムC_G3",
+      "status": "dry_run",
+      "url": "https://race.netkeiba.com/race/movie.html?race_id=PLACEHOLDER_TOKYO"
+    },
+    {
+      "race": "駿風_S_OP",
+      "status": "dry_run",
+      "url": "https://race.netkeiba.com/race/movie.html?race_id=PLACEHOLDER_NIIGATA"
+    }
+  ]
+}
