@@ -1,0 +1,49 @@
+{
+  "image": "sample_horse.jpg",
+  "inference_ms": 138.3,
+  "n_detections": 3,
+  "n_horses": 0,
+  "max_horse_conf": 0,
+  "all_classes": [
+    "tie",
+    "person"
+  ],
+  "detections": [
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "confidence": 0.836,
+      "bbox": [
+        114.9,
+        197.4,
+        1114.5,
+        711.9
+      ],
+      "is_horse": false
+    },
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "confidence": 0.819,
+      "bbox": [
+        748.5,
+        41.9,
+        1143.1,
+        713.0
+      ],
+      "is_horse": false
+    },
+    {
+      "class_id": 27,
+      "class_name": "tie",
+      "confidence": 0.291,
+      "bbox": [
+        439.5,
+        437.1,
+        524.3,
+        709.2
+      ],
+      "is_horse": false
+    }
+  ]
+}
