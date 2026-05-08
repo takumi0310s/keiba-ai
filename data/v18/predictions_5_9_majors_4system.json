@@ -1,0 +1,141 @@
+{
+  "date": "20260509",
+  "majors": [
+    {
+      "race": {
+        "course": "東京",
+        "race_num": 11,
+        "race_name": "エプソムカップ (G3)",
+        "start": "15:45"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/8 21:00 後)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2 features)",
+          "status": "deferred",
+          "race_id": "placeholder_東京_11R",
+          "design": "Sprint 2 horse_weight + race_interval + running_style features を merge",
+          "expected_top1": "(System 1 と同じ or 微妙に異なる)"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教 (TFJV)",
+          "status": "deferred",
+          "race_id": "placeholder_東京_11R",
+          "design": "TFJV TM_DATA から 各馬の公式調教タイムを features 化",
+          "feature_count_added": "5-10 (距離別 best time、 ratings 等)"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 全部 + Stage 2 + パドック (Phase 4)",
+          "status": "deferred",
+          "race_id": "placeholder_東京_11R",
+          "design": "Stage 2 (Session #48 B) + 動画 features (Session #48 C) 統合",
+          "trigger": "各 R 65 分前 (5/16+ schtasks)、 5/9 では未稼働"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "confidence": "low"
+      }
+    },
+    {
+      "race": {
+        "course": "京都",
+        "race_num": 11,
+        "race_name": "京都新聞杯 (G2)",
+        "start": "15:30"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/8 21:00 後)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2 features)",
+          "status": "deferred",
+          "race_id": "placeholder_京都_11R",
+          "design": "Sprint 2 horse_weight + race_interval + running_style features を merge",
+          "expected_top1": "(System 1 と同じ or 微妙に異なる)"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教 (TFJV)",
+          "status": "deferred",
+          "race_id": "placeholder_京都_11R",
+          "design": "TFJV TM_DATA から 各馬の公式調教タイムを features 化",
+          "feature_count_added": "5-10 (距離別 best time、 ratings 等)"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 全部 + Stage 2 + パドック (Phase 4)",
+          "status": "deferred",
+          "race_id": "placeholder_京都_11R",
+          "design": "Stage 2 (Session #48 B) + 動画 features (Session #48 C) 統合",
+          "trigger": "各 R 65 分前 (5/16+ schtasks)、 5/9 では未稼働"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "confidence": "low"
+      }
+    },
+    {
+      "race": {
+        "course": "新潟",
+        "race_num": 11,
+        "race_name": "駿風 S (OP)",
+        "start": "15:20"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成 (5/8 21:00 後)"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教 (Sprint 2 features)",
+          "status": "deferred",
+          "race_id": "placeholder_新潟_11R",
+          "design": "Sprint 2 horse_weight + race_interval + running_style features を merge",
+          "expected_top1": "(System 1 と同じ or 微妙に異なる)"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教 (TFJV)",
+          "status": "deferred",
+          "race_id": "placeholder_新潟_11R",
+          "design": "TFJV TM_DATA から 各馬の公式調教タイムを features 化",
+          "feature_count_added": "5-10 (距離別 best time、 ratings 等)"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 全部 + Stage 2 + パドック (Phase 4)",
+          "status": "deferred",
+          "race_id": "placeholder_新潟_11R",
+          "design": "Stage 2 (Session #48 B) + 動画 features (Session #48 C) 統合",
+          "trigger": "各 R 65 分前 (5/16+ schtasks)、 5/9 では未稼働"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "agreement_count": 0,
+        "confidence": "low"
+      }
+    }
+  ],
+  "note": "★ 投票なし ★ verdict + 4 system 比較学習データ。 5/9 各 R 終了 5 分後 verdict 通知。"
+}
