@@ -1,0 +1,22 @@
+{
+  "input": "C:\\Users\\takum\\keiba-ai\\data\\video_poc\\zidane.jpg",
+  "yolo": {
+    "status": "ok",
+    "inference_ms": 69.0,
+    "n_horses": 0,
+    "horses": []
+  },
+  "keypoint": {
+    "status": "deferred"
+  },
+  "features": {
+    "video_horse_size_score": 0.0,
+    "video_pose_stability": 0.0,
+    "video_aspect_ratio": 0.0,
+    "video_horse_detection_rate": 0.0,
+    "video_stride_freq": 0.0,
+    "video_gait_symmetry": 0.0,
+    "video_head_bobbing_amp": 0.0,
+    "video_ear_pos_y_mean": 0.0
+  }
+}
