@@ -1,0 +1,48 @@
+{
+  "available": true,
+  "n_jockeys": 295,
+  "n_edges": 0,
+  "n_races": 189957,
+  "top_5_jockey_samples": [
+    {
+      "jockey_degree": 3593,
+      "jockey_top_partner_count": 0,
+      "jockey_top_partner_top3_rate_avg": 0.0,
+      "jockey_isolation_score": 0.0,
+      "jockey": "丹内祐次",
+      "top3_rate": 0.273
+    },
+    {
+      "jockey_degree": 3410,
+      "jockey_top_partner_count": 0,
+      "jockey_top_partner_top3_rate_avg": 0.0,
+      "jockey_isolation_score": 0.0509,
+      "jockey": "鮫島克駿",
+      "top3_rate": 0.2944
+    },
+    {
+      "jockey_degree": 3365,
+      "jockey_top_partner_count": 0,
+      "jockey_top_partner_top3_rate_avg": 0.0,
+      "jockey_isolation_score": 0.0635,
+      "jockey": "松山弘平",
+      "top3_rate": 0.3637
+    },
+    {
+      "jockey_degree": 3195,
+      "jockey_top_partner_count": 0,
+      "jockey_top_partner_top3_rate_avg": 0.0,
+      "jockey_isolation_score": 0.1108,
+      "jockey": "戸崎圭太",
+      "top3_rate": 0.405
+    },
+    {
+      "jockey_degree": 3138,
+      "jockey_top_partner_count": 0,
+      "jockey_top_partner_top3_rate_avg": 0.0,
+      "jockey_isolation_score": 0.1266,
+      "jockey": "菅原明良",
+      "top3_rate": 0.2728
+    }
+  ]
+}
