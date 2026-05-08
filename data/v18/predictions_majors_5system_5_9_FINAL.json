@@ -1,0 +1,130 @@
+{
+  "date": "20260509",
+  "version": "5system_v2_with_real_video_features",
+  "majors": [
+    {
+      "race": {
+        "course": "東京",
+        "race_num": 11,
+        "race_name": "エプソムカップ (G3)",
+        "start": "15:45"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (実 PoC)",
+          "status": "deferred",
+          "reason": "5/9 朝 動画 DL + horse_motion_features 実行後 利用可"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      }
+    },
+    {
+      "race": {
+        "course": "京都",
+        "race_num": 11,
+        "race_name": "京都新聞杯 (G2)",
+        "start": "15:30"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (実 PoC)",
+          "status": "deferred",
+          "reason": "5/9 朝 動画 DL + horse_motion_features 実行後 利用可"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      }
+    },
+    {
+      "race": {
+        "course": "新潟",
+        "race_num": 11,
+        "race_name": "駿風 S (OP)",
+        "start": "15:20"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独",
+          "status": "deferred",
+          "reason": "5/9 daily_predictions 未生成"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (実 PoC)",
+          "status": "deferred",
+          "reason": "5/9 朝 動画 DL + horse_motion_features 実行後 利用可"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": null,
+        "confidence": "deferred (5/9 朝 全 system 動作後)"
+      }
+    }
+  ],
+  "note": "★★ 5/9 重賞 投票なし ★★ Session #52 B+C 実動画 PoC 反映"
+}
