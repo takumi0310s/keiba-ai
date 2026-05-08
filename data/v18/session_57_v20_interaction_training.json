@@ -1,0 +1,234 @@
+{
+  "session": "Session #57 C",
+  "ts": "2026-05-09T00:32:18.602418",
+  "target": "is_top3",
+  "n_train": 479783,
+  "n_test": 47497,
+  "baseline": {
+    "auc": 0.8684797587385205,
+    "logloss": 0.35804277255242717,
+    "n_features": 150,
+    "best_iter": 500
+  },
+  "interaction": {
+    "auc": 0.8682802481339184,
+    "logloss": 0.358131408328425,
+    "n_features": 160,
+    "best_iter": 490
+  },
+  "delta_auc": -0.00019951060460210446,
+  "interaction_importance": [
+    {
+      "feature": "int_sire_baba_top3r",
+      "rank": 42,
+      "gain": 3827.8365607261658,
+      "split": 306
+    },
+    {
+      "feature": "int_trainer_course_top3r",
+      "rank": 43,
+      "gain": 3772.805645465851,
+      "split": 313
+    },
+    {
+      "feature": "int_sire_course_top3r",
+      "rank": 46,
+      "gain": 3650.981113910675,
+      "split": 290
+    },
+    {
+      "feature": "int_jockey_class_top3r",
+      "rank": 47,
+      "gain": 3632.1808280944824,
+      "split": 290
+    },
+    {
+      "feature": "int_jockey_trainer_top3r",
+      "rank": 48,
+      "gain": 3584.641613483429,
+      "split": 292
+    },
+    {
+      "feature": "int_jockey_distcat_top3r",
+      "rank": 60,
+      "gain": 3180.954930782318,
+      "split": 251
+    },
+    {
+      "feature": "int_jockey_baba_top3r",
+      "rank": 66,
+      "gain": 2985.943422317505,
+      "split": 229
+    },
+    {
+      "feature": "int_sire_distcat_top3r",
+      "rank": 67,
+      "gain": 2983.5950169563293,
+      "split": 244
+    },
+    {
+      "feature": "int_jockey_course_top3r",
+      "rank": 70,
+      "gain": 2814.7530283927917,
+      "split": 235
+    },
+    {
+      "feature": "int_horse_jockey_top3r",
+      "rank": 127,
+      "gain": 249.8861789703369,
+      "split": 22
+    }
+  ],
+  "top30_features": [
+    {
+      "feature": "paci_jockey_exp_wr",
+      "gain": 318042.78813791275,
+      "split": 294
+    },
+    {
+      "feature": "paci_ninki_idx",
+      "gain": 263639.5081219673,
+      "split": 648
+    },
+    {
+      "feature": "paci_jockey_exp_3rd",
+      "gain": 233934.17685985565,
+      "split": 306
+    },
+    {
+      "feature": "jrdb_ze_idm_avg",
+      "gain": 151195.9183959961,
+      "split": 1920
+    },
+    {
+      "feature": "training_time_filled",
+      "gain": 87977.34057426453,
+      "split": 1410
+    },
+    {
+      "feature": "training_per_dist",
+      "gain": 48336.597016334534,
+      "split": 1073
+    },
+    {
+      "feature": "jrdb_ze_ten_avg",
+      "gain": 34870.12471103668,
+      "split": 963
+    },
+    {
+      "feature": "horse_career_wr",
+      "gain": 31427.048002243042,
+      "split": 728
+    },
+    {
+      "feature": "jrdb_prev_idm",
+      "gain": 27878.989298820496,
+      "split": 759
+    },
+    {
+      "feature": "paci_goal_rank",
+      "gain": 16915.84828567505,
+      "split": 235
+    },
+    {
+      "feature": "surface_dist_enc",
+      "gain": 16276.715317249298,
+      "split": 402
+    },
+    {
+      "feature": "pop_rank_change",
+      "gain": 14532.880955219269,
+      "split": 284
+    },
+    {
+      "feature": "age_season",
+      "gain": 13386.722134590149,
+      "split": 416
+    },
+    {
+      "feature": "jrdb_ze_agari_avg",
+      "gain": 13011.323686122894,
+      "split": 622
+    },
+    {
+      "feature": "age",
+      "gain": 12823.22503232956,
+      "split": 204
+    },
+    {
+      "feature": "surface_enc",
+      "gain": 10690.572577476501,
+      "split": 190
+    },
+    {
+      "feature": "avg_last3f_3r",
+      "gain": 9300.737823009491,
+      "split": 409
+    },
+    {
+      "feature": "age_sex",
+      "gain": 8540.169985294342,
+      "split": 238
+    },
+    {
+      "feature": "distance",
+      "gain": 8294.470908164978,
+      "split": 273
+    },
+    {
+      "feature": "paci_sogo_mark",
+      "gain": 8011.260593414307,
+      "split": 47
+    },
+    {
+      "feature": "jrdb_idm",
+      "gain": 7144.201933383942,
+      "split": 233
+    },
+    {
+      "feature": "horse_career_top3r",
+      "gain": 6957.232741355896,
+      "split": 368
+    },
+    {
+      "feature": "paci_idm_mark",
+      "gain": 6739.6029753685,
+      "split": 107
+    },
+    {
+      "feature": "transport_distance_km",
+      "gain": 6416.901009559631,
+      "split": 279
+    },
+    {
+      "feature": "prev2_last3f",
+      "gain": 5952.199822425842,
+      "split": 335
+    },
+    {
+      "feature": "horse_career_races",
+      "gain": 5216.98884677887,
+      "split": 295
+    },
+    {
+      "feature": "course_enc",
+      "gain": 5100.18955039978,
+      "split": 258
+    },
+    {
+      "feature": "jrdb_prev_pace_idx",
+      "gain": 5057.371394634247,
+      "split": 338
+    },
+    {
+      "feature": "weight_ma5",
+      "gain": 4931.793026447296,
+      "split": 388
+    },
+    {
+      "feature": "carry_diff",
+      "gain": 4930.301867008209,
+      "split": 381
+    }
+  ]
+}

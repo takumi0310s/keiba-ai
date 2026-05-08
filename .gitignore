@@ -117,3 +117,4 @@ data/netkeiba_siblings_expanding_decay*.csv
 data/netkeiba_siblings_expanding_segmented.csv
 data/tfjv/
 data/v20/interaction_features.csv
+data/v20/models/
