@@ -1,0 +1,194 @@
+{
+  "n_rows": 548606,
+  "year_coverage": {
+    "n": {
+      "2015": 49992,
+      "2016": 50076,
+      "2017": 49299,
+      "2018": 48618,
+      "2019": 47574,
+      "2020": 48282,
+      "2021": 47821,
+      "2022": 47220,
+      "2023": 47672,
+      "2024": 47181,
+      "2025": 47884,
+      "2026": 16987
+    },
+    "jra_top3r_nonnull": {
+      "2015": 90.9,
+      "2016": 90.7,
+      "2017": 90.5,
+      "2018": 90.2,
+      "2019": 89.7,
+      "2020": 89.9,
+      "2021": 90.2,
+      "2022": 90.0,
+      "2023": 89.9,
+      "2024": 89.5,
+      "2025": 89.5,
+      "2026": 92.4
+    },
+    "kyori_top3r_nonnull": {
+      "2015": 76.1,
+      "2016": 75.8,
+      "2017": 75.6,
+      "2018": 75.1,
+      "2019": 74.7,
+      "2020": 74.9,
+      "2021": 73.7,
+      "2022": 74.3,
+      "2023": 74.7,
+      "2024": 74.5,
+      "2025": 74.2,
+      "2026": 78.2
+    }
+  },
+  "jou_coverage": {
+    "東京": 87264,
+    "中山": 84801,
+    "阪神": 77916,
+    "京都": 66195,
+    "中京": 57615,
+    "新潟": 51244,
+    "小倉": 44020,
+    "福島": 37904,
+    "札幌": 21933,
+    "函館": 19714
+  },
+  "top3r_corr_with_jra": {
+    "kka_turf_dirt_2_top3r": 0.933,
+    "kka_heavy_seiseki_top3r": 0.854,
+    "kka_kyori_seiseki_top3r": 0.814,
+    "kka_slow_seiseki_top3r": 0.764,
+    "kka_waku_seiseki_top3r": 0.743,
+    "kka_turf_dirt_2_dist_top3r": 0.735,
+    "kka_speed_seiseki_top3r": 0.735,
+    "kka_saka_seiseki_top3r": 0.714,
+    "kka_season_seiseki_top3r": 0.697,
+    "kka_mid_seiseki_top3r": 0.697,
+    "kka_track_seiseki_top3r": 0.606,
+    "kka_rest_seiseki_top3r": 0.6,
+    "kka_rotation_sei_top3r": 0.573,
+    "kka_breeder_surface_top3r": 0.548,
+    "kka_class_seiseki_top3r": 0.538,
+    "kka_breeder_baba_top3r": 0.367,
+    "kka_breeder_adjust_top3r": 0.336,
+    "kka_breeder_blanker_top3r": 0.334,
+    "kka_breeder_dist_top3r": 0.329,
+    "kka_breeder_track_top3r": 0.272,
+    "kka_koryu_seiseki_top3r": 0.033,
+    "kka_other_seiseki_top3r": -0.084
+  },
+  "leak_check": [
+    {
+      "feature": "kka_jra_seiseki_top3r",
+      "all_one_pct": 3.9,
+      "all_zero_pct": 27.9,
+      "std": 0.2609,
+      "verdict": "PASS"
+    },
+    {
+      "feature": "kka_kyori_seiseki_top3r",
+      "all_one_pct": 9.3,
+      "all_zero_pct": 32.6,
+      "std": 0.3163,
+      "verdict": "PASS"
+    },
+    {
+      "feature": "kka_class_seiseki_top3r",
+      "all_one_pct": 20.4,
+      "all_zero_pct": 50.6,
+      "std": 0.3966,
+      "verdict": "NG (二極化)"
+    },
+    {
+      "feature": "kka_track_seiseki_top3r",
+      "all_one_pct": 24.5,
+      "all_zero_pct": 43.2,
+      "std": 0.4087,
+      "verdict": "NG (二極化)"
+    },
+    {
+      "feature": "kka_heavy_seiseki_top3r",
+      "all_one_pct": 7.8,
+      "all_zero_pct": 31.6,
+      "std": 0.3029,
+      "verdict": "PASS"
+    }
+  ],
+  "starts_stats": [
+    {
+      "feature": "kka_jra_seiseki_starts",
+      "mean": 10.49,
+      "median": 7,
+      "p90": 24,
+      "p99": 43,
+      "zero_pct": 0.2
+    },
+    {
+      "feature": "kka_kyori_seiseki_starts",
+      "mean": 4.88,
+      "median": 3,
+      "p90": 13,
+      "p99": 27,
+      "zero_pct": 17.0
+    },
+    {
+      "feature": "kka_class_seiseki_starts",
+      "mean": 1.0,
+      "median": 0,
+      "p90": 3,
+      "p99": 7,
+      "zero_pct": 52.2
+    }
+  ],
+  "redundancy_with_v15": [
+    {
+      "kka": "kka_jra_seiseki_top3r",
+      "v15": "V15.horse_career_top3r",
+      "severity": "高 (両方とも全成績)"
+    },
+    {
+      "kka": "kka_kyori_seiseki_top3r",
+      "v15": "V15.horse_dist_top3r",
+      "severity": "高 (両方とも距離別)"
+    },
+    {
+      "kka": "kka_track_seiseki_top3r",
+      "v15": "V15.horse_surface_top3r",
+      "severity": "中 (track vs surface 概念異)"
+    },
+    {
+      "kka": "kka_heavy_seiseki_top3r",
+      "v15": "なし",
+      "severity": "低 (V15 に重馬場 features 無し)"
+    },
+    {
+      "kka": "kka_class_seiseki_top3r",
+      "v15": "なし",
+      "severity": "低 (V15 に class 別 features 無し)"
+    },
+    {
+      "kka": "kka_speed_seiseki_top3r",
+      "v15": "なし",
+      "severity": "低 (V15 にペース別 features 無し)"
+    },
+    {
+      "kka": "kka_season_seiseki_top3r",
+      "v15": "なし",
+      "severity": "低 (V15 に season 別 features 無し)"
+    },
+    {
+      "kka": "kka_waku_seiseki_top3r",
+      "v15": "V15.frame_course_dist_wr",
+      "severity": "中 (waku の集計方法異)"
+    },
+    {
+      "kka": "kka_dam_rensho_max",
+      "v15": "V15.dam_top3r (除外済)",
+      "severity": "低 (V15 で dam リーク事故、 KKA は連勝率)"
+    }
+  ],
+  "final_verdict": "NG"
+}
