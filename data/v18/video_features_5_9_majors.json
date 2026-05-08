@@ -1,0 +1,39 @@
+{
+  "mode": "simulate",
+  "n_processed": 3,
+  "results": [
+    {
+      "status": "ok",
+      "n_horses_detected": 0,
+      "features": {
+        "video_horse_detected": 0,
+        "video_max_conf": 0.0,
+        "video_avg_size_score": 0.0,
+        "video_aspect_ratio": 0.0
+      },
+      "file": "zidane.jpg"
+    },
+    {
+      "status": "ok",
+      "n_horses_detected": 0,
+      "features": {
+        "video_horse_detected": 0,
+        "video_max_conf": 0.0,
+        "video_avg_size_score": 0.0,
+        "video_aspect_ratio": 0.0
+      },
+      "file": "bus.jpg"
+    },
+    {
+      "status": "ok",
+      "n_horses_detected": 0,
+      "features": {
+        "video_horse_detected": 0,
+        "video_max_conf": 0.0,
+        "video_avg_size_score": 0.0,
+        "video_aspect_ratio": 0.0
+      },
+      "file": "sample_horse.jpg"
+    }
+  ]
+}

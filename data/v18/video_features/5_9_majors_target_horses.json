@@ -1,0 +1,29 @@
+{
+  "京都新聞杯_G2": {
+    "race_id_pattern": "20260508*11",
+    "noted_horses": [
+      {
+        "umaban": "?",
+        "horse_name": "(5/9 朝確定)"
+      }
+    ]
+  },
+  "エプソムC_G3": {
+    "race_id_pattern": "20260505*11",
+    "noted_horses": [
+      {
+        "umaban": "?",
+        "horse_name": "(5/9 朝確定)"
+      }
+    ]
+  },
+  "駿風_S_OP": {
+    "race_id_pattern": "20260504*11",
+    "noted_horses": [
+      {
+        "umaban": "?",
+        "horse_name": "(5/9 朝確定)"
+      }
+    ]
+  }
+}
