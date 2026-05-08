@@ -1,0 +1,35 @@
+{
+  "date": "20260503",
+  "v15_today": {
+    "available": true,
+    "date": "20260503",
+    "v15_full": {
+      "n_races": 34,
+      "inv": 23800,
+      "pay": 7450,
+      "profit": -16350,
+      "roi_pct": 31.3
+    },
+    "v15_case_b": {
+      "n_races": 6,
+      "inv": 4200,
+      "pay": 3680,
+      "profit": -520,
+      "trio_hit": 1,
+      "hit_rate_pct": 16.67,
+      "roi_pct": 87.62
+    }
+  },
+  "cumulative": {
+    "available": true,
+    "through_date": "20260503",
+    "raw_cumulative_jpy": -28360,
+    "retire_margin_jpy": 21640,
+    "user_real_per_claude_md": 13530
+  },
+  "judge_5_16": {
+    "verdict": "微損",
+    "go_probability_pct": 45,
+    "recommendation": "V15 単独継続 推奨"
+  }
+}
