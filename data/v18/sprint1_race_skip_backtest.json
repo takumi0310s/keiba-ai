@@ -1,0 +1,41 @@
+{
+  "available": true,
+  "n_total": 39,
+  "baseline": {
+    "n_races": 39,
+    "investment": 27300,
+    "payout": 22920,
+    "profit": -4380,
+    "roi_pct": 83.96
+  },
+  "skip_strategies": {
+    "loose": {
+      "threshold": 0.5,
+      "n_invested": 2,
+      "n_skip": 37,
+      "investment": 1400,
+      "payout": 2280,
+      "profit": 880,
+      "roi_pct": 162.86
+    },
+    "medium": {
+      "threshold": 0.6,
+      "n_invested": 7,
+      "n_skip": 32,
+      "investment": 4900,
+      "payout": 10910,
+      "profit": 6010,
+      "roi_pct": 222.65
+    },
+    "strict": {
+      "threshold": 0.7,
+      "n_invested": 23,
+      "n_skip": 16,
+      "investment": 16100,
+      "payout": 22920,
+      "profit": 6820,
+      "roi_pct": 142.36
+    }
+  },
+  "best_strategy": "medium"
+}
