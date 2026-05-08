@@ -1,0 +1,25 @@
+{
+  "n_maiden_total": 43959,
+  "n_train": 32014,
+  "n_test": 11945,
+  "AUC_test_2023_plus": 0.8092015951161325,
+  "features": [
+    "weight_carry_num",
+    "age_num",
+    "num_horses_num",
+    "popularity_num",
+    "distance_num",
+    "horse_weight_num",
+    "umaban_num",
+    "sex_enc",
+    "surface_enc",
+    "condition_enc",
+    "course_enc",
+    "father_enc",
+    "mother_enc",
+    "bms_enc",
+    "course_code_num"
+  ],
+  "feature_count": 15,
+  "elapsed_sec": 4.2
+}
