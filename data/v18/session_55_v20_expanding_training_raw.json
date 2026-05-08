@@ -1,0 +1,140 @@
+{
+  "base": {
+    "2023": 0.8083678979563982,
+    "2024": 0.8128851695762482,
+    "2025": 0.8111217554557094
+  },
+  "expanding": {
+    "2023": 0.808100132765873,
+    "2024": 0.8128795773183861,
+    "2025": 0.8113837661420941
+  },
+  "importance_top30": [
+    [
+      "popularity",
+      572086.4490756989
+    ],
+    [
+      "prev_finish",
+      14268.96407175064
+    ],
+    [
+      "num_horses",
+      11667.469091415405
+    ],
+    [
+      "rest_days",
+      4814.294153213501
+    ],
+    [
+      "jockey_wr_lifetime",
+      4651.46235370636
+    ],
+    [
+      "horse_career_wr_lifetime",
+      4416.211443424225
+    ],
+    [
+      "age",
+      3921.7359051704407
+    ],
+    [
+      "trainer_top3_lifetime",
+      3669.0823426246643
+    ],
+    [
+      "trainer_top3_w90",
+      3281.6705141067505
+    ],
+    [
+      "jockey_top3_w30",
+      2913.1183218955994
+    ],
+    [
+      "horse_num_ratio",
+      2363.973181247711
+    ],
+    [
+      "distance",
+      2080.446304321289
+    ],
+    [
+      "horse_career_top3_w10",
+      1733.4787521362305
+    ],
+    [
+      "horse_career_wr_w5",
+      1531.5710582733154
+    ],
+    [
+      "horse_career_top3_w5",
+      1500.1352896690369
+    ],
+    [
+      "weight_carry",
+      1367.4774360656738
+    ],
+    [
+      "umaban",
+      1224.5841031074524
+    ],
+    [
+      "jockey_wr_w30",
+      1193.9480347633362
+    ],
+    [
+      "sex_enc",
+      743.1288771629333
+    ],
+    [
+      "surface_enc",
+      422.60521125793457
+    ],
+    [
+      "course_enc",
+      0.0
+    ],
+    [
+      "prev_pass4",
+      0.0
+    ]
+  ],
+  "expanding_importance": {
+    "trainer_top3_w90": 3281.6705141067505,
+    "jockey_top3_w30": 2913.1183218955994,
+    "horse_career_top3_w10": 1733.4787521362305,
+    "horse_career_wr_w5": 1531.5710582733154,
+    "horse_career_top3_w5": 1500.1352896690369,
+    "jockey_wr_w30": 1193.9480347633362
+  },
+  "features_base": [
+    "weight_carry",
+    "age",
+    "distance",
+    "course_enc",
+    "surface_enc",
+    "sex_enc",
+    "num_horses",
+    "umaban",
+    "horse_num_ratio",
+    "prev_finish",
+    "prev_pass4",
+    "rest_days",
+    "horse_career_wr_lifetime",
+    "jockey_wr_lifetime",
+    "trainer_top3_lifetime",
+    "popularity"
+  ],
+  "features_expanding": [
+    "jockey_wr_w30",
+    "jockey_top3_w30",
+    "trainer_top3_w90",
+    "horse_career_top3_w5",
+    "horse_career_wr_w5",
+    "horse_career_top3_w10"
+  ],
+  "base_avg_auc": 0.8107916076627854,
+  "expanding_avg_auc": 0.8107878254087844,
+  "delta_auc": -3.7822540009946337e-06,
+  "elapsed_s": 19.35401725769043
+}
