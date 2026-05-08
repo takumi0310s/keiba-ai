@@ -3,15 +3,18 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-08 (Session #41 巨大マラソン、 Phase 3 前倒し実装、 JV-Link 加入完了反映)**
+Last updated: **2026-05-08 (Session #42、 拡張 retro + 動画 feasibility + sib_exp window=5、 5/16 GO 65-80%)**
 
-> Session #41 (5/8 深夜) で 8 領域 同時前倒し実装:
-> - **A**: 32-bit Python 環境 plan ([data/v18/jvlink_python32_setup_5_7.md](data/v18/jvlink_python32_setup_5_7.md))
-> - **B**: jvlink_fetcher_v2.py 本実装 ([data/v18/jvlink_fetcher_implementation_5_7.md](data/v18/jvlink_fetcher_implementation_5_7.md))
-> - **C**: 5/1-5/7 backfill script ([data/v18/jvlink_backfill_5_1_5_7.md](data/v18/jvlink_backfill_5_1_5_7.md))
-> - **D**: sib_exp PoC 完成 + V18/V19 LIVE retro ([data/v18/sib_expanding_v1_retro_5_7.md] 別 commit)
-> - **E**: V20 学習 data 準備 plan ([data/v18/v20_data_preparation_plan_5_7.md](data/v18/v20_data_preparation_plan_5_7.md))
+> Session #42 (5/8 日中) で 10 領域 並行 + 動画 PoC 実行:
+> - **A**: 32-bit Python quickstart 1 ページ ([docs/SETUP_PYTHON32_QUICKSTART.md](docs/SETUP_PYTHON32_QUICKSTART.md))
+> - **B+G**: 5/1-5/7 actual + V20 phased backfill ([data/v18/v20_backfill_phased_5_8.md](data/v18/v20_backfill_phased_5_8.md))
+> - **C**: 拡張 retro 4/18-5/5 (V15 案B改 ROI 44.47% / 39 races) ([data/v18/extended_retro_4_12_5_5_5_8.md](data/v18/extended_retro_4_12_5_5_5_8.md))
+> - **D**: 5/10 朝 結果照合 自動化 (verdict 6 シナリオ) ([docs/RESULT_VERIFICATION_5_10.md](docs/RESULT_VERIFICATION_5_10.md))
+> - **E**: 動画解析 feasibility GO (ultralytics 8.4 + YOLOv8 138ms 動作) ([docs/PHASE_4_VIDEO_FEASIBILITY_5_8.md](docs/PHASE_4_VIDEO_FEASIBILITY_5_8.md))
+> - **F**: sib_exp variant 探索、 **window=5 が最良 corr 0.2010** (full expanding 0.1689 から +0.032) ([data/v18/sib_exp_optimization_5_8.md](data/v18/sib_exp_optimization_5_8.md))
+> - **H**: 5/16 V18/V19 投入 plan v2 (GO 65-80%、 6 シナリオ条件分岐) ([docs/PLAN_5_16_V18_V19_DEPLOYMENT_v2.md](docs/PLAN_5_16_V18_V19_DEPLOYMENT_v2.md))
 >
+> Session #41 巨大マラソン (5/8 深夜) で 8 領域 + sib_exp LIVE retro **+6.89pt 改善大成功** ([data/v18/sib_expanding_v1_retro_5_7.md](data/v18/sib_expanding_v1_retro_5_7.md))。
 > Session #39 deluxe (5/7) で 10 領域 設計済 ([Phase 3-4 統合 roadmap](docs/PHASE_3_4_INTEGRATED_ROADMAP.md))。
 
 ### JRA-VAN 加入 + JV-Link 環境 (2026-05-07 夜 確定)

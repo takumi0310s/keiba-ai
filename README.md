@@ -2,14 +2,15 @@
 
 JRA (中央競馬) + NAR (地方競馬) 予測 AI システム
 
-> 最終更新: **2026-05-08 (Session #41 巨大マラソン、 Phase 3 前倒し実装、 JV-Link 加入完了反映)**
+> 最終更新: **2026-05-08 (Session #42、 拡張 retro + 動画 feasibility + sib_exp window=5、 5/16 GO 65-80%)**
 > 累計収支: **+13,530円** (`data/cumulative_results.csv`、 5/6 真相確定値)
 > 撤退ライン: **-50,000円** (絶対遵守) — 撤退余裕 +63,530円
 
 > **Session #38 確定 (5/7)**: V15.1 SKB POST-RACE LEAK 確定 → 採用 NO-GO。 V18/V19 sib抜き = リーク + 識別能力 hybrid → 5/16 NO-GO。 5/9 V15 案B改 単独継続 (絶対)。
 > **Session #39 deluxe (5/7)**: Phase 3 (5/24+) 修正版 + V20 (6/9-30) architecture + Phase 4 (7-8月) 動画解析 PoC を全前倒し設計。
 > **Session #40 マスター (5/7)**: 5 領域 (PAT 7pt baseline confirm、 race_classifier、 Kelly、 health check、 EMERGENCY runbook 15 シナリオ、 docs/INDEX.md、 voting design)。
-> **Session #41 巨大マラソン (5/8)**: 8 領域。 32-bit Python 環境 plan + JV-Link fetcher v2 (RA/SE/HR/O1 parser) + 5/1-5/7 backfill + V20 学習 data 準備 (6 年 36-66 GB) + sib_exp PoC 完成 + V18/V19 LIVE retro。 詳細 → [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md)
+> **Session #41 巨大マラソン (5/8)**: 8 領域。 sib_exp PoC LIVE retro **+6.89pt 改善大成功** (24.14% → 31.03%)、 32-bit Python plan、 JV-Link fetcher v2、 V20 6 年分 backfill plan。
+> **Session #42 (5/8)**: 10 領域。 拡張 retro 4/18-5/5 (V15 案B改 ROI 44.47%)、 動画解析 feasibility GO、 sib_exp **window=5 最適化 (corr 0.2010)**、 5/16 V18/V19 GO 65-80%。 詳細 → [`docs/PHASE_3_4_INTEGRATED_ROADMAP.md`](docs/PHASE_3_4_INTEGRATED_ROADMAP.md)
 
 ### JRA-VAN 加入完了 (5/7 夜)
 

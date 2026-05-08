@@ -116,15 +116,28 @@
 
 ## I. 関連 data/v18/ doc (重要)
 
-### Session #41 (5/8) deliverables
+### Session #42 (5/8) deliverables
+
+| doc | tag | 内容 |
+|-----|-----|------|
+| `docs/SETUP_PYTHON32_QUICKSTART.md` | 🛠📋 | 32-bit Python install 1 ページ手順 (Session #42 A) |
+| `data/v18/v20_backfill_phased_5_8.md` | 📋🛠 | V20 phased backfill (Session #42 B+G) |
+| `data/v18/extended_retro_4_12_5_5_5_8.md` | 🚀🔍 | 拡張 retro 4/18-5/5 V15 案B改 ROI 44.47% (Session #42 C) |
+| `docs/RESULT_VERIFICATION_5_10.md` | 🚀🛠 | 5/10 朝 結果照合 自動化 (Session #42 D) |
+| `docs/PHASE_4_VIDEO_FEASIBILITY_5_8.md` | 🧪📋 | 動画解析 feasibility GO (Session #42 E) |
+| `data/v18/sib_exp_optimization_5_8.md` | 📋🧪 | **sib_exp window=5 最良 corr 0.2010** (Session #42 F) |
+| `docs/PLAN_5_16_V18_V19_DEPLOYMENT_v2.md` | 🚀📋 | 5/16 V18/V19 投入 plan v2 GO 65-80% (Session #42 H) |
+
+### Session #41 (5/8 深夜) deliverables
 
 | doc | tag | 内容 |
 |-----|-----|------|
 | `data/v18/jvlink_python32_setup_5_7.md` | 📋🛠 | 32-bit Python 環境 plan (Session #41 A) |
 | `data/v18/jvlink_fetcher_implementation_5_7.md` | 📋 | jvlink_fetcher_v2 本実装 (Session #41 B) |
 | `data/v18/jvlink_backfill_5_1_5_7.md` | 📋🛠 | 5/1-5/7 backfill plan (Session #41 C) |
-| `data/v18/sib_expanding_v1_retro_5_7.md` | 🔍📋 | sib_exp PoC + LIVE retro 結果 (Session #41 D) |
+| `data/v18/sib_expanding_v1_retro_5_7.md` | 🔍📋 | **sib_exp PoC LIVE retro +6.89pt 大成功** (Session #41 D) |
 | `data/v18/v20_data_preparation_plan_5_7.md` | 📋 | V20 6 年分 backfill plan (Session #41 E) |
+| `data/v18/session_41_summary_5_8.md` | 🔍📚 | Session #41 統合 summary |
 
 ### Session #39-40 deliverables
 
