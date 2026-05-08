@@ -1,0 +1,289 @@
+[
+  {
+    "id": 18,
+    "name": "jrdb_sed_time",
+    "tier": "3h",
+    "csv": "data/jrdb_sed.csv",
+    "value_cols": [
+      "new__finish",
+      "new__abnormal",
+      "new__distance",
+      "new__surface_code",
+      "new__num_horses",
+      "new__time_sec",
+      "new__weight_carry",
+      "new__odds_final"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 1.0,
+    "delta": 0.131883,
+    "coverage_2024": 1.0,
+    "elapsed_s": 10.9,
+    "status": "ok"
+  },
+  {
+    "id": 22,
+    "name": "race_review_score",
+    "tier": "2h",
+    "csv": "data/netkeiba_race_review.csv",
+    "value_cols": [
+      "new__finish",
+      "new__review_score"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.998086,
+    "delta": 0.12997,
+    "coverage_2024": 0.894,
+    "elapsed_s": 12.9,
+    "status": "ok"
+  },
+  {
+    "id": 11,
+    "name": "training_times_rank",
+    "tier": "1h",
+    "csv": "data/netkeiba_training_times.csv",
+    "value_cols": [
+      "new__rank"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.868117,
+    "delta": 0.0,
+    "coverage_2024": 0.0,
+    "elapsed_s": 17.2,
+    "status": "ok"
+  },
+  {
+    "id": 5,
+    "name": "ai_opinion_pace",
+    "tier": "2h",
+    "csv": "data/netkeiba_ai_opinion.csv",
+    "value_cols": [
+      "new__pace"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.868117,
+    "delta": 0.0,
+    "coverage_2024": 0.0,
+    "elapsed_s": 20.8,
+    "status": "ok"
+  },
+  {
+    "id": 9,
+    "name": "ai_position_pct",
+    "tier": "2h",
+    "csv": "data/netkeiba_ai_position.csv",
+    "value_cols": [
+      "new__position_left_pct",
+      "new__position_top_pct"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.868117,
+    "delta": 0.0,
+    "coverage_2024": 0.4596,
+    "elapsed_s": 19.6,
+    "status": "ok"
+  },
+  {
+    "id": 4,
+    "name": "jrdb_kka_seiseki",
+    "tier": "6h",
+    "csv": "data/jrdb_kka.csv",
+    "value_cols": [
+      "new__kyori_seiseki_1",
+      "new__kyori_seiseki_2",
+      "new__kyori_seiseki_3",
+      "new__track_seiseki_1",
+      "new__track_seiseki_2",
+      "new__track_seiseki_3",
+      "new__heavy_seiseki_1",
+      "new__heavy_seiseki_2",
+      "new__heavy_seiseki_3"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.868117,
+    "delta": 0.0,
+    "coverage_2024": 0.0,
+    "elapsed_s": 29.3,
+    "status": "ok"
+  },
+  {
+    "id": 8,
+    "name": "jrdb_jo_bb",
+    "tier": "3h",
+    "csv": "data/jrdb_jo.csv",
+    "value_cols": [
+      "new__gaisha_bb",
+      "new__gaisha_bb_wr",
+      "new__gaisha_bb_rensho",
+      "new__breeder_bb",
+      "new__breeder_bb_wr",
+      "new__breeder_bb_rensho"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.868004,
+    "delta": -0.000113,
+    "coverage_2024": 0.096,
+    "elapsed_s": 16.0,
+    "status": "ok"
+  },
+  {
+    "id": 6,
+    "name": "jrdb_cha_oikiri",
+    "tier": "4h",
+    "csv": "data/jrdb_cha.csv",
+    "value_cols": [
+      "new__oikiri_rank",
+      "new__oikiri_idx",
+      "new__ten_time_idx",
+      "new__chukan_time_idx",
+      "new__shimai_time_idx"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867942,
+    "delta": -0.000174,
+    "coverage_2024": 0.9706,
+    "elapsed_s": 27.5,
+    "status": "ok"
+  },
+  {
+    "id": 17,
+    "name": "jrdb_tyb_live",
+    "tier": "2h",
+    "csv": "data/jrdb_tyb.csv",
+    "value_cols": [
+      "new__bagu_change",
+      "new__cancel_flag"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867849,
+    "delta": -0.000267,
+    "coverage_2024": 1.0,
+    "elapsed_s": 14.4,
+    "status": "ok"
+  },
+  {
+    "id": 10,
+    "name": "jrdb_cyb_train",
+    "tier": "3h",
+    "csv": "data/jrdb_cyb.csv",
+    "value_cols": [
+      "new__train_mark",
+      "new__train_amount",
+      "new__train_change",
+      "new__train_eval"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867731,
+    "delta": -0.000386,
+    "coverage_2024": 1.0,
+    "elapsed_s": 33.5,
+    "status": "ok"
+  },
+  {
+    "id": 12,
+    "name": "race_analysis_score",
+    "tier": "2h",
+    "csv": "data/netkeiba_race_analysis.csv",
+    "value_cols": [
+      "new__score"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867716,
+    "delta": -0.000401,
+    "coverage_2024": 0.1871,
+    "elapsed_s": 17.9,
+    "status": "ok"
+  },
+  {
+    "id": 7,
+    "name": "speed_index_dist_course",
+    "tier": "1h",
+    "csv": "data/netkeiba_speed_index.csv",
+    "value_cols": [
+      "new__index_dist",
+      "new__index_course"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867715,
+    "delta": -0.000402,
+    "coverage_2024": 0.9156,
+    "elapsed_s": 17.4,
+    "status": "ok"
+  },
+  {
+    "id": 21,
+    "name": "upset_level",
+    "tier": "1h",
+    "csv": "data/netkeiba_upset_level.csv",
+    "value_cols": [
+      "new__upset_level",
+      "new__top_popularity_reliability"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867702,
+    "delta": -0.000414,
+    "coverage_2024": 1.0,
+    "elapsed_s": 29.8,
+    "status": "ok"
+  },
+  {
+    "id": 26,
+    "name": "jrdb_jo_odds",
+    "tier": "2h",
+    "csv": "data/jrdb_jo.csv",
+    "value_cols": [
+      "new__soten_odds",
+      "new__yoso_odds",
+      "new__cid_soten_idx",
+      "new__cid_sara_idx"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867625,
+    "delta": -0.000492,
+    "coverage_2024": 1.0,
+    "elapsed_s": 14.2,
+    "status": "ok"
+  },
+  {
+    "id": 23,
+    "name": "stable_comment_score",
+    "tier": "1h",
+    "csv": "data/netkeiba_stable_comments.csv",
+    "value_cols": [
+      "new__score"
+    ],
+    "auc_base": 0.868117,
+    "auc_new": 0.867527,
+    "delta": -0.00059,
+    "coverage_2024": 0.3499,
+    "elapsed_s": 27.6,
+    "status": "ok"
+  },
+  {
+    "id": 28,
+    "name": "data_analysis_count",
+    "tier": "2h",
+    "csv": "data/netkeiba_data_analysis.csv",
+    "error": "no usable cols",
+    "elapsed_s": 18.2,
+    "status": "error"
+  },
+  {
+    "id": 19,
+    "name": "jrdb_kyi_marks",
+    "tier": "1h",
+    "csv": "data/jrdb_kyi.csv",
+    "error": "'race_id'",
+    "elapsed_s": 8.8,
+    "status": "error"
+  },
+  {
+    "id": 24,
+    "name": "jrdb_kz_leading",
+    "tier": "3h",
+    "csv": "data/jrdb_kz.csv",
+    "error": "'race_id'",
+    "elapsed_s": 7.8,
+    "status": "error"
+  }
+]
