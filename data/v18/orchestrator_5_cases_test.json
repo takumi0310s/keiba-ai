@@ -1,0 +1,14 @@
+{
+  "race_id": "202604010312",
+  "cases_tested": [
+    4
+  ],
+  "results": [
+    {
+      "case": 4,
+      "status": "ok_v15_only",
+      "v15_n": 12,
+      "expected_behavior": "V15 単独通知 + Discord warn 'V18/V19 全 fall-back to V15'"
+    }
+  ]
+}

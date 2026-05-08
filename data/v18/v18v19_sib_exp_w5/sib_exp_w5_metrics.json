@@ -1,0 +1,36 @@
+{
+  "v18_w5": {
+    "auc": 0.8847497027004959,
+    "logloss": 0.18640126102526916,
+    "winner_top1": 0.4549927641099855,
+    "feature_count": 190
+  },
+  "v19_w5": {
+    "auc": 0.8751674674022857,
+    "logloss": 0.34828182092806886,
+    "feature_count": 190
+  },
+  "v18_compare_v1": {
+    "v1_auc": 0.8845203849263201,
+    "delta_auc": 0.0002293177741757857
+  },
+  "meta": {
+    "timestamp": "2026-05-08 15:00:04.357136",
+    "session": "43_C",
+    "purpose": "V18/V19 sib_exp w5 単一-fold 再学習",
+    "fold": "train 2015-2024, test 2025",
+    "leak_excluded_count": 31,
+    "sib_old_excluded": [
+      "sib_top3_rate",
+      "sib_shinba_wr"
+    ],
+    "sib_w5_added": [
+      "sib_top3_rate_exp_w5",
+      "sib_shinba_wr_exp_w5"
+    ],
+    "feature_count": 190,
+    "elapsed_min": 1.4055990695953369,
+    "n_train": 479783,
+    "n_test": 47497
+  }
+}

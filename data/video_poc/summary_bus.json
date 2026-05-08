@@ -1,0 +1,7 @@
+{
+  "n_frames": 1,
+  "n_with_horse_detected": 0,
+  "horse_detection_rate_pct": 0.0,
+  "mean_max_horse_conf": 0,
+  "max_horse_conf": 0
+}
