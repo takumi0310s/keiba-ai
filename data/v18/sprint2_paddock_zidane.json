@@ -1,0 +1,18 @@
+{
+  "image": "zidane.jpg",
+  "detection": {
+    "status": "ok",
+    "inference_ms": 81.8,
+    "n_detections": 3,
+    "n_horses": 0,
+    "horses": [],
+    "max_horse_conf": 0
+  },
+  "features": {
+    "paddock_horse_detected": 0,
+    "paddock_max_conf": 0.0,
+    "paddock_body_size_score": 0.0,
+    "paddock_aspect_ratio": 0.0,
+    "paddock_pose_score": 0.0
+  }
+}
