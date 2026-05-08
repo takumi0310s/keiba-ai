@@ -27,6 +27,8 @@ import hashlib
 import time
 from datetime import datetime
 
+import pandas as pd
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
@@ -80,22 +82,31 @@ def fetch_5_9_race_list(date_str):
         return []
 
 
-def predict_one_v15(race_id):
-    """V15 single race prediction (predict_one_race 流用、 read-only)。
+_MODEL_CACHE = {}
 
-    Returns: dict {top1, top2, top3, scores}
+
+def _get_model():
+    if 'model' not in _MODEL_CACHE:
+        import predict_core
+        _MODEL_CACHE['model'] = predict_core.load_models()
+    return _MODEL_CACHE['model']
+
+
+def predict_one_v15(race_id):
+    """V15 single race prediction (predict_one_race.py の flow を流用、 read-only)。
+
+    Returns: dict { race_name, rinfo, top3 (list of {umaban, horse_name, score}), scores, num_horses }
     """
     try:
         import predict_core
-        model_data = predict_core.load_models()
-        if model_data['model'] is None:
+        model_data = _get_model()
+        if model_data is None or model_data.get('model') is None:
             return {'error': 'model load failed'}
 
         race_name, horses, horse_ids, rinfo = predict_core.parse_shutuba(race_id)
         if not horses:
             return {'error': 'shutuba fetch failed'}
 
-        # オッズ + JRA + 天候
         try:
             odds_full = predict_core.fetch_realtime_odds_full(race_id)
             odds_dict = {u: v['odds'] for u, v in odds_full.items()} if odds_full else {}
@@ -106,7 +117,6 @@ def predict_one_v15(race_id):
         except Exception:
             jra_info, weather_info = {}, {}
 
-        # 各馬成績
         for horse, hid in zip(horses, horse_ids):
             if hid:
                 try:
@@ -121,24 +131,51 @@ def predict_one_v15(race_id):
             else:
                 predict_core.set_horse_defaults(horse)
 
-        # 予測
-        result = predict_core.predict_race(
-            horses=horses,
-            rinfo=rinfo,
-            jra_info=jra_info,
-            weather_info=weather_info,
-            odds_dict=odds_dict,
-            model_data=model_data,
+        df = predict_core.build_features(
+            horses, rinfo, model_data,
+            race_id=race_id, odds_dict=odds_dict,
+            jra_track_info=jra_info, weather_info=weather_info,
         )
+
+        try:
+            from jrdb_features import merge_jrdb_predict_features
+            df = merge_jrdb_predict_features(df, race_id)
+        except Exception:
+            pass
+
+        odds_available = bool(odds_dict and any(v > 0 for v in odds_dict.values()))
+        result = predict_core.predict_race(df, model_data, odds_available, race_info=rinfo)
+        if hasattr(result, 'sort_values'):
+            result = result.sort_values('スコア', ascending=False).reset_index(drop=True)
+
+        # Build top3 list
+        top3 = []
+        scores = {}
+        try:
+            for i in range(min(3, len(result))):
+                row = result.iloc[i]
+                umaban = int(row.get('馬番', row.get('umaban', 0))) if not pd.isna(row.get('馬番', None)) else 0
+                hname = str(row.get('馬名', row.get('horse_name', '')))
+                score = float(row.get('スコア', row.get('score', 0)))
+                top3.append({'umaban': umaban, 'horse_name': hname, 'score': score})
+            for i in range(len(result)):
+                row = result.iloc[i]
+                umaban = int(row.get('馬番', row.get('umaban', 0))) if not pd.isna(row.get('馬番', None)) else 0
+                score = float(row.get('スコア', row.get('score', 0)))
+                scores[str(umaban)] = score
+        except Exception as e:
+            log(f"  parse top3 failed: {e}")
+
         return {
             'race_name': race_name,
             'rinfo': rinfo,
-            'top3': result.get('top3', [])[:3] if isinstance(result, dict) else [],
-            'scores': result.get('scores', {}) if isinstance(result, dict) else {},
+            'top3': top3,
+            'scores': scores,
             'num_horses': len(horses),
         }
     except Exception as e:
-        return {'error': str(e)}
+        import traceback
+        return {'error': f"{e} | {traceback.format_exc()[-200:]}"}
 
 
 def classify_grade(race_name, course, race_num):
