@@ -1,0 +1,203 @@
+{
+  "date": "20260509",
+  "version": "5system_v60_simulate_motion",
+  "branch": "dev/training-poc",
+  "majors": [
+    {
+      "race": {
+        "course": "東京",
+        "race_num": 11,
+        "race_name": "エプソムカップ (G3)",
+        "start": "15:45",
+        "race_id": "202605020511"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "14",
+          "top1_name": "サクラファレル",
+          "top2_num": "11",
+          "top2_name": "トロヴァトーレ",
+          "top3_num": "1",
+          "top3_name": "ジュタ",
+          "top1_score": 0.6952273547863085,
+          "trio_bets": "1-2-14; 1-4-14; 1-8-14; 1-11-14; 2-11-14; 4-11-14; 8-11-14"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred",
+          "reason": "Sprint 2 features 統合 待ち"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "reason": "TFJV TCOV 統合 (Phase 3) 待ち"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "reason": "9:30 morning weight check 結果 待ち"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (simulate)",
+          "status": "simulate",
+          "reason": "Session #60 B で動画 DL 全失敗 (HTTP 400)、 simulate 値使用",
+          "features_simulated": {
+            "stride_length_mean": 2.84,
+            "body_size_relative": 0.5442,
+            "stability_score": 0.8545,
+            "tension_score": 0.2426
+          },
+          "predicted_top1_num": "14",
+          "design_note": "実 PoC は Phase 4 (Playwright + YOLOv8) で実装"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "14",
+        "agreement_count": 2,
+        "n_systems_responding": 2,
+        "confidence": "低 (2/5)",
+        "all_top1s": {
+          "14": 2
+        }
+      }
+    },
+    {
+      "race": {
+        "course": "京都",
+        "race_num": 11,
+        "race_name": "京都新聞杯 (G2)",
+        "start": "15:30",
+        "race_id": "202608030511"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "1",
+          "top1_name": "アーレムアレス",
+          "top2_num": "8",
+          "top2_name": "バドリナート",
+          "top3_num": "2",
+          "top3_name": "エムズビギン",
+          "top1_score": 0.6019995366861147,
+          "trio_bets": "1-2-8; 1-2-12; 1-2-13; 1-2-15; 1-8-12; 1-8-13; 1-8-15"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred",
+          "reason": "Sprint 2 features 統合 待ち"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "reason": "TFJV TCOV 統合 (Phase 3) 待ち"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "reason": "9:30 morning weight check 結果 待ち"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (simulate)",
+          "status": "simulate",
+          "reason": "Session #60 B で動画 DL 全失敗 (HTTP 400)、 simulate 値使用",
+          "features_simulated": {
+            "stride_length_mean": 2.67,
+            "body_size_relative": 0.4529,
+            "stability_score": 0.8753,
+            "tension_score": 0.2337
+          },
+          "predicted_top1_num": "1",
+          "design_note": "実 PoC は Phase 4 (Playwright + YOLOv8) で実装"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "1",
+        "agreement_count": 2,
+        "n_systems_responding": 2,
+        "confidence": "低 (2/5)",
+        "all_top1s": {
+          "1": 2
+        }
+      }
+    },
+    {
+      "race": {
+        "course": "新潟",
+        "race_num": 11,
+        "race_name": "駿風 S (OP)",
+        "start": "15:20",
+        "race_id": "202604010311"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "1",
+          "top1_name": "パラサイコロジー",
+          "top2_num": "13",
+          "top2_name": "エコロジーク",
+          "top3_num": "5",
+          "top3_name": "カウンターセブン",
+          "top1_score": 0.516550398601408,
+          "trio_bets": "1-5-8; 1-5-9; 1-5-13; 1-5-14; 1-8-13; 1-9-13; 1-13-14"
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred",
+          "reason": "Sprint 2 features 統合 待ち"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式調教",
+          "status": "deferred",
+          "reason": "TFJV TCOV 統合 (Phase 3) 待ち"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重 (Stage 2 proxy)",
+          "status": "deferred",
+          "reason": "9:30 morning weight check 結果 待ち"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (simulate)",
+          "status": "simulate",
+          "reason": "Session #60 B で動画 DL 全失敗 (HTTP 400)、 simulate 値使用",
+          "features_simulated": {
+            "stride_length_mean": 2.6,
+            "body_size_relative": 0.5108,
+            "stability_score": 0.9355,
+            "tension_score": 0.1695
+          },
+          "predicted_top1_num": "1",
+          "design_note": "実 PoC は Phase 4 (Playwright + YOLOv8) で実装"
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "1",
+        "agreement_count": 2,
+        "n_systems_responding": 2,
+        "confidence": "低 (2/5)",
+        "all_top1s": {
+          "1": 2
+        }
+      }
+    }
+  ],
+  "note": "Session #60 C - 動画 DL 失敗のため System 5 は simulate、 投票なし"
+}
