@@ -115,15 +115,47 @@ def races_in_next_window(window_min: int = 60, now: datetime | None = None) -> l
     return out
 
 
+def _probe_netkeiba(race_id: str) -> dict:
+    """Session #68 C: parse_shutuba 失敗時の診断 (status_code / len / Cookie 有無)."""
+    import requests
+    try:
+        import predict_core as pc
+        h = pc._get_headers_with_cookie()
+        url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
+        r = requests.get(url, headers=h, timeout=10)
+        text = r.text or ""
+        return {
+            "status_code": r.status_code,
+            "response_len": len(text),
+            "has_horse_list": "HorseList" in text,
+            "cookie_present": "Cookie" in h,
+            "url": url,
+        }
+    except Exception as e:
+        return {"probe_error": f"{type(e).__name__}: {e}"}
+
+
 def predict_stage2(race_id: str) -> dict:
-    """V15 ensemble で再予測。 戻り値: {race_name, rinfo, top3, n_horses, error}"""
+    """V15 ensemble で再予測。
+    戻り値: {race_name, rinfo, top3, n_horses, error, error_kind, diag}
+    Session #68 C: error_kind を分類 (netkeiba_block / shutuba_empty / exception / None)。
+    """
     try:
         import predict_one_race as por
         ret = por.predict_one_race(race_id)
         if ret is None:
-            return {"error": "predict_one_race returned None"}
+            diag = _probe_netkeiba(race_id)
+            print(f"[stage2-trace] predict_one_race returned None, diag={diag}")
+            err = "predict_one_race returned None"
+            kind = "shutuba_empty"
+            if diag.get("status_code") == 400:
+                err = f"netkeiba HTTP 400 (server block) / len={diag.get('response_len')}"
+                kind = "netkeiba_block"
+            elif diag.get("status_code") and diag.get("status_code") != 200:
+                err = f"netkeiba HTTP {diag['status_code']} / len={diag.get('response_len')}"
+                kind = "netkeiba_other"
+            return {"error": err, "error_kind": kind, "diag": diag}
         result, race_name, rinfo = ret
-        # スコア降順 sort 済 (predict_one_race 末尾)
         top3 = []
         for _, row in result.head(3).iterrows():
             top3.append({
@@ -137,11 +169,16 @@ def predict_stage2(race_id: str) -> dict:
             "top3": top3,
             "n_horses": len(result),
             "error": None,
+            "error_kind": None,
         }
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return {"error": f"{type(e).__name__}: {e}"}
+        return {
+            "error": f"{type(e).__name__}: {e}",
+            "error_kind": "exception",
+            "diag": {"trace": traceback.format_exc()[-500:]},
+        }
 
 
 def diff_top1(morning_top1: str, stage2_top1: str) -> bool:
@@ -165,15 +202,30 @@ def build_message(race_id: str, morning_row, stage2: dict) -> tuple[str, str, st
     title = f"R{rn} {course} 1h 前予測 (Stage 2)"
 
     if stage2.get("error"):
+        kind = stage2.get("error_kind") or "unknown"
+        diag = stage2.get("diag") or {}
+        diag_str = ""
+        if kind == "netkeiba_block":
+            diag_str = f"  - netkeiba HTTP {diag.get('status_code')} (server block 想定、 Session #62/63 既知)\n"
+        elif kind == "netkeiba_other":
+            diag_str = f"  - netkeiba HTTP {diag.get('status_code')} / len={diag.get('response_len')}\n"
+        elif kind == "shutuba_empty":
+            diag_str = f"  - shutuba page 空 (HorseList not found、 status={diag.get('status_code', '?')})\n"
+        elif kind == "exception":
+            diag_str = f"  - 例外発生 (trace tail 確認)\n"
+
         body = (
-            f"## {title}\n"
+            f"## {title} — Stage 1 fallback 採用\n"
             f"発走: {start} / レース: {rname}\n\n"
-            f"### Stage 2 予測 失敗\n"
-            f"error: `{stage2['error']}`\n\n"
-            f"### 朝予測 (Stage 1) top3\n"
+            f"### Stage 2 失敗 ({kind})\n"
+            f"error: `{stage2['error']}`\n"
+            f"{diag_str}"
+            f"\n### 採用予測 = 朝予測 (Stage 1) top3 ★\n"
             f"1. {morning_top1} {morning_top1_name} (score={morning_score:.3f})\n"
             f"2. {morning_top2} {morning_top2_name}\n"
             f"3. {morning_top3} {morning_top3_name}\n\n"
+            f"※ Stage 2 取得不可のため、 朝予測 (Stage 1) を本 R の最終予測として扱う。\n"
+            f"※ retry: 次 fire (30 分後) で自動再試行 (cache に書込み無し)\n\n"
             f"★ V15 投票方針 (絶対遵守) ★\n"
             f"- 新潟 12R 4歳以上1勝 ¥700 のみ (案B改 strict)\n"
             f"- 11R 重賞 投票しない / Stage 2 は学習用、 投票推奨ではない\n"
@@ -269,20 +321,52 @@ def predict_one(race_id: str, force: bool = False, no_discord: bool = False) -> 
         ok = send_discord(title, body, color, dedup_key=f"pre_race_{race_id}")
         print(f"[discord] {'sent' if ok else 'FAIL'}")
 
-    cache[race_id] = datetime.now().isoformat()
-    save_cache(cache)
-    return {"race_id": race_id, "predicted": True, "title": title}
+    # Session #68 C: 失敗時は cache に書き込まない (= 次 fire で再試行可)
+    if stage2.get("error") is None:
+        cache[race_id] = datetime.now().isoformat()
+        save_cache(cache)
+        return {"race_id": race_id, "predicted": True, "title": title}
+    else:
+        print(f"[stage2-trace] skip cache write (error_kind={stage2.get('error_kind')}) → next fire で再試行")
+        return {"race_id": race_id, "predicted": False,
+                "error": stage2.get("error"),
+                "error_kind": stage2.get("error_kind"),
+                "title": title}
 
 
 def cmd_check_next_1h(args):
     if KILL_SWITCH.exists():
         print(f"[kill-switch] {KILL_SWITCH} → no-op exit")
         return
+
     rids = races_in_next_window(window_min=60)
     print(f"[check_next_1h] window=60min, candidates={len(rids)}: {rids}")
+
+    # Session #68 C: fire 起動時 1 回 netkeiba probe → block 検知時 全 R skip
+    if rids:
+        diag = _probe_netkeiba(rids[0])
+        print(f"[probe] netkeiba: status={diag.get('status_code')} len={diag.get('response_len')} cookie={diag.get('cookie_present')}")
+        if diag.get("status_code") == 400 and not args.no_discord and not args.skip_block_alert:
+            try:
+                from notify import send_discord as _send
+                _send(
+                    "Stage 2 fire skip (netkeiba block 検知)",
+                    f"## Stage 2 fire skip\n"
+                    f"netkeiba HTTP 400 (server block) を検知 (probe race_id={rids[0]})。\n"
+                    f"今 fire の Stage 2 予測は全 R skip、 次 30 分後の fire で再試行。\n\n"
+                    f"※ 朝予測 (Stage 1) が最終予測として有効。\n"
+                    f"※ block 解除されれば 自動復活。",
+                    color="yellow",
+                    channel="bets",
+                )
+            except Exception as e:
+                print(f"[discord block-alert error] {e}")
+            print(f"[probe] block 検知 → 全 R skip")
+            return
+
     for rid in rids:
         try:
-            predict_one(rid, force=False, no_discord=args.no_discord)
+            predict_one(rid, force=args.force, no_discord=args.no_discord)
         except Exception as e:
             print(f"[error] {rid}: {e}")
         time.sleep(2)  # rate limit
@@ -295,6 +379,8 @@ def main():
     p.add_argument("--no-discord", action="store_true")
     p.add_argument("--force", action="store_true",
                    help="dedup cache を無視して再予測")
+    p.add_argument("--skip-block-alert", action="store_true",
+                   help="netkeiba block 検知時 Discord 警告を送らない (test 用)")
     args = p.parse_args()
 
     if KILL_SWITCH.exists():
