@@ -3,8 +3,21 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-08 (Session #44、 ★ TFJV フル data 即活用 → V20 1 ヶ月前倒し ★)**
+Last updated: **2026-05-09 (Session #86、 ★ GW 146h+ マラソン 締め + 完全自動化 plan + メモリ整理 ★)**
 
+> Session #86 (5/9 21:00) で 完全自動化 plan + CLAUDE.md update + メモリ整理:
+> - **A**: 完全自動化 ロードマップ (5/15 80% / 9/2 90% / 12/1 100%) ([docs/FULL_AUTOMATION_ROADMAP.md](docs/FULL_AUTOMATION_ROADMAP.md))
+> - **B**: CLAUDE.md update (本 commit、 Session #46-#86 主要発見 反映)
+> - **C**: docs/ 全索引 (用途別 navigate + Session 別 list) ([docs/MEMORY_INDEX.md](docs/MEMORY_INDEX.md))
+> - **D**: 5/10 朝確認用 cheat sheet ([docs/MORNING_5_10_CHEAT_SHEET.md](docs/MORNING_5_10_CHEAT_SHEET.md))
+>
+> Session #79-#85 (5/9 GW 締め マラソン):
+> - **#79**: V20 構築 詳細 ([docs/V20_BUILD_DETAILED_PLAN.md](docs/V20_BUILD_DETAILED_PLAN.md))
+> - **#80**: JRA-VAN RV trial guide + Phase 4 plan v2 ([docs/JRA_VAN_RV_TRIAL_GUIDE.md](docs/JRA_VAN_RV_TRIAL_GUIDE.md), [docs/PHASE_4_VIDEO_REPLAN_v2.md](docs/PHASE_4_VIDEO_REPLAN_v2.md))
+> - **#81**: JRA-VAN NEXT 自動分配 設計 ([docs/JRA_VAN_NEXT_AUTO_ALLOCATION.md](docs/JRA_VAN_NEXT_AUTO_ALLOCATION.md))
+> - **#82**: hybrid 戦略 ([docs/STRATEGY_HYBRID_DESIGN.md](docs/STRATEGY_HYBRID_DESIGN.md))
+> - **#84/#85**: V22 RL 設計 + 30 年 backtest ([docs/V22_RL_DESIGN.md](docs/V22_RL_DESIGN.md), [docs/BACKTEST_30_YEAR_DESIGN.md](docs/BACKTEST_30_YEAR_DESIGN.md))
+>
 > Session #44 (5/8) で 7 領域 並行実行 + ★ TFJV フル data 即活用 ★:
 > - **A**: TFJV 構造把握 (43,000 files / 6 GB / 14 datatypes) ([data/v18/tfjv_data_inventory_5_8.md](data/v18/tfjv_data_inventory_5_8.md))
 > - **B**: tools/tfjv_parser.py 本実装 (RA/SE/HR/H1/UM/WF parser、 Shift-JIS 漢字 OK)
