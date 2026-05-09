@@ -1,0 +1,38 @@
+{
+  "majors": [
+    {
+      "race_id": "202608030511",
+      "name": "京都新聞杯_G2",
+      "status": "no_video_url",
+      "page_result": {
+        "status": "fail",
+        "error": "http_400",
+        "video_urls": []
+      }
+    },
+    {
+      "race_id": "202605020511",
+      "name": "エプソムC_G3",
+      "status": "no_video_url",
+      "page_result": {
+        "status": "fail",
+        "error": "http_400",
+        "video_urls": []
+      }
+    },
+    {
+      "race_id": "202604010311",
+      "name": "駿風S_OP",
+      "status": "no_video_url",
+      "page_result": {
+        "status": "fail",
+        "error": "http_400",
+        "video_urls": []
+      }
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "ok": 0
+  }
+}
