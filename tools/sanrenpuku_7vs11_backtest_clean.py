@@ -36,8 +36,42 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parents[1]
 PRED_DIR = ROOT / "data" / "daily_predictions"
 RES_DIR = ROOT / "data" / "daily_results"
+PAYOUTS_CSV = ROOT / "data" / "jra_payouts.csv"
 OUT_CSV = ROOT / "data" / "v18" / "session_69_per_race.csv"
 OUT_JSON = ROOT / "data" / "v18" / "session_69_metrics.json"
+
+# race_id course code → JRA course name (jra_payouts.csv 表記)
+COURSE_CODE_NAME = {
+    "01": "札幌", "02": "函館", "03": "福島", "04": "新潟",
+    "05": "東京", "06": "中山", "07": "中京", "08": "京都",
+    "09": "阪神", "10": "小倉",
+}
+
+
+def load_payouts_lookup(dates: list) -> dict:
+    """jra_payouts.csv → {race_id: (trio_result_tuple, trio_payout)}.
+
+    race_id format: YYYY + course(2) + kai(2) + nichi(2) + race_num(2)
+    """
+    p = pd.read_csv(PAYOUTS_CSV, encoding="utf-8-sig", dtype=str)
+    p = p[p["race_date"].isin(dates)].copy()
+    name2code = {v: k for k, v in COURSE_CODE_NAME.items()}
+    out = {}
+    for _, r in p.iterrows():
+        course = r["course"]
+        cc = name2code.get(course)
+        if cc is None:
+            continue
+        year = r["race_date"][:4]
+        rid = f"{year}{cc}{r['kai'].zfill(2)}{r['nichi'].zfill(2)}{r['race_num'].zfill(2)}"
+        try:
+            nums = tuple(sorted(int(x) for x in str(r["trio_nums"]).split("-")))
+            pay = float(r["trio_payout"]) if r["trio_payout"] else 0.0
+            if len(nums) == 3:
+                out[rid] = (nums, pay)
+        except Exception:
+            continue
+    return out
 
 DEFAULT_DATES = [
     "20260314", "20260315", "20260321",
@@ -130,8 +164,13 @@ def main():
     args = ap.parse_args()
     dates = [d.strip() for d in args.dates.split(",") if d.strip()]
 
+    print(f"[load] jra_payouts.csv (true 三連複 配当 lookup)")
+    payout_lookup = load_payouts_lookup(dates)
+    print(f"  loaded {len(payout_lookup)} race payouts")
+
     rows = []
     skip_summary = []
+    miss_payout = 0
     for d in dates:
         pp = PRED_DIR / f"{d}.csv"
         rp = RES_DIR / f"{d}.csv"
@@ -160,8 +199,11 @@ def main():
             bets_v15 = parse_bets(pp_row.get("trio_bets", ""))
             top6 = reconstruct_top16(t1, t2, t3, bets_v15)
 
-            win = parse_trio_str(r.get("trio_result", ""))
-            trio_pay = float(r.get("trio_payout", 0) or 0)
+            # 真の trio_result + 配当 (jra_payouts.csv 由来)
+            if rid not in payout_lookup:
+                miss_payout += 1
+                continue
+            win, trio_pay = payout_lookup[rid]
 
             n7, inv7, pay7, hit7 = evaluate(fmt_v15_baseline_7, top6, win, trio_pay)
             n11, inv11, pay11, hit11 = evaluate(fmt_top16_11, top6, win, trio_pay)
@@ -188,7 +230,8 @@ def main():
     n_r = len(df)
     print(f"\n=== Session #69 7 点 vs 11 点 backtest (leak-free) ===")
     print(f"期間: {dates[0]} - {dates[-1]} ({n_r} R)")
-    print(f"skip: {skip_summary}")
+    print(f"skip dates: {skip_summary}")
+    print(f"missing payout entries: {miss_payout}")
     print()
 
     if n_r == 0:

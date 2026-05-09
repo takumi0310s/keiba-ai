@@ -1,0 +1,59 @@
+{
+  "period": {
+    "start": "20260314",
+    "end": "20260425",
+    "dates": [
+      "20260314",
+      "20260315",
+      "20260321",
+      "20260411",
+      "20260412",
+      "20260418",
+      "20260419",
+      "20260425"
+    ],
+    "skipped": [],
+    "n_races": 280
+  },
+  "7pt": {
+    "label": "7点 (V15 baseline)",
+    "n_races": 280,
+    "n_bets_avg": 6.871428571428571,
+    "total_invest": 192400,
+    "total_payout": 170280,
+    "profit": -22120,
+    "roi_pct": 88.5031185031185,
+    "hits": 76,
+    "hit_rate_pct": 27.142857142857142,
+    "avg_payout_per_hit": 2240.5263157894738
+  },
+  "11pt": {
+    "label": "11点 (top1-6 拡張)",
+    "n_races": 280,
+    "n_bets_avg": 10.785714285714286,
+    "total_invest": 302000,
+    "total_payout": 274170,
+    "profit": -27830,
+    "roi_pct": 90.78476821192054,
+    "hits": 97,
+    "hit_rate_pct": 34.64285714285714,
+    "avg_payout_per_hit": 2826.494845360825
+  },
+  "delta": {
+    "hits": 21,
+    "profit_yen": -5710,
+    "roi_pt": 2.2816497088020355,
+    "ev_per_race_yen": -20.39285714285714,
+    "ci95_roi_pt": [
+      -17.548649787844298,
+      24.241570675896877
+    ],
+    "p_11pt_better": 0.5625
+  },
+  "leak_free": {
+    "source": "data/daily_predictions/ (production saved)",
+    "top4_6_recovery": "trio_bets occurrence count (deterministic)",
+    "top7_10_used": false,
+    "rationale": "user指摘 (リーク risk) 反映、 top1-6 のみで 11 点設計"
+  }
+}
