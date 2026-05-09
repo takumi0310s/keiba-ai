@@ -63,7 +63,7 @@ TARGETS: list[WatchTarget] = [
         name='daily_predict',
         log_glob='daily_predict*.log',
         stale_sec=60 * 60,  # 30 → 60 min (Session #31 誤発火防止)
-        process_match='tools\\daily_predict.py',
+        process_match='tools/daily_predict.py',
         restart_cmd=['python', '-u', 'tools/daily_predict.py', '--resume'],
         restart_log_pattern='daily_predict_watchdog_restart_{date}.log',
     ),
@@ -71,7 +71,7 @@ TARGETS: list[WatchTarget] = [
         name='race_auto_notify',
         log_glob='race_auto_notify*.log',
         stale_sec=30 * 60,  # 10 → 30 min (Session #31 誤発火防止)
-        process_match='tools\\race_auto_notify.py',
+        process_match='tools/race_auto_notify.py',
         restart_cmd=['python', '-u', 'tools/race_auto_notify.py'],
         restart_log_pattern='race_auto_notify_watchdog_restart_{date}.log',
     ),
@@ -234,8 +234,13 @@ def check_target(target: WatchTarget, now: Optional[datetime] = None,
         status = 'ALIVE'
     elif alive and stale:
         status = 'STALE'      # プロセスは生きてるがログ止まってる (Fortran ゾンビ等)
+    elif (not alive) and (not stale):
+        # Session #64 fix: プロセスがいなくてもログ鮮度内 → 直近に正常終了したワンショット
+        # (例: daily_predict.py は実行 → ログ書き → 終了 のサイクル)。
+        # これを MISSING 扱いすると watchdog が 5 分毎に誤再起動 → Discord spam。
+        status = 'COMPLETED'
     else:
-        status = 'MISSING'    # プロセス自体がない
+        status = 'MISSING'    # プロセス自体がない、 かつログも stale_sec 以上 古い
     return {
         'name': target.name,
         'alive': alive,
@@ -256,7 +261,8 @@ def run_once(dry_run: bool = False, now: Optional[datetime] = None) -> dict:
         results.append(r)
         print(f"[watchdog_v2] {target.name}: {r['status']} "
               f"(alive={r['alive']}, stale={r['stale']}, mtime={r['mtime']})")
-        if r['status'] == 'ALIVE':
+        if r['status'] in ('ALIVE', 'COMPLETED'):
+            # Session #64 fix: COMPLETED (ワンショット正常終了 + ログ新鮮) は再起動しない
             continue
         # STALE or MISSING → 再起動 or 警告
         rr = restart_target(target, dry_run=dry_run, now=now)
@@ -289,6 +295,13 @@ def main():
     ap.add_argument('--once', action='store_true', help='1回チェックして終了')
     ap.add_argument('--dry-run', action='store_true', help='検知のみ、再起動しない')
     args = ap.parse_args()
+
+    # Session #64 fix: kill-switch — Admin なしで緊急停止可能。
+    # `data/v18/process_watchdog_v2.kill` を touch すれば即時 no-op で抜ける。
+    kill_switch = os.path.join(BASE_DIR, 'data', 'v18', 'process_watchdog_v2.kill')
+    if os.path.exists(kill_switch):
+        print(f"[watchdog_v2] kill-switch active ({kill_switch}) → no-op exit")
+        return
 
     if args.once:
         run_once(dry_run=args.dry_run)
