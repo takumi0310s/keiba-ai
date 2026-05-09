@@ -1,0 +1,16 @@
+{
+  "race_id": "202604010312",
+  "morning": {
+    "top1_num": "11",
+    "top1_name": "ハイクオリティ",
+    "top1_score": 0.6482839685622699,
+    "top2_num": "12",
+    "top2_name": "マテンロウミラクル",
+    "top3_num": "8",
+    "top3_name": "カレンラップスター"
+  },
+  "stage2": {
+    "error": "predict_one_race returned None"
+  },
+  "ts": "2026-05-09T13:05:47.237658"
+}
