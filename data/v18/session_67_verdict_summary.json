@@ -1,0 +1,29 @@
+{
+  "total_verdicts": 34,
+  "sys_stats": {
+    "v15_top1": {
+      "hit": 13,
+      "tot": 34
+    },
+    "v15_top3": {
+      "hit": 31,
+      "tot": 34
+    },
+    "v15_trio": {
+      "hit": 9,
+      "tot": 34
+    },
+    "v66_top1": {
+      "hit": 2,
+      "tot": 6
+    },
+    "stage2_top1": {
+      "hit": 0,
+      "tot": 0
+    }
+  },
+  "majors_12r_n_inv": 5,
+  "majors_12r_n_hit": 0,
+  "majors_12r_tot_inv": 3500,
+  "majors_12r_tot_payout": 0
+}
