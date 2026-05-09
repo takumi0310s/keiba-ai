@@ -1,0 +1,14 @@
+{
+  "summary": {
+    "n_total": 0,
+    "n_stage2_ok": 0,
+    "n_top1_changed": 0,
+    "top1_change_rate": 0.0,
+    "top3_overlap_mean": 0.0,
+    "score_diff_mean": 0.0,
+    "morning_top1_in_trio_rate": null,
+    "stage2_top1_in_trio_rate": null,
+    "n_with_verdict": 0
+  },
+  "rows": []
+}
