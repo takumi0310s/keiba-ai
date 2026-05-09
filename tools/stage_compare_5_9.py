@@ -87,6 +87,8 @@ def compare_pair(morning_row, stage2_blob: dict) -> dict:
             "race_name": str(morning_row.get("race_name", "")),
             "stage2_ok": False,
             "stage2_error": s2.get("error", "no_top3"),
+            "stage2_error_kind": s2.get("error_kind"),  # Session #68 D: kind 集計用
+            "stage2_diag": s2.get("diag", {}),           # Session #68 D: 診断情報 保存
             "morning_top1": m_top1,
             "morning_top1_name": m_top1_name,
             "morning_top1_score": m_top1_score,
@@ -135,27 +137,80 @@ def integrate_verdicts(rows: list[dict], verdicts: list[dict]) -> list[dict]:
 
 
 def aggregate(rows: list[dict]) -> dict:
+    """Session #68 D: hit rate を 3 系統 で集計.
+
+    系統:
+      1. morning_only: 全 R で朝予測 top1 が trio 入った率 (= Stage 2 失敗 R も morning fallback)
+      2. stage2_success_only: Stage 2 成功 R に限った top1 入賞率
+      3. integrated: stage2 が成功した R は stage2 top1、 失敗 R は morning top1 を採用 (実運用方針)
+
+    error_kind 別の集計も追加 (netkeiba_block / shutuba_empty / exception)。
+    """
     n = len(rows)
     n_ok = sum(1 for r in rows if r.get("stage2_ok"))
+    n_failed = n - n_ok
     n_changed = sum(1 for r in rows if r.get("top1_changed"))
     overlaps = [r.get("top3_overlap", 0) for r in rows if r.get("stage2_ok")]
     score_diffs = [r.get("score_diff", 0) for r in rows if r.get("stage2_ok")]
-    morn_hits = [r.get("morning_in_trio") for r in rows if r.get("morning_in_trio") is not None]
-    s2_hits = [r.get("stage2_in_trio") for r in rows if r.get("stage2_in_trio") is not None]
+
+    # Session #68 D: 失敗 R の error_kind 別 count
+    err_kinds = {}
+    for r in rows:
+        if not r.get("stage2_ok"):
+            kind = r.get("stage2_error_kind") or _infer_kind(r.get("stage2_error", ""))
+            err_kinds[kind] = err_kinds.get(kind, 0) + 1
+
+    # 系統 1: morning_only — 全 R 対象、 morning_in_trio で集計
+    morn_hits_all = [r.get("morning_in_trio") for r in rows if r.get("morning_in_trio") is not None]
+    # 系統 2: stage2_success_only — Stage 2 成功 R のみ
+    morn_hits_ok = [r.get("morning_in_trio") for r in rows
+                    if r.get("stage2_ok") and r.get("morning_in_trio") is not None]
+    s2_hits_ok = [r.get("stage2_in_trio") for r in rows
+                  if r.get("stage2_ok") and r.get("stage2_in_trio") is not None]
+    # 系統 3: integrated — Stage 2 成功 R は s2 top1、 失敗 R は morning top1
+    integrated_hits = []
+    for r in rows:
+        if r.get("stage2_ok") and r.get("stage2_in_trio") is not None:
+            integrated_hits.append(r["stage2_in_trio"])
+        elif r.get("morning_in_trio") is not None:
+            integrated_hits.append(r["morning_in_trio"])
+
+    def _rate(lst):
+        return (sum(1 for x in lst if x) / max(len(lst), 1)) if lst else None
 
     return {
         "n_total": n,
         "n_stage2_ok": n_ok,
+        "n_stage2_failed": n_failed,
+        "stage2_failure_rate": n_failed / max(n, 1),
+        "stage2_error_kinds": err_kinds,
         "n_top1_changed": n_changed,
         "top1_change_rate": n_changed / max(n_ok, 1),
         "top3_overlap_mean": sum(overlaps) / max(len(overlaps), 1),
-        "score_diff_mean": sum(score_diffs) / max(len(score_diffs), 1),
-        "morning_top1_in_trio_rate": (sum(1 for x in morn_hits if x) / max(len(morn_hits), 1)
-                                       if morn_hits else None),
-        "stage2_top1_in_trio_rate": (sum(1 for x in s2_hits if x) / max(len(s2_hits), 1)
-                                      if s2_hits else None),
-        "n_with_verdict": len(morn_hits),
+        "score_diff_mean": sum(score_diffs) / max(len(score_diffs), 1) if score_diffs else 0.0,
+        # Session #68 D: 3 系統 hit rate
+        "hit_rate_morning_only": _rate(morn_hits_all),
+        "hit_rate_stage2_only_morning_ref": _rate(morn_hits_ok),
+        "hit_rate_stage2_only_stage2_ref": _rate(s2_hits_ok),
+        "hit_rate_integrated": _rate(integrated_hits),
+        "n_with_verdict_total": len(morn_hits_all),
+        "n_with_verdict_stage2_ok": len(morn_hits_ok),
+        # 旧 key (互換性のため維持)
+        "morning_top1_in_trio_rate": _rate(morn_hits_all),
+        "stage2_top1_in_trio_rate": _rate(s2_hits_ok),
+        "n_with_verdict": len(morn_hits_all),
     }
+
+
+def _infer_kind(err: str) -> str:
+    """旧 JSON (error_kind 無し) を error 文字列から逆引き."""
+    if not err:
+        return "no_error_msg"
+    if "HTTP 400" in err or "server block" in err:
+        return "netkeiba_block"
+    if "returned None" in err:
+        return "shutuba_empty"
+    return "other"
 
 
 def cmd_summary(args):
@@ -175,27 +230,52 @@ def cmd_summary(args):
     agg = aggregate(rows)
 
     body_lines = [
-        f"# Session #65 D: 朝 vs 1h 前 比較 summary ({DATE})",
+        f"# Session #65 D + Session #68 D: 朝 vs 1h 前 比較 summary ({DATE})",
         f"",
         f"updated: {datetime.now().isoformat()}",
         f"",
         f"## 累積 metrics",
         f"- 比較対象 R: {agg['n_total']}",
         f"- Stage 2 成功 R: {agg['n_stage2_ok']}",
+        f"- Stage 2 失敗 R: {agg['n_stage2_failed']} ({agg['stage2_failure_rate']*100:.1f}%)",
+    ]
+    err_kinds = agg.get("stage2_error_kinds", {})
+    if err_kinds:
+        body_lines.append(f"- 失敗 R の error_kind 内訳:")
+        for kind, cnt in sorted(err_kinds.items(), key=lambda x: -x[1]):
+            body_lines.append(f"  - {kind}: {cnt}")
+    body_lines += [
         f"- top1 変更 R: {agg['n_top1_changed']} ({agg['top1_change_rate']*100:.1f}% of OK)",
         f"- top3 重複 mean: {agg['top3_overlap_mean']:.2f} / 3",
         f"- score 差 mean: {agg['score_diff_mean']:+.4f}",
         f"",
-        f"## 実結果 と統合 (placeholder)",
-        f"- verdict 取得 R: {agg['n_with_verdict']}",
+        f"## 実結果 と統合 (3 系統 hit rate)",
+        f"- verdict 取得 R (全体): {agg['n_with_verdict_total']}",
+        f"- verdict 取得 R (Stage 2 成功 のみ): {agg['n_with_verdict_stage2_ok']}",
     ]
-    if agg.get("morning_top1_in_trio_rate") is not None:
+    if agg.get("hit_rate_morning_only") is not None:
+        body_lines.append("")
+        body_lines.append("### 系統 1: 朝予測のみ (全 R)")
         body_lines.append(
-            f"- 朝 top1 が trio に入った率: {agg['morning_top1_in_trio_rate']*100:.1f}%")
-        body_lines.append(
-            f"- 1h 前 top1 が trio に入った率: {agg['stage2_top1_in_trio_rate']*100:.1f}%")
-        diff = (agg['stage2_top1_in_trio_rate'] - agg['morning_top1_in_trio_rate']) * 100
-        body_lines.append(f"- Stage 2 効果 (差): {diff:+.1f} pt")
+            f"- 朝 top1 が trio 入り 率 = {agg['hit_rate_morning_only']*100:.1f}%")
+
+        if agg.get("hit_rate_stage2_only_stage2_ref") is not None:
+            body_lines.append("")
+            body_lines.append("### 系統 2: Stage 2 成功 R のみ")
+            body_lines.append(
+                f"- 朝 top1 が trio 入り 率 = {agg['hit_rate_stage2_only_morning_ref']*100:.1f}% (参照)")
+            body_lines.append(
+                f"- Stage 2 top1 が trio 入り 率 = {agg['hit_rate_stage2_only_stage2_ref']*100:.1f}%")
+            diff = (agg['hit_rate_stage2_only_stage2_ref'] - agg['hit_rate_stage2_only_morning_ref']) * 100
+            body_lines.append(f"- Stage 2 効果 (差) = {diff:+.1f} pt")
+
+        if agg.get("hit_rate_integrated") is not None:
+            body_lines.append("")
+            body_lines.append("### 系統 3: integrated (Stage 2 成功は s2、 失敗は morning fallback) ★実運用方針")
+            body_lines.append(
+                f"- integrated top1 が trio 入り 率 = {agg['hit_rate_integrated']*100:.1f}%")
+            diff_int = (agg['hit_rate_integrated'] - agg['hit_rate_morning_only']) * 100
+            body_lines.append(f"- 朝のみ vs integrated 差 = {diff_int:+.1f} pt")
     else:
         body_lines.append("- 実結果未取得 (5/10 朝 backfill 後 再実行)")
 
