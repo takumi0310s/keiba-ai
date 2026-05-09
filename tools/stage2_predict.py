@@ -38,11 +38,14 @@ try:
 except Exception:
     pass
 
-DATE = "20260509"
+# Session #78: 5/9 hardcode 撤廃。 DATE は CLI --date で override、 default = 当日。
+DATE = datetime.now().strftime("%Y%m%d")
 DAILY_PRED = BASE / "data" / "daily_predictions" / f"{DATE}.csv"
 DAILY_PRED_FULL_DIR = BASE / "data" / "daily_predictions_full"  # Session #71 生成 (Session #72 で参照)
 OUT_DIR = BASE / "data" / "v18"
-CACHE_PATH = OUT_DIR / "pre_race_predict_cache_5_9.json"
+def _date_short(d: str) -> str:
+    return f"{int(d[4:6])}_{int(d[6:8])}"
+CACHE_PATH = OUT_DIR / f"pre_race_predict_cache_{_date_short(DATE)}.json"
 KILL_SWITCH = OUT_DIR / "pre_race_predict.kill"
 
 # Session #72 C: Discord body 上限 (実 2000 char、 安全 margin で 1700 以下に table 抑制)
@@ -457,7 +460,7 @@ def predict_one(race_id: str, force: bool = False, no_discord: bool = False) -> 
         title, body, color = build_message(race_id, morning, stage2)
     print(body)
 
-    out_path = OUT_DIR / f"pre_race_predict_5_9_R{morning.get('race_num')}_{morning.get('course')}_{race_id}.json"
+    out_path = OUT_DIR / f"pre_race_predict_{_date_short(DATE)}_R{morning.get('race_num')}_{morning.get('course')}_{race_id}.json"
     out_path.write_text(json.dumps({
         "race_id": race_id,
         "morning": {
@@ -538,7 +541,27 @@ def main():
                    help="dedup cache を無視して再予測")
     p.add_argument("--skip-block-alert", action="store_true",
                    help="netkeiba block 検知時 Discord 警告を送らない (test 用)")
+    p.add_argument("--date", default=None,
+                   help="Session #78: 対象日 YYYYMMDD (default = 当日)")
+    p.add_argument("--dry-run", action="store_true",
+                   help="Session #78: import + path 検証のみ (predict 実行せず exit)")
     args = p.parse_args()
+
+    # Session #78: --date 指定時は module 定数 を上書き
+    if args.date:
+        global DATE, DAILY_PRED, CACHE_PATH
+        DATE = args.date
+        DAILY_PRED = BASE / "data" / "daily_predictions" / f"{DATE}.csv"
+        CACHE_PATH = OUT_DIR / f"pre_race_predict_cache_{_date_short(DATE)}.json"
+        print(f"[date] override DATE={DATE}")
+
+    if args.dry_run:
+        print(f"[dry-run] DATE={DATE}")
+        print(f"[dry-run] DAILY_PRED={DAILY_PRED} exists={DAILY_PRED.exists()}")
+        print(f"[dry-run] CACHE_PATH={CACHE_PATH}")
+        print(f"[dry-run] KILL_SWITCH={KILL_SWITCH} exists={KILL_SWITCH.exists()}")
+        print(f"[dry-run] OK")
+        return
 
     if KILL_SWITCH.exists():
         print(f"[kill-switch] {KILL_SWITCH} → no-op exit")
