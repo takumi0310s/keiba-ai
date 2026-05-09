@@ -1,0 +1,19 @@
+Session #64 emergency kill-switch (created 2026-05-09 12:38).
+
+Reason: process_watchdog_v2.py had two bugs causing 5-min restart loop on
+5/9 → daily_predict / race_auto_notify spawned every 5 min → "8 messages"
+Discord spam each cycle.
+
+Bugs (fixed in same commit):
+  1. process_match used backslash 'tools\\X.py' but actual cmdline is
+     'tools/X.py' (POSIX) → process_alive() always returned False even
+     when 12 race_auto_notify processes were running.
+  2. (alive=False, stale=False) was bucketed as MISSING and triggered
+     restart, but it actually means "one-shot finished normally + log
+     fresh" → COMPLETED status, no restart.
+
+Remove this file ONLY when:
+  - You verified the watchdog logic is sound on next race day
+  - 5/16 morning (土) は再有効化可能か手動確認
+
+Touch to disable, delete to re-enable.
