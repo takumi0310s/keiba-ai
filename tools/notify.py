@@ -14,9 +14,17 @@ Channels:
     "bets"    → DISCORD_WEBHOOK_BETS (買い目通知)
     "updates" → DISCORD_WEBHOOK_UPDATES (システム通知)
     未指定     → DISCORD_WEBHOOK_URL (フォールバック)
+
+Dedup (Session #59):
+    send_discord() は default で 5 分以内の同一 (channel + title + message) を
+    silent skip する。 dedup_window_sec=0 で無効化可能。
+    cache は data/discord_send_cache.json (JSON、 best-effort、 lock なし)。
 """
 import os
 import re
+import json
+import hashlib
+import time
 from datetime import datetime
 import requests
 
@@ -25,6 +33,39 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 COLORS = {"green": 0x4ade80, "yellow": 0xf0c040, "red": 0xff4060, "blue": 0x60b0ff}
 
 _ENV_CACHE = None
+
+# === Session #59: dedup cache (5min default) ===
+_DEDUP_CACHE_PATH = os.path.join(BASE_DIR, 'data', 'discord_send_cache.json')
+_DEDUP_DEFAULT_WINDOW_SEC = 300
+
+
+def _hash_message(channel: str, title: str, message: str) -> str:
+    """Stable sha256 hash for dedup key. message は先頭 500 文字のみ使用 (bet 通知など
+    末尾のオッズ更新で hash がブレるのを防ぐため)."""
+    s = f"{channel}\x1f{title}\x1f{(message or '')[:500]}"
+    return hashlib.sha256(s.encode('utf-8')).hexdigest()
+
+
+def _load_dedup_cache() -> dict:
+    if not os.path.exists(_DEDUP_CACHE_PATH):
+        return {}
+    try:
+        with open(_DEDUP_CACHE_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_dedup_cache(cache: dict) -> None:
+    try:
+        os.makedirs(os.path.dirname(_DEDUP_CACHE_PATH), exist_ok=True)
+        # prune: keep only entries within last 1h to avoid unbounded growth
+        cutoff = time.time() - 3600
+        pruned = {k: v for k, v in cache.items() if isinstance(v, (int, float)) and v >= cutoff}
+        with open(_DEDUP_CACHE_PATH, 'w', encoding='utf-8') as f:
+            json.dump(pruned, f)
+    except Exception:
+        pass  # best-effort, failure must not block notify
 
 
 def _load_env():
@@ -76,16 +117,30 @@ def _log_failure(title: str, message: str, channel: str, reason: str) -> None:
 
 
 def send_discord(title, message, color="green", fields=None, channel="updates",
-                 max_retries=3, retry_backoff=(1, 2, 4)):
-    """Discord Webhook通知を送信 (retry + log、Session #31 A2 強化)。
+                 max_retries=3, retry_backoff=(1, 2, 4),
+                 dedup_window_sec=_DEDUP_DEFAULT_WINDOW_SEC):
+    """Discord Webhook通知を送信 (retry + log、Session #31 A2 強化、 #59 dedup)。
     URLが未設定ならスキップ。
 
     Args:
         channel: "bets" (買い目) or "updates" (システム通知)
         max_retries: 最大 retry 回数 (default 3)
         retry_backoff: 各 retry 間の sleep 秒 (default 1/2/4)
+        dedup_window_sec: 同一 (channel + title + message[:500]) を秒数以内 silent skip。
+                          default 300 (5分)、 0 で無効化。
     """
     import time as _time
+
+    # === Session #59: dedup check ===
+    h = None
+    if dedup_window_sec and dedup_window_sec > 0:
+        h = _hash_message(channel, title, message)
+        cache = _load_dedup_cache()
+        last_ts = cache.get(h)
+        now = _time.time()
+        if last_ts and (now - last_ts) < dedup_window_sec:
+            # silent skip — 重複送信防止
+            return True
 
     url = _get_webhook_url(channel)
     if not url:
@@ -106,6 +161,11 @@ def send_discord(title, message, color="green", fields=None, channel="updates",
         try:
             resp = requests.post(url, json={"embeds": [embed]}, timeout=10)
             if resp.status_code in (200, 204):
+                # === Session #59: 成功時のみ dedup cache 記録 ===
+                if h is not None:
+                    cache = _load_dedup_cache()
+                    cache[h] = _time.time()
+                    _save_dedup_cache(cache)
                 return True
             last_reason = f"http_{resp.status_code}"
             # 429 (rate limit) は backoff、4xx の他は retry 無意味なので break
