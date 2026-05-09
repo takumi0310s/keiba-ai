@@ -15,5 +15,6 @@ Bugs (fixed in same commit):
 Remove this file ONLY when:
   - You verified the watchdog logic is sound on next race day
   - 5/16 morning (土) は再有効化可能か手動確認
+  - Admin で `schtasks /Change /TN "\ProcessWatchdog" /ENABLE` 不要 (Disable してない)
 
 Touch to disable, delete to re-enable.
