@@ -1,0 +1,201 @@
+{
+  "version": "5system_v62_realistic_simulate",
+  "branch": "dev/training-poc",
+  "session": "Session #62 F",
+  "date": "20260509",
+  "majors": [
+    {
+      "race": {
+        "course": "東京",
+        "race_num": 11,
+        "race_name": "エプソムカップ (G3)",
+        "start": "15:45",
+        "race_id": "202605020511"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "14",
+          "top1_name": "サクラファレル",
+          "top2_num": "11",
+          "top2_name": "トロヴァトーレ",
+          "top3_num": "1",
+          "top3_name": "ジュタ",
+          "top1_score": 0.6952273547863085,
+          "trio_bets": "1-2-14; 1-4-14; 1-8-14; 1-11-14; 2-11-14; 4-11-14; 8-11-14",
+          "num_horses": 17
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (realistic simulate)",
+          "status": "simulate_realistic",
+          "reason": "Session #62 D で動画 DL 全失敗 (server 400)、 V15 ranking 反映の simulate",
+          "n_horses_with_features": 3,
+          "top1_num": "14",
+          "top2_num": "11",
+          "top3_num": "1",
+          "features_summary": {
+            "stride_mean": 2.93,
+            "stability_mean": 0.94,
+            "tension_mean": 0.1388
+          }
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "14",
+        "agreement_count": 2,
+        "n_responding": 2,
+        "confidence": "中低 (2/5)",
+        "all_top1s": {
+          "14": 2
+        }
+      }
+    },
+    {
+      "race": {
+        "course": "京都",
+        "race_num": 11,
+        "race_name": "京都新聞杯 (G2)",
+        "start": "15:30",
+        "race_id": "202608030511"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "1",
+          "top1_name": "アーレムアレス",
+          "top2_num": "8",
+          "top2_name": "バドリナート",
+          "top3_num": "2",
+          "top3_name": "エムズビギン",
+          "top1_score": 0.6019995366861147,
+          "trio_bets": "1-2-8; 1-2-12; 1-2-13; 1-2-15; 1-8-12; 1-8-13; 1-8-15",
+          "num_horses": 16
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (realistic simulate)",
+          "status": "simulate_realistic",
+          "reason": "Session #62 D で動画 DL 全失敗 (server 400)、 V15 ranking 反映の simulate",
+          "n_horses_with_features": 16,
+          "top1_num": "1",
+          "top2_num": "2",
+          "top3_num": "8",
+          "features_summary": {
+            "stride_mean": 2.701,
+            "stability_mean": 0.8549,
+            "tension_mean": 0.2079
+          }
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "1",
+        "agreement_count": 2,
+        "n_responding": 2,
+        "confidence": "中低 (2/5)",
+        "all_top1s": {
+          "1": 2
+        }
+      }
+    },
+    {
+      "race": {
+        "course": "新潟",
+        "race_num": 11,
+        "race_name": "駿風 S (OP)",
+        "start": "15:20",
+        "race_id": "202604010311"
+      },
+      "predictions": [
+        {
+          "system": 1,
+          "name": "V15 単独 (production baseline)",
+          "status": "ok",
+          "top1_num": "1",
+          "top1_name": "パラサイコロジー",
+          "top2_num": "13",
+          "top2_name": "エコロジーク",
+          "top3_num": "5",
+          "top3_name": "カウンターセブン",
+          "top1_score": 0.516550398601408,
+          "trio_bets": "1-5-8; 1-5-9; 1-5-13; 1-5-14; 1-8-13; 1-9-13; 1-13-14",
+          "num_horses": 16
+        },
+        {
+          "system": 2,
+          "name": "V15 + 拡張調教",
+          "status": "deferred"
+        },
+        {
+          "system": 3,
+          "name": "V15 + TM 公式",
+          "status": "deferred"
+        },
+        {
+          "system": 4,
+          "name": "V15 + 当日体重",
+          "status": "deferred"
+        },
+        {
+          "system": 5,
+          "name": "V15 + 動画 features (realistic simulate)",
+          "status": "simulate_realistic",
+          "reason": "Session #62 D で動画 DL 全失敗 (server 400)、 V15 ranking 反映の simulate",
+          "n_horses_with_features": 16,
+          "top1_num": "1",
+          "top2_num": "13",
+          "top3_num": "3",
+          "features_summary": {
+            "stride_mean": 2.7,
+            "stability_mean": 0.8601,
+            "tension_mean": 0.1962
+          }
+        }
+      ],
+      "consensus": {
+        "consensus_top1": "1",
+        "agreement_count": 2,
+        "n_responding": 2,
+        "confidence": "中低 (2/5)",
+        "all_top1s": {
+          "1": 2
+        }
+      }
+    }
+  ],
+  "note": "Session #62 D 動画 DL 0/3 (server 400)、 realistic simulate で完成、 投票なし"
+}
