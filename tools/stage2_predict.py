@@ -40,9 +40,14 @@ except Exception:
 
 DATE = "20260509"
 DAILY_PRED = BASE / "data" / "daily_predictions" / f"{DATE}.csv"
+DAILY_PRED_FULL_DIR = BASE / "data" / "daily_predictions_full"  # Session #71 生成 (Session #72 で参照)
 OUT_DIR = BASE / "data" / "v18"
 CACHE_PATH = OUT_DIR / "pre_race_predict_cache_5_9.json"
 KILL_SWITCH = OUT_DIR / "pre_race_predict.kill"
+
+# Session #72 C: Discord body 上限 (実 2000 char、 安全 margin で 1700 以下に table 抑制)
+DISCORD_BODY_SAFE_LIMIT = 1700
+HORSE_NAME_TRUNC = 14
 
 # Session #65 A 静的 schedule (anchor base、 11R 実時刻 + JRA 標準 interval)
 RACE_START_TIMES = {
@@ -90,6 +95,84 @@ def get_morning_row(race_id: str):
     if len(sub) == 0:
         return None
     return sub.iloc[0]
+
+
+def load_full_predictions(race_id: str, date: str = DATE) -> list[dict] | None:
+    """Session #72 C: data/daily_predictions_full/{date}.csv から race_id の全馬 row を返す.
+
+    schema (Session #71 生成想定):
+      race_id, course, race_num, race_name, num_horses, distance, surface, track_condition,
+      horse_rank, umaban, horse_name, score, odds
+
+    file 不在 / race_id 不在 / 行数 0 → None (top3 fallback へ)。
+    """
+    import pandas as pd
+    csv_path = DAILY_PRED_FULL_DIR / f"{date}.csv"
+    if not csv_path.exists():
+        return None
+    try:
+        df = pd.read_csv(csv_path, dtype=str)
+    except Exception as e:
+        print(f"[full-pred] read error: {e}")
+        return None
+    if "race_id" not in df.columns:
+        return None
+    sub = df[df["race_id"].astype(str) == race_id].copy()
+    if len(sub) == 0:
+        return None
+    # numeric coerce
+    for c in ("score", "odds"):
+        if c in sub.columns:
+            sub[c] = pd.to_numeric(sub[c], errors="coerce")
+    if "horse_rank" in sub.columns:
+        sub["horse_rank"] = pd.to_numeric(sub["horse_rank"], errors="coerce")
+        sub = sub.sort_values("horse_rank", na_position="last")
+    elif "score" in sub.columns:
+        sub = sub.sort_values("score", ascending=False, na_position="last")
+    return sub.to_dict(orient="records")
+
+
+def build_horse_table(rows: list[dict],
+                      max_chars: int = DISCORD_BODY_SAFE_LIMIT) -> tuple[str, int]:
+    """Session #72 C: 全馬 V15 score 順 markdown table を構築.
+
+    rows: [{horse_rank, umaban, horse_name, score, odds}, ...] (sorted)
+    戻り値: (table_str, n_truncated)
+    """
+    header = ("| 順 | 馬番 | 馬名 | V15 score | 単勝オッズ |\n"
+              "|----|----|--------|------|------|\n")
+    lines = [header.rstrip("\n")]
+    body_lines: list[str] = []
+
+    def _format_row(r: dict, rank: int) -> str:
+        umaban = r.get("umaban", "?")
+        name = (r.get("horse_name") or "?")[:HORSE_NAME_TRUNC]
+        score = r.get("score")
+        odds = r.get("odds")
+        try:
+            score_str = f"{float(score):.3f}" if score not in (None, "") else "-"
+        except (TypeError, ValueError):
+            score_str = "-"
+        try:
+            odds_str = f"{float(odds):.1f}" if odds not in (None, "") else "-"
+        except (TypeError, ValueError):
+            odds_str = "-"
+        return f"| {rank} | {umaban} | {name} | {score_str} | {odds_str} |"
+
+    n_truncated = 0
+    cur = "\n".join(lines) + "\n"
+    for i, r in enumerate(rows, 1):
+        line = _format_row(r, i)
+        if len(cur) + len(line) + 1 > max_chars:
+            n_truncated = len(rows) - i + 1
+            break
+        body_lines.append(line)
+        cur = cur + line + "\n"
+
+    table = "\n".join(lines + body_lines)
+    if n_truncated > 0:
+        table += f"\n... (以下 {n_truncated} 頭省略、 size 上限のため)"
+    return table, n_truncated
 
 
 def parse_start_time(race_id: str, today: datetime | None = None) -> datetime | None:
@@ -275,6 +358,72 @@ def build_message(race_id: str, morning_row, stage2: dict) -> tuple[str, str, st
     return title, "\n".join(lines), color
 
 
+def build_message_all_horses(race_id: str, morning_row, stage2: dict,
+                             full_rows: list[dict]) -> tuple[str, str, str]:
+    """Session #72 C: 全馬 V15 score 順 通知 (Session #71 連携、 daily_predictions_full 利用).
+
+    full_rows: load_full_predictions(race_id) の結果 (sorted by horse_rank)。
+    title 例: "5/10 R12 新潟 4歳以上1勝クラス (16:10) 全馬 V15 score"
+    body: meta + 全馬 markdown table + Stage 2 status + 投票方針
+    """
+    course = str(morning_row.get("course", "?"))
+    rn = str(morning_row.get("race_num", "?"))
+    rname = str(morning_row.get("race_name", "?"))
+    start = RACE_START_TIMES.get(race_id, "?")
+    distance = morning_row.get("distance", "?")
+    surface = morning_row.get("surface", "?")
+    cond = morning_row.get("track_condition", "?")
+    n_horses = len(full_rows)
+
+    title = f"R{rn} {course} {rname} ({start} 発走) 全馬 V15 score"
+
+    table_str, n_trunc = build_horse_table(full_rows)
+
+    s2_status_lines: list[str] = []
+    if stage2.get("error"):
+        kind = stage2.get("error_kind") or "unknown"
+        diag = stage2.get("diag") or {}
+        s2_status_lines.append(f"### Stage 2 状況 (失敗: {kind})")
+        if kind == "netkeiba_block":
+            s2_status_lines.append(f"- netkeiba HTTP {diag.get('status_code')} (server block 想定) → Stage 1 (朝予測) 採用")
+        elif kind == "netkeiba_other":
+            s2_status_lines.append(f"- netkeiba HTTP {diag.get('status_code')} → Stage 1 採用")
+        elif kind == "shutuba_empty":
+            s2_status_lines.append(f"- shutuba page 空 → Stage 1 採用")
+        elif kind == "exception":
+            s2_status_lines.append(f"- 例外発生 → Stage 1 採用")
+        s2_status_lines.append("- 次 fire (30 分後) で再試行")
+    else:
+        s2_status_lines.append(f"### Stage 2 状況 (成功)")
+        s2_status_lines.append(f"- 当日体重統合: 取得済 / オッズ 反映済")
+        s2_top3 = stage2.get("top3") or []
+        if s2_top3:
+            morn_top1 = str(morning_row.get("top1_num", ""))
+            new_top1 = str(s2_top3[0].get("umaban", ""))
+            if new_top1 != morn_top1 and new_top1:
+                s2_status_lines.append(f"- ★ Stage 2 top1 変更: {morn_top1} → {new_top1}")
+            else:
+                s2_status_lines.append(f"- top1 不変")
+
+    body_parts = [
+        f"## R{rn} {course} {rname} ({start} 発走)",
+        f"出走: {n_horses} 頭 / コース: {course} {surface}{distance}m / 馬場: {cond}",
+        "",
+        f"### 全馬 V15 score 順 (Stage 1 = 朝予測 8:00)",
+        table_str,
+        "",
+    ]
+    body_parts += s2_status_lines + [
+        "",
+        "### V15 投票方針 (絶対遵守)",
+        "- Stage 2 通知は学習用、 投票推奨ではない",
+        "- 投票は朝予測 (Stage 1) の trio_bets に従う",
+    ]
+    body = "\n".join(body_parts)
+    color = "blue" if not stage2.get("error") else "yellow"
+    return title, body, color
+
+
 def send_discord(title: str, body: str, color: str, dedup_key: str) -> bool:
     try:
         from notify import send_discord as _send
@@ -297,7 +446,15 @@ def predict_one(race_id: str, force: bool = False, no_discord: bool = False) -> 
 
     print(f"=== Stage 2 predict {race_id} ({morning.get('course')} R{morning.get('race_num')}) ===")
     stage2 = predict_stage2(race_id)
-    title, body, color = build_message(race_id, morning, stage2)
+
+    # Session #72 C: 全馬 score available なら新通知 (table)、 不在なら旧 top3 通知
+    full_rows = load_full_predictions(race_id, DATE)
+    if full_rows:
+        print(f"[full-pred] {len(full_rows)} 馬 取得 → 全馬 score 順 table 通知")
+        title, body, color = build_message_all_horses(race_id, morning, stage2, full_rows)
+    else:
+        print(f"[full-pred] daily_predictions_full 不在 → top3 通知 fallback (旧 logic)")
+        title, body, color = build_message(race_id, morning, stage2)
     print(body)
 
     out_path = OUT_DIR / f"pre_race_predict_5_9_R{morning.get('race_num')}_{morning.get('course')}_{race_id}.json"
