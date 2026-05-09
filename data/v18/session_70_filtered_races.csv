@@ -1,0 +1,13 @@
+﻿date,race_id,course,race_num,race_name,num_horses,distance,surface,condition,track_condition,top1_num,top1_name,top1_score,top2_num,top3_num,top1_finish,top2_finish,top3_finish,trio_bets,trio_result,trio_hit,trio_payout,actual_payout,investment,profit,source,top2_name,top3_name,bet_type
+20260502,202604010111,新潟,11,三条S,,1800.0,ダ,X,,,,,,,6,2,14,,5-12-13,0.0,0.0,0.0,700,-700,production_saved_score (cumulative_results.csv),,,
+20260502,202605020312,東京,12,4歳以上2勝クラス,,1600.0,ダ,B,,,,,,,1,2,9,,2-5-7,1.0,1810.0,1810.0,700,1110,production_saved_score (cumulative_results.csv),,,
+20260502,202608030312,京都,12,4歳以上1勝クラス,,1600.0,芝,A,,,,,,,3,5,2,,1-4-5,1.0,2390.0,2390.0,700,1690,production_saved_score (cumulative_results.csv),,,
+20260503,202604010211,新潟,11,越後S,,1200.0,ダ,D,,,,,,,2,8,10,,3-4-10,0.0,0.0,0.0,700,-700,production_saved_score (cumulative_results.csv),,,
+20260503,202604010212,新潟,12,4歳以上1勝クラス,,1200.0,ダ,D,,,,,,,1,6,2,,3-4-10,1.0,3680.0,3680.0,700,2980,production_saved_score (cumulative_results.csv),,,
+20260503,202605020411,東京,11,プリンシパルS,,2000.0,芝,C,,,,,,,13,11,9,,10-12-13,0.0,0.0,0.0,700,-700,production_saved_score (cumulative_results.csv),,,
+20260503,202605020412,東京,12,4歳以上2勝クラス,,1300.0,ダ,D,,,,,,,1,13,4,,5-10-13,0.0,0.0,0.0,700,-700,production_saved_score (cumulative_results.csv),,,
+20260503,202608030412,京都,12,東大路S,,1400.0,ダ,D,,,,,,,15,16,6,,10-13-16,0.0,0.0,0.0,700,-700,production_saved_score (cumulative_results.csv),,,
+20260509,202608030512,京都,12,4歳以上2勝クラス,13,1800,ダ,A,良,8,ロードヴォイジャー,0.6614495950705287,13,3,,,,2-3-8; 2-8-13; 3-7-8; 3-8-11; 3-8-13; 7-8-13; 8-11-13,,,,,700,,production_saved_score (daily_predictions/20260509.csv),サイモンシュバリエ,メイショウヤシマ,trio
+20260509,202604010311,新潟,11,駿風S,16,1000,芝,D,稍,1,パラサイコロジー,0.516550398601408,13,5,,,,1-5-8; 1-5-9; 1-5-13; 1-5-14; 1-8-13; 1-9-13; 1-13-14,,,,,700,,production_saved_score (daily_predictions/20260509.csv),エコロジーク,カウンターセブン,trio
+20260509,202604010312,新潟,12,4歳以上1勝クラス,12,1800,ダ,A,稍,11,ハイクオリティ,0.6482839685622699,12,8,,,,6-8-11; 6-11-12; 8-9-11; 8-10-11; 8-11-12; 9-11-12; 10-11-12,,,,,700,,production_saved_score (daily_predictions/20260509.csv),マテンロウミラクル,カレンラップスター,trio
+20260509,202605020512,東京,12,4歳以上2勝クラス,16,1400,ダ,D,良,11,フィドルファドル,0.5624138461323335,3,7,,,,1-3-11; 1-7-11; 3-7-11; 3-8-11; 3-11-15; 7-8-11; 7-11-15,,,,,700,,production_saved_score (daily_predictions/20260509.csv),モーニングマジック,ヴィンブルレー,trio
