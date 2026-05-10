@@ -1,0 +1,64 @@
+{
+  "race_id": "202605020306",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020306",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "03",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020103053",
+      "horse_name": "シャンドゥレール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020104778",
+      "horse_name": "チャイボーグ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105614",
+      "horse_name": "ポッポノフェスタ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022105365",
+      "horse_name": "オプレントジュエル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022103629",
+      "horse_name": "ウーバーストロング"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022105118",
+      "horse_name": "ノクターン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022105338",
+      "horse_name": "リポサンテ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0707000000000000000000000000000000000000000000000000000000000000000000000000600000016001                          0600000011001070000001100200                                     00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

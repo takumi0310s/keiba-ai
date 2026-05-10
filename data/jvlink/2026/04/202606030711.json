@@ -1,0 +1,82 @@
+{
+  "race_id": "202606030711",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030711",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "11",
+    "race_name": "0163中山グランドジャンプ",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021100016",
+      "horse_name": "ポリトナリティー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021104800",
+      "horse_name": "フォージドブリック"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021105623",
+      "horse_name": "ホウオウプロサンゲ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2018100297",
+      "horse_name": "サンデイビス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2019106330",
+      "horse_name": "プラチナドリーム"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2019101614",
+      "horse_name": "エコロデュエル"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2018103677",
+      "horse_name": "ネビーイーム"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2021110022",
+      "horse_name": "ヘザルフェン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2018100752",
+      "horse_name": "タンジェントアーク"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2019101507",
+      "horse_name": "ディナースタ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000600000015001                          060000001100110000000150020200000038007                          6800000036001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

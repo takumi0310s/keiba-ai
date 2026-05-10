@@ -1,0 +1,118 @@
+{
+  "race_id": "202606030611",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030611",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "06",
+    "race_num": "11",
+    "race_name": "0000春雷ステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2018103515",
+      "horse_name": "カンティーユ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2022110034",
+      "horse_name": "ソーダーンライト"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2020105400",
+      "horse_name": "タマモブラックタイ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2021100522",
+      "horse_name": "ジョーメッドヴィン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2020101262",
+      "horse_name": "エコロレジーナ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2020102625",
+      "horse_name": "アクートゥス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2019100214",
+      "horse_name": "ウインモナーク"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2019110102",
+      "horse_name": "デュガ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022106394",
+      "horse_name": "クラスペディア"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2021102315",
+      "horse_name": "アスクワンタイム"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021100130",
+      "horse_name": "ロードフォアエース"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2016104668",
+      "horse_name": "カリボール"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2020103962",
+      "horse_name": "ステークホルダー"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2020109102",
+      "horse_name": "サウザンサニー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2019104108",
+      "horse_name": "エナジーグラン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2022100490",
+      "horse_name": "モズナナスター"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000900000162005                          090000005600816000001400130700000056007                          5800000975027        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

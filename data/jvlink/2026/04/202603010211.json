@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010211",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010211",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "11",
+    "race_name": "0000福島民報杯",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2018101615",
+      "horse_name": "ウインシュクラン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021101134",
+      "horse_name": "ピースワンデュック"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2019100628",
+      "horse_name": "トゥデイイズザデイ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020105633",
+      "horse_name": "リビアングラス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2020100761",
+      "horse_name": "マンマリアーレ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2020101025",
+      "horse_name": "アスクドゥポルテ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2019104850",
+      "horse_name": "バレエマスター"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2021105808",
+      "horse_name": "ガイアメンテ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2019106335",
+      "horse_name": "タシット"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2017105194",
+      "horse_name": "ラインベック"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020100734",
+      "horse_name": "サヴォーナ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2020105749",
+      "horse_name": "マイネルモーント"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022106633",
+      "horse_name": "バルナバ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2020105424",
+      "horse_name": "シルトホルン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2016102175",
+      "horse_name": "ダンディズム"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000088005                          110000003000508000000330061400000021002                          5600000360016        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

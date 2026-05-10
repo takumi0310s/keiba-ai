@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010401",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010401",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "04",
+    "race_num": "01",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023106782",
+      "horse_name": "スプリングドリーム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2023101660",
+      "horse_name": "スイーヴル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023102427",
+      "horse_name": "イングラム"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2023107544",
+      "horse_name": "カンフージョン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023104392",
+      "horse_name": "オレンジキャンパス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2023104607",
+      "horse_name": "チュラヴェール"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023101662",
+      "horse_name": "ラインカシウス"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2023104539",
+      "horse_name": "フレンズプラス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023104704",
+      "horse_name": "セイウンサクラサケ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2023104669",
+      "horse_name": "ゲレイロ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023104561",
+      "horse_name": "ジェム"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2023107539",
+      "horse_name": "ダイイズキャスト"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023101827",
+      "horse_name": "ヨドノティアラ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2023102757",
+      "horse_name": "クインズヒマワリ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023104810",
+      "horse_name": "ミュージックレイン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2023104665",
+      "horse_name": "ヴィビーム"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000001300000042001                          130000001800208000000700091200000021004                          4700000838023        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

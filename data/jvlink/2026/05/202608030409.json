@@ -1,0 +1,76 @@
+{
+  "race_id": "202608030409",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030409",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "04",
+    "race_num": "09",
+    "race_name": "0000六波羅特別",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019102705",
+      "horse_name": "ヒデノレインボー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021106359",
+      "horse_name": "バトンインディ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2020100771",
+      "horse_name": "ジョータルマエ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2019102514",
+      "horse_name": "サパテアール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022103186",
+      "horse_name": "テーオーライマン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022104267",
+      "horse_name": "レヴァンテシチー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2019104636",
+      "horse_name": "シュプリンガー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2022102218",
+      "horse_name": "サンライズバレット"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2021100620",
+      "horse_name": "グランオース"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0909000000000000000000000000000000000000000000000000000000000000000000000000600000050002                          060000001100208000000100010300000016005                          6800000024001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

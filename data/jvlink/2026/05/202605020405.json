@@ -1,0 +1,112 @@
+{
+  "race_id": "202605020405",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020405",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105255",
+      "horse_name": "オメガディコン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106872",
+      "horse_name": "イルミナジーティー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023104200",
+      "horse_name": "マジックオーラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023103584",
+      "horse_name": "トランスマーレ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023106801",
+      "horse_name": "ラヴィニアパーク"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023103372",
+      "horse_name": "ユマハム"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023100727",
+      "horse_name": "ルミナスレイナ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023105413",
+      "horse_name": "ブルースパーダ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023101328",
+      "horse_name": "ラインクインビー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023105573",
+      "horse_name": "オープンザパンドラ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023101151",
+      "horse_name": "アラムベイ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023104227",
+      "horse_name": "キタノタイキ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023105892",
+      "horse_name": "ブライスフェアリー"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023105260",
+      "horse_name": "サトノリアファル"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023101852",
+      "horse_name": "キョンチャン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000100000051003                          010000001700204000000190030600000022005                          1300000076002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

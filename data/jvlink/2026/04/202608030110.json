@@ -1,0 +1,88 @@
+{
+  "race_id": "202608030110",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030110",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "01",
+    "race_num": "10",
+    "race_name": "0000観月橋ステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022110054",
+      "horse_name": "デルアヴァー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021104411",
+      "horse_name": "マイノワール"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021104092",
+      "horse_name": "ペンナヴェローチェ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022100204",
+      "horse_name": "ピエマンソン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022102131",
+      "horse_name": "ショウサンジョージ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2020104215",
+      "horse_name": "ケイアイメキラ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021100329",
+      "horse_name": "プルナチャンドラ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2021103073",
+      "horse_name": "プロミシングスター"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022107134",
+      "horse_name": "タガノマカシヤ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2021104503",
+      "horse_name": "パシアンジャン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2021107192",
+      "horse_name": "アラレタバシル"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000200000137006                          020000002600509000000130010300000020004                          2700000208011        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

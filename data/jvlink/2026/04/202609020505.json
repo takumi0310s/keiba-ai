@@ -1,0 +1,94 @@
+{
+  "race_id": "202609020505",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020505",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "05",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023103734",
+      "horse_name": "アスクドゥチャンプ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107059",
+      "horse_name": "ジュンプリメーロ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023102132",
+      "horse_name": "テスタヴェローチェ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023104324",
+      "horse_name": "タガノエルー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023103895",
+      "horse_name": "チュウワカーネギー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023103677",
+      "horse_name": "ヴィエントデコラ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023102919",
+      "horse_name": "サイモンゼスト"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023103884",
+      "horse_name": "キリオス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023107050",
+      "horse_name": "ワンダフルデイズ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023107351",
+      "horse_name": "クラッチスラッガー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023100475",
+      "horse_name": "キタノシャカール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023106564",
+      "horse_name": "メイショウペイト"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000500000052003                          050000002000304000000130010100000050008                          4500000045001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

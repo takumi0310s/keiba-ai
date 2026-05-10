@@ -1,0 +1,106 @@
+{
+  "race_id": "202608030207",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030207",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022106715",
+      "horse_name": "ギザキズラヴ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020103772",
+      "horse_name": "エイトスターズ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022101605",
+      "horse_name": "サミダレナイツ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020102736",
+      "horse_name": "ビヨンドザドリーム"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2021105803",
+      "horse_name": "カーメルタザイト"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022104947",
+      "horse_name": "フラワームーン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2022105766",
+      "horse_name": "ドーギッド"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022104724",
+      "horse_name": "ハルフロンティア"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2022101562",
+      "horse_name": "ダイシンラー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2021105047",
+      "horse_name": "マサハヤヴォス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2022107106",
+      "horse_name": "デリュージョン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022110060",
+      "horse_name": "エリカアンディーヴ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2020106843",
+      "horse_name": "メイショウヒュウガ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022103063",
+      "horse_name": "ルージュスティーズ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1414000000000000000000000000000000000000000000000000000000000000000000000001200000028001                          120000001500111000000280050800000020003                          7700000231008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,76 @@
+{
+  "race_id": "202609020710",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020710",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "07",
+    "race_num": "10",
+    "race_name": "0000丹波特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103525",
+      "horse_name": "ライラ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021103171",
+      "horse_name": "タイキヴァンクール"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2018103473",
+      "horse_name": "サヴァビアン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021106237",
+      "horse_name": "サーナーティオン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2020106519",
+      "horse_name": "モズアンタレス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022101241",
+      "horse_name": "アジュマン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022106123",
+      "horse_name": "ガンマジーティーピ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2021103862",
+      "horse_name": "サダメ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2021106854",
+      "horse_name": "ハピアーザンエバー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0909000000000000000000000000000000000000000000000000000000000000000000000000700000052003                          070000001300206000000140040100000011001                          6700000155008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

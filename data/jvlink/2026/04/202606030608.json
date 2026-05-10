@@ -1,0 +1,82 @@
+{
+  "race_id": "202606030608",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030608",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "06",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022106209",
+      "horse_name": "ウインシャーガス"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020101337",
+      "horse_name": "コスモアバンサ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021106559",
+      "horse_name": "クインズスピカ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2017101772",
+      "horse_name": "ヤマニンガラッシア"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022105317",
+      "horse_name": "ミーントゥビー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022106813",
+      "horse_name": "マイネルフーガ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2021105600",
+      "horse_name": "グランカンタンテ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2020100177",
+      "horse_name": "ロードマンハイム"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2021105580",
+      "horse_name": "クラッシファイド"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2021101639",
+      "horse_name": "ソルトブリーズ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000001000000061005                          100000002300504000000650090100000018002                          4800000448014        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010607",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010607",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103463",
+      "horse_name": "サラサラヘアー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021105123",
+      "horse_name": "グランコネクシオン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022107342",
+      "horse_name": "ザラタン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022104264",
+      "horse_name": "ライヴスプーン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022107317",
+      "horse_name": "カルミアクラウン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021103723",
+      "horse_name": "アンリーベイビー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022106663",
+      "horse_name": "バレンシア"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2021101725",
+      "horse_name": "リリーズブルーム"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022104633",
+      "horse_name": "アーデルリーベ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022102952",
+      "horse_name": "ユージュアーナ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022103785",
+      "horse_name": "マタミカンサン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2021105875",
+      "horse_name": "レイフロレット"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022104881",
+      "horse_name": "エウテルペ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022102631",
+      "horse_name": "ハイゼンスレイ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022102349",
+      "horse_name": "ノアチュロス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001000000052002                          100000001900206000000270051100000011001                          4600000057002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

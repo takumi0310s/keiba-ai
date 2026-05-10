@@ -1,0 +1,82 @@
+{
+  "race_id": "202606030805",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030805",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "08",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102281",
+      "horse_name": "フクスケ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023105317",
+      "horse_name": "ウィングブルー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023101558",
+      "horse_name": "ルージュブリッツ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023106478",
+      "horse_name": "ヘクセンハウス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023106163",
+      "horse_name": "サマースプラッシュ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023103078",
+      "horse_name": "ブレイブキトゥン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2023105356",
+      "horse_name": "マーゴットブロー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2023106197",
+      "horse_name": "フレンドモナコ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2023106883",
+      "horse_name": "グリオンヴール"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2023105553",
+      "horse_name": "ヘイマー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000700000028002                          070000002600202000000460030400000132005                          2700000064003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

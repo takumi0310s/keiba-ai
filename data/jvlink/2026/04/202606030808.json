@@ -1,0 +1,94 @@
+{
+  "race_id": "202606030808",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030808",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "08",
+    "race_num": "08",
+    "race_name": "0000利根川特別",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105803",
+      "horse_name": "パースウェイド"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022101716",
+      "horse_name": "ピコシー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021100711",
+      "horse_name": "ケイアイアルタイル"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022103232",
+      "horse_name": "ドゥマーヴェリック"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022100028",
+      "horse_name": "フェスタリア"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2022105844",
+      "horse_name": "タイヨウフレア"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021100162",
+      "horse_name": "ロードブレイズ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2020106491",
+      "horse_name": "メイショウジェンマ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022102039",
+      "horse_name": "サノノワンダー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2022103518",
+      "horse_name": "リラゲイル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022102738",
+      "horse_name": "エーオーキング"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022102722",
+      "horse_name": "ドゥラエテルノ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1211000000000000000000111110111000000000100000000000000000000000000000000100900000023001                          090000001200103000000660090400000020004                          3700000349013        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

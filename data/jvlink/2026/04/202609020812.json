@@ -1,0 +1,82 @@
+{
+  "race_id": "202609020812",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020812",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "08",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020103246",
+      "horse_name": "ウィンターダフネ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020104791",
+      "horse_name": "プウスカンドゥール"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022104970",
+      "horse_name": "サンコンクエスト"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104292",
+      "horse_name": "フクキタテーラー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021104581",
+      "horse_name": "ハリウッドパーク"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022106851",
+      "horse_name": "レディゴディヴァ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022101457",
+      "horse_name": "アンドリーナ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2022103753",
+      "horse_name": "ネクストダンサー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2022103515",
+      "horse_name": "ユウェンタース"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022105058",
+      "horse_name": "ヴァンアグレアブル"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000100000089003                          010000002000310000000110010200000033009                          1800000068003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,82 @@
+{
+  "race_id": "202609020511",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020511",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "05",
+    "race_num": "11",
+    "race_name": "0081サンケイスポーツ杯阪神牝馬ステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105185",
+      "horse_name": "エンブロイダリー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021104073",
+      "horse_name": "カピリナ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105157",
+      "horse_name": "ルージュソリテール"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021107098",
+      "horse_name": "ラヴァンダ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022105402",
+      "horse_name": "カムニャック"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2021105354",
+      "horse_name": "アスコリピチェーノ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2021100139",
+      "horse_name": "クランフォード"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2019105293",
+      "horse_name": "カナテープ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2021104153",
+      "horse_name": "エポックヴィーナス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022105192",
+      "horse_name": "ビップデイジー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000100000028001                          010000001400105000000220040300000027005                          1500000112004        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

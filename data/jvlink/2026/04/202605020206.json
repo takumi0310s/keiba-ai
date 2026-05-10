@@ -1,0 +1,70 @@
+{
+  "race_id": "202605020206",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020206",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "02",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023107014",
+      "horse_name": "サレジオ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023101566",
+      "horse_name": "フジガイフウ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023100953",
+      "horse_name": "グランセレスト"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103413",
+      "horse_name": "マツリダイコ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023107169",
+      "horse_name": "エルハーベン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023102160",
+      "horse_name": "アルデキングダム"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2023106921",
+      "horse_name": "ブルースカイブルー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2023100606",
+      "horse_name": "シュテルン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0808000000000000000000000000000000000000000000000000000000000000000000000000200000026002                          020000001100205000000240050100000011001                          00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,76 @@
+{
+  "race_id": "202609020708",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020708",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "07",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105290",
+      "horse_name": "レッドヴァリアート"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022102294",
+      "horse_name": "ボナペティアスク"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021103177",
+      "horse_name": "タイキジパング"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022105633",
+      "horse_name": "ノラリクラリ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022104661",
+      "horse_name": "ジーティートシオー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2020101323",
+      "horse_name": "アットアブラスト"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2021105418",
+      "horse_name": "クラッチプレイヤー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2022104598",
+      "horse_name": "ドルチェリターン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2022100081",
+      "horse_name": "マイネルビスマルク"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0909000000000000000000000000000000000000000000000000000000000000000000000000400000028001                          040000001100108000000120030100000012002                          4800000038001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010103",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010103",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "03",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023101448",
+      "horse_name": "スラッシュコード"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023102063",
+      "horse_name": "アリディプラチノ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023103693",
+      "horse_name": "スノーランス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023105116",
+      "horse_name": "ジュディーイメル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023102023",
+      "horse_name": "タイセイガナール"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023100966",
+      "horse_name": "マリブサーフ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023104669",
+      "horse_name": "ゲレイロ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023103216",
+      "horse_name": "アンバサダネージュ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023102317",
+      "horse_name": "バンダムソレール"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023104826",
+      "horse_name": "ジュエルサンライズ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023102866",
+      "horse_name": "リオダプラタ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023101936",
+      "horse_name": "メイショウアルマ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023105333",
+      "horse_name": "ヒーナシャム"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023104606",
+      "horse_name": "トゥントゥントゥン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023105737",
+      "horse_name": "エナジーアユ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000800000039002                          080000001600204000000160040300000016003                          3500000093005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

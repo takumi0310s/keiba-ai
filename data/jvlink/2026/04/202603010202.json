@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010202",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010202",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105623",
+      "horse_name": "テイエムリチャード"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2023103078",
+      "horse_name": "ブレイブキトゥン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023102827",
+      "horse_name": "タイセイフリーデン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2023101138",
+      "horse_name": "ディジーピナクル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023102404",
+      "horse_name": "アッシュグレイス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2023100290",
+      "horse_name": "リナシタ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023104481",
+      "horse_name": "ナツノオジョウサマ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2023103954",
+      "horse_name": "アースジャッジ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023106991",
+      "horse_name": "グレイシエーション"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2023103528",
+      "horse_name": "ツルノマイハシ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023106815",
+      "horse_name": "コラカオ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2023105611",
+      "horse_name": "ラブペイトー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023102119",
+      "horse_name": "ユウアイ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2023104685",
+      "horse_name": "ロジスカヤ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023106291",
+      "horse_name": "ヤジロベエバランス"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2023100802",
+      "horse_name": "クラウンアバンティ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000001000000052002                          100000001400209000000120011400000052008                          5500000047002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

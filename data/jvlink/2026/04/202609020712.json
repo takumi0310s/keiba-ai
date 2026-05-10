@@ -1,0 +1,112 @@
+{
+  "race_id": "202609020712",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020712",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "07",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022100997",
+      "horse_name": "ジョードリウム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022103307",
+      "horse_name": "サンライズジュピタ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022100366",
+      "horse_name": "リトムテール"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020106355",
+      "horse_name": "フェゲフォイア"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022106189",
+      "horse_name": "デュアルロール"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022105321",
+      "horse_name": "ハウリングウィンド"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022104611",
+      "horse_name": "ジュンライトニング"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2021102550",
+      "horse_name": "メイショウハッブル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022101082",
+      "horse_name": "フェアリーメドウ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022106200",
+      "horse_name": "ミヤジマナ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021103842",
+      "horse_name": "ニホンピロカラット"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022100660",
+      "horse_name": "ロードヴァルカン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022101396",
+      "horse_name": "サンライズブレイク"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022103440",
+      "horse_name": "インディゴアスール"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021104151",
+      "horse_name": "カネコメファミリー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001400000123006                          140000003200611000000260041000000023003                          6800000112005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

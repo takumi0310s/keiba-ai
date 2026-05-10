@@ -1,0 +1,94 @@
+{
+  "race_id": "202604010209",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010209",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "09",
+    "race_name": "0000咲花特別",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105569",
+      "horse_name": "ルージュマローネ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021103209",
+      "horse_name": "メイショウリリー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105787",
+      "horse_name": "コンアフェット"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104432",
+      "horse_name": "レイバックスピン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021101533",
+      "horse_name": "シンボリノエル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2021104857",
+      "horse_name": "フローラルセント"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021100606",
+      "horse_name": "ベルイストワール"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2022105385",
+      "horse_name": "ステアハート"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2021106618",
+      "horse_name": "マハナ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2020100629",
+      "horse_name": "サイモンコーラル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2020104791",
+      "horse_name": "プウスカンドゥール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022104970",
+      "horse_name": "サンコンクエスト"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000400000020001                          040000001100103000000130020800000014003                          3400000044002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

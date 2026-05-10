@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030402",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030402",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "04",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023103017",
+      "horse_name": "フチサンチャチャ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023105329",
+      "horse_name": "エクストラプッシュ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023101412",
+      "horse_name": "クリコバロー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103190",
+      "horse_name": "アスクハッピーマン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023105444",
+      "horse_name": "ポップアップ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023102517",
+      "horse_name": "ジャストグレース"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023100477",
+      "horse_name": "クリノリキオー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023106563",
+      "horse_name": "メイショウゴウケツ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023101572",
+      "horse_name": "グランワールド"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023102124",
+      "horse_name": "ヒラボクソライア"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023102630",
+      "horse_name": "グランシャン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023101953",
+      "horse_name": "メイショウサッソウ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000001200000241008                          120000005500804000000220030900000029005                          4800000085003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

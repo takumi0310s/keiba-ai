@@ -1,0 +1,100 @@
+{
+  "race_id": "202603010606",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010606",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021101088",
+      "horse_name": "テイキットイージー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021102801",
+      "horse_name": "ドゥラシェーナ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021103037",
+      "horse_name": "デリシュー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2020101916",
+      "horse_name": "ペネトレイトゴー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2022103510",
+      "horse_name": "キングズトゥルー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2022105289",
+      "horse_name": "キロノヴァ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2022101450",
+      "horse_name": "ブルージャイアント"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2022101495",
+      "horse_name": "シャインフリーリー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2022100724",
+      "horse_name": "ニシノエピカリ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2022105839",
+      "horse_name": "アスクデッドヒート"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2021102919",
+      "horse_name": "ワイドモヒート"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2021103916",
+      "horse_name": "スラーヴァ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2022105543",
+      "horse_name": "フララナキラ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1313000000000000000000000000000000000000000000000000000000000000000000000001000000034002                          100000001500105000000160021300000039008                          4700000028001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

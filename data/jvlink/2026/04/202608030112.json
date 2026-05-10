@@ -1,0 +1,88 @@
+{
+  "race_id": "202608030112",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030112",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "01",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021105886",
+      "horse_name": "ホウオウトランプ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022106322",
+      "horse_name": "フェアリーライク"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022101925",
+      "horse_name": "オデット"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2020106399",
+      "horse_name": "ユメハハテシナク"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022100381",
+      "horse_name": "オリバナム"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2021103665",
+      "horse_name": "クスクス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2019106280",
+      "horse_name": "サクラオーラ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2020101031",
+      "horse_name": "アスクエピソード"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022104590",
+      "horse_name": "ショウナンバルドル"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2020105299",
+      "horse_name": "リアライズ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022100080",
+      "horse_name": "リカントロポ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000200000022001                          020000001200109000000320061100000017003                          2700000270010        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

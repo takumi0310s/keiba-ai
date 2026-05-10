@@ -1,0 +1,112 @@
+{
+  "race_id": "202606030810",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030810",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "08",
+    "race_num": "10",
+    "race_name": "0000京葉ステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105244",
+      "horse_name": "ポッドベイダー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021110104",
+      "horse_name": "エコロエイト"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2019101759",
+      "horse_name": "ムーヴ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020106062",
+      "horse_name": "ジュンウィンダム"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021110069",
+      "horse_name": "エスカル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2020110062",
+      "horse_name": "ワールズコライド"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020106557",
+      "horse_name": "コンクイスタ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022102493",
+      "horse_name": "トリリオンボーイ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022104972",
+      "horse_name": "スリーピース"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2019105761",
+      "horse_name": "エティエンヌ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020103876",
+      "horse_name": "モンドプリューム"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2019101975",
+      "horse_name": "ナムラフランク"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2020110105",
+      "horse_name": "マニバドラ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2020101707",
+      "horse_name": "スマートフォルス"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021105608",
+      "horse_name": "カズゴルティス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001200000085005                          120000002800507000000210021300000024004                          4700000109001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

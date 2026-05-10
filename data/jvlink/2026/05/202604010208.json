@@ -1,0 +1,94 @@
+{
+  "race_id": "202604010208",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010208",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105130",
+      "horse_name": "スターエンブレム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021100074",
+      "horse_name": "サンピアノソナタ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021105911",
+      "horse_name": "アンドローゼス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022102295",
+      "horse_name": "マドモアゼルアスク"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021102420",
+      "horse_name": "ナムラブーニン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2022106817",
+      "horse_name": "マイネルアレス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2022102064",
+      "horse_name": "ミエノフェアリー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2020103160",
+      "horse_name": "ケイツークローン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022105101",
+      "horse_name": "サトノシャルレーヌ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2020102552",
+      "horse_name": "クラウドセイル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022106824",
+      "horse_name": "グランツローゼ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022106398",
+      "horse_name": "レゼールドラペ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000400000038002                          040000001500206000000210030500000035008                          4500000090004        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

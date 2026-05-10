@@ -1,0 +1,88 @@
+{
+  "race_id": "202608030104",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030104",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "01",
+    "race_num": "04",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019100641",
+      "horse_name": "アトラクティーボ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2018102822",
+      "horse_name": "テイエムエメラルド"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022106304",
+      "horse_name": "ナックエルドラド"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2017104238",
+      "horse_name": "フームスムート"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021105455",
+      "horse_name": "アルマーザアミール"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022109119",
+      "horse_name": "ケイテンアイジン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021105004",
+      "horse_name": "ホークフィールド"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2018102196",
+      "horse_name": "ゴールドブリーズ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2017106372",
+      "horse_name": "ワールドスケール"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2019105292",
+      "horse_name": "ヴァレッタカズマ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2020106836",
+      "horse_name": "マテンロウジョイ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000700000016001                          070000001100105000000210041100000014002                          5600000081004        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

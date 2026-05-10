@@ -1,0 +1,118 @@
+{
+  "race_id": "202605020207",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020207",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "02",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020106974",
+      "horse_name": "サムワンライクユー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2021103776",
+      "horse_name": "ベルメサイア"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022104967",
+      "horse_name": "サトノシャムロック"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2021103512",
+      "horse_name": "ツインクルステージ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021100753",
+      "horse_name": "ワンダービジブル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2021105329",
+      "horse_name": "カーマンライン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022105609",
+      "horse_name": "ライヴドライバー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2022105217",
+      "horse_name": "ヴァイオパイシーズ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022105257",
+      "horse_name": "ウフドゥウフ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2022104539",
+      "horse_name": "ユーウェイン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022104259",
+      "horse_name": "アイファーシャドー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022102446",
+      "horse_name": "ノアヴィヴァーチェ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021103251",
+      "horse_name": "フォートポータル"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2021105688",
+      "horse_name": "セブンマイスター"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022106975",
+      "horse_name": "ハクシンブライアン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2022105708",
+      "horse_name": "ヴェーヌドール"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000001400000019001                          140000001100112000000170041500000014002                          6700000073003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

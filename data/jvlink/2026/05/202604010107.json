@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010107",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010107",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103227",
+      "horse_name": "レッドイステル"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022110143",
+      "horse_name": "ソングコレクター"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022104982",
+      "horse_name": "サンディエゴ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021110040",
+      "horse_name": "メトロポリターナ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021100730",
+      "horse_name": "コスモフレディ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2019105755",
+      "horse_name": "グロリアスヒーロー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022110061",
+      "horse_name": "ブレスドナイル"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022100557",
+      "horse_name": "ロードスカイブルー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022102957",
+      "horse_name": "ヴィーナスバブル"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022104930",
+      "horse_name": "ビリングス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020103502",
+      "horse_name": "トラストエムシー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022101465",
+      "horse_name": "リュミナーズ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022110018",
+      "horse_name": "サカイシューター"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022104967",
+      "horse_name": "サトノシャムロック"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022100548",
+      "horse_name": "ヴィーデ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000100000014001                          010000001100102000000300051400000024004                          1200000049001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

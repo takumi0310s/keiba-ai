@@ -1,0 +1,106 @@
+{
+  "race_id": "202604010106",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010106",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023101197",
+      "horse_name": "ゴールドアベニュー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107221",
+      "horse_name": "シャンドラファール"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023104485",
+      "horse_name": "マイネルリーヒム"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023103776",
+      "horse_name": "フォーティンブラス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2023103471",
+      "horse_name": "プレイザリード"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023107381",
+      "horse_name": "ディアアズール"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2023102937",
+      "horse_name": "アイスアイスベイビ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023106077",
+      "horse_name": "タケルフォーカス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2023104926",
+      "horse_name": "アルタティール"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023100020",
+      "horse_name": "アイゼンハイム"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2023107188",
+      "horse_name": "シュタットパーク"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023102333",
+      "horse_name": "ゴールドエンバー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2023103289",
+      "horse_name": "マーゴットデウス"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023107344",
+      "horse_name": "マテンロウルクス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1414000000000000000000000000000000000000000000000000000000000000000000000000500000028001                          050000001300108000000610080600000015002                          4500000049002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

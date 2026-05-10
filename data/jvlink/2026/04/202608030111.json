@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030111",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030111",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "01",
+    "race_num": "11",
+    "race_name": "0000天王山ステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020104228",
+      "horse_name": "ケイアイアニラ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020106062",
+      "horse_name": "ジュンウィンダム"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2019103605",
+      "horse_name": "ペプチドヤマト"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021103095",
+      "horse_name": "オーブルクール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021103716",
+      "horse_name": "メイショウホウレン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2021103786",
+      "horse_name": "ヒルノドゴール"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021100768",
+      "horse_name": "ジョーローリット"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2018101739",
+      "horse_name": "ケイアイシェルビー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2021105608",
+      "horse_name": "カズゴルティス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2022110151",
+      "horse_name": "ゲッティヴィラ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2020106006",
+      "horse_name": "ドンアミティエ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022110142",
+      "horse_name": "ファムエレガンテ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000200001057011                          020000013801111000000250050300000042007                          2800001033021        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

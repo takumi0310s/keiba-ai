@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010206",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010206",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022101562",
+      "horse_name": "ダイシンラー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022106398",
+      "horse_name": "レゼールドラペ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022106634",
+      "horse_name": "アンビアンス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022106180",
+      "horse_name": "シャインバオバブ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021103037",
+      "horse_name": "デリシュー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021106199",
+      "horse_name": "ウインドラート"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022100765",
+      "horse_name": "リケアキャンディ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022103018",
+      "horse_name": "シェーンルスカ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021101280",
+      "horse_name": "ジェロニモス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022101272",
+      "horse_name": "スタニングヴュー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022106825",
+      "horse_name": "コスモイシュタル"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022100099",
+      "horse_name": "クラウディアイ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021103004",
+      "horse_name": "ヒラボクヒーロー"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021103518",
+      "horse_name": "リアルセンター"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022106811",
+      "horse_name": "マイネルアウルム"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000067004                          110000002300512000000200031500000014001                          6700000189008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010202",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010202",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105962",
+      "horse_name": "オセアフェアモント"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023101280",
+      "horse_name": "ブレイシオン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023106265",
+      "horse_name": "ニシノアオニヨシ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023102152",
+      "horse_name": "クイーンオブハート"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023105855",
+      "horse_name": "ウイングラナート"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023104590",
+      "horse_name": "スカット"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023103517",
+      "horse_name": "ビスケットアソート"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023106222",
+      "horse_name": "ナムラソラン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023100588",
+      "horse_name": "トーセンシーギリヤ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023107532",
+      "horse_name": "ミスタートントン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023105174",
+      "horse_name": "キタノレクレドール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023104438",
+      "horse_name": "ヘヴンズドライブ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023110063",
+      "horse_name": "エコロボルト"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023106239",
+      "horse_name": "ナムラステラ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023105594",
+      "horse_name": "ポッドスモーカー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001300000041003                          130000001800310000000170021200000096007                          6700000079003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

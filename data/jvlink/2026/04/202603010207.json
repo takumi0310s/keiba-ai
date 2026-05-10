@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010207",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010207",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103336",
+      "horse_name": "ニコ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022104435",
+      "horse_name": "プリマドンナアスク"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022106324",
+      "horse_name": "レインボーラッキー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022101678",
+      "horse_name": "キャットテイル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021103512",
+      "horse_name": "ツインクルステージ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022102465",
+      "horse_name": "ブライティアブーケ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022104181",
+      "horse_name": "ミルキープリンセス"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022105100",
+      "horse_name": "フォンデネージュ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022101599",
+      "horse_name": "ピラニアキッス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022101259",
+      "horse_name": "ショウナンマリーナ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022102263",
+      "horse_name": "カスバートテソーロ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2021102494",
+      "horse_name": "ブーケドグレイス"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022104844",
+      "horse_name": "ブルスカメンテ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021102900",
+      "horse_name": "ノクターナル"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021104754",
+      "horse_name": "ベルフィーヌ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000081004                          110000001900315000000190040400000016002                          6800000202011        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

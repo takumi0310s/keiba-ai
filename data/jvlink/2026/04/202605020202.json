@@ -1,0 +1,106 @@
+{
+  "race_id": "202605020202",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020202",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "02",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023104916",
+      "horse_name": "キチロクゴール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023100234",
+      "horse_name": "イーガービーバー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023100240",
+      "horse_name": "スピニンググローブ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023106060",
+      "horse_name": "モロノカガヤキ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2023105060",
+      "horse_name": "ロードクローザー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023102555",
+      "horse_name": "エターナルホープ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2023105361",
+      "horse_name": "ホウオウパーソンズ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023105427",
+      "horse_name": "ピョイットハレルヤ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2023107355",
+      "horse_name": "マナイアカラニ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023106374",
+      "horse_name": "シャトーベスト"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2023105392",
+      "horse_name": "マテンロウストーム"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023103157",
+      "horse_name": "サトノフェンサー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2023101994",
+      "horse_name": "マクローリン"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023104610",
+      "horse_name": "ホグホグナナハン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1414000000000000000000000000000000000000000000000000000000000000000000000001200000027002                          120000001800206000000600060800000082007                          4700000096004        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

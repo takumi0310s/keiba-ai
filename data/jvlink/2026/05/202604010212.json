@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010212",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010212",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021102798",
+      "horse_name": "サイモンプレジール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020104437",
+      "horse_name": "ジャーニーメモリー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022100333",
+      "horse_name": "タケルハーロック"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022105705",
+      "horse_name": "バルジール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022100630",
+      "horse_name": "フルドド"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021104673",
+      "horse_name": "ダディーズアイル"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2019103285",
+      "horse_name": "クリノミニスター"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022104944",
+      "horse_name": "シュネーグロッケン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022102701",
+      "horse_name": "ワンウェイトゥヘル"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022103577",
+      "horse_name": "リッキースタイル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021101015",
+      "horse_name": "スーパーバイザー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022103954",
+      "horse_name": "クインズメレンゲ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019101233",
+      "horse_name": "アイファーファイト"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022100076",
+      "horse_name": "ダイチラポール"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021102701",
+      "horse_name": "サイコウダネ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000300000027002                          030000001400210000000190030400000028004                          2600000065003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

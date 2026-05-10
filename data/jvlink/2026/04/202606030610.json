@@ -1,0 +1,94 @@
+{
+  "race_id": "202606030610",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030610",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "06",
+    "race_num": "10",
+    "race_name": "0000あけぼのステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020100810",
+      "horse_name": "グラニット"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2019107075",
+      "horse_name": "ブランデーロック"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021101422",
+      "horse_name": "マテンロウブラボー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2018103406",
+      "horse_name": "トーホウディアス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2021106369",
+      "horse_name": "チャンネルトンネル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2022101230",
+      "horse_name": "インパクトシー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2022101669",
+      "horse_name": "ストレイトトーカー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2022104694",
+      "horse_name": "ブルクトーア"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022104594",
+      "horse_name": "ヒシアマン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2021105777",
+      "horse_name": "ボーモンド"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2021105757",
+      "horse_name": "テウメッサ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2018106154",
+      "horse_name": "エスコバル"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000700000080005                          070000002000505000000190040600000013001                          5600000053002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

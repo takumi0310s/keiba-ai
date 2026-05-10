@@ -1,0 +1,88 @@
+{
+  "race_id": "202608030209",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030209",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "09",
+    "race_name": "0000比良山特別",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021105247",
+      "horse_name": "オメガナビゲーター"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022104799",
+      "horse_name": "ピックデムッシュ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021101554",
+      "horse_name": "アルベリック"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022103522",
+      "horse_name": "ジェットブレード"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022106626",
+      "horse_name": "ロールザダイス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2018104512",
+      "horse_name": "エルディアブロ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2016102767",
+      "horse_name": "プレイリードリーム"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2022102303",
+      "horse_name": "アスクコモンタレヴ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022105422",
+      "horse_name": "フォーキャンドルズ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2019103816",
+      "horse_name": "リッチブラック"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022101601",
+      "horse_name": "ニュークレド"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000100000086005                          010000002300408000000150020600000064007                          1700000132007        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

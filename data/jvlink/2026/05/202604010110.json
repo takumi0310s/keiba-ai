@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010110",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010110",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "10",
+    "race_name": "0000胎内川特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022101227",
+      "horse_name": "ヴォンフレ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020103228",
+      "horse_name": "ビターグラッセ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2018106354",
+      "horse_name": "バガン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022106760",
+      "horse_name": "マイネルフルムーン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021102115",
+      "horse_name": "アラタマフェーヴル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021102106",
+      "horse_name": "ツルマウカタチ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021104899",
+      "horse_name": "ドリームクルーズ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022106825",
+      "horse_name": "コスモイシュタル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021104421",
+      "horse_name": "デファイ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022105394",
+      "horse_name": "ハニードレス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022104855",
+      "horse_name": "エンジェルマーク"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2021101603",
+      "horse_name": "ナイトスラッガー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022105031",
+      "horse_name": "ジャルディニエ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022100625",
+      "horse_name": "ラブリーリディア"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022105421",
+      "horse_name": "コンフォルツァ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000400000064003                          040000002100315000000200020800000025005                          3800000134005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

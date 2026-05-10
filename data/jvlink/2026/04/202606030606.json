@@ -1,0 +1,88 @@
+{
+  "race_id": "202606030606",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030606",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "06",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102352",
+      "horse_name": "タイセツナヒ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023101642",
+      "horse_name": "ベルウッドピース"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023106428",
+      "horse_name": "マイネルミストラル"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103632",
+      "horse_name": "ランニングビーチ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023102477",
+      "horse_name": "ストロングエース"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023102120",
+      "horse_name": "システマソラー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023101165",
+      "horse_name": "プレイメイカー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2023103793",
+      "horse_name": "サイモフェーン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023103061",
+      "horse_name": "ゴールドブレイズ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2023100858",
+      "horse_name": "エコロガノン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023100954",
+      "horse_name": "テルケンレンスキー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000500000146005                          050000003400506000000190030900000046007                          5600000163007        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202609020701",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020701",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "07",
+    "race_num": "01",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102766",
+      "horse_name": "スマートルヴァン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023100601",
+      "horse_name": "ケイトバローズ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023107267",
+      "horse_name": "ジーティービキニ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023101526",
+      "horse_name": "ショウサンカナヲ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023105244",
+      "horse_name": "アンヌグロース"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023103676",
+      "horse_name": "アグレイビューティ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023102197",
+      "horse_name": "ダリアフレイバー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023106068",
+      "horse_name": "アオイハルカ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023100652",
+      "horse_name": "コイタマチャン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023109040",
+      "horse_name": "メイショウメゴヒメ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023106339",
+      "horse_name": "ペコリズム"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023100609",
+      "horse_name": "ペガサスウィンド"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023104553",
+      "horse_name": "ゼルノードゥス"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023104384",
+      "horse_name": "ローゾフィア"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023102891",
+      "horse_name": "グロリアス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000600000038002                          060000001300209000000140030300000011001                          4500000062003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

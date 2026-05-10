@@ -1,0 +1,94 @@
+{
+  "race_id": "202606030809",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030809",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "08",
+    "race_num": "09",
+    "race_name": "0000野島崎特別",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105030",
+      "horse_name": "エリーナストーム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022105002",
+      "horse_name": "ボウウィンドウ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021103533",
+      "horse_name": "ホウオウシンデレラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021106826",
+      "horse_name": "レッセパッセ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022106667",
+      "horse_name": "ヴォワラクテ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2020102803",
+      "horse_name": "エリム"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021103878",
+      "horse_name": "ジャンビ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2022105442",
+      "horse_name": "ラブリージャブリー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2020103228",
+      "horse_name": "ビターグラッセ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2021106642",
+      "horse_name": "ファミリーツリー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2020100446",
+      "horse_name": "イトカワサクラ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022104855",
+      "horse_name": "エンジェルマーク"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000800000027002                          080000001300202000000120010300000032006                          2600000032001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

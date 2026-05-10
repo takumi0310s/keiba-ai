@@ -1,0 +1,82 @@
+{
+  "race_id": "202605020204",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020204",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "02",
+    "race_num": "04",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023107327",
+      "horse_name": "ガードオブオナー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107045",
+      "horse_name": "ウルフマン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023103579",
+      "horse_name": "アグアフレスカ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103433",
+      "horse_name": "レフィノス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023100384",
+      "horse_name": "ルージュダズリング"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023105248",
+      "horse_name": "イブキ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2023103697",
+      "horse_name": "クライングナウ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2023107254",
+      "horse_name": "マーゴットドライ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2023105371",
+      "horse_name": "ボンボンベイビー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2023106684",
+      "horse_name": "カゲムシャ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000600000021001                          060000001100108000000180040200000017003                          6700000099004        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

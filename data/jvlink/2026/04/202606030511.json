@@ -1,0 +1,112 @@
+{
+  "race_id": "202606030511",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030511",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "05",
+    "race_num": "11",
+    "race_name": "0115ニュージーランドトロフィー",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023106076",
+      "horse_name": "ハノハノ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023100002",
+      "horse_name": "マダックス"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023103268",
+      "horse_name": "レザベーション"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023105714",
+      "horse_name": "ヒズマスターピース"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023104885",
+      "horse_name": "ジーネキング"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023104450",
+      "horse_name": "シュペルリング"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023107166",
+      "horse_name": "ロデオドライブ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023107078",
+      "horse_name": "スマイルカーブ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023104650",
+      "horse_name": "ブルズアイプリンス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023102083",
+      "horse_name": "ジーティーシンドウ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023107056",
+      "horse_name": "ゴーラッキー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023105106",
+      "horse_name": "アルデトップガン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023100681",
+      "horse_name": "ガリレア"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023103326",
+      "horse_name": "ディールメーカー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023100840",
+      "horse_name": "ミリオンクラウン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000300000435006                          030000004500607000000110010500000027005                          2400000200007        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

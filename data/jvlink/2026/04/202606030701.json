@@ -1,0 +1,112 @@
+{
+  "race_id": "202606030701",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030701",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "01",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023101659",
+      "horse_name": "エビスディアーナ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107206",
+      "horse_name": "オーシャンステラ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023102971",
+      "horse_name": "サドルトウショウ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023100283",
+      "horse_name": "アドミ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023102338",
+      "horse_name": "シャインネージュ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023100888",
+      "horse_name": "セントリアン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023100805",
+      "horse_name": "ウィザードオブマリ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023100808",
+      "horse_name": "マリノフォルトゥナ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023102401",
+      "horse_name": "ジャメビュ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023106065",
+      "horse_name": "アイリーノリチャン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023103225",
+      "horse_name": "グラデュエール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023107403",
+      "horse_name": "エコロセレナ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023103072",
+      "horse_name": "ベイビーシスター"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023104480",
+      "horse_name": "タイセイスタナー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023107095",
+      "horse_name": "クアロアランチ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001500000014001                          150000001100112000000150030400000011002                          7800000045002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

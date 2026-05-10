@@ -1,0 +1,100 @@
+{
+  "race_id": "202608030305",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030305",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "03",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105829",
+      "horse_name": "ダノンワンダー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106361",
+      "horse_name": "ビースペシフィック"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023107292",
+      "horse_name": "ラヴズプレミアム"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103707",
+      "horse_name": "テイクザスローン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2023106210",
+      "horse_name": "スリーキズナヒメ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023105793",
+      "horse_name": "ロードスタニング"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2023103239",
+      "horse_name": "シャイニングスター"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023101742",
+      "horse_name": "ホワイトラバーズ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2023102642",
+      "horse_name": "シャインヴィーラ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023100217",
+      "horse_name": "ソルトハッピー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2023107236",
+      "horse_name": "ラルヴァンダード"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023101893",
+      "horse_name": "スーパービジー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2023100669",
+      "horse_name": "ルクスディグニティ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1313000000000000000000000000000000000000000000000000000000000000000000000000600000012001                          060000001000101000000140021000000015003                          1500000030002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

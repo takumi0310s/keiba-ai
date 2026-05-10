@@ -1,0 +1,70 @@
+{
+  "race_id": "202608030407",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030407",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "04",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022102294",
+      "horse_name": "ボナペティアスク"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021100695",
+      "horse_name": "ヴェストラン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022100457",
+      "horse_name": "テレプシコーラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104793",
+      "horse_name": "サラコスティ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022103070",
+      "horse_name": "レイデラティエラ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2021101280",
+      "horse_name": "ジェロニモス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022105171",
+      "horse_name": "タンテドヴィーヴル"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2022106634",
+      "horse_name": "アンビアンス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0808000000000000000000000000000000000000000000000000000000000000000000000000700000014001                          070000001100104000000110020500000016004                          00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

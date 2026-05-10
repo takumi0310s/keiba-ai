@@ -1,0 +1,112 @@
+{
+  "race_id": "202605020407",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020407",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021104285",
+      "horse_name": "リーゼントジェイド"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022100497",
+      "horse_name": "スマートブル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2017104815",
+      "horse_name": "ディープキング"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022101438",
+      "horse_name": "レッドルイナール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022106545",
+      "horse_name": "カンレイスキー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021103342",
+      "horse_name": "カルフ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022105076",
+      "horse_name": "スクレイピング"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022102880",
+      "horse_name": "ヴォラーレ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022102769",
+      "horse_name": "コーシューパンジャ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022104897",
+      "horse_name": "レッドベルダンス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021107052",
+      "horse_name": "マテンロウノカゼ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022101684",
+      "horse_name": "ミスティマウンテン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022102529",
+      "horse_name": "ボーヌロマネ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022102397",
+      "horse_name": "ビービーバザーク"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022107284",
+      "horse_name": "ライズトゥザトップ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001000000075005                          100000002400512000000340060700000020002                          6700000182009        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

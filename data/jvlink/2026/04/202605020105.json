@@ -1,0 +1,130 @@
+{
+  "race_id": "202605020105",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020105",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "01",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105744",
+      "horse_name": "シエラモレーナ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2023104442",
+      "horse_name": "カズノダイジョウ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023104412",
+      "horse_name": "リラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2023103462",
+      "horse_name": "スターリットフレア"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023103536",
+      "horse_name": "ルージュアストレア"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2023106986",
+      "horse_name": "グランマエストロ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023103459",
+      "horse_name": "ペリバジャ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2023103936",
+      "horse_name": "ハネマン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023104857",
+      "horse_name": "アリアス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2023105777",
+      "horse_name": "ノブピースオブラブ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023107100",
+      "horse_name": "ダノンケリー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2023100179",
+      "horse_name": "ニシノマーレ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023110028",
+      "horse_name": "ジューンレトリバー"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2023105285",
+      "horse_name": "ミスティユニバンス"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "7",
+      "horse_id": "2023101296",
+      "horse_name": "ジュニートワン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2023107145",
+      "horse_name": "ジーティートゥーリ"
+    },
+    {
+      "umaban": "17",
+      "wakuban": "8",
+      "horse_id": "2023106879",
+      "horse_name": "アドマイヤパープル"
+    },
+    {
+      "umaban": "18",
+      "wakuban": "8",
+      "horse_id": "2023101871",
+      "horse_name": "アルマサーガ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1818000000000000000000000000000000000000000000000000000000000000000000000000300000052002                          030000001500206000000110010200000026005                          2300000040001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

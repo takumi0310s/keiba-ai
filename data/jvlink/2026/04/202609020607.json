@@ -1,0 +1,88 @@
+{
+  "race_id": "202609020607",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020607",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "06",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022100933",
+      "horse_name": "エルサトアナ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022105070",
+      "horse_name": "ジャサルディア"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021104978",
+      "horse_name": "マルカオペラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2018106354",
+      "horse_name": "バガン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2019105461",
+      "horse_name": "ガストン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2019106280",
+      "horse_name": "サクラオーラ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2019103996",
+      "horse_name": "タイキエクセロン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2021100297",
+      "horse_name": "ブルボンクイーン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2018104534",
+      "horse_name": "アスクキングコング"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022104988",
+      "horse_name": "ロンドボス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2021105516",
+      "horse_name": "イゾラフェリーチェ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000200000014001                          020000001100111000000470080400000042007                          2800000020001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

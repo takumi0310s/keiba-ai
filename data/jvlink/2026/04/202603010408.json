@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010408",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010408",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "04",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019105755",
+      "horse_name": "グロリアスヒーロー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021110040",
+      "horse_name": "メトロポリターナ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021100387",
+      "horse_name": "マーベリックシチー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022103644",
+      "horse_name": "ブレイジングスター"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022101578",
+      "horse_name": "ブラックジジ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021110123",
+      "horse_name": "アメリカンチーフ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022101684",
+      "horse_name": "ミスティマウンテン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2019102676",
+      "horse_name": "リゼレインボー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2019100689",
+      "horse_name": "リリーアロー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2021106070",
+      "horse_name": "ブリスフル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022102260",
+      "horse_name": "ジェシーテソーロ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2021107052",
+      "horse_name": "マテンロウノカゼ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021103017",
+      "horse_name": "オウケンシルヴァー"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022104982",
+      "horse_name": "サンディエゴ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2019100844",
+      "horse_name": "ミツカネヴィーナス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000199009                          110000005400913000000180011200000038007                          6700000344012        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

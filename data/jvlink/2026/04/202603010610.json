@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010610",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010610",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "10",
+    "race_name": "0000尾瀬特別",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021105931",
+      "horse_name": "ギマール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022100664",
+      "horse_name": "グランキングオー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022104903",
+      "horse_name": "セボンサデッセ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020103967",
+      "horse_name": "グレイスオブゴッド"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021103939",
+      "horse_name": "スマートプレシャス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2020104676",
+      "horse_name": "マイレーヌ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021103161",
+      "horse_name": "トーレ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022102394",
+      "horse_name": "マーウォルス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022105232",
+      "horse_name": "イブニングタイド"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022103766",
+      "horse_name": "トルショー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021106521",
+      "horse_name": "キングツェッペリン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2020105350",
+      "horse_name": "コスモマルーン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022102263",
+      "horse_name": "カスバートテソーロ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021104039",
+      "horse_name": "ジュンラトゥール"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2020106051",
+      "horse_name": "セザンワールド"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000200000105005                          020000003900703000000140011400000031006                          2200000212010        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

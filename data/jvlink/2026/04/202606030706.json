@@ -1,0 +1,58 @@
+{
+  "race_id": "202606030706",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030706",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105275",
+      "horse_name": "ノーザンタイタン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023103386",
+      "horse_name": "ルージュボヤージュ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023103820",
+      "horse_name": "ターンザテーブルス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023106776",
+      "horse_name": "トライアンドエラー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023107121",
+      "horse_name": "タッセルノット"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023106994",
+      "horse_name": "ティルベリー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0606000000000000000000000000000000000000000000000000000000000000000000000000200000024002                          0200000019002030000002800400                                     00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

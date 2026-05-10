@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010109",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010109",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "09",
+    "race_name": "0000浄土平特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020106843",
+      "horse_name": "メイショウヒュウガ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2022104693",
+      "horse_name": "レッドシュテルン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021100165",
+      "horse_name": "フォルテフィオーレ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2022105001",
+      "horse_name": "グレヴィレア"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022101889",
+      "horse_name": "ゼットエイト"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2022101425",
+      "horse_name": "エナジーショット"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022105194",
+      "horse_name": "ラトラース"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2021103251",
+      "horse_name": "フォートポータル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022106832",
+      "horse_name": "コスモキャバリエ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2022105191",
+      "horse_name": "スペードギニー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022104786",
+      "horse_name": "サトノラポール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022104688",
+      "horse_name": "ロットブラータ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021105742",
+      "horse_name": "シアブリス"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2022101307",
+      "horse_name": "ガンバルマン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021104173",
+      "horse_name": "デイジー"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2022105156",
+      "horse_name": "レッドシュトラール"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000300000036001                          030000001800109000000420060200000045007                          2500000216010        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

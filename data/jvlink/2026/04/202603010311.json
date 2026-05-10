@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010311",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010311",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "03",
+    "race_num": "11",
+    "race_name": "0000ラジオ福島賞",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021110062",
+      "horse_name": "ヒストリアイ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022105443",
+      "horse_name": "モレポブラーノ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022103047",
+      "horse_name": "ホウショウマリス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021104395",
+      "horse_name": "サンドオブエテル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021105849",
+      "horse_name": "オコタンペ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2019101330",
+      "horse_name": "アイファーグローブ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021105229",
+      "horse_name": "シーニックビュー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2021103154",
+      "horse_name": "メイショウカシワデ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021107212",
+      "horse_name": "ファイントパーズ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022103778",
+      "horse_name": "ライフゲート"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021102200",
+      "horse_name": "レッドライトニング"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2021101431",
+      "horse_name": "クリノキングマン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022105201",
+      "horse_name": "ラマンシュ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021105604",
+      "horse_name": "ステラスプレンダー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022105141",
+      "horse_name": "レーヴブリリアント"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000800000051002                          080000001600111000000310060300000025004                          5600000106006        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

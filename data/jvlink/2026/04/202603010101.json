@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010101",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010101",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "01",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023100992",
+      "horse_name": "セルシャーム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023100514",
+      "horse_name": "ロケットパンチ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023107303",
+      "horse_name": "レジェルテ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023101087",
+      "horse_name": "ベストブラザーズ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023100567",
+      "horse_name": "グレートアゲイン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023103621",
+      "horse_name": "シンエンドーツダ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023104869",
+      "horse_name": "ディーズベンチャー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023101667",
+      "horse_name": "ウォーターサオラ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023106072",
+      "horse_name": "パシオネ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023102925",
+      "horse_name": "ライヴマティーニ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023102659",
+      "horse_name": "シューティングガイ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023103187",
+      "horse_name": "クワッドマリニン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023109054",
+      "horse_name": "カミノトップワン"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023100291",
+      "horse_name": "ウインビギニング"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023102517",
+      "horse_name": "ジャストグレース"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000055002                          110000001500214000000110010400000019004                          6800000046001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

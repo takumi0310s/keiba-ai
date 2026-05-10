@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010107",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010107",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021101430",
+      "horse_name": "プロスペクト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022105569",
+      "horse_name": "ルージュマローネ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021107012",
+      "horse_name": "キングプロフィット"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021103916",
+      "horse_name": "スラーヴァ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022106926",
+      "horse_name": "ナインオブレター"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022105548",
+      "horse_name": "プロスペクトパーク"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021105772",
+      "horse_name": "ホウオウバローロ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022104779",
+      "horse_name": "リトルスカーレット"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022106409",
+      "horse_name": "バーニングフレーム"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022105556",
+      "horse_name": "ラストレガシー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021102813",
+      "horse_name": "ハイケンス"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022104496",
+      "horse_name": "スコーピオンイメル"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019101233",
+      "horse_name": "アイファーファイト"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022104176",
+      "horse_name": "チャチャピンク"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2019103092",
+      "horse_name": "ワンダーウィルク"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000200000292009                          020000005700910000000200030600000019002                          2600000604018        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202609020610",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020610",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "06",
+    "race_num": "10",
+    "race_name": "0000京橋ステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019105824",
+      "horse_name": "アレナリア"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2018102178",
+      "horse_name": "マイネルエニグマ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021105384",
+      "horse_name": "チルカーノ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2018103590",
+      "horse_name": "リッケンバッカー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021102728",
+      "horse_name": "バッデレイト"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2020107121",
+      "horse_name": "イケイケドンドン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022103207",
+      "horse_name": "ミュージシャン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022105769",
+      "horse_name": "ヴァリディシームス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021106193",
+      "horse_name": "ウイントレメンデス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022104207",
+      "horse_name": "キングスコール"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2019105462",
+      "horse_name": "ソリダリティ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2020106667",
+      "horse_name": "サトノクローク"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019107025",
+      "horse_name": "クレバーテースト"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2020103794",
+      "horse_name": "エゾダイモン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021104948",
+      "horse_name": "キーパフォーマー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000200000132006                          020000003000507000000200020500000026003                          2400000180008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

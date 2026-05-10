@@ -1,0 +1,82 @@
+{
+  "race_id": "202603010407",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010407",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "04",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022106811",
+      "horse_name": "マイネルアウルム"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022100684",
+      "horse_name": "アクアリッズ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022104587",
+      "horse_name": "ディアボリカドンナ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2019105076",
+      "horse_name": "フォーグッド"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022103278",
+      "horse_name": "ホウオウタイタン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022101102",
+      "horse_name": "ウインポセイドン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022105461",
+      "horse_name": "コウセイケンタロス"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2019106416",
+      "horse_name": "キセキノエンジェル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2020103502",
+      "horse_name": "トラストエムシー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022105525",
+      "horse_name": "モルビド"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000000500000018001                          050000001100106000000150040300000015003                          5600000067003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

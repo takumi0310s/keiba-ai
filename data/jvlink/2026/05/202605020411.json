@@ -1,0 +1,112 @@
+{
+  "race_id": "202605020411",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020411",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "11",
+    "race_name": "0000プリンシパルステークス",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023103957",
+      "horse_name": "ベルウッドクレド"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107227",
+      "horse_name": "レッドラージャ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023105943",
+      "horse_name": "トーセンブリラーレ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023105280",
+      "horse_name": "ヘイジュード"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023106981",
+      "horse_name": "ウィロークリーク"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023106410",
+      "horse_name": "マイネルクオリア"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023105334",
+      "horse_name": "ヴィサージュ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023105337",
+      "horse_name": "ボンドマティーニ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023104676",
+      "horse_name": "マテンロウゼロ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023103370",
+      "horse_name": "エーデルゼーレ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023105642",
+      "horse_name": "オルフセン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023102039",
+      "horse_name": "メイショウハチコウ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023106924",
+      "horse_name": "ジャスティンシカゴ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023105274",
+      "horse_name": "ミッキージャンプ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023103897",
+      "horse_name": "ショウグンマサムネ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001200000263010                          120000007501013000000360051000000024002                          7700001190026        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

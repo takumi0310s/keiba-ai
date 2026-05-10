@@ -1,0 +1,100 @@
+{
+  "race_id": "202605020112",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020112",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "01",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021105321",
+      "horse_name": "エーデル"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020110058",
+      "horse_name": "ホウキボシ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105847",
+      "horse_name": "ディーズゴールド"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021101053",
+      "horse_name": "キョウエイフロイデ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2022104512",
+      "horse_name": "タマモカンパネラ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2021102555",
+      "horse_name": "アースイオス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2021105276",
+      "horse_name": "バロンドール"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2021102595",
+      "horse_name": "バルダンツァ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2022103733",
+      "horse_name": "スーパージョック"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2021104464",
+      "horse_name": "テンクウジョー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2021101727",
+      "horse_name": "ピコニ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2021104576",
+      "horse_name": "クレイヴィンオナー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2021102676",
+      "horse_name": "コーカサスゴールド"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1313000000000000000000000000000000000000000000000000000000000000000000000001300000026001                          130000001500104000000190030700000070009                          4800000070003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

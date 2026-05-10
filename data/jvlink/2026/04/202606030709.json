@@ -1,0 +1,94 @@
+{
+  "race_id": "202606030709",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030709",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "09",
+    "race_name": "0000袖ケ浦特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022104734",
+      "horse_name": "ワース"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022101469",
+      "horse_name": "ヴェナートル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022104771",
+      "horse_name": "スターウェーブ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104197",
+      "horse_name": "カウンターセブン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2020105073",
+      "horse_name": "ガットネロ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2021104074",
+      "horse_name": "ラブディーヴァ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2022101906",
+      "horse_name": "キョウエイボニータ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2021101580",
+      "horse_name": "メイショウヨゾラ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2020106987",
+      "horse_name": "スムースベルベット"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2021101595",
+      "horse_name": "ヴィヴァクラウン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2018103485",
+      "horse_name": "ジャガード"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022102939",
+      "horse_name": "アオイレーギーナ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000800000076004                          080000002900407000001260100300000048008                          6600001616030        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

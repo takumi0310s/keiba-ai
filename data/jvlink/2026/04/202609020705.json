@@ -1,0 +1,58 @@
+{
+  "race_id": "202609020705",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020705",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "07",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105021",
+      "horse_name": "メイショウテンク"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106169",
+      "horse_name": "セイカンサンラン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023107287",
+      "horse_name": "イベントホライゾン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023105380",
+      "horse_name": "サトノアイボリー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023106995",
+      "horse_name": "ロングトールサリー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023102810",
+      "horse_name": "エチゴドラゴン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0605000000000000000000000000000000000000000000000000000000000000000000000000300000019001                          0300000011001040000002200400                                     00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

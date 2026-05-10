@@ -1,0 +1,88 @@
+{
+  "race_id": "202609020808",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202609020808",
+    "date": "2026-04-20",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "08",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021101391",
+      "horse_name": "ブラックドレス"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022107325",
+      "horse_name": "レーンアジリティ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022102839",
+      "horse_name": "メイショウカスガイ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022105848",
+      "horse_name": "ステイクオール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022104403",
+      "horse_name": "ニシノミチアキ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022103227",
+      "horse_name": "レッドイステル"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2021104872",
+      "horse_name": "ビルンバウム"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2019104261",
+      "horse_name": "メイショウオグマ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2022107248",
+      "horse_name": "ルシャリオ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022104267",
+      "horse_name": "レヴァンテシチー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022102906",
+      "horse_name": "オリジナルファイン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000001000000033002                          100000001300206000000120010400000027006                          6800000027001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

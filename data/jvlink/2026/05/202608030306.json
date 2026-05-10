@@ -1,0 +1,88 @@
+{
+  "race_id": "202608030306",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030306",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "03",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105343",
+      "horse_name": "デルマサクラサク"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022102768",
+      "horse_name": "メイショウウメゴチ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105794",
+      "horse_name": "ラテライト"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021105238",
+      "horse_name": "アリストクラシア"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2019102986",
+      "horse_name": "シゲルオトヒメ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022106631",
+      "horse_name": "バシリス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2022105716",
+      "horse_name": "シュドゥン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2022105567",
+      "horse_name": "アリュールテーラー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2021103841",
+      "horse_name": "ニホンピロマリンバ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022101400",
+      "horse_name": "マーゴットレジーナ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2022104624",
+      "horse_name": "アロマフェリス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000700000027001                          070000001300111000000140020100000016003                          6800000030001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

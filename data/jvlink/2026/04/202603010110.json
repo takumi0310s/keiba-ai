@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010110",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010110",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "10",
+    "race_name": "0000花見山特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103324",
+      "horse_name": "シュラフ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2022104637",
+      "horse_name": "ホウオウブースター"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021104217",
+      "horse_name": "ムチャスグラシアス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2021101399",
+      "horse_name": "ヴァンヴィーヴ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022104629",
+      "horse_name": "バシレイア"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2021105068",
+      "horse_name": "クリノハレルヤ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020106623",
+      "horse_name": "ゴキゲンサン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2022101604",
+      "horse_name": "ハニーローリエ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022104174",
+      "horse_name": "マジカルフェアリー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2021102468",
+      "horse_name": "ブライティアダイヤ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022107138",
+      "horse_name": "アタリダイキチ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022102635",
+      "horse_name": "バンブルビー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022105623",
+      "horse_name": "タマカヅラ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2020104983",
+      "horse_name": "マルプリ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022104190",
+      "horse_name": "ラトルシェ"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2022100547",
+      "horse_name": "アサクサグレース"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000001600000037002                          1600000012002040000001100108000000270071200000020005             2800000056001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

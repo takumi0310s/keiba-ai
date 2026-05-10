@@ -1,0 +1,118 @@
+{
+  "race_id": "202606030708",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030708",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022101814",
+      "horse_name": "ナムラジミー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2020103118",
+      "horse_name": "ブレイヴアロウ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022104740",
+      "horse_name": "コズミックダンサー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2019103219",
+      "horse_name": "ブレイクザアイス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022103156",
+      "horse_name": "タイキフィアリーベ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2021104822",
+      "horse_name": "リボルトバレット"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022100360",
+      "horse_name": "シュヴァルノワール"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2022101438",
+      "horse_name": "レッドルイナール"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021106128",
+      "horse_name": "ラキアレクサンダー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2022100557",
+      "horse_name": "ロードスカイブルー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021101201",
+      "horse_name": "ロードインフェルノ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022106566",
+      "horse_name": "ダイシンレアレア"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022101481",
+      "horse_name": "アルデツヨシ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2022101255",
+      "horse_name": "ステイアンビシャス"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021104850",
+      "horse_name": "セージグリーン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2022102383",
+      "horse_name": "ニヒトツーゼーア"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000300000036002                          030000001500216000000130011200000022004                          2800000041001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

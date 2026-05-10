@@ -1,0 +1,76 @@
+{
+  "race_id": "202605020408",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020408",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021105716",
+      "horse_name": "アージェント"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022105318",
+      "horse_name": "コムユンプリュム"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022104939",
+      "horse_name": "ウィンターベル"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104893",
+      "horse_name": "ダノンエンブレム"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2020105183",
+      "horse_name": "ウインルピナス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2021100008",
+      "horse_name": "ホークマン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2021105367",
+      "horse_name": "コンテネレッツア"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2022105281",
+      "horse_name": "ダノンブギ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2021104581",
+      "horse_name": "ハリウッドパーク"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0909000000000000000000000000000000000000000000000000000000000000000000000000400000028001                          040000001400107000000170030100000036006                          4700000104005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

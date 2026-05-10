@@ -1,0 +1,100 @@
+{
+  "race_id": "202603010609",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010609",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "09",
+    "race_name": "0000飯盛山特別",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105400",
+      "horse_name": "ピティロディア"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2019100915",
+      "horse_name": "ゼンノインヴォーク"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021102708",
+      "horse_name": "アドミラルシップ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022105614",
+      "horse_name": "ポッポノフェスタ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2021106203",
+      "horse_name": "ウインボレロ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2022105597",
+      "horse_name": "ゲンジ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2022106846",
+      "horse_name": "ゴールドジェスター"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2021104891",
+      "horse_name": "オールデュスヴラン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2022107149",
+      "horse_name": "ヴォラヴィア"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2022105796",
+      "horse_name": "アリスメティーク"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2022103308",
+      "horse_name": "ミッドセンチュリー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022100274",
+      "horse_name": "マイネルアズーロ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2022106828",
+      "horse_name": "マイネルゼウス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1313000000000000000000000000000000000000000000000000000000000000000000000001000000062004                          100000001700202000000210051200000014001                          2700000173008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

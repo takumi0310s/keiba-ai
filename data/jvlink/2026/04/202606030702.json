@@ -1,0 +1,88 @@
+{
+  "race_id": "202606030702",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030702",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "07",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023100629",
+      "horse_name": "ゴーフォアブローク"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023103196",
+      "horse_name": "フクチャンブラック"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023105754",
+      "horse_name": "リマーカブル"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023105474",
+      "horse_name": "トワイライトビュー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023102868",
+      "horse_name": "サクラドール"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023105682",
+      "horse_name": "キセログラフィカ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023105365",
+      "horse_name": "ホウオウファラオ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2023101841",
+      "horse_name": "ユイノサダハル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023102319",
+      "horse_name": "ロジシーザ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2023103519",
+      "horse_name": "サウジバラード"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023105838",
+      "horse_name": "ロードステラート"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000001000000108005                          100000001800401000000140020600000011001                          1800000080003        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

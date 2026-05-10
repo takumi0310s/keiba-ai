@@ -1,0 +1,118 @@
+{
+  "race_id": "202605020210",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020210",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "02",
+    "race_num": "10",
+    "race_name": "0000オアシスステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021106637",
+      "horse_name": "アンシール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2019105512",
+      "horse_name": "ジャスティンスカイ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022106942",
+      "horse_name": "ドンインザムード"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2018105431",
+      "horse_name": "ミッキーヌチバナ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2018102040",
+      "horse_name": "ヴィヴァン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2022104584",
+      "horse_name": "アドマイヤデイトナ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020106873",
+      "horse_name": "オウギノカナメ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2020103325",
+      "horse_name": "プロトポロス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022102493",
+      "horse_name": "トリリオンボーイ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2020110024",
+      "horse_name": "ウェイワードアクト"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020102843",
+      "horse_name": "アッチャゴーラ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2020101874",
+      "horse_name": "ペリエール"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2020105545",
+      "horse_name": "アルムラトゥール"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2020103005",
+      "horse_name": "ナイトアクアリウム"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2019103879",
+      "horse_name": "バトルクライ"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2021102236",
+      "horse_name": "テーオーパスワード"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1615000000000000000000000000000000000000000000000000000000000000000000000000300000029002                          030000001200116000000150021400000018003                          2800000038001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

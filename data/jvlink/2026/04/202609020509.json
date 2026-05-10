@@ -1,0 +1,70 @@
+{
+  "race_id": "202609020509",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020509",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "05",
+    "race_num": "09",
+    "race_name": "0000明石特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020104491",
+      "horse_name": "ファームツエンティ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022102199",
+      "horse_name": "アルマデオロ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021101554",
+      "horse_name": "アルベリック"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104635",
+      "horse_name": "アロンズロッド"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2020103369",
+      "horse_name": "パンデアスカル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2016102767",
+      "horse_name": "プレイリードリーム"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2018105073",
+      "horse_name": "サトノスカイターフ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2019103816",
+      "horse_name": "リッチブラック"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0808000000000000000000000000000000000000000000000000000000000000000000000000100000041003                          010000001000204000000100010200000010003                          00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

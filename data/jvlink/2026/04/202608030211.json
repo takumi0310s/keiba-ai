@@ -1,0 +1,130 @@
+{
+  "race_id": "202608030211",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030211",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "11",
+    "race_name": "0043読売マイラーズカップ",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022105891",
+      "horse_name": "ドラゴンブースト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2021110031",
+      "horse_name": "オフトレイル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021102419",
+      "horse_name": "ファインライン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2020101813",
+      "horse_name": "クルゼイロドスル"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2019105239",
+      "horse_name": "ショウナンアデイブ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2021105454",
+      "horse_name": "ブエナオンダ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021105117",
+      "horse_name": "ベラジオボンド"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2020103075",
+      "horse_name": "シャンパンカラー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022105396",
+      "horse_name": "アドマイヤズーム"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2021100953",
+      "horse_name": "ウォーターリヒト"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020107001",
+      "horse_name": "キョウエイブリッサ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2021104893",
+      "horse_name": "ファーヴェント"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019105482",
+      "horse_name": "アサヒ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2018104708",
+      "horse_name": "ロングラン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "7",
+      "horse_id": "2019105546",
+      "horse_name": "マテンロウスカイ"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2021105724",
+      "horse_name": "シックスペンス"
+    },
+    {
+      "umaban": "17",
+      "wakuban": "8",
+      "horse_id": "2020100680",
+      "horse_name": "エルトンバローズ"
+    },
+    {
+      "umaban": "18",
+      "wakuban": "8",
+      "horse_id": "2022104401",
+      "horse_name": "ランスオブカオス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1818000000000000000000000000000000000000000000000000000000000000000000000000900000041001                          090000001900201000000560090700000027004                          1500000044001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

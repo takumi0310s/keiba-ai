@@ -1,0 +1,112 @@
+{
+  "race_id": "202605020110",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202605020110",
+    "date": "2026-04-27",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "01",
+    "race_num": "10",
+    "race_name": "0000鎌倉ステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020103088",
+      "horse_name": "ピックアップライン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021106328",
+      "horse_name": "クインズデネブ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022100418",
+      "horse_name": "ラストシャリナ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022103264",
+      "horse_name": "メイショウハチロー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022101703",
+      "horse_name": "ベンヌ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2020100406",
+      "horse_name": "トクシーカイザー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021100623",
+      "horse_name": "スプランドゥール"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022102790",
+      "horse_name": "カネショウレジェン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021100300",
+      "horse_name": "エンセリオ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2021104786",
+      "horse_name": "シャパリュ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021100734",
+      "horse_name": "レーウィン"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022101626",
+      "horse_name": "フウセツ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021104745",
+      "horse_name": "イノセントキャット"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022100071",
+      "horse_name": "ワンダラー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022104219",
+      "horse_name": "ペイシャケイプ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001500000038002                          150000001600204000000120011200000050009                          3800000033001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

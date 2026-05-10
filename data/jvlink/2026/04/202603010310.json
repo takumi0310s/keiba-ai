@@ -1,0 +1,70 @@
+{
+  "race_id": "202603010310",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010310",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "03",
+    "race_num": "10",
+    "race_name": "0000桑折特別",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022101400",
+      "horse_name": "マーゴットレジーナ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022100781",
+      "horse_name": "ルールーリマ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022105182",
+      "horse_name": "メリザンド"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022104187",
+      "horse_name": "ムーンストラック"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022103494",
+      "horse_name": "スイートオレンジ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022102139",
+      "horse_name": "シェーラ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2022106761",
+      "horse_name": "ウアーシュプルング"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "8",
+      "horse_id": "2022100626",
+      "horse_name": "フィオレストラーダ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0808000000000000000000000000000000000000000000000000000000000000000000000000800000074005                          080000002400602000000140010300000024005                          00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030307",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030307",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "03",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102542",
+      "horse_name": "ミルトベスト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106431",
+      "horse_name": "トライアンフパス"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023107378",
+      "horse_name": "テーオーアンジェラ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023105300",
+      "horse_name": "スウィッチインラヴ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023103798",
+      "horse_name": "ファムマルキーズ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023106184",
+      "horse_name": "ネネキリマル"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023101501",
+      "horse_name": "マイティキングダム"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023103836",
+      "horse_name": "フロムレイブン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023104121",
+      "horse_name": "アルスマグナ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023101405",
+      "horse_name": "カクウチ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023103797",
+      "horse_name": "アンディムジーク"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023105277",
+      "horse_name": "ファニーバニー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000500000037002                          050000001500104000000520091200000039008                          4500000257011        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

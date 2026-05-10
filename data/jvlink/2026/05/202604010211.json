@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010211",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010211",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "02",
+    "race_num": "11",
+    "race_name": "0000越後ステークス",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021110056",
+      "horse_name": "エコロガイア"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022110140",
+      "horse_name": "ポールセン"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2020104597",
+      "horse_name": "ショウナンアビアス"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021100114",
+      "horse_name": "ブレーザー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021100836",
+      "horse_name": "レアンダー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2021100895",
+      "horse_name": "サフランヒーロー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021110069",
+      "horse_name": "エスカル"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2020102343",
+      "horse_name": "サンライズパスカル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021110057",
+      "horse_name": "ボディブロー"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2020101174",
+      "horse_name": "ユキマル"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020105545",
+      "horse_name": "アルムラトゥール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022104972",
+      "horse_name": "スリーピース"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019105761",
+      "horse_name": "エティエンヌ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2020101182",
+      "horse_name": "グッジョブ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021110008",
+      "horse_name": "ルディック"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000400000143008                          040000004000810000000200010300000035006                          3600000194008        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

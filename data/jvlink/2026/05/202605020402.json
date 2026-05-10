@@ -1,0 +1,118 @@
+{
+  "race_id": "202605020402",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020402",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "02",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023101845",
+      "horse_name": "マッシブショット"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2023102651",
+      "horse_name": "キタノドンカルロ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023104846",
+      "horse_name": "リトルコリンズ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2023106575",
+      "horse_name": "キーチジャステン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023105208",
+      "horse_name": "レピュニット"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2023103161",
+      "horse_name": "エメラルファイン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023100647",
+      "horse_name": "ブルーミーティア"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2023100252",
+      "horse_name": "ハピナスター"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023104893",
+      "horse_name": "レオスキーム"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2023102978",
+      "horse_name": "レイズレガシー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023104042",
+      "horse_name": "ライカ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2023107225",
+      "horse_name": "セツナサ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023102590",
+      "horse_name": "プリプリプリン"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2023106407",
+      "horse_name": "マイネルテオドロス"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023102220",
+      "horse_name": "ネオシューマン"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2023104288",
+      "horse_name": "イントゥゴールデン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000500000046002                          050000001700213000001450110700000024004                          3700000484014        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

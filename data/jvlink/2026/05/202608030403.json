@@ -1,0 +1,112 @@
+{
+  "race_id": "202608030403",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030403",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "04",
+    "race_num": "03",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102764",
+      "horse_name": "スマートピクタス"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023103546",
+      "horse_name": "デルマタイセツ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023102250",
+      "horse_name": "ミリオンアップ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023101703",
+      "horse_name": "ウルダ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023100652",
+      "horse_name": "コイタマチャン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023107267",
+      "horse_name": "ジーティービキニ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023100580",
+      "horse_name": "セントピュアベース"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023104553",
+      "horse_name": "ゼルノードゥス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023102766",
+      "horse_name": "スマートルヴァン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023107477",
+      "horse_name": "オヤツノジカン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023103329",
+      "horse_name": "ウンナターシャ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023101145",
+      "horse_name": "プルーフリーディン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023102483",
+      "horse_name": "トリビア"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023103378",
+      "horse_name": "レザーアンドレース"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023104362",
+      "horse_name": "ヤマニンエルファバ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001400000665009                          140000010300805000000210031000000045007                          3800000077005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

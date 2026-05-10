@@ -1,0 +1,88 @@
+{
+  "race_id": "202604010104",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010104",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "04",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019101889",
+      "horse_name": "コンバスチョン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020104328",
+      "horse_name": "パープルアドミラル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2021106621",
+      "horse_name": "ハイウェイスター"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2018110131",
+      "horse_name": "アメリカンピース"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2018106815",
+      "horse_name": "ヴィアルークス"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022104293",
+      "horse_name": "トモジャシック"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2019103920",
+      "horse_name": "レッドラマンシュ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2022102728",
+      "horse_name": "ベイビーベリッシモ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2019103100",
+      "horse_name": "サルサロッサ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2021103051",
+      "horse_name": "グアラニア"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2020100948",
+      "horse_name": "ウォーターリーダー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1111000000000000000000000000000000000000000000000000000000000000000000000000200000880011                          020000014601103000000180021100000019003                          2300001388028        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,58 @@
+{
+  "race_id": "202606030806",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202606030806",
+    "date": "2026-04-20",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "08",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105771",
+      "horse_name": "ショウナンパトス"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023107171",
+      "horse_name": "ピュアエンブレム"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023107158",
+      "horse_name": "イナズマダイモン"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023103142",
+      "horse_name": "イッテラッシャイ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023103013",
+      "horse_name": "ルーナディサングエ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023101114",
+      "horse_name": "ファイタージェット"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0606000000000000000000000000000000000000000000000000000000000000000000000000400000022002                          0400000022002050000025300600                                     00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

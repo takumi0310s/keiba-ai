@@ -1,0 +1,100 @@
+{
+  "race_id": "202605020412",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020412",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020106987",
+      "horse_name": "スムースベルベット"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021104576",
+      "horse_name": "クレイヴィンオナー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2019101753",
+      "horse_name": "アオカミ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2021101077",
+      "horse_name": "ベンダバール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "4",
+      "horse_id": "2022105381",
+      "horse_name": "エイプリルインパリ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2021104874",
+      "horse_name": "ルーフオブヘヴン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "5",
+      "horse_id": "2021105849",
+      "horse_name": "オコタンペ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2019102163",
+      "horse_name": "フォーワンセルフ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "6",
+      "horse_id": "2021103145",
+      "horse_name": "レッドレナート"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2021103706",
+      "horse_name": "アルジェンタージョ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "7",
+      "horse_id": "2020104864",
+      "horse_name": "タマモヴェナトル"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2022110001",
+      "horse_name": "シルフズミスチーフ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "8",
+      "horse_id": "2022103183",
+      "horse_name": "アイアムイチバン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1313000000000000000000000000000000000000000000000000000000000000000000000000500000027001                          050000001400110000000440081300000024005                          4700000116005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

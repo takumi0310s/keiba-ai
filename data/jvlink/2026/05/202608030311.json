@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030311",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030311",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "03",
+    "race_num": "11",
+    "race_name": "0143ユニコーンステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102919",
+      "horse_name": "サイモンゼスト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023102769",
+      "horse_name": "ケイアイアギト"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023102462",
+      "horse_name": "ガウラディスコ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023107043",
+      "horse_name": "シルバーレシオ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023107368",
+      "horse_name": "コロナドブリッジ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023103677",
+      "horse_name": "ヴィエントデコラ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023102477",
+      "horse_name": "ストロングエース"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023107258",
+      "horse_name": "シャローファースト"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023102075",
+      "horse_name": "ソルチェリア"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023101132",
+      "horse_name": "セイントエルモズ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023105303",
+      "horse_name": "メルカントゥール"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023106955",
+      "horse_name": "デールエルバハリ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000400000028002                          040000001100211000000110010200000018004                          4800000027001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

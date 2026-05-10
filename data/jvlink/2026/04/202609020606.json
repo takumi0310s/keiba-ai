@@ -1,0 +1,82 @@
+{
+  "race_id": "202609020606",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202609020606",
+    "date": "2026-04-13",
+    "course_code": "09",
+    "kai": "02",
+    "nichi": "06",
+    "race_num": "06",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020106922",
+      "horse_name": "メイショウクモイ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2022104729",
+      "horse_name": "サマーナイト"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2022110143",
+      "horse_name": "ソングコレクター"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2022107299",
+      "horse_name": "クレスコドルフィン"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2022102300",
+      "horse_name": "アスクガンバーレ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2022110157",
+      "horse_name": "レーヴドアンジュ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2019102950",
+      "horse_name": "アイファーリーベン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "7",
+      "horse_id": "2022100637",
+      "horse_name": "ロードアルディート"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "8",
+      "horse_id": "2022102916",
+      "horse_name": "モズプリヴェール"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "8",
+      "horse_id": "2022104854",
+      "horse_name": "ソニックステップ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1010000000000000000000000000000000000000000000000000000000000000000000000001000000022001                          100000001400202000000520060100000069007                          2800000186005        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

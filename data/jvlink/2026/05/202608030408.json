@@ -1,0 +1,112 @@
+{
+  "race_id": "202608030408",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202608030408",
+    "date": "2026-05-04",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "04",
+    "race_num": "08",
+    "race_name": "0000御池特別",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022103962",
+      "horse_name": "ペイドラロワール"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021103171",
+      "horse_name": "タイキヴァンクール"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021103278",
+      "horse_name": "メイショウミリオレ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2018104534",
+      "horse_name": "アスクキングコング"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021100297",
+      "horse_name": "ブルボンクイーン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2019101643",
+      "horse_name": "バシレウスシチー"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022104174",
+      "horse_name": "マジカルフェアリー"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022110063",
+      "horse_name": "サディーク"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022102939",
+      "horse_name": "アオイレーギーナ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2019100566",
+      "horse_name": "ミロワール"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022107138",
+      "horse_name": "アタリダイキチ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2020106519",
+      "horse_name": "モズアンタレス"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021100639",
+      "horse_name": "アストラカ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022106555",
+      "horse_name": "タガノアンファン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021105833",
+      "horse_name": "カリーシ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000599012                          110000011201208000000210020500000072010                          5600000560017        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

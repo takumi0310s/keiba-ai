@@ -1,0 +1,112 @@
+{
+  "race_id": "202608030208",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030208",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022110143",
+      "horse_name": "ソングコレクター"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020106922",
+      "horse_name": "メイショウクモイ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022102710",
+      "horse_name": "エイユーファイヤー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2022104729",
+      "horse_name": "サマーナイト"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022103587",
+      "horse_name": "ミラクルブルー"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022105795",
+      "horse_name": "サントモナルカ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021110139",
+      "horse_name": "ガーデンカメリア"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022104176",
+      "horse_name": "チャチャピンク"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022104214",
+      "horse_name": "ニホンピロデヴィン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2021105772",
+      "horse_name": "ホウオウバローロ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022105129",
+      "horse_name": "カンピドリオ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022106174",
+      "horse_name": "ブラックタロー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022104654",
+      "horse_name": "ジーティーアメリカ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022107299",
+      "horse_name": "クレスコドルフィン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021103064",
+      "horse_name": "メイショウコナン"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000900000232008                          090000008001002000000380051500000065008                          2500000285013        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

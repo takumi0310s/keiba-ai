@@ -1,0 +1,130 @@
+{
+  "race_id": "202605020311",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020311",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "03",
+    "race_num": "11",
+    "race_name": "0025京王杯スプリングカップ",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020103517",
+      "horse_name": "レッドシュヴェルト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2022104814",
+      "horse_name": "ダノンセンチュリー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2020101503",
+      "horse_name": "カンチェンジュンガ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2021104094",
+      "horse_name": "シリウスコルト"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021104434",
+      "horse_name": "ワイドラトゥール"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2020102836",
+      "horse_name": "セフィロ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020101784",
+      "horse_name": "ラケマーダ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2021100935",
+      "horse_name": "ララマセラシオン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2020103661",
+      "horse_name": "フリームファクシ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2021105119",
+      "horse_name": "キープカルム"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2020105154",
+      "horse_name": "アサカラキング"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022106232",
+      "horse_name": "ウイントワイライト"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022105836",
+      "horse_name": "ファンダム"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2022106768",
+      "horse_name": "マイネルチケット"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "7",
+      "horse_id": "2020110155",
+      "horse_name": "レイベリング"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2021105864",
+      "horse_name": "ワールズエンド"
+    },
+    {
+      "umaban": "17",
+      "wakuban": "8",
+      "horse_id": "2021105774",
+      "horse_name": "ダノンマッキンリー"
+    },
+    {
+      "umaban": "18",
+      "wakuban": "8",
+      "horse_id": "2021103116",
+      "horse_name": "ヤブサメ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1818000000000000000000000000000000000000000000000000000000000000000000000001600000054003                          160000002700306000001290131400000046007                          3800000238010        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

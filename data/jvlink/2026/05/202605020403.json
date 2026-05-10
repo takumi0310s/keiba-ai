@@ -1,0 +1,94 @@
+{
+  "race_id": "202605020403",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202605020403",
+    "date": "2026-05-04",
+    "course_code": "05",
+    "kai": "02",
+    "nichi": "04",
+    "race_num": "03",
+    "race_name": "0000",
+    "youbi_code": "3"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023102964",
+      "horse_name": "タイガーゲイト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023105733",
+      "horse_name": "モズエムブイピー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023103010",
+      "horse_name": "クラージュスター"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023102338",
+      "horse_name": "シャインネージュ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023103252",
+      "horse_name": "タマモブレイキン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023102958",
+      "horse_name": "スティールヴォーグ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023102328",
+      "horse_name": "カウガールハット"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023105439",
+      "horse_name": "カシマライフウ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023110022",
+      "horse_name": "アーデントアイ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023107184",
+      "horse_name": "スターツトゥデイ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023105474",
+      "horse_name": "トワイライトビュー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023105077",
+      "horse_name": "マサッチェハマー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000001200000023001                          120000001100106000000110020800000014003                          5800000025001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

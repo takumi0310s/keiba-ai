@@ -1,0 +1,130 @@
+{
+  "race_id": "202608030210",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030210",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "10",
+    "race_name": "0000センテニアル・パークステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2020103487",
+      "horse_name": "ミッキーツインクル"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2021105856",
+      "horse_name": "ミスタージーティー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022102744",
+      "horse_name": "キングメーカー"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2022105475",
+      "horse_name": "レディーミコノス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022100699",
+      "horse_name": "イガッチ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2020104297",
+      "horse_name": "ルクスビッグスター"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020100976",
+      "horse_name": "ハギノアルデバラン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2022100084",
+      "horse_name": "ジェットマグナム"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2021102246",
+      "horse_name": "テーオーダグラス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2022102500",
+      "horse_name": "マトラコーニッシュ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022104750",
+      "horse_name": "レイニング"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022104638",
+      "horse_name": "アラベラ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019104732",
+      "horse_name": "チェルノボーグ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2021104854",
+      "horse_name": "ミナデオロ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "7",
+      "horse_id": "2020106660",
+      "horse_name": "スズカダブル"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2020104013",
+      "horse_name": "プッシュオン"
+    },
+    {
+      "umaban": "17",
+      "wakuban": "8",
+      "horse_id": "2022105140",
+      "horse_name": "ネブラディスク"
+    },
+    {
+      "umaban": "18",
+      "wakuban": "8",
+      "horse_id": "2021105578",
+      "horse_name": "ショウナンラピダス"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1818000000000000000000000000000000000000000000000000000000000000000000000000500000185005                          050000004300617000000130010200000064011                          3800000167006        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

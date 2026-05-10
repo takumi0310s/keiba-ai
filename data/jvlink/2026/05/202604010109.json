@@ -1,0 +1,112 @@
+{
+  "race_id": "202604010109",
+  "date": "2026-05-04",
+  "ra": {
+    "race_id": "202604010109",
+    "date": "2026-05-04",
+    "course_code": "04",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "09",
+    "race_name": "0000わらび賞",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023107203",
+      "horse_name": "インシオン"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023104151",
+      "horse_name": "ニャンタロウ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2023107394",
+      "horse_name": "イサチルシーキング"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2023102752",
+      "horse_name": "スマートグロワール"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2023103636",
+      "horse_name": "ウルフ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2023106313",
+      "horse_name": "ジェイエルモーダル"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2023103013",
+      "horse_name": "ルーナディサングエ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2023104674",
+      "horse_name": "タイセイサーブル"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2023101705",
+      "horse_name": "ガムラスタン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2023102364",
+      "horse_name": "サムシングニュー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2023104324",
+      "horse_name": "タガノエルー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2023105137",
+      "horse_name": "ユアフェリシティ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2023110029",
+      "horse_name": "ジューンセクレタ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2023102352",
+      "horse_name": "タイセツナヒ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2023100922",
+      "horse_name": "ジャイアンバローズ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000001100000018001                          110000001100106000000210041200000021003                          4600000048002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

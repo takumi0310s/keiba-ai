@@ -1,0 +1,64 @@
+{
+  "race_id": "202606030509",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030509",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "05",
+    "race_num": "09",
+    "race_name": "0000山藤賞",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023105622",
+      "horse_name": "ワッフル"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023104820",
+      "horse_name": "キタノファーンヒル"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023100503",
+      "horse_name": "ソングオブザバード"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023104156",
+      "horse_name": "グランアルト"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023106718",
+      "horse_name": "コッツォリーノ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "6",
+      "horse_id": "2023107389",
+      "horse_name": "チャリングクロス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "7",
+      "horse_id": "2023100953",
+      "horse_name": "グランセレスト"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "0707000000000000000000000000000000000000000000000000000000000000000000000000600000033002                          0600000015002050000001100100                                     00                   "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

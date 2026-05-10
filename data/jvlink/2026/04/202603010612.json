@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010612",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010612",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "12",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019101340",
+      "horse_name": "ブルーデイジー"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2022106582",
+      "horse_name": "ケイアイマウンガ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2020103513",
+      "horse_name": "ナンヨークリスタル"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2022101456",
+      "horse_name": "ダイヤモンド"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022102103",
+      "horse_name": "レイアポポ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2020106394",
+      "horse_name": "オンリーラヴ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2020105525",
+      "horse_name": "カツノテンス"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2021103994",
+      "horse_name": "タッカーバレット"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022104411",
+      "horse_name": "シャインミラカナ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2022110126",
+      "horse_name": "エコロカディス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021101363",
+      "horse_name": "アイランドピーク"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2020106429",
+      "horse_name": "ノーブルミステリー"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2020107018",
+      "horse_name": "レジェンダリーデイ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2021101702",
+      "horse_name": "チャージドアップ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021106347",
+      "horse_name": "ピクラリーダ"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2018103293",
+      "horse_name": "ヨドノゴールド"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000500000087005                          050000002600504000000210031300000037007                          2300000171009        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030105",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030105",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "01",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023107094",
+      "horse_name": "コスモフィレンツェ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106930",
+      "horse_name": "エルナト"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023107272",
+      "horse_name": "サトノトリニティ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023104320",
+      "horse_name": "タガノミトゥンドゥ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023104552",
+      "horse_name": "フウセン"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023103280",
+      "horse_name": "ロスニーニョス"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023102718",
+      "horse_name": "レイワノキセキ"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023104944",
+      "horse_name": "チュオンソン"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023105418",
+      "horse_name": "ビップヴォルフ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023100899",
+      "horse_name": "マーゴットショット"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023100938",
+      "horse_name": "スウィーティーベル"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023101924",
+      "horse_name": "エアセンチュリー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000500000029001                          050000001400101000000150030400000089008                          1500000049001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

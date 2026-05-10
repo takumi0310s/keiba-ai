@@ -1,0 +1,94 @@
+{
+  "race_id": "202608030205",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202608030205",
+    "date": "2026-04-27",
+    "course_code": "08",
+    "kai": "03",
+    "nichi": "02",
+    "race_num": "05",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2023103586",
+      "horse_name": "ストラドーネ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2023106218",
+      "horse_name": "ブルーザー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "3",
+      "horse_id": "2023100604",
+      "horse_name": "ショウナンアワード"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "4",
+      "horse_id": "2023104419",
+      "horse_name": "アングランパ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "5",
+      "horse_id": "2023107543",
+      "horse_name": "チヨ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "5",
+      "horse_id": "2023102060",
+      "horse_name": "オーマイラッキーン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "6",
+      "horse_id": "2023105323",
+      "horse_name": "バックドラフト"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "6",
+      "horse_id": "2023100288",
+      "horse_name": "ロングホリデー"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "7",
+      "horse_id": "2023107022",
+      "horse_name": "フレアオブセンス"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "7",
+      "horse_id": "2023104202",
+      "horse_name": "カヴァティーナ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "8",
+      "horse_id": "2023102455",
+      "horse_name": "オンザムービー"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "8",
+      "horse_id": "2023104937",
+      "horse_name": "バチラ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1212000000000000000000000000000000000000000000000000000000000000000000000000800000043003                          080000001600309000000130011100000019005                          6700000028001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

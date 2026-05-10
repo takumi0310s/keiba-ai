@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010111",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202603010111",
+    "date": "2026-04-13",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "01",
+    "race_num": "11",
+    "race_name": "0000吾妻小富士ステークス",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021102009",
+      "horse_name": "ラタフォレスト"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2019105741",
+      "horse_name": "イスラアネーロ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2021103306",
+      "horse_name": "コトホドサヨウニ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2020102095",
+      "horse_name": "ペプチドソレイユ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2021105112",
+      "horse_name": "ミッキークレスト"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2018100664",
+      "horse_name": "ホールシバン"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2019101681",
+      "horse_name": "サンライズホーク"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2018100830",
+      "horse_name": "ダイシンピスケス"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2020102737",
+      "horse_name": "マリアナトレンチ"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022104628",
+      "horse_name": "レイナデアルシーラ"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021103987",
+      "horse_name": "スナークラファエロ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022103304",
+      "horse_name": "ダンツエラン"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2019100286",
+      "horse_name": "カンピオーネ"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021100836",
+      "horse_name": "レアンダー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2021106554",
+      "horse_name": "タガノミスト"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000100000072005                          010000002900515000000530081100000026004                          1800000603021        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

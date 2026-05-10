@@ -1,0 +1,112 @@
+{
+  "race_id": "202603010308",
+  "date": "2026-04-20",
+  "ra": {
+    "race_id": "202603010308",
+    "date": "2026-04-20",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "03",
+    "race_num": "08",
+    "race_name": "0000",
+    "youbi_code": "1"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2021106361",
+      "horse_name": "ボナーテソーロ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2020106205",
+      "horse_name": "メイショウクーガー"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022104311",
+      "horse_name": "ヤングアメリカンズ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021105677",
+      "horse_name": "ローガンパス"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022106259",
+      "horse_name": "ララエキリーブル"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022102550",
+      "horse_name": "メイショウピリカ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2022106785",
+      "horse_name": "コスモシェルベット"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022106924",
+      "horse_name": "ハイクオリティ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2022106627",
+      "horse_name": "クリオシダード"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022105739",
+      "horse_name": "カルテシウス"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022103229",
+      "horse_name": "ウォーターパラディ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022104222",
+      "horse_name": "リアルフォルゴーレ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2022102486",
+      "horse_name": "キタノブレイク"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2021107123",
+      "horse_name": "イイデカンタロウ"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2019106972",
+      "horse_name": "ロストボール"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000200000065003                          020000001800308000000130010500000024005                          2500000054002        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

@@ -1,0 +1,112 @@
+{
+  "race_id": "202606030607",
+  "date": "2026-04-13",
+  "ra": {
+    "race_id": "202606030607",
+    "date": "2026-04-13",
+    "course_code": "06",
+    "kai": "03",
+    "nichi": "06",
+    "race_num": "07",
+    "race_name": "0000",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2022104093",
+      "horse_name": "ガラク"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "2",
+      "horse_id": "2021101383",
+      "horse_name": "アッシュバーグ"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2022103394",
+      "horse_name": "ドルビナ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "3",
+      "horse_id": "2021105035",
+      "horse_name": "イージーブリージー"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2022105233",
+      "horse_name": "ルナルーチェット"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "4",
+      "horse_id": "2022100700",
+      "horse_name": "ポッドロルフ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2021101930",
+      "horse_name": "ライングッドマン"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "5",
+      "horse_id": "2022106393",
+      "horse_name": "ブラックジェダイト"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2020103727",
+      "horse_name": "ゴールドシーン"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "6",
+      "horse_id": "2022102088",
+      "horse_name": "ユーティジャーニー"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2022102988",
+      "horse_name": "トレヴィ"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "7",
+      "horse_id": "2022102135",
+      "horse_name": "ゴーゴータカシ"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021105078",
+      "horse_name": "アトリウムチャペル"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "8",
+      "horse_id": "2022110092",
+      "horse_name": "コンヴァージョン"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022106741",
+      "horse_name": "メイリー"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1515000000000000000000000000000000000000000000000000000000000000000000000000800000015001                          080000001100109000000150020500000043008                          5500000041001        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}

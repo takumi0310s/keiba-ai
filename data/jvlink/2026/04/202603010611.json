@@ -1,0 +1,118 @@
+{
+  "race_id": "202603010611",
+  "date": "2026-04-27",
+  "ra": {
+    "race_id": "202603010611",
+    "date": "2026-04-27",
+    "course_code": "03",
+    "kai": "01",
+    "nichi": "06",
+    "race_num": "11",
+    "race_name": "0000モルガナイトステークス",
+    "youbi_code": "2"
+  },
+  "se": [
+    {
+      "umaban": "01",
+      "wakuban": "1",
+      "horse_id": "2019103594",
+      "horse_name": "レッドアヴァンティ"
+    },
+    {
+      "umaban": "02",
+      "wakuban": "1",
+      "horse_id": "2020103061",
+      "horse_name": "シュタールヴィント"
+    },
+    {
+      "umaban": "03",
+      "wakuban": "2",
+      "horse_id": "2018103205",
+      "horse_name": "クムシラコ"
+    },
+    {
+      "umaban": "04",
+      "wakuban": "2",
+      "horse_id": "2021102392",
+      "horse_name": "ナナオ"
+    },
+    {
+      "umaban": "05",
+      "wakuban": "3",
+      "horse_id": "2020103434",
+      "horse_name": "カルロヴェローチェ"
+    },
+    {
+      "umaban": "06",
+      "wakuban": "3",
+      "horse_id": "2022102057",
+      "horse_name": "サウンドモリアーナ"
+    },
+    {
+      "umaban": "07",
+      "wakuban": "4",
+      "horse_id": "2019110001",
+      "horse_name": "ショウナンハクラク"
+    },
+    {
+      "umaban": "08",
+      "wakuban": "4",
+      "horse_id": "2021107063",
+      "horse_name": "イツモニコニコ"
+    },
+    {
+      "umaban": "09",
+      "wakuban": "5",
+      "horse_id": "2020103356",
+      "horse_name": "クファシル"
+    },
+    {
+      "umaban": "10",
+      "wakuban": "5",
+      "horse_id": "2019100751",
+      "horse_name": "マイネルレノン"
+    },
+    {
+      "umaban": "11",
+      "wakuban": "6",
+      "horse_id": "2021103725",
+      "horse_name": "テイエムリステット"
+    },
+    {
+      "umaban": "12",
+      "wakuban": "6",
+      "horse_id": "2022100490",
+      "horse_name": "モズナナスター"
+    },
+    {
+      "umaban": "13",
+      "wakuban": "7",
+      "horse_id": "2021100522",
+      "horse_name": "ジョーメッドヴィン"
+    },
+    {
+      "umaban": "14",
+      "wakuban": "7",
+      "horse_id": "2021103092",
+      "horse_name": "ナムラローズマリー"
+    },
+    {
+      "umaban": "15",
+      "wakuban": "8",
+      "horse_id": "2022102408",
+      "horse_name": "ムイ"
+    },
+    {
+      "umaban": "16",
+      "wakuban": "8",
+      "horse_id": "2018104347",
+      "horse_name": "ユキノファラオ"
+    }
+  ],
+  "hr": {
+    "data_kbn": "2",
+    "raw_payouts": "1616000000000000000000000000000000000000000000000000000000000000000000000000600000064003                          060000002400201000000830141300000040006                          1300000175007        "
+  },
+  "source": "TFJV_BINARY_2026",
+  "phase": "phase12_poc"
+}
