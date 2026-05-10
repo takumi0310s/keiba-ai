@@ -1,0 +1,52 @@
+{
+  "V15": {
+    "n_total": 347,
+    "n_bet": 37,
+    "n_hit": 10,
+    "investment": 25900,
+    "payout": 3490,
+    "profit": -22410,
+    "roi_pct": 13.474903474903474,
+    "hit_rate": 27.027027027027028
+  },
+  "V18 cand": {
+    "n_total": 347,
+    "n_bet": 15,
+    "n_hit": 2,
+    "investment": 10500,
+    "payout": 680,
+    "profit": -9820,
+    "roi_pct": 6.476190476190476,
+    "hit_rate": 13.333333333333334
+  },
+  "V20 cand": {
+    "n_total": 347,
+    "n_bet": 15,
+    "n_hit": 2,
+    "investment": 12000,
+    "payout": 971,
+    "profit": -11029,
+    "roi_pct": 8.091666666666667,
+    "hit_rate": 13.333333333333334
+  },
+  "V21 cand": {
+    "n_total": 347,
+    "n_bet": 15,
+    "n_hit": 2,
+    "investment": 12000,
+    "payout": 971,
+    "profit": -11029,
+    "roi_pct": 8.091666666666667,
+    "hit_rate": 13.333333333333334
+  },
+  "V22 RL": {
+    "n_total": 347,
+    "n_bet": 0,
+    "n_hit": 0,
+    "investment": 0,
+    "payout": 0,
+    "profit": 0,
+    "roi_pct": 0.0,
+    "hit_rate": 0.0
+  }
+}
