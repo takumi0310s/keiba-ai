@@ -139,6 +139,18 @@ def load_full_predictions(race_id: str, date: str = DATE) -> list[dict] | None:
     sub = df[df["race_id"].astype(str) == race_id].copy()
     if len(sub) == 0:
         return None
+    # Phase 5 (5/10): Session #71 daily_predictions_full schema 名称対応
+    # CSV 実列: V15_score / rank_in_race / horse_num
+    # build_horse_table 期待: score / horse_rank / umaban
+    rename_map = {}
+    if "V15_score" in sub.columns and "score" not in sub.columns:
+        rename_map["V15_score"] = "score"
+    if "rank_in_race" in sub.columns and "horse_rank" not in sub.columns:
+        rename_map["rank_in_race"] = "horse_rank"
+    if "horse_num" in sub.columns and "umaban" not in sub.columns:
+        rename_map["horse_num"] = "umaban"
+    if rename_map:
+        sub = sub.rename(columns=rename_map)
     # numeric coerce
     for c in ("score", "odds"):
         if c in sub.columns:
