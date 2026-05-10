@@ -1,0 +1,50 @@
+{
+  "v15_baseline": {
+    "features": 150,
+    "auc": 0.8939485520467574
+  },
+  "v18_status": "訓練前 (5/16 user CLI 実行待ち)",
+  "d5_10_full35r": {
+    "n_total": 34,
+    "trio_hit": 11,
+    "trio_hit_rate_pct": 32.35294117647059,
+    "investment": 23800,
+    "payout": 27090,
+    "profit": 3290,
+    "roi_pct": 113.82352941176471
+  },
+  "score_bands": {
+    "≥0.7": {
+      "n": 6,
+      "hit": 2,
+      "hit_rate_pct": 33.333333333333336,
+      "investment": 4200,
+      "payout": 3490,
+      "roi_pct": 83.0952380952381
+    },
+    "0.6-0.7": {
+      "n": 10,
+      "hit": 5,
+      "hit_rate_pct": 50.0,
+      "investment": 7000,
+      "payout": 16950,
+      "roi_pct": 242.14285714285714
+    },
+    "0.5-0.6": {
+      "n": 7,
+      "hit": 2,
+      "hit_rate_pct": 28.571428571428573,
+      "investment": 4900,
+      "payout": 1950,
+      "roi_pct": 39.795918367346935
+    },
+    "<0.5": {
+      "n": 11,
+      "hit": 2,
+      "hit_rate_pct": 18.181818181818183,
+      "investment": 7700,
+      "payout": 4700,
+      "roi_pct": 61.03896103896104
+    }
+  }
+}
