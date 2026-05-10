@@ -1,0 +1,57 @@
+[
+  {
+    "model": "V15@0.6",
+    "n_total": 34,
+    "n_bet": 13,
+    "n_hit": 5,
+    "investment": 9100,
+    "payout": 6060,
+    "profit": -3040,
+    "roi_pct": 66.59,
+    "hit_rate": 38.46
+  },
+  {
+    "model": "V15@0.65",
+    "n_total": 34,
+    "n_bet": 9,
+    "n_hit": 4,
+    "investment": 6300,
+    "payout": 4630,
+    "profit": -1670,
+    "roi_pct": 73.49,
+    "hit_rate": 44.44
+  },
+  {
+    "model": "V15@0.7",
+    "n_total": 34,
+    "n_bet": 6,
+    "n_hit": 2,
+    "investment": 4200,
+    "payout": 3490,
+    "profit": -710,
+    "roi_pct": 83.1,
+    "hit_rate": 33.33
+  },
+  {
+    "model": "V15@0.75",
+    "n_total": 34,
+    "n_bet": 1,
+    "n_hit": 1,
+    "investment": 700,
+    "payout": 680,
+    "profit": -20,
+    "roi_pct": 97.14,
+    "hit_rate": 100.0
+  },
+  {
+    "model": "V15@0.8",
+    "n_total": 34,
+    "n_bet": 1,
+    "n_hit": 1,
+    "investment": 700,
+    "payout": 680,
+    "profit": -20,
+    "roi_pct": 97.14,
+    "hit_rate": 100.0
+  }
+]
