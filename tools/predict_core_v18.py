@@ -2112,37 +2112,48 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
                 df[_paci] = 0
 
     # ===== V18 candidate features (Phase 11、 5/10) =====
-    # 全 15 features、 Phase 11 = scaffold + default values 段階。
-    # 5/12+ で JRDB data lookup + expanding window 集計 を本実装予定。
+    # 全 15 features。 Phase 11 真値化 (5/10 22:30) で 6 features を実 KYI lookup 化。
+    # 残 9 features は data 不足のため constant default のまま (5/12+ 平日 task)。
     # V15 model_data['features'] に含まれない → V15 推論影響 なし (use_features fallback 通過)。
     # V18 学習時にこれらを取り込む form。
 
     # A. 外厩 (training farm) features - 4 features
-    # source: JRDB UKC (馬基本) / CHA (前走詳細) の外厩 column
-    df['gaika_id_enc'] = 0           # 外厩 ID encoded (TODO: UKC.外厩 lookup)
-    df['gaika_top3r_3r'] = 0.33      # 過去 3 R 外厩 top3 率 (expanding) baseline 33%
-    df['gaika_winrate'] = 0.20       # 外厩別 通算 勝率 baseline 20%
-    df['gaika_dist_winrate'] = 0.20  # 外厩 X 距離別 勝率 baseline 20%
+    df['gaika_id_enc'] = 0           # 真値化対象 (KYI 放牧先 hash) — 後段 apply で上書き
+    df['gaika_top3r_3r'] = 0.33      # data-pending: 馬個別 外厩 history aggregation 必要 (5/12+)
+    df['gaika_winrate'] = 0.20       # data-pending: 外厩別 通算 winrate 集計必要 (5/12+)
+    df['gaika_dist_winrate'] = 0.20  # data-pending: 外厩 X 距離別 winrate 集計必要 (5/12+)
 
     # B. 時系列オッズ features - 4 features
-    # source: JRDB OT/OV/OW (時系列オッズ) または save_odds_base 蓄積データ
-    df['odds_change_3h_v18'] = 0.0    # 3h 前 → 直前 odds 変化率
-    df['odds_change_30m_v18'] = 0.0   # 30m 前 → 直前 odds 変化率
-    df['popularity_shift_v18'] = 0    # 朝人気 - 直前人気 (整数差)
-    df['odds_volatility_v18'] = 0.0   # 期間内 odds std / mean
+    # 全 4 件 data-pending: 多 snapshot odds 不在 (現 odds_base = 1 snapshot)
+    # 5/24+ JV-Link 後、 1 日複数 snapshot 蓄積で実装可能化
+    df['odds_change_3h_v18'] = 0.0    # data-pending
+    df['odds_change_30m_v18'] = 0.0   # data-pending
+    df['popularity_shift_v18'] = 0    # data-pending
+    df['odds_volatility_v18'] = 0.0   # data-pending
 
-    # C. 騎手マスタ拡張 features - 4 features
-    # source: JRDB KKA (既統合 90.4%) を distance/track/class/trainer で再集計
-    df['jockey_dist_winrate'] = 0.10   # 騎手 X 距離 勝率 baseline 10%
-    df['jockey_track_winrate'] = 0.10  # 騎手 X 芝/ダート 勝率
-    df['jockey_class_winrate'] = 0.10  # 騎手 X クラス 勝率
-    df['jockey_x_trainer_wr'] = 0.15   # 騎手 X 調教師 連携 勝率 baseline 15%
+    # C. 騎手マスタ拡張 features - 4 features (★ 真値化対象、 KYI lookup ★)
+    df['jockey_dist_winrate'] = 0.10   # 真値化: KYI 騎手期待単勝率 — 後段 apply で上書き
+    df['jockey_track_winrate'] = 0.10  # 真値化: KYI 騎手期待連対率 — 後段 apply で上書き
+    df['jockey_class_winrate'] = 0.10  # 真値化: KYI 騎手期待3着内率 — 後段 apply で上書き
+    df['jockey_x_trainer_wr'] = 0.15   # 真値化: 連対率ベース近似 — 後段 apply で上書き
 
     # D. 返し馬 / パドック features - 3 features
-    # source: JRDB CYB (調教コメント) / TYB (直前) - 既存 jrdb_paddock_idx を超えた評価
-    df['return_horse_score'] = 0.0   # 返し馬 評価 (-3 〜 +3)
-    df['paddock_eval_v18'] = 0.0     # パドック評価 v18 (jrdb_paddock_idx と独立)
-    df['saddle_room_score'] = 0.0    # 装鞍所 状態 (-3 〜 +3)
+    df['return_horse_score'] = 0.0   # data-pending: TYB 返し馬 column parsing 必要 (5/12+)
+    df['paddock_eval_v18'] = 0.0     # 真値化: V15 jrdb_paddock_idx 再 encode — 後段 apply で上書き
+    df['saddle_room_score'] = 0.0    # data-pending: TYB 装鞍所 column parsing 必要 (5/12+)
+
+    # 真値化 lookup 適用 (Phase 11 真値化、 2026-05-10)
+    # KYI data 利用可能なら 6 features を真値で上書き、 失敗時は constant default のまま。
+    try:
+        from tools.phase11_real_lookups import apply_phase11_real_lookups
+        df = apply_phase11_real_lookups(df)
+    except Exception:
+        try:
+            sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
+            from phase11_real_lookups import apply_phase11_real_lookups  # type: ignore
+            df = apply_phase11_real_lookups(df)
+        except Exception:
+            pass  # KYI 不在 / import 失敗時は constant default のまま継続
 
     # ===== V18 candidate features END =====
 
