@@ -180,10 +180,7 @@ def predict_and_notify(race_info, date_str):
             print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
             return
 
-        # 2. 京都を除外 (データ蓄積待ち、5/11 以降に再評価)
-        if course_str == '京都':
-            print(f"    [STRATEGY7] Skip 京都: データ蓄積待ち")
-            return
+        # 2. 京都 filter 削除 (Phase 4 5/10、 ユーザー要望「予測 fire + 通知含む、 候補のみ手動除外」)
         # ===== 戦略⑦ フィルタ ここまで =====
 
         # Fetch odds (full = odds + pop_rank, save base cache for change features)
