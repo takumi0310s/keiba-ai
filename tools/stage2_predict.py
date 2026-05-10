@@ -207,6 +207,35 @@ def build_horse_table(rows: list[dict],
     return table, n_truncated
 
 
+_DYNAMIC_LOADED_FOR: str | None = None
+
+
+def _load_today_dynamic_times(date_str: str) -> None:
+    """Phase 7 (5/10): netkeiba race_list_sub から real-time 取得し RACE_START_TIMES に merge.
+
+    static dict (5/9, 5/10 hardcoded) では 5/16+ など 別開催日 で fire 不可。
+    1 process 内で 1 回のみ fetch (DATE 単位 cache)、 失敗時は static fallback。
+    """
+    global _DYNAMIC_LOADED_FOR
+    if _DYNAMIC_LOADED_FOR == date_str:
+        return
+    try:
+        import race_auto_notify as ran
+        races = ran.get_todays_races(date_str)
+        added = 0
+        for r in races:
+            rid = r.get('race_id')
+            st = r.get('start_time')
+            if rid and st and ':' in st:
+                if RACE_START_TIMES.get(rid) != st:
+                    added += 1
+                RACE_START_TIMES[rid] = st
+        _DYNAMIC_LOADED_FOR = date_str
+        print(f"[dynamic] netkeiba race_list_sub: date={date_str}, races={len(races)}, updated={added}")
+    except Exception as e:
+        print(f"[dynamic] fetch failed (fallback to static): {e}")
+
+
 def parse_start_time(race_id: str, today: datetime | None = None) -> datetime | None:
     hhmm = RACE_START_TIMES.get(race_id)
     if not hhmm:
@@ -218,6 +247,8 @@ def parse_start_time(race_id: str, today: datetime | None = None) -> datetime | 
 
 def races_in_next_window(window_min: int = 60, now: datetime | None = None) -> list[str]:
     now = now or datetime.now()
+    # Phase 7: 当日 race_list_sub を dynamic 取得し RACE_START_TIMES merge
+    _load_today_dynamic_times(now.strftime("%Y%m%d"))
     end = now + timedelta(minutes=window_min)
     out = []
     for race_id in RACE_START_TIMES:
