@@ -57,7 +57,7 @@ def _write_env(env):
 def _get_credentials(save=False):
     """Get login credentials from env or interactive input."""
     env = _read_env()
-    login_id = env.get('NETKEIBA_LOGIN_ID', '')
+    login_id = env.get('NETKEIBA_LOGIN_ID', '') or env.get('NETKEIBA_EMAIL', '')
     password = env.get('NETKEIBA_PASSWORD', '')
 
     if not login_id:
@@ -162,6 +162,17 @@ def refresh_cookie(headless=True, save_credentials=False):
             env['NETKEIBA_COOKIE'] = cookie_str
             _write_env(env)
 
+            # 8b. data/cookies.json にも Playwright 形式で export (paddock_video_capture 等で使用)
+            try:
+                import json as _json
+                cookie_json_path = os.path.join(BASE_DIR, 'data', 'cookies.json')
+                os.makedirs(os.path.dirname(cookie_json_path), exist_ok=True)
+                with open(cookie_json_path, 'w', encoding='utf-8') as cf:
+                    _json.dump(cookies, cf, ensure_ascii=False, indent=2)
+                print(f'[INFO] data/cookies.json updated ({len(cookies)} cookies)')
+            except Exception as e:
+                print(f'[WARN] cookies.json export failed: {e}')
+
             browser.close()
 
             # 9. 検証
@@ -228,7 +239,7 @@ def auto_refresh_if_expired(headless=True):
         return False, f'Cookie有効: {msg}'
 
     env = _read_env()
-    login_id = env.get('NETKEIBA_LOGIN_ID', '')
+    login_id = env.get('NETKEIBA_LOGIN_ID', '') or env.get('NETKEIBA_EMAIL', '')
     password = env.get('NETKEIBA_PASSWORD', '')
 
     if not login_id or not password:

@@ -202,7 +202,32 @@ def capture(horse_id, race_id=None, fps=3, duration=30, headless=True, probe_onl
             page.evaluate("() => { const v = document.querySelector('video'); if (v) { v.muted = true; v.play().catch(() => {}); } }")
         except Exception:
             pass
+
+        # Cross-origin iframe (admint.biz video player) detection
+        iframe_locator = None
+        for sel in ['iframe[src*="admint"]', 'iframe[src*="tv-player"]', 'iframe[src*="race-player"]']:
+            try:
+                loc = page.locator(sel).first
+                if loc.count() > 0:
+                    iframe_locator = loc
+                    print(f'[INFO] iframe video detected: {sel}')
+                    break
+            except Exception:
+                pass
+
+        # Click iframe to start video (autoplay often blocked)
+        if iframe_locator is not None:
+            try:
+                iframe_locator.click(timeout=3000)
+                page.wait_for_timeout(800)
+            except Exception as e:
+                print(f'[WARN] iframe click failed: {e}')
+
         page.wait_for_timeout(1500)
+
+        # Capture mode: canvas (same-origin) or iframe screenshot (cross-origin)
+        use_iframe_screenshot = iframe_locator is not None
+        canvas_taint_detected = False
 
         interval_ms = max(1, int(1000 / fps))
         end = time.time() + duration
@@ -210,38 +235,72 @@ def capture(horse_id, race_id=None, fps=3, duration=30, headless=True, probe_onl
         bytes_total = 0
         errs = 0
         last_t = -1.0
+        print(f'[INFO] capture mode: {"iframe_screenshot" if use_iframe_screenshot else "canvas_drawImage"}')
+
         while time.time() < end:
-            try:
-                r = page.evaluate(CAPTURE_JS)
-            except Exception as e:
-                errs += 1
-                print(f'[WARN] eval err #{errs}: {e}')
-                if errs > 5:
-                    break
-                page.wait_for_timeout(interval_ms)
-                continue
+            ct = None
 
-            if r.get('error'):
-                errs += 1
-                if errs <= 3:
-                    print(f'[WARN] {r}')
-                if errs > 10:
-                    print('[STOP] too many errors')
-                    break
-                page.wait_for_timeout(interval_ms)
-                continue
+            # Path A: canvas drawImage (only if video element in main DOM, not iframe)
+            if not use_iframe_screenshot:
+                try:
+                    r = page.evaluate(CAPTURE_JS)
+                except Exception as e:
+                    errs += 1
+                    print(f'[WARN] eval err #{errs}: {e}')
+                    if errs > 5:
+                        break
+                    page.wait_for_timeout(interval_ms)
+                    continue
 
-            ct = r.get('currentTime', 0.0)
-            if abs(ct - last_t) < 0.05:
-                page.wait_for_timeout(interval_ms)
-                continue
-            last_t = ct
+                if r.get('error'):
+                    if r.get('error') == 'canvas_taint' and not canvas_taint_detected:
+                        canvas_taint_detected = True
+                        print(f'[INFO] canvas_taint detected -> falling back to iframe screenshot')
+                        use_iframe_screenshot = True
+                        # find iframe again on the fly
+                        for sel in ['iframe[src*="admint"]', 'iframe[src*="tv-player"]']:
+                            loc = page.locator(sel).first
+                            if loc.count() > 0:
+                                iframe_locator = loc
+                                break
+                        continue
 
-            sz = save_frame(out_dir, idx, r['data'])
-            if sz:
-                bytes_total += sz
-                manifest['frames'].append({'idx': idx, 't': ct, 'bytes': sz})
-                idx += 1
+                    errs += 1
+                    if errs <= 3:
+                        print(f'[WARN] {r}')
+                    if errs > 10:
+                        print('[STOP] too many errors')
+                        break
+                    page.wait_for_timeout(interval_ms)
+                    continue
+
+                ct = r.get('currentTime', 0.0)
+                if abs(ct - last_t) < 0.05:
+                    page.wait_for_timeout(interval_ms)
+                    continue
+                last_t = ct
+                sz = save_frame(out_dir, idx, r['data'])
+                if sz:
+                    bytes_total += sz
+                    manifest['frames'].append({'idx': idx, 't': ct, 'bytes': sz})
+                    idx += 1
+
+            # Path B: iframe element screenshot (cross-origin safe)
+            else:
+                try:
+                    fp = os.path.join(out_dir, f'frame_{idx:04d}.jpg')
+                    iframe_locator.screenshot(path=fp, type='jpeg', quality=85, timeout=5000)
+                    sz = os.path.getsize(fp)
+                    bytes_total += sz
+                    manifest['frames'].append({'idx': idx, 't': time.time(), 'bytes': sz})
+                    idx += 1
+                except Exception as e:
+                    errs += 1
+                    if errs <= 3:
+                        print(f'[WARN] screenshot err #{errs}: {e}')
+                    if errs > 10:
+                        print('[STOP] too many screenshot errors')
+                        break
 
             page.wait_for_timeout(interval_ms)
 
