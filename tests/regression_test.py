@@ -109,7 +109,7 @@ def test_env_in_gitignore():
     """.envが.gitignoreに含まれていること"""
     gi_path = os.path.join(BASE_DIR, '.gitignore')
     assert os.path.exists(gi_path), ".gitignore not found"
-    with open(gi_path, 'r') as f:
+    with open(gi_path, 'r', encoding='utf-8') as f:
         content = f.read()
     assert '.env' in content, ".envが.gitignoreにない"
 
