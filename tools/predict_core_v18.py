@@ -2146,6 +2146,48 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
 
     # ===== V18 candidate features END =====
 
+    # ===== Phase 13: netkeiba マスター 25 features (5/10) =====
+    # source: tools/netkeiba_master_scraper.py 経由 (¥4,980/月 master 加入後)
+    # F. AI 展開予測 (7) / G. AI 波乱度 (3) / H. 個別ラップ (10) / I. トラックバイアス (5)
+    # 実 fetch は kill switch (data/netkeiba_master/.disabled) で制御、 default fill 経路あり
+    # V15 model_data['features'] に含まれない → V15 推論影響 なし (use_features fallback)。
+    # V20 学習時に Phase 13 features を取り込む form。
+
+    # F. AI 展開予測 (7)
+    df['master_pace_pred'] = 1                  # 0=slow, 1=medium, 2=high
+    df['master_pred_winner_score'] = 50.0       # AI 1 着馬 score
+    df['master_pred_first3f_avg'] = 35.5        # AI 予測前半 3F 平均
+    df['master_pred_last3f_avg'] = 35.5         # AI 予測後半 3F 平均
+    df['master_pred_finish_time'] = 100.0       # AI 予測走破タイム (秒)
+    df['master_horse_aitenkai_score'] = 50.0    # 馬別 展開適性 score
+    df['master_horse_pred_pos'] = 9             # 馬別 4 角通過順 default
+
+    # G. AI 波乱度 (3)
+    df['master_haran_score'] = 50.0             # 波乱度 score (0-100)
+    df['master_top_pop_trust'] = 50.0           # 上位人気信頼度
+    df['master_haran_meter'] = 3                # 波乱メーター 1-5
+
+    # H. 個別ラップ (10)
+    df['master_horse_lap_avg_first3f'] = 35.5
+    df['master_horse_lap_avg_last3f'] = 35.5
+    df['master_horse_lap_best_last3f'] = 34.5
+    df['master_horse_lap_consistency'] = 1.0
+    df['master_horse_lap_best_3f'] = 34.0
+    df['master_horse_lap_pos_change_avg'] = 0.0
+    df['master_horse_lap_finish_speed'] = 12.0
+    df['master_horse_lap_acc_phase'] = 1
+    df['master_horse_lap_dec_phase'] = 1
+    df['master_horse_lap_distance_factor'] = 0.5
+
+    # I. トラックバイアス (5)
+    df['master_track_inner_outer_bias'] = 0.0   # -1 内 / +1 外
+    df['master_track_front_back_bias'] = 0.0    # -1 逃げ / +1 差し
+    df['master_track_corner_bias'] = 0.0
+    df['master_track_pace_bias_score'] = 0.0
+    df['master_track_today_severity'] = 50.0
+
+    # ===== Phase 13 features END =====
+
     # 必要な特徴量の確保
     use_features = model_data.get('features')
     if use_features:
