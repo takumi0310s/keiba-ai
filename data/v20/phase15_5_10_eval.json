@@ -1,0 +1,41 @@
+{
+  "date": "2026-05-10",
+  "evaluated_at": "2026-05-10T21:02:19",
+  "v15": {
+    "n_races": 35,
+    "n_settled": 34,
+    "trio_hits": 11,
+    "investment": 23800.0,
+    "payout": 27090.0,
+    "profit": 3290.0,
+    "roi_pct": 113.8235294117647,
+    "top1_first_rate": 0.2647058823529412,
+    "top1_top3_rate": 0.6176470588235294,
+    "condition_stats": {
+      "A": {
+        "n": 11,
+        "trio_hits": 4,
+        "profit": 7920.0
+      },
+      "C": {
+        "n": 10,
+        "trio_hits": 3,
+        "profit": -1620.0
+      },
+      "D": {
+        "n": 13,
+        "trio_hits": 4,
+        "profit": -3010.0
+      }
+    }
+  },
+  "v20": {
+    "model_path": "C:\\Users\\takum\\keiba-ai\\models\\v20\\v20_quick_20260510_2101.pkl.gz",
+    "note": "V20 quick = V15 features 145 のみ retrain。 Phase 11/12/13 57 features は constant default のため signal 寄与なし。 5/10 仮想評価は同一データの場合 V15 と等価のため未実施。"
+  },
+  "comparison": {
+    "note": "V20 真の改善には Phase 11/12/13 実 data 取得が必要 (5/11+ Phase 13.5、 5/12+ Phase 11 lookup、 5/24+ Phase 12 JV-Link)。",
+    "v15_baseline_auc": 0.8939,
+    "v20_quick_eval_auc": null
+  }
+}
