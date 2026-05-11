@@ -46,10 +46,14 @@ def list_frames(input_path):
                    if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
 
 
-def detect(frames, conf_threshold=0.3, save_annotated=False, out_dir=None):
+def detect(frames, conf_threshold=0.3, save_annotated=False, out_dir=None, device='cpu'):
+    import os as _os
+    # torchvision::nms CUDA backend 未実装回避: 既定で CPU 強制
+    if device == 'cpu':
+        _os.environ['CUDA_VISIBLE_DEVICES'] = ''
     from ultralytics import YOLO
     model = YOLO(MODEL_PATH)
-    print(f'[INFO] YOLO model loaded: {MODEL_PATH}')
+    print(f'[INFO] YOLO model loaded: {MODEL_PATH} (device={device})')
     print(f'[INFO] processing {len(frames)} frame(s), conf>={conf_threshold}')
 
     per_frame = []
@@ -59,7 +63,8 @@ def detect(frames, conf_threshold=0.3, save_annotated=False, out_dir=None):
 
     for i, fp in enumerate(frames):
         try:
-            results = model(fp, conf=conf_threshold, verbose=False, classes=[COCO_HORSE_ID])
+            results = model(fp, conf=conf_threshold, verbose=False,
+                            classes=[COCO_HORSE_ID], device=device)
         except Exception as e:
             print(f'[WARN] {fp}: {e}')
             per_frame.append({'idx': i, 'file': os.path.basename(fp), 'error': str(e)})
@@ -128,6 +133,7 @@ def main():
                     help='bbox 描画版を ann_*.jpg として保存')
     ap.add_argument('--out-name', dest='out_name', default=None,
                     help='出力 dir 名 (default: 入力 dir basename)')
+    ap.add_argument('--device', default='cpu', help='cpu (default) / cuda / 0')
     args = ap.parse_args()
 
     frames = list_frames(args.input)
@@ -141,7 +147,8 @@ def main():
 
     print(f'[INFO] out_dir: {out_dir}')
     per_frame, summary = detect(frames, conf_threshold=args.conf,
-                                save_annotated=args.save_annotated, out_dir=out_dir)
+                                save_annotated=args.save_annotated, out_dir=out_dir,
+                                device=args.device)
 
     with open(os.path.join(out_dir, 'yolov8_features.json'), 'w', encoding='utf-8') as f:
         json.dump({'per_frame': per_frame, 'detected_at': datetime.now().isoformat()},
