@@ -217,7 +217,95 @@ python tools/morning_briefing_5_17.py
 - #4 jockey_trainer_combo_wr (cross expanding)
 - #5 bagu_change_flag (JRDB 既存活用)
 
-## 📋 加入 source 取得可能 data inventory (Agent 2 進行中)
+## 📋 加入 source 完全 inventory (Agent 2 完了)
+
+### TOP 10 不足 items (V20-V22 inject 候補、 priority 順)
+
+| # | item | source | priority |
+|---|------|--------|---------|
+| 1 | **JV-Link DIFF マスター一括** | JRA-VAN | ★★★ V20 学習 base 強化 |
+| 2 | **JV-Link 0B41/0B42 オッズ時系列 (1年)** | JRA-VAN | ★★★ V20 オッズ shift |
+| 3 | **JV-Link MING 公式 DM 予想** | JRA-VAN | ★★ ensemble 第 5 model |
+| 4 | **JV-Link 0B20 出走取消 速報** | JRA-VAN | ★★★ 朝 fire-check critical |
+| 5 | **RV パトロール ビデオ** | JRA RV | ★★★ 不利検知 V22 RL |
+| 6 | **RV パドックアイ AI 分割 + 歩様** | JRA RV | ★★★ Phase 4 比較 baseline |
+| 7 | **netkeiba タイム指数マスター + start/middle/上がり 個別** | netkeiba master | ★★ V20 LGB +5 features |
+| 8 | **netkeiba 期待値シミュレーション + AI 印** | netkeiba master | ★★ cross-check |
+| 9 | **JRDB KTA / MZA / MSA** | JRDB | ★ 出走確定 + 抹消検知 |
+| 10 | **TFJV JG/EX/TM/UM_DATA** | TFJV | ★ 取消 + base time + ID 補強 |
+
+### 各 source 別 詳細
+
+#### 1. netkeiba マスターコース (¥4,980/月、 25/25 主要 取得済)
+**不足 7 items**:
+- タイム指数マスター 上位モデル (重量補正)
+- スタート/追走/上がり 区間別 指数
+- 期待値シミュレーション
+- AI 印 (◎○▲△ 直接値、 expert_marks には部分のみ)
+- 走行解析 score
+- UMAI ビルダー 出力 (cross-check 用)
+- 9 AI parameters の生値 (気性 / 毛色 / 馬名文字数 / 画数 / 誕生月 / blinker)
+
+#### 2. JRDB Advance (¥2,000/月、 15/18 主要 取得済)
+**不足 3 items**:
+- KTA (登録馬、 火曜先行) ← 出走確定 検知に 重要
+- MZA/MSA (抹消馬) ← keep 馬 判定
+- CZA / KZA 全件マスター (差分のみで base なし → 累積 error source)
+- PACI 4/4 停止 (既知 bug、 要修復)
+
+#### 3. JRA-VAN DataLab JV-Link (¥2,090/月、 8/30+ 実装)
+**不足 15+ dataspec**:
+- **DIFF** (馬/騎手/調教師/血統/累計 master 一括) ★★★
+- **MING** (DataMining 公式予想)
+- **SLOP** (坂路調教 公式)
+- HOSE/HOYU (市場価格 / 馬名由来)
+- COMM/YSCH/TOKU (コース / 開催 / 特別登録)
+- 速報系 **全部**: 0B11 (馬体重) / 0B14 (馬場) / 0B15 (確定) / **0B20 (取消)** / 0B30-36 (オッズ各式) / **0B41/0B42 (時系列)**
+- MV (動画 API)
+
+#### 4. JRA レーシングビュアー (¥550/月、 5/15 取得済)
+**不足 5+ 重要 items**:
+- **パトロール ビデオ** (不利検知、 ゴール後 40分公開) ★★★
+- **マルチカメラビュー** (重賞 のみ、 3 画面同時、 位置取り解析)
+- **パドックアイ AI 分割動画 + 歩様解析** (発走 20 分前) ← Phase 4 V22 比較 critical
+- GI ホースライブラリー (1984+、 V22 RL pretrain data 巨大)
+- 重賞レビュー / ダートグレード / GI 特集
+
+#### 5. TARGET frontier JV (個人 license、 4/24 抽出済)
+**未抽出 7 datatype**:
+- **JG_DATA** (競走除外 / 騎乗変更) ← 0B20 と被るが 蓄積
+- **EX_DATA** (拡張データ)
+- **TM_DATA** (タイム関連、 ベースタイム)
+- **UM_DATA** (馬個体 master、 ID 紐付け強化)
+- **DE_DATA** (出馬表 蓄積)
+- **W5_DATA** (WIN5)
+- **TXT/target_sakaro.csv** (公式坂路、 現状 netkeiba 経由)
+
+### 競合 vs 我々 vs 不足 統合 summary
+
+**我々の優位**:
+- Phase 24 新 features (class_down / hot_streak / Jackpot pattern / sire boost) = 競合公開情報になし
+- 動画 AI 自前構築 (paddock + race + body condition + gait) = 先行領域
+- 4-ensemble + IntraRace Attention = 競合の中で上位
+- 戦略⑦ 条件分類 + 黄金 pattern = unique
+
+**不足で 真に効くもの (Phase 24 marathon 中 verify):**
+- jockey_trainer_combo_wr +21.3pt (実装済)
+- corner_position_delta +10.2pt (実装済)
+- prev_race_disadvantage_score (NLP scoring 実装済)
+
+**5/24+ V20 投入 で 追加すべき**:
+- start/middle/上がり 個別 指数 (netkeiba)
+- jockey_trainer combo, corner_delta は 既実装
+- bagu_change (JRDB) - 詳細解析 必要
+- JV-Link DIFF + 0B20 + 0B41 (V20 base 強化)
+
+**5/24+ 〜 V21 で**:
+- パトロールビデオ AI 解析
+- パドックアイ AI 歩様 cross-check
+
+**V22+ RL で**:
+- GI ホースライブラリー 1984+ pretrain
 
 ### JV-Link DataSpec 既実装 vs 不足 (我々 中間検証)
 
