@@ -42,16 +42,18 @@ def main():
 
     # 数値 only + label
     target = 'top3'
+    # V20 LIVE 想定: popularity / horse_weight / tansho_odds は事前確定 (LIVE 入力)
     drop_cols = {'race_id', 'horse_id', 'horse_name', 'jockey', 'trainer',
                  'owner', 'breeder', 'finish', 'finish2', 'abnormal_code',
                  'time_margin', 'run_time', 'run_time_x10', 'empty',
                  'pass1', 'pass2', 'pass3', 'pass4', 'agari_3f',  # POST-RACE LEAK
-                 'finish2', 'birthday', 'mark1', 'mark2', 'training_4f',
+                 'birthday', 'mark1', 'mark2', 'training_4f',
                  'distance_change_cat',  # category cat
-                 'top3', 'prize', 'horse_weight',  # post-race or LEAK
-                 'popularity', 'tansho_odds',  # LIVE only (LEAK in WF)
+                 'top3', 'prize',  # POST-RACE
                  'umaban', 'horse_num',
                  'race_date', 'prev_race_date', '_year_full', '_idx',
+                 # popularity / horse_weight は LIVE で 事前確定なので 残す
+                 # tansho_odds は data 不在のため 自動 drop
                  }
     feature_cols = [c for c in df.columns if c not in drop_cols and df[c].dtype in ('int64', 'float64', 'int32', 'float32', 'int8', 'int16')]
     print(f'[INFO] feature count: {len(feature_cols)}')
