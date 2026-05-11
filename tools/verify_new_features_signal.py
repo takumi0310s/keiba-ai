@@ -65,6 +65,26 @@ def main():
         df = df.merge(evt, on=['race_id', 'horse_id'], how='left')
         print(f'[INFO] +events features: {df.shape}')
 
+    # Merge hot streak
+    if 'hot_streak' in features_to_use or 'hot' in features_to_use:
+        hs_path = os.path.join(BASE_DIR, 'data', 'hot_streak_features.csv')
+        if os.path.exists(hs_path):
+            hs = pd.read_csv(hs_path, encoding='utf-8')
+            hs['race_id'] = hs['race_id'].astype(str)
+            hs['horse_id'] = hs['horse_id'].astype(str)
+            df = df.merge(hs, on=['race_id', 'horse_id'], how='left')
+            print(f'[INFO] +hot_streak features: {df.shape}')
+
+    # Merge pace expanding
+    if 'pace' in features_to_use:
+        pe_path = os.path.join(BASE_DIR, 'data', 'pace_features_expanding.csv')
+        if os.path.exists(pe_path):
+            pe = pd.read_csv(pe_path, encoding='utf-8')
+            pe['race_id'] = pe['race_id'].astype(str)
+            pe['horse_id'] = pe['horse_id'].astype(str)
+            df = df.merge(pe, on=['race_id', 'horse_id'], how='left')
+            print(f'[INFO] +pace expanding features: {df.shape}')
+
     # Merge remarks (by umaban)
     if 'remarks' in features_to_use:
         rmk = pd.read_csv(os.path.join(BASE_DIR, 'data', 'race_review_features.csv'),
@@ -112,7 +132,8 @@ def main():
     new_feature_keys = [c for c in feature_cols
                         if c.startswith(('rmk_', 'jockey_change', 'trainer_change',
                                           'class_change', 'class_up', 'class_down',
-                                          'equipment_change'))
+                                          'equipment_change', 'jockey_recent', 'trainer_recent',
+                                          'horse_recent', 'pace_career', 'pace_recent'))
                         or '_rate_exp' in c]
     base_features = [c for c in feature_cols if c not in new_feature_keys]
     print(f'[INFO] base features: {len(base_features)}, new features: {len(new_feature_keys)}')
