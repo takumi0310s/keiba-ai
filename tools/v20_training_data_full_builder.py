@@ -41,7 +41,9 @@ def main():
     yt = args.year_to - 2000 if args.year_to >= 2000 else args.year_to
     df = df[(df['year'] >= yf) & (df['year'] <= yt)]
     df['race_id'] = df['race_id'].astype(str)
-    df['horse_id'] = df['horse_id'].astype(str)
+    # horse_id を int 化 (".0" suffix 除去 + 統一 dtype)
+    df['horse_id'] = pd.to_numeric(df['horse_id'], errors='coerce').astype('Int64').astype(str)
+    df['horse_id'] = df['horse_id'].str.replace('<NA>', '', regex=False)
     print(f'[INFO] base after year filter: {df.shape}')
 
     # All feature CSVs to merge
@@ -52,6 +54,7 @@ def main():
         ('layoff_features.csv', ['race_id', 'horse_id']),
         ('distance_surface_change_features.csv', ['race_id', 'horse_id']),
         ('sire_class_down_features.csv', ['race_id', 'horse_id']),
+        ('competitor_gap_features.csv', ['race_id', 'horse_id']),
     ]
 
     total_new_cols = 0
@@ -60,7 +63,13 @@ def main():
         if not os.path.exists(path):
             print(f'  [SKIP] {fname} (not found)')
             continue
-        sub = pd.read_csv(path, encoding='utf-8', dtype={k: str for k in keys})
+        sub = pd.read_csv(path, encoding='utf-8')
+        # horse_id dtype 統一 (int → str)
+        if 'horse_id' in sub.columns:
+            sub['horse_id'] = pd.to_numeric(sub['horse_id'], errors='coerce').astype('Int64').astype(str)
+            sub['horse_id'] = sub['horse_id'].str.replace('<NA>', '', regex=False)
+        if 'race_id' in sub.columns:
+            sub['race_id'] = sub['race_id'].astype(str)
         original_cols = set(sub.columns)
         # merge
         before = df.shape[1]

@@ -131,9 +131,10 @@ def main():
     else:
         print('  JRDB SKB 未取得')
 
-    # Save features
+    # Save features (horse_id を int 化、 ".0" suffix なくす)
     out = df[['race_id', 'horse_id', 'corner_position_delta',
               'jockey_trainer_combo_top3_exp']].copy()
+    out['horse_id'] = pd.to_numeric(out['horse_id'], errors='coerce').astype('Int64')
     out_path = os.path.join(BASE_DIR, 'data', 'competitor_gap_features.csv')
     out.to_csv(out_path, index=False)
     print(f'\n[OK] saved: {out_path}')
