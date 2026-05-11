@@ -72,7 +72,7 @@ def cmd_probe(args):
     print(f'[INFO] target: {JRA_RV_TOP}')
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # debug は visible
+        browser = p.chromium.launch(headless=True)  # automated probe
         ctx = browser.new_context(
             viewport={'width': 1280, 'height': 800},
             user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0',
