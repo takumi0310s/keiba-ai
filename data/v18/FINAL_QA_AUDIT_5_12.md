@@ -217,9 +217,35 @@ python tools/morning_briefing_5_17.py
 - #4 jockey_trainer_combo_wr (cross expanding)
 - #5 bagu_change_flag (JRDB 既存活用)
 
-## 📋 加入 source 取得可能 data inventory (Agent 結果 待ち)
+## 📋 加入 source 取得可能 data inventory (Agent 2 進行中)
 
-Agent 2 (4 source inventory) 完了次第 ここに 追記。
+### JV-Link DataSpec 既実装 vs 不足 (我々 中間検証)
+
+**我々 実装済 (jvlink_parser.py 8 dataspec)**:
+- RACE / SE / HR / UM / BLOD / WOOD / TCOV / O1
+
+**JV-Link 公式 30+ dataspec のうち 我々 不足**:
+| dataspec | 内容 | priority |
+|----------|------|---------|
+| **O2** | 馬連 オッズ (LIVE) | ★★★ Pari-mutuel optimizer 必要 |
+| **O3** | 馬単 オッズ | ★★ |
+| **O4** | Wide オッズ (LIVE) | ★★★ (Wide ROI 178% 確認済) |
+| **O5** | 三連複 オッズ | ★★★ trio bet base |
+| **O6** | 三連単 オッズ | ★★ |
+| **WH** | 馬体重 LIVE | ★★★ Phase 21A morning_weight_check と統合 |
+| **WE** | 天気 / 馬場 LIVE | ★★★ |
+| **SC** | 出走馬 確定 (LIVE) | ★★ |
+| **MVID** | Movie type API | ★★ |
+| **MING** | DataMining 公式 予想 | ★ |
+| **DM** | ダート / 芝 mining | ★ |
+| **TOKU** | 特別レース | ★ |
+| **CHAR** | 字幕 | - |
+| **RC** | レコード | - |
+| **JC** | 騎手 変更 (LIVE) | ★★ jockey_change LIVE |
+
+→ jvlink_parser.py に **15+ dataspec 追加** で full coverage、 特に O2-6 / WH / WE / SC は 5/24+ V20 投入時に critical。
+
+Agent 2 完了次第 詳細 inventory 追記。
 
 ## 結論 (現状)
 
