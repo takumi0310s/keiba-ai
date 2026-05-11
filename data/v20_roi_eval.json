@@ -1,10 +1,10 @@
 {
   "test_year": 2025,
-  "n_race": 0,
-  "n_hit": 0,
-  "hit_rate": 0.0,
-  "total_bet": 0,
-  "total_pnl": 0,
-  "roi": 100.0,
+  "n_race": 3455,
+  "n_hit": 444,
+  "hit_rate": 0.12850940665701882,
+  "total_bet": 2418500,
+  "total_pnl": -642500,
+  "roi": 73.43394666115361,
   "assumed_payout": 4000
 }

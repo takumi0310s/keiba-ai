@@ -68,8 +68,11 @@ def main():
 
     # race ごとに top1-3 pick + 簡易 trio bet
     print(f'\n=== V20 race-level trio simulation (2025) ===')
-    # race_id key (full Year/MM/DD format に変換)
-    race_groups = df_25.groupby('race_id')
+    # race_id 末尾 2 digit = 馬番、 race 単位 = 上 8 digit
+    df_25['race_id_str'] = df_25['race_id'].astype(str).str.zfill(10)
+    df_25['race_id_8'] = df_25['race_id_str'].str[:8]
+    print(f'  unique race_id (8 digit): {df_25["race_id_8"].nunique():,}')
+    race_groups = df_25.groupby('race_id_8')
 
     # 戦略⑦ exclusion
     def classify_cond(row):
@@ -98,10 +101,8 @@ def main():
     for rid, grp in race_groups:
         if len(grp) < 3:
             continue
-        cond = classify_cond(grp.iloc[0])
-        # 戦略⑦ exclude
-        if cond in ['B', 'E']:
-            continue
+        # 戦略⑦ exclusion は condition encode 問題のため 一旦 skip
+        # 全 race で V20 性能 確認
         # V20 pred ranking
         sorted_grp = grp.sort_values('v20_pred', ascending=False)
         top3_pred = sorted_grp.iloc[:3]
