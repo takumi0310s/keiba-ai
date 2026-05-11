@@ -38,6 +38,7 @@ def main():
 
     features_to_use = [f.strip() for f in args.features.split(',')]
     print(f'[INFO] verify features: {features_to_use}')
+    # ★ Note: pace features は LEAK のため WF で慎重に。 pos_change_1to4 等は post-race info
 
     # Load base
     base_path = os.path.join(BASE_DIR, 'data', 'jra_races_full.csv')

@@ -5,6 +5,19 @@
 既存 pass1-4 (通過順位) + agari_3f (上がり 3F) + run_time から、 race-level pace 統計 +
 horse-level position change features を 算出。 V15 既存 prev_race_first3f 等 とは別 axis。
 
+【🔴 LEAK 警告】
+本 script の features は **POST-RACE info** (pass1-4 / agari_3f はレース中・後の値)。
+**当該レース予測の features として使うと致命的 LEAK**。
+
+使い方:
+1. **過去レースの集計** (prev_race_avg_burst_5R, prev_race_avg_pace_change_5R 等) として expanding window 化して 次走以降の features に使う
+2. または、 **馬の career 平均** として horse_id 単位で集計し、 リーク 厳格に時系列管理する
+
+【V12 既存 features との関係】
+V12 で既に prev_race_first3f, prev_race_pace_diff 等が実装済。 本 script は補完 axis として
+final_burst (差し力) / pos_change (前半 → 後半 移動) 等を 新規追加。
+利用時は expanding window 化 厳守。
+
 【追加 features (per-race × per-horse、 12 種)】
 1. pace_avg_pass1: 1 角 通過順位 race avg (混戦度の proxy)
 2. pace_std_pass1: 1 角 std
