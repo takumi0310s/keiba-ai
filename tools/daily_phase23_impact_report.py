@@ -58,8 +58,30 @@ def load_results(date):
     return results
 
 
+_CALIBRATOR_CACHE = None
+
+
+def apply_cal(p):
+    """V15 calibrator あれば適用、 raw 返す."""
+    global _CALIBRATOR_CACHE
+    cal_path = os.path.join(BASE_DIR, 'data', 'calibrator_v15.pkl')
+    if not os.path.exists(cal_path):
+        return p, 'no_calibrator'
+    if _CALIBRATOR_CACHE is None:
+        try:
+            import pickle
+            _CALIBRATOR_CACHE = pickle.load(open(cal_path, 'rb'))
+        except Exception:
+            return p, 'cal_error'
+    try:
+        iso = _CALIBRATOR_CACHE['isotonic']
+        return float(iso.transform([p])[0]), 'isotonic'
+    except Exception:
+        return p, 'cal_error'
+
+
 def kelly_simple(p, odds, bankroll=30000, fraction=0.25, cap_pct=0.05):
-    """Kelly bet (簡易、 max 5% cap)."""
+    """Kelly bet (簡易、 max 5% cap)。 calibration 適用済 p を 受け取る."""
     if odds <= 1 or p <= 0 or p >= 1:
         return 0
     b = odds - 1
@@ -122,8 +144,9 @@ def main():
         v15_ev = top1_score * est_odds - 1
         v15_total_bet += v15_bet
 
-        # Shadow: Kelly
-        shadow_bet = kelly_simple(top1_score, est_odds, bankroll=args.bankroll)
+        # Shadow: Kelly with calibrated prob
+        cal_p, cal_method = apply_cal(top1_score)
+        shadow_bet = kelly_simple(cal_p, est_odds, bankroll=args.bankroll)
         shadow_total_bet += shadow_bet
 
         # outcome
