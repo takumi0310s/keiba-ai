@@ -37,7 +37,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_history():
-    """jra_races_full.csv を 過去 history として load."""
+    """jra_races_full.csv を 過去 history として load.
+    horse_id を netkeiba 10-digit 形式 (TFJV '20' prefix) に 統一。"""
     import pandas as pd
     path = os.path.join(BASE_DIR, 'data', 'jra_races_full.csv')
     df = pd.read_csv(path, encoding='utf-8', low_memory=False,
@@ -50,10 +51,15 @@ def load_history():
     df['top3'] = (df['finish'] <= 3).astype(int)
     df['win'] = (df['finish'] == 1).astype(int)
     df['race_id'] = df['race_id'].astype(str)
+    # horse_id を 8-digit TFJV → 10-digit netkeiba 形式 ('20' prefix)
     df['horse_id'] = pd.to_numeric(df['horse_id'], errors='coerce').astype('Int64').astype(str)
     df['horse_id'] = df['horse_id'].str.replace('<NA>', '', regex=False)
-    df['jockey_id'] = df['jockey_id'].astype(str)
-    df['trainer_id'] = df['trainer_id'].astype(str)
+    # Map TFJV (8桁) → netkeiba (10桁): prepend '20' to zero-padded 8-digit
+    df['horse_id'] = df['horse_id'].apply(
+        lambda x: '20' + x.zfill(8) if x and x != '' else '')
+    # jockey_id / trainer_id: normalize to integer string (strip leading zeros)
+    df['jockey_id'] = pd.to_numeric(df['jockey_id'], errors='coerce').astype('Int64').astype(str).str.replace('<NA>', '', regex=False)
+    df['trainer_id'] = pd.to_numeric(df['trainer_id'], errors='coerce').astype('Int64').astype(str).str.replace('<NA>', '', regex=False)
     # date column 生成
     df['race_date'] = pd.to_datetime(
         (2000 + df['year']).astype(str) + '-' +
@@ -237,13 +243,15 @@ def main():
             continue
 
         for h in horses_found:
+            # Normalize jockey_id (strip leading zeros to match history int format)
+            j_id_norm = str(int(h['jockey_id'])) if h['jockey_id'].isdigit() else h['jockey_id']
             hf = compute_horse_features(h['horse_id'], history, ref_date=ref_date)
-            jf = compute_jockey_features(h['jockey_id'], history, ref_date=ref_date)
+            jf = compute_jockey_features(j_id_norm, history, ref_date=ref_date)
             tf = compute_trainer_features(hf.get('horse_last_trainer', ''),
                                             history, ref_date=ref_date)
-            jt = compute_jt_combo(h['jockey_id'], hf.get('horse_last_trainer', ''),
+            jt = compute_jt_combo(j_id_norm, hf.get('horse_last_trainer', ''),
                                     history, ref_date=ref_date)
-            is_jpot = jackpot_check(hf, jf, current_class, h['jockey_id'])
+            is_jpot = jackpot_check(hf, jf, current_class, j_id_norm)
             if is_jpot:
                 n_jackpot += 1
 
