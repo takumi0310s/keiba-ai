@@ -99,8 +99,12 @@ def format_alert(date_str, jackpots):
     lines.append('過去 4 年 ROI 184% verified、 単勝 1500円 任意 試験運用')
     lines.append('')
     for j in jackpots[:10]:
-        lines.append(f'• race {j["race_id"]} 馬番 {j["umaban"]} '
-                      f'(horse {j["horse_id"][:8]}..) jockey {j["jockey_id"]}')
+        hid = str(j.get('horse_id', ''))
+        jid = str(j.get('jockey_id', ''))
+        rid = str(j.get('race_id', ''))
+        uma = j.get('umaban', '')
+        lines.append(f'• race {rid} 馬番 {uma} '
+                      f'(horse {hid[:8]}..) jockey {jid}')
         recent5 = j.get('horse_recent5_top3', 'N/A')
         j30 = j.get('jockey_recent30_top3', 'N/A')
         if isinstance(recent5, float):
