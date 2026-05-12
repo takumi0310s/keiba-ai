@@ -128,3 +128,4 @@ data/netkeiba_siblings_expanding_segmented.csv
 data/tfjv/
 data/v21_training_data_full.csv
 keiba_model_v21_central.pkl.gz
+v22_4ensemble.pkl.gz
