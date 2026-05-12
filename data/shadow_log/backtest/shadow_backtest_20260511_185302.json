@@ -1,0 +1,229 @@
+{
+  "summary": {
+    "v15_pnl": -11950.0,
+    "shadow_pnl": 16800.0,
+    "n_races": 20
+  },
+  "results": [
+    {
+      "race_id": 202606020505,
+      "pred": 0.1988226976964497,
+      "cal_pred": 0.1988226976964497,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020506,
+      "pred": 0.1574649023659729,
+      "cal_pred": 0.1574649023659729,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020507,
+      "pred": 0.1834722115245527,
+      "cal_pred": 0.1834722115245527,
+      "est_odds": 17.8,
+      "v15_bet": 700,
+      "v15_pnl": 1080.0,
+      "shadow_bet": 1000,
+      "shadow_pnl": 16800.0,
+      "hit": 1
+    },
+    {
+      "race_id": 202606020508,
+      "pred": 0.1507907490291375,
+      "cal_pred": 0.1507907490291375,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020509,
+      "pred": 0.165856199793038,
+      "cal_pred": 0.165856199793038,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020510,
+      "pred": 0.164323526226143,
+      "cal_pred": 0.164323526226143,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020511,
+      "pred": 0.1584094431395503,
+      "cal_pred": 0.1584094431395503,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202606020512,
+      "pred": 0.1458860514200565,
+      "cal_pred": 0.1458860514200565,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010701,
+      "pred": 0.1982245367876736,
+      "cal_pred": 0.1982245367876736,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010702,
+      "pred": 0.1599380887460698,
+      "cal_pred": 0.1599380887460698,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010703,
+      "pred": 0.1674913735178,
+      "cal_pred": 0.1674913735178,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010704,
+      "pred": 0.1860397796196033,
+      "cal_pred": 0.1860397796196033,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010705,
+      "pred": 0.1742542610871586,
+      "cal_pred": 0.1742542610871586,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010706,
+      "pred": 0.194749209091597,
+      "cal_pred": 0.194749209091597,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010707,
+      "pred": 0.1630161503254485,
+      "cal_pred": 0.1630161503254485,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010708,
+      "pred": 0.2008423744472429,
+      "cal_pred": 0.2008423744472429,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010709,
+      "pred": 0.1391963459638832,
+      "cal_pred": 0.1391963459638832,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010710,
+      "pred": 0.1750338241879171,
+      "cal_pred": 0.1750338241879171,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010711,
+      "pred": 0.1664454231935292,
+      "cal_pred": 0.1664454231935292,
+      "est_odds": 5.0,
+      "v15_bet": 700,
+      "v15_pnl": -700,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 0
+    },
+    {
+      "race_id": 202609010712,
+      "pred": 0.1669098857095986,
+      "cal_pred": 0.1669098857095986,
+      "est_odds": 2.7,
+      "v15_bet": 700,
+      "v15_pnl": -430.0,
+      "shadow_bet": 0,
+      "shadow_pnl": 0,
+      "hit": 1
+    }
+  ]
+}

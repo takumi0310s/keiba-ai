@@ -1,0 +1,27 @@
+{
+  "race_id": "TEST_RACE_ID",
+  "top_horse_pred": 0.65,
+  "top_horse_calibrated_pred": 0.65,
+  "cal_method": "no_calibrator",
+  "top_horse_odds": 3.5,
+  "top_horse_ev": 1.275,
+  "kelly_bet_full_pct": 0.51,
+  "kelly_bet_size": 1500,
+  "current_bet_size": 700,
+  "shadow_bet_diff": 800,
+  "optimal_trio_points": [
+    {
+      "triple": [
+        0,
+        1,
+        2
+      ],
+      "prob": 1.0000000000000002,
+      "odds_est": 0.7999999999999998,
+      "ev": -0.19999999999999996
+    }
+  ],
+  "breaker_status": "WARN",
+  "breaker_pnl": -25070.0,
+  "shadow_at": "2026-05-11T18:53:07.478446"
+}

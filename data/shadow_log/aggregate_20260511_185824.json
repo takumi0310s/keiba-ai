@@ -1,0 +1,31 @@
+{
+  "aggregate": {
+    "n_logs": 2,
+    "breaker_status_dist": {
+      "WARN": 2
+    },
+    "kelly_bet_stats": {
+      "n": 2,
+      "sum": 3000,
+      "mean": 1500.0,
+      "min": 1500,
+      "max": 1500
+    },
+    "current_bet_stats": {
+      "n": 2,
+      "sum": 1400,
+      "mean": 700.0,
+      "min": 700,
+      "max": 700
+    },
+    "shadow_diff_total": 1600,
+    "cal_methods_used": {
+      "no_calibrator": 2
+    },
+    "optimal_trio_avg_count": 1.0
+  },
+  "logs_count": 2,
+  "generated_at": "2026-05-11T18:58:24.719010",
+  "date_from": null,
+  "date_to": null
+}
