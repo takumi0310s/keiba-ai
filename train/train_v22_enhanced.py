@@ -192,23 +192,11 @@ def run_wf(df, features, folds, quick=False):
         xgb_model, p_xgb, auc_xgb = train_xgb(df_tr, df_te, features)
         print(f'  XGB AUC={auc_xgb:.4f} [{time.time()-t0:.0f}s]')
 
-        # FT
-        scaler = StandardScaler()
-        X_tr_s = scaler.fit_transform(X_tr)
-        X_te_s = scaler.transform(X_te)
-        torch.cuda.empty_cache() if DEVICE.type == 'cuda' else None
-        print('  Training FT-Transformer...')
-        t0 = time.time()
-        # ★ V22 enhanced: features 282 で OOM 対策 → batch 256 + d_token 32 ★
-        ft_model, p_ft, auc_ft = train_ft_transformer(
-            X_tr_s, y_tr.astype(np.float32),
-            X_te_s, y_te.astype(np.float32),
-            n_features=len(features),
-            epochs=30, batch_size=256, lr=1e-3,
-            patience=8, d_token=32, n_heads=4, n_layers=2,
-            dropout=0.1, label=f'FT-{y_lo}',
-        )
-        print(f'  FT AUC={auc_ft:.4f} [{time.time()-t0:.0f}s]')
+        # FT skip (282 features で val step OOM、 V22 enhanced 専用 limitation)
+        # 代わりに LGB+XGB+IR Grid 3-model ensemble
+        print('  FT skipped (OOM with 282 features)')
+        p_ft = np.full(len(X_te), 0.3, dtype=np.float32)  # neutral baseline
+        auc_ft = 0.5
 
         torch.cuda.empty_cache() if DEVICE.type == 'cuda' else None
         print('  Training IntraRace...')
