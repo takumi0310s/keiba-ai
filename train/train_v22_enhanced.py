@@ -199,12 +199,13 @@ def run_wf(df, features, folds, quick=False):
         torch.cuda.empty_cache() if DEVICE.type == 'cuda' else None
         print('  Training FT-Transformer...')
         t0 = time.time()
+        # ★ V22 enhanced: features 282 で OOM 対策 → batch 256 + d_token 32 ★
         ft_model, p_ft, auc_ft = train_ft_transformer(
             X_tr_s, y_tr.astype(np.float32),
             X_te_s, y_te.astype(np.float32),
             n_features=len(features),
-            epochs=30, batch_size=512, lr=1e-3,
-            patience=8, d_token=64, n_heads=4, n_layers=3,
+            epochs=30, batch_size=256, lr=1e-3,
+            patience=8, d_token=32, n_heads=4, n_layers=2,
             dropout=0.1, label=f'FT-{y_lo}',
         )
         print(f'  FT AUC={auc_ft:.4f} [{time.time()-t0:.0f}s]')
@@ -217,9 +218,10 @@ def run_wf(df, features, folds, quick=False):
         scaler_ir = StandardScaler()
         df_tr_ir[features] = scaler_ir.fit_transform(df_tr_ir[features].values.astype(np.float32))
         df_te_ir[features] = scaler_ir.transform(df_te_ir[features].values.astype(np.float32))
+        # ★ V22 enhanced: features 282 + IR で OOM 対策 → d_model 64 (元 V22 base 値) ★
         ir_model, ir_val_dict, auc_ir_raw = train_intra_race(
             df_tr_ir, df_te_ir, features,
-            epochs=30, patience=10, seed=42 + int(y_lo), d_model=128,
+            epochs=30, patience=10, seed=42 + int(y_lo), d_model=64,
         )
         p_ir = np.zeros(len(X_te), dtype=np.float32)
         cov = 0
