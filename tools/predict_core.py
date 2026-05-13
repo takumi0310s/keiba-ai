@@ -1673,7 +1673,7 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         if 'training_time_filled' not in df.columns or (df.get('training_time_filled', pd.Series([0])) == 0).all():
             df['training_time_filled'] = training_mean
             df['has_training'] = 0
-        df['training_time_filled'] = df['training_time_filled'].replace(0, training_mean)
+        df['training_time_filled'] = df['training_time_filled'].mask(df['training_time_filled'] == 0, training_mean)
         if 'has_training' not in df.columns:
             df['has_training'] = (df['training_time_filled'] != training_mean).astype(int)
         df['training_per_dist'] = training_mean / max(dist / 200, 1)
@@ -1824,7 +1824,8 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
     has_odds = (odds_dict and len(odds_dict) > 0) or \
                ('単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any())
     if has_odds and '単勝オッズ' in df.columns:
-        df['odds_log'] = np.log1p(df['単勝オッズ'].clip(1, 999).replace(0, 15.0))
+        _odds_clipped = df['単勝オッズ'].clip(1, 999)
+        df['odds_log'] = np.log1p(_odds_clipped.mask(_odds_clipped == 0, 15.0))
         # リアルタイムオッズがある場合、prev_odds_log も更新
         has_real_odds = df['単勝オッズ'] > 0
         if has_real_odds.any() and 'prev_odds_log' in df.columns:
@@ -1841,9 +1842,9 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
         df['weather_enc'] = weather_map.get(weather_str, 0)
 
         if '人気順位' in df.columns and (df['人気順位'] > 0).any():
-            df['pop_rank'] = df['人気順位'].replace(0, 8)
+            df['pop_rank'] = df['人気順位'].mask(df['人気順位'] == 0, 8)
         elif has_odds and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
-            df['pop_rank'] = df['単勝オッズ'].replace(0, 9999).rank(method='min')
+            df['pop_rank'] = df['単勝オッズ'].mask(df['単勝オッズ'] == 0, 9999).rank(method='min')
         else:
             df['pop_rank'] = 8
 
@@ -1986,8 +1987,8 @@ def build_features(horses, race_info, model_data, race_id=None, odds_dict=None,
 
     # 7. PCI (Pace Change Index)
     if 'prev_race_first3f' in df.columns and 'prev_race_last3f' in df.columns:
-        _f3f = df['prev_race_first3f'].replace(0, np.nan)
-        _l3f = df['prev_race_last3f'].replace(0, np.nan)
+        _f3f = df['prev_race_first3f'].mask(df['prev_race_first3f'] == 0)
+        _l3f = df['prev_race_last3f'].mask(df['prev_race_last3f'] == 0)
         df['pci'] = (_l3f / _f3f).fillna(1.0)
     else:
         df['pci'] = 1.0
@@ -2360,7 +2361,7 @@ def predict_race(df, model_data, odds_available=False, race_info=None):
 
     # ===== FINAL SCORE（v8/v9 統一ウェイト） =====
     if odds_available and '単勝オッズ' in df.columns and (df['単勝オッズ'] > 0).any():
-        odds_vals = df['単勝オッズ'].replace(0, 15.0)
+        odds_vals = df['単勝オッズ'].mask(df['単勝オッズ'] == 0, 15.0)
         odds_scores = np.clip(1.0 - np.log1p(odds_vals) / np.log1p(100.0), 0.0, 1.0)
         final_scores = (
             ai_scores * 0.65 + odds_scores * 0.08 + apt_scores * 0.06

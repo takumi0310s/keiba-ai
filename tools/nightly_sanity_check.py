@@ -69,12 +69,16 @@ def get_tomorrow_tasks(target_date: datetime) -> list[dict]:
             "} | ConvertTo-Json -Depth 2"
         ),
     ]
-    r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    r = subprocess.run(
+        cmd, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", timeout=60,
+    )
     if r.returncode != 0:
         return []
     try:
         data = json.loads(r.stdout)
-    except Exception:
+    except Exception as e:
+        print(f"[WARN] schtask json parse fail: {e}", file=sys.stderr)
         return []
     if isinstance(data, dict):
         data = [data]

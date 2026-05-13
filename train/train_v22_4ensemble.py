@@ -144,8 +144,22 @@ def build_race_id_unique(df):
     return df
 
 
-def train_intra_race(df_tr, df_va, features, label='target', epochs=20, patience=5):
-    """IntraRace モデル 学習 + val preds 返却."""
+def train_intra_race(df_tr, df_va, features, label='target', epochs=30, patience=10,
+                     seed: int = 42, d_model: int = 128):
+    """IntraRace モデル 学習 + val preds 返却.
+
+    fold 22 collapse 対策:
+    - epochs 20 → 30 (early-stop 余裕)
+    - patience 5 → 10 (val noise に robust)
+    - d_model 64 → 128 (representation 拡大、 GPU 16GB 余裕)
+    - explicit torch seed (再現性 + 初期重み instability 軽減)
+    """
+    import random as _random
+    _random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
     def make_race_batches(df, feats):
         race_groups = df.groupby('race_id_unique')
@@ -171,7 +185,7 @@ def train_intra_race(df_tr, df_va, features, label='target', epochs=20, patience
     X_va, y_va, m_va, idx_va = make_race_batches(df_va, features)
     print(f'    IR: train={len(X_tr)} races, val={len(X_va)} races')
 
-    model = IntraRaceAttention(n_features=len(features), d_model=64,
+    model = IntraRaceAttention(n_features=len(features), d_model=d_model,
                                 n_heads=4, n_layers=2, dropout=0.1).to(DEVICE)
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
@@ -325,8 +339,10 @@ def wf_4ensemble(df, features, folds):
         scaler_ir = StandardScaler()
         df_tr[features] = scaler_ir.fit_transform(df_tr[features].values.astype(np.float32))
         df_te[features] = scaler_ir.transform(df_te[features].values.astype(np.float32))
-        ir_model, ir_val_dict, auc_ir_raw = train_intra_race(df_tr, df_te, features,
-                                                              epochs=20, patience=5)
+        ir_model, ir_val_dict, auc_ir_raw = train_intra_race(
+            df_tr, df_te, features,
+            epochs=30, patience=10, seed=42 + int(y_lo), d_model=128,
+        )
 
         p_ir = np.zeros(len(X_te), dtype=np.float32)
         cov = 0
