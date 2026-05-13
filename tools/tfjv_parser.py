@@ -46,21 +46,28 @@ TFJV_ROOT = Path(r"C:/TFJV")
 # 各 datatype の record は CRLF 区切り、 内部 ASCII + Shift-JIS 漢字混在
 
 RA_FIELD_OFFSETS = {
-    # offset (start, length)
-    "record_type":  (0,  2),
-    "data_kbn":     (2,  1),
-    "year":         (3,  4),
-    "month_day":    (7,  4),    # MMDD
-    "year_create":  (11, 4),    # 作成 年
-    "create_md":    (15, 4),
-    "course_code":  (19, 2),
-    "kai":          (21, 2),
-    "nichi":        (23, 2),
-    "race_num":     (25, 2),
-    # 後段は yobi (28)、 youbi、 開催情報 etc.、 spec full ref
-    "youbi_code":   (27, 1),
-    "race_name":    (28, 60),   # Shift-JIS、 60 bytes (30 chars)
-    # ... (略、 race_name_short、 race_class、 surface、 distance 等 後段で追加)
+    # offset (start, length) — Phase 13 fix (5/13 PM)
+    "record_type":     (0,  2),
+    "data_kbn":        (2,  1),
+    "year":            (3,  4),
+    "month_day":       (7,  4),    # MMDD
+    "year_create":     (11, 4),    # 作成 年
+    "create_md":       (15, 4),
+    "course_code":     (19, 2),
+    "kai":             (21, 2),
+    "nichi":           (23, 2),
+    "race_num":        (25, 2),
+    "youbi_code":      (27, 1),
+    "tokubetsu_num":   (28, 4),    # ★ Phase 13: 特別競走番号 (4 bytes ASCII、 平場=0000) ★
+    "race_name":       (32, 60),   # ★ Phase 13 fix: 28→32 (本題、 Shift-JIS) ★
+    "race_name_sub":   (92, 60),   # ★ Phase 13 add: 副題 (Shift-JIS) ★
+    "race_name_paren": (152, 60),  # ★ Phase 13 add: カッコ内 (Shift-JIS) ★
+    # 後段 offset 696-720 = 競走種別 + 競走条件 + 距離 + トラックコード (binary 観察 確認)
+    # Phase 13 観察: offset 705-708 = 距離(4桁)、 offset 709 = トラックコード(1 char、 A=芝 / B=ダート)
+    "shubetsu_code":   (697, 2),   # ★ Phase 13 add: 競走種別 (2 chars、 offset 696 は 全角space trailing) ★
+    "race_dist_raw":   (705, 4),   # ★ Phase 13 add: 距離 (4 chars ASCII) ★
+    "track_code":      (709, 1),   # ★ Phase 13 add: トラックコード (1 char、 A=芝 / B=ダート右 / D=ダート左) ★
+    "race_raw_extras": (670, 50),  # ★ Phase 13 add: 後段 raw chunk (debug 用) ★
 }
 
 SE_FIELD_OFFSETS = {
@@ -139,8 +146,16 @@ PARSERS = {
 }
 
 
+SJIS_FIELDS = {"horse_name", "race_name", "race_name_sub", "race_name_paren"}
+RAW_FIELDS = {"race_raw_extras"}
+
+
 def parse_record(raw: bytes, schema: dict, encoding: str = "shift_jis") -> dict:
-    """raw bytes と offsets schema で record を dict に変換."""
+    """raw bytes と offsets schema で record を dict に変換.
+
+    Phase 13: Shift-JIS 漢字 fields に race_name_sub / race_name_paren 追加。
+    全角space (U+3000) も strip 対象に追加。 race_raw_extras は hex で保持。
+    """
     out = {}
     for name, (start, length) in schema.items():
         if length == -1:
@@ -148,14 +163,17 @@ def parse_record(raw: bytes, schema: dict, encoding: str = "shift_jis") -> dict:
         else:
             chunk = raw[start:start+length]
         try:
-            if name in ("horse_name", "race_name") or name.endswith("_kanji"):
-                # Shift-JIS 漢字 fields
-                val = chunk.decode(encoding, errors="replace").rstrip("\x00 ")
+            if name in RAW_FIELDS:
+                val = chunk.hex()  # raw bytes hex (debug 用)
+            elif name in SJIS_FIELDS or name.endswith("_kanji"):
+                # Shift-JIS 漢字 fields、 全角space (U+3000) も strip
+                val = (chunk.decode(encoding, errors="replace")
+                            .rstrip("\x00 　\t\n\r"))
             else:
                 val = chunk.decode("ascii", errors="replace")
         except Exception:
             val = chunk.hex()
-        out[name] = val.strip()
+        out[name] = val.strip(" 　\t\n\r") if isinstance(val, str) else val
     return out
 
 

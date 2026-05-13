@@ -52,7 +52,7 @@ def _within_period(d: date | None) -> bool:
 
 
 def load_ra_records() -> Dict[str, dict]:
-    """RA records を race_id 別 dict 化、 1 ヶ月 filter."""
+    """RA records を race_id 別 dict 化、 1 ヶ月 filter (Phase 13 fields 込み)."""
     out: Dict[str, dict] = {}
     fpath = TFJV_DIR / 'RA_2026.csv'
     with open(fpath, 'r', encoding='utf-8-sig') as f:
@@ -70,7 +70,16 @@ def load_ra_records() -> Dict[str, dict]:
                 'kai': row['kai'],
                 'nichi': row['nichi'],
                 'race_num': row['race_num'],
-                'race_name': row.get('race_name', '').strip().replace('\x00', ''),
+                # ★ Phase 13 fix: race_name 真値化 ★
+                'race_name': row.get('race_name', '').strip().replace('\x00', '').replace('　', ''),
+                # ★ Phase 13 add: 副題 / カッコ内 ★
+                'race_name_sub': row.get('race_name_sub', '').strip().replace('\x00', '').replace('　', ''),
+                'race_name_paren': row.get('race_name_paren', '').strip().replace('\x00', '').replace('　', ''),
+                # ★ Phase 13 add: 特別競走番号 / 種別 / 距離 / トラック ★
+                'tokubetsu_num': row.get('tokubetsu_num', '0000'),
+                'shubetsu_code': row.get('shubetsu_code', '').strip(),
+                'race_dist_raw': row.get('race_dist_raw', '').strip(),
+                'track_code': row.get('track_code', '').strip(),
                 'youbi_code': row.get('youbi_code', ''),
             }
     return out
