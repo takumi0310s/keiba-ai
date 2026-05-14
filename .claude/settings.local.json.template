@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(C:/Users/takum/python32/python.exe:*)",
+      "Bash(C:\\\\Users\\\\takum\\\\python32\\\\python.exe:*)",
+      "Bash(python tools/jvlink_fetcher.py:*)",
+      "Bash(C:/Users/takum/python32/python.exe tools/jvlink_fetcher.py:*)"
+    ]
+  },
+  "_note": "★ user: このファイルを settings.local.json (extension なし) に rename して有効化 ★ JV-Link COM access (32-bit Python 経由) を自動 allow するため。"
+}
