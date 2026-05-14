@@ -1,0 +1,457 @@
+{
+  "top_n": 100,
+  "fold_year": 24,
+  "lgb_auc": 0.8792322919783241,
+  "total_features": 282,
+  "top_features": [
+    {
+      "name": "paci_jockey_exp_3rd",
+      "gain": 286460.9546122551
+    },
+    {
+      "name": "paci_ninki_idx",
+      "gain": 246514.46000146866
+    },
+    {
+      "name": "paci_jockey_exp_wr",
+      "gain": 190135.40585803986
+    },
+    {
+      "name": "jrdb_ze_idm_avg",
+      "gain": 136079.32464408875
+    },
+    {
+      "name": "training_time_filled",
+      "gain": 83095.8262257576
+    },
+    {
+      "name": "training_per_dist",
+      "gain": 42666.7037396431
+    },
+    {
+      "name": "jrdb_ze_ten_avg",
+      "gain": 32811.68432807922
+    },
+    {
+      "name": "jrdb_class_code",
+      "gain": 29779.57960653305
+    },
+    {
+      "name": "jrdb_idm",
+      "gain": 28575.976045131683
+    },
+    {
+      "name": "paci_goal_rank",
+      "gain": 16587.735281944275
+    },
+    {
+      "name": "horse_career_wr",
+      "gain": 15582.028865814209
+    },
+    {
+      "name": "jrdb_ze_agari_avg",
+      "gain": 12750.5607213974
+    },
+    {
+      "name": "surface_dist_enc",
+      "gain": 11304.480616569519
+    },
+    {
+      "name": "paci_sogo_mark",
+      "gain": 10821.505275249481
+    },
+    {
+      "name": "pop_rank_change",
+      "gain": 10352.98737859726
+    },
+    {
+      "name": "jrdb_composite_idx",
+      "gain": 8746.17025566101
+    },
+    {
+      "name": "age_season",
+      "gain": 8355.42754983902
+    },
+    {
+      "name": "jrdb_prev_idm",
+      "gain": 7925.734998703003
+    },
+    {
+      "name": "jrdb_training_idx",
+      "gain": 7879.5406103134155
+    },
+    {
+      "name": "age",
+      "gain": 7431.3408217430115
+    },
+    {
+      "name": "jrdb_agari_idx_pred",
+      "gain": 6691.381083488464
+    },
+    {
+      "name": "paci_idm_mark",
+      "gain": 6423.171797275543
+    },
+    {
+      "name": "transport_distance_km",
+      "gain": 6410.179081439972
+    },
+    {
+      "name": "horse_career_top3r",
+      "gain": 6202.526918411255
+    },
+    {
+      "name": "age_sex",
+      "gain": 6097.478991985321
+    },
+    {
+      "name": "jrdb_position_idx_pred",
+      "gain": 5928.113454341888
+    },
+    {
+      "name": "distance",
+      "gain": 5851.496894359589
+    },
+    {
+      "name": "avg_last3f_3r",
+      "gain": 5580.255610466003
+    },
+    {
+      "name": "jrdb_pace_idx_pred",
+      "gain": 5497.538007736206
+    },
+    {
+      "name": "surface_enc",
+      "gain": 5474.274202346802
+    },
+    {
+      "name": "course_enc",
+      "gain": 4836.321209907532
+    },
+    {
+      "name": "prev2_last3f",
+      "gain": 4820.7403383255005
+    },
+    {
+      "name": "horse_career_races",
+      "gain": 4675.025300502777
+    },
+    {
+      "name": "track_lap__pace_diff_race",
+      "gain": 4465.371277332306
+    },
+    {
+      "name": "trainer_top3_calc",
+      "gain": 4359.584526062012
+    },
+    {
+      "name": "horse_num_ratio",
+      "gain": 4286.727210044861
+    },
+    {
+      "name": "weight_ma5",
+      "gain": 4236.172989845276
+    },
+    {
+      "name": "carry_diff",
+      "gain": 4233.932199478149
+    },
+    {
+      "name": "paci_goal_diff",
+      "gain": 3990.907335281372
+    },
+    {
+      "name": "track_lap__pace_second_half",
+      "gain": 3897.113796710968
+    },
+    {
+      "name": "frame_course_dist_wr",
+      "gain": 3877.3729944229126
+    },
+    {
+      "name": "jrdb_upset_idx",
+      "gain": 3794.5171790122986
+    },
+    {
+      "name": "num_horses_val",
+      "gain": 3681.2759160995483
+    },
+    {
+      "name": "jrdb_dam_rensho_avg",
+      "gain": 3609.7029209136963
+    },
+    {
+      "name": "jrdb_ten_idx_pred",
+      "gain": 3592.6908559799194
+    },
+    {
+      "name": "weight_carry",
+      "gain": 3576.5504693984985
+    },
+    {
+      "name": "jrdb_stable_idx",
+      "gain": 3421.0603013038635
+    },
+    {
+      "name": "jockey_wr_calc",
+      "gain": 3383.2823524475098
+    },
+    {
+      "name": "rest_days",
+      "gain": 3287.988115310669
+    },
+    {
+      "name": "jockey_surface_wr",
+      "gain": 3283.3320722579956
+    },
+    {
+      "name": "jockey_course_wr_calc",
+      "gain": 3279.8505358695984
+    },
+    {
+      "name": "sire_surface_wr",
+      "gain": 3133.7164373397827
+    },
+    {
+      "name": "paci_dochu_rank",
+      "gain": 3127.54350233078
+    },
+    {
+      "name": "avg_finish_3r",
+      "gain": 3031.849061489105
+    },
+    {
+      "name": "bms_surface_wr",
+      "gain": 2936.813645362854
+    },
+    {
+      "name": "sire_dist_wr",
+      "gain": 2917.1255593299866
+    },
+    {
+      "name": "course_surface",
+      "gain": 2911.731963157654
+    },
+    {
+      "name": "prev_last3f",
+      "gain": 2727.753882408142
+    },
+    {
+      "name": "jrdb_kta_idm",
+      "gain": 2687.8517723083496
+    },
+    {
+      "name": "paci_manken_idx",
+      "gain": 2615.5107712745667
+    },
+    {
+      "name": "jrdb_prev_pace_idx",
+      "gain": 2501.853618144989
+    },
+    {
+      "name": "horse_surface_top3r",
+      "gain": 2501.1933646202087
+    },
+    {
+      "name": "jrdb_bms_rensho_avg",
+      "gain": 2412.97527217865
+    },
+    {
+      "name": "weight_trend",
+      "gain": 2402.6259450912476
+    },
+    {
+      "name": "sire_enc",
+      "gain": 2389.7373600006104
+    },
+    {
+      "name": "jrdb_kta_ten_pred",
+      "gain": 2291.522533416748
+    },
+    {
+      "name": "horse_num",
+      "gain": 2231.0298686027527
+    },
+    {
+      "name": "bms_enc",
+      "gain": 2196.9578042030334
+    },
+    {
+      "name": "jrdb_kta_agari_pred",
+      "gain": 2157.3681540489197
+    },
+    {
+      "name": "oz_fukusho_base_log",
+      "gain": 2042.078064918518
+    },
+    {
+      "name": "jrdb_prev_track_bias",
+      "gain": 2026.1866512298584
+    },
+    {
+      "name": "horse_dist_top3r",
+      "gain": 1986.84574508667
+    },
+    {
+      "name": "prev_pass4",
+      "gain": 1969.411810874939
+    },
+    {
+      "name": "best_finish_3r",
+      "gain": 1913.7929148674011
+    },
+    {
+      "name": "dist_change",
+      "gain": 1849.197561264038
+    },
+    {
+      "name": "finish_trend",
+      "gain": 1792.9263277053833
+    },
+    {
+      "name": "prev_prize",
+      "gain": 1650.9702897071838
+    },
+    {
+      "name": "index_run1_filled",
+      "gain": 1589.6023597717285
+    },
+    {
+      "name": "oz_base_pop_rank",
+      "gain": 1520.6174001693726
+    },
+    {
+      "name": "prev2_finish",
+      "gain": 1498.707064151764
+    },
+    {
+      "name": "jrdb_oikiri_idx",
+      "gain": 1479.6623349189758
+    },
+    {
+      "name": "prev_finish",
+      "gain": 1423.4124293327332
+    },
+    {
+      "name": "oz_tansho_base_log",
+      "gain": 1412.9650239944458
+    },
+    {
+      "name": "jrdb_shimai_time_idx",
+      "gain": 1380.1923289299011
+    },
+    {
+      "name": "sakaro_best_4f_filled",
+      "gain": 1360.0029525756836
+    },
+    {
+      "name": "odds_change_rate",
+      "gain": 1348.8454599380493
+    },
+    {
+      "name": "index_avg5_filled",
+      "gain": 1348.3597993850708
+    },
+    {
+      "name": "jrdb_hoof_code",
+      "gain": 1299.002369403839
+    },
+    {
+      "name": "jrdb_cid_idx",
+      "gain": 1227.7313055992126
+    },
+    {
+      "name": "prev3_finish",
+      "gain": 1225.758945465088
+    },
+    {
+      "name": "jrdb_running_style",
+      "gain": 1217.7734260559082
+    },
+    {
+      "name": "jrdb_tb_homestr_inner",
+      "gain": 1102.6951479911804
+    },
+    {
+      "name": "jrdb_ze_furi_count",
+      "gain": 1093.802704334259
+    },
+    {
+      "name": "jockey_horse_wr",
+      "gain": 1074.9043879508972
+    },
+    {
+      "name": "jockey_trainer_combo_top3_exp",
+      "gain": 1048.555010318756
+    },
+    {
+      "name": "jockey_horse_rides",
+      "gain": 997.3664908409119
+    },
+    {
+      "name": "sakaro_best_3f_filled",
+      "gain": 986.5056219100952
+    },
+    {
+      "name": "jrdb_stable_rank",
+      "gain": 978.1298875808716
+    },
+    {
+      "name": "index_max_filled",
+      "gain": 964.9048829078674
+    },
+    {
+      "name": "season",
+      "gain": 958.1123714447021
+    }
+  ],
+  "all_features_with_zero_gain": [
+    "is_nar",
+    "prev_odds_log",
+    "has_training",
+    "prev_race_first3f",
+    "prev_race_last3f",
+    "prev_race_pace_diff",
+    "sire_shinba_top3r",
+    "pci",
+    "odds_sharp_drop",
+    "course_renovated",
+    "gaisha_rank",
+    "very_long_layoff",
+    "rmk_delay",
+    "rmk_trouble",
+    "rmk_yore",
+    "rmk_fukure",
+    "rmk_contact",
+    "rmk_demote",
+    "rmk_late_pace",
+    "rmk_fast_pace",
+    "rmk_any",
+    "turf_to_dirt",
+    "free__is_full_moon",
+    "free__is_holiday",
+    "free__is_long_holiday",
+    "free__horse_birth_quarter",
+    "free__horse_same_course_count",
+    "free__is_very_short_rest",
+    "free__prev4_finish",
+    "free__prev5_finish",
+    "free__prev5_pop",
+    "free__is_main_race",
+    "track_lap__track_bias_inner_advantage",
+    "track_lap__track_bias_outer_advantage",
+    "track_lap__is_outer_umaban",
+    "jrdb_jo__ls_eval",
+    "jrdb_jo__em",
+    "jrdb_jo__breeder_bb",
+    "jrdb_jo__breeder_bb_wr",
+    "jrdb_jo__breeder_bb_rensho",
+    "jrdb_jo__gaisha_strength",
+    "jrdb_jo__breeder_strength",
+    "horse_advanced__horse_grade_win_count",
+    "horse_advanced__horse_grade_top3_count",
+    "horse_advanced__horse_g1_win_count",
+    "venue__track_curve_type",
+    "venue__is_right_turn"
+  ]
+}
