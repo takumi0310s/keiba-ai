@@ -1,0 +1,24 @@
+{
+  "mode": "quick",
+  "top_n": 100,
+  "n_features": 100,
+  "roi_by_condition": {
+    "_total": {
+      "invest": 0,
+      "payout": 0,
+      "profit": 0,
+      "roi": 0
+    }
+  },
+  "v15_baseline_roi": {
+    "note": "V15 production WF 2020-2025 actual ROI",
+    "A": 355.4,
+    "B": 346.8,
+    "C": 623.0,
+    "D": 360.8,
+    "E": 195.7,
+    "X": 701.2,
+    "total": 428.4
+  },
+  "elapsed_s": 42.54682016372681
+}
