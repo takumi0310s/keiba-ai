@@ -262,8 +262,9 @@ def run_wf_with_preds_save(df, features, folds, quick=False):
 
 def simulate_roi(df_preds, payouts):
     """per-race predictions → 戦略適用 → ROI 計算."""
-    # race group
-    df_preds['race_key'] = (df_preds['course'].astype(str) + '_'
+    # race group (year 含む、 多年 collision 防止)
+    df_preds['race_key'] = (df_preds['year'].astype(str) + '_'
+                             + df_preds['course'].astype(str) + '_'
                              + df_preds['kai'].astype(str) + '_'
                              + df_preds['nichi'].astype(str) + '_'
                              + df_preds['race_num'].astype(str))
