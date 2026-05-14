@@ -94,7 +94,7 @@ def run_wf_top(df, features, folds, quick=False):
         print('  Training FT-Transformer...')
         t0 = time.time()
         try:
-            ft_model, p_ft, auc_ft = train_ft_transformer(
+            ft_model, p_ft, p_ft_tr, auc_ft = train_ft_transformer(
                 X_tr_s, y_tr.astype(np.float32),
                 X_te_s, y_te.astype(np.float32),
                 n_features=len(features),
