@@ -129,3 +129,74 @@ data/tfjv/
 data/v21_training_data_full.csv
 keiba_model_v21_central.pkl.gz
 v22_4ensemble.pkl.gz
+
+# ★ 5/15 規約 review 後 補強 (再配布 NG 抵触 risk 防止) ★
+# V20 / V21 training data (large, regenerable)
+data/v20_training_data_full.csv
+data/v22_*.csv
+
+# netkeiba 全 csv (加入範囲内 私的利用、 再配布 NG)
+data/netkeiba_*.csv
+# netkeiba subset で commit 許可 (spec / index のみ): nothing for now
+
+# features_*.csv (V20+/V22 学習用 加工結果、 再生成可能)
+data/features_*.csv
+
+# JRDB 全 csv (.gitignore 上 既 一部、 ここで 全包括)
+data/jrdb_*.csv
+data/jrdb_*_features.csv
+
+# JV-Link 取得 data (JRA-VAN 私的利用、 再配布 厳格 NG)
+data/jvlink/
+data/jvlink_*/
+
+# 動画 / 画像 (レーシングビュワー / netkeiba paddock、 規約 NG)
+data/paddock_archive/
+data/paddock_netkeiba/
+data/race_video_frames/
+data/morning_go_check/
+data/morning_weight_check/
+
+# 計算 中間 (training data full、 features cache 等)
+data/_v15_optuna_df_cache.pkl.gz
+data/_v15_*.pkl.gz
+data/v20_lgb_xgb_results.json
+data/competitor_gap_features_v2.csv
+data/distance_surface_change_features.csv
+data/event_effect_features.csv
+data/hot_streak_features.csv
+data/layoff_features.csv
+data/jrdb_kka_features.csv
+data/jrdb_kka_v2.csv
+data/pace_features*.csv
+data/race_review_features.csv
+data/race_id_mapping.csv
+data/calibrator_v15_pilot.pkl
+
+# Daily outputs (regenerable)
+data/daily_predictions/
+data/daily_predictions_full/
+data/daily_results/
+data/fire_check_results/
+data/paper_trade/
+
+# NAR (地方競馬) data
+data/nar_*.csv
+data/nar_*.json
+
+# All odds bases
+data/odds_base_*.csv
+
+# Model files (large、 別 sync 推奨)
+keiba_model_v22_*.pkl*
+keiba_model_v15_*.pkl*
+
+# scheduled tasks lock
+.claude/scheduled_tasks.lock
+.claude/worktrees/
+
+# Status / cache files
+data/_scrape_status_snapshot.json
+data/drift_detection_log.json
+data/discord_dedup_state.json
+data/discord_send_cache.json
