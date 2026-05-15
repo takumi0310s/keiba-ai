@@ -38,6 +38,10 @@ FEATURE_FILES = {
     'jrdb_jo': 'features_jrdb_jo.csv',
     'horse_advanced': 'features_horse_advanced.csv',
     'venue': 'features_venue.csv',
+    # 5/15 追加 (V15 越え 試行 用)
+    # 'master_idx': 'features_master_index_expanding.csv',  # race_id 12桁 nk、 format mismatch で 除外
+    'nk_ai': 'features_netkeiba_ai.csv',
+    'nk_extra': 'features_netkeiba_extra.csv',
     # sentiment 系 (netkeiba 12桁 race_id) は format 不一致のため 別 module で merge
 }
 
