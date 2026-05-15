@@ -39,45 +39,25 @@ with gzip.open(V15_MODEL, 'rb') as f:
     v15 = pickle.load(f)
 v15_lgb = v15['model']
 v15_xgb = v15['xgb_model']
-v15_features = v15['features']
-print(f'  V15 features: {len(v15_features)}')
-print(f'  V15 version: {v15.get("version")}')
-print(f'  V15 AUC (train): {v15.get("auc")}')
+print(f'  V15 LGB num_features: {v15_lgb.num_feature()}')
 
-# 2. V15 cache load
+# 2. V15 cache load (cache features = LGB train features 145)
 print('Loading V15 cache ...')
 with gzip.open(V15_CACHE, 'rb') as f:
     d = pickle.load(f)
 df = d['df']
+cache_features = d['features']  # 145 features (Pattern A)
+print(f'  cache features: {len(cache_features)}')
 df['target'] = (df['finish'] <= 3).astype(int)
 
 # 3. fold 25 (2025) subset
 df25 = df[df['year'] == 25].copy()
 print(f'  fold 25 (2025) rows: {len(df25):,}')
 
-# 4. V15 predict on 2025 (OOS since V15 trained before 2025)
+# 4. V15 predict on 2025 (cache features 145、 LGB order と一致)
 print('V15 predict on 2025 ...')
-v15_feat_avail = [f for f in v15_features if f in df25.columns]
-missing_v15 = [f for f in v15_features if f not in df25.columns]
-print(f'  V15 features available: {len(v15_feat_avail)}/{len(v15_features)} (missing: {missing_v15[:5]}...)')
-
-# Use available subset (fill missing with 0)
-X25 = df25[v15_feat_avail].fillna(0).astype(np.float32).values
-# If missing features, pad with 0 to match V15 features count
-if len(missing_v15) > 0:
-    pad = np.zeros((len(df25), len(missing_v15)), dtype=np.float32)
-    X25_full = np.hstack([X25, pad])
-    print(f'  padded {len(missing_v15)} missing features with 0')
-else:
-    X25_full = X25
-
-# rearrange columns to match V15 features order
-X25_dict = {f: 0.0 for f in v15_features}
-v15_indices = {f: i for i, f in enumerate(v15_features)}
-X25_in_order = np.zeros((len(df25), len(v15_features)), dtype=np.float32)
-for j, f in enumerate(v15_feat_avail):
-    if f in v15_indices:
-        X25_in_order[:, v15_indices[f]] = X25[:, j]
+X25_in_order = df25[cache_features].fillna(0).astype(np.float32).values
+print(f'  X25 shape: {X25_in_order.shape}')
 
 # V15 predict (LGB + XGB ensemble)
 p_v15_lgb = v15_lgb.predict(X25_in_order)
