@@ -193,3 +193,50 @@ git log --oneline | Select-Object -First 5  # revert 確認
 - 期待 ROI / 期待投票数 は paper backtest projection ベース (assumption 明示)
 - rollback は `git revert` 1 行で完結 (本番 production code への safe modification 設計)
 - 本 doc は 5/17 朝 起床直後 (5:30) に最初に開く運用想定
+
+---
+
+## ★ 8. 自動 anomaly detection (Sub-task T6, 5/16 evening) ★
+
+### 目的
+G1 day 朝の user 目視 5 項目 → 全自動 Discord 通知化、 起床負担軽減。
+
+### 5 trigger (auto check)
+
+| # | trigger | severity | rollback 推奨? |
+|---|---------|----------|----------------|
+| 1 | 予測ゼロ (daily_predictions/{date}.csv 不在 / 0 rows / <20 R) | ★ critical | YES |
+| 2 | 投票候補 0R (整形済み買い目通知: 0 messages) | ★ critical | YES |
+| 3 | streamlit 起動失敗 (port 8501 unreachable) | ⚠ warning | NO (投票影響 0) |
+| 4 | Discord 通知なし (log 1h 0 messages) | ⚠ warning | rollback でなく fix |
+| 5 | 戦略⑦案 C 不動作 (京都 R が log に Skip 0 件) | ★ critical | YES |
+
+### 5/17 朝 user 操作 (Sub-task T6 適用後)
+1. Discord `#updates` channel を確認するだけ
+2. 06:30 / 08:30 / 09:40 / 14:10 / 17:00 で 自動 check fire (schtask、 ★ 5/18 user 判断後 admin 登録 ★)
+3. ✅ のみ通知なし (静か = 正常)
+4. ⚠ or ★ 通知あれば内容確認 + rollback 判断 (本 doc 「§3. rollback 手順」 参照)
+
+### 手動 fire (任意の時間に)
+```bash
+python tools/anomaly_auto_detector.py --date 20260517            # Discord 通知あり
+python tools/anomaly_auto_detector.py --date 20260517 --no-discord  # console 出力のみ
+```
+
+### test 結果
+- `tests/T6_anomaly_detection_test.py` 17/17 PASS
+- false positive rate < 5% (5 normal scenarios)
+- true positive rate > 95% (4 anomaly scenarios)
+
+### schtask 登録 (★ 5/18 user 判断後 admin で実行 ★)
+```cmd
+:: agent では絶対 実行しない、 user 判断後 admin で
+tools\register_anomaly_detector_schtask.bat
+```
+
+### 実装 file
+- `tools/anomaly_auto_detector.py` — 5 trigger 本体
+- `tools/anomaly_auto_detector.bat` — schtask 用 wrapper
+- `tools/register_anomaly_detector_schtask.bat` — schtask 登録 script (admin)
+- `tests/T6_anomaly_detection_test.py` — 17 tests
+- `docs/T6_ANOMALY_DETECTION_AUTOMATION_2026_05_16.md` — 設計詳細
