@@ -625,11 +625,63 @@ def run_weekly_report(end_date_str):
         for w in warnings:
             md += f"- {w}\n"
 
+    # 5/16 sub-task 10: drift section 追加 (truth file 不在時は no-op)
+    drift_md = build_drift_section()
+    if drift_md:
+        md += "\n" + drift_md
+
     md_path = os.path.join(md_dir, f"{end_date_str}_report.md")
     with open(md_path, 'w', encoding='utf-8') as f:
         f.write(md)
     print(f"Markdown保存: {md_path}")
     print(f"{'=' * 60}")
+
+
+def build_drift_section():
+    """daily_cumulative_audit.py の cumulative_truth.json + audit log を読んで
+    drift section の markdown 文字列を返す (5/16 sub-task 10 で追加、 既存 logic 不変)。
+
+    truth file 不在時は空文字列を返す (weekly_report は通常通り動作)。
+    """
+    truth_path = os.path.join(BASE_DIR, "data", "cumulative_truth.json")
+    log_path = os.path.join(BASE_DIR, "logs", "daily_cumulative_audit.log")
+
+    lines = []
+    if not os.path.exists(truth_path):
+        return ""
+
+    try:
+        with open(truth_path, "r", encoding="utf-8") as f:
+            truth = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+    lines.append("## Cumulative Drift Detect (5/16 sub-task 10)")
+    lines.append("")
+    lines.append(f"- truth source: `{truth.get('source', 'data/cumulative_results.csv')}`")
+    lines.append(f"- last_verified: {truth.get('calculation_date', 'unknown')[:10]}")
+    lines.append(f"- N settled: {truth.get('n_settled', 0)}")
+    lines.append(f"- ROI: {truth.get('roi_pct', 0):.2f}%")
+    lines.append(f"- PnL: {truth.get('pnl', 0):+,d} JPY")
+    lines.append(f"- hit3 rate: {truth.get('hit3_rate', 0):.1%}")
+    lines.append("")
+
+    # 過去 7 日 audit log tail
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r", encoding="utf-8") as f:
+                log_lines = f.readlines()
+            recent = log_lines[-30:]  # 直近 30 行 tail
+            lines.append("### Recent audit log (tail 30)")
+            lines.append("")
+            lines.append("```")
+            lines.extend(line.rstrip() for line in recent)
+            lines.append("```")
+            lines.append("")
+        except OSError:
+            pass
+
+    return "\n".join(lines) + "\n"
 
 
 def _generate_empty_report(start_str, end_str):
