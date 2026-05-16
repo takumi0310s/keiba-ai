@@ -1,0 +1,148 @@
+{
+  "phase": "A",
+  "timestamp": "2026-05-16T12:26:47.162116",
+  "cache_path": "C:\\Users\\takum\\keiba-ai\\data\\_v15_optuna_df_cache.pkl.gz",
+  "paddock_csv": "C:\\Users\\takum\\keiba-ai\\data\\v21\\paddock_12_features.csv",
+  "cache_rows": 527280,
+  "paddock_rows": 89,
+  "paddock_distinct_races": 33,
+  "paddock_distinct_horses": 85,
+  "merge_matched_rows": 0,
+  "merge_matched_pct": 0.0,
+  "n_base_features": 145,
+  "n_paddock_features": 12,
+  "paddock_features": [
+    "pad_body_condition_score",
+    "pad_body_condition_std",
+    "pad_coat_gloss",
+    "pad_coat_contrast",
+    "pad_body_aspect_mean",
+    "pad_body_aspect_var",
+    "pad_body_compactness",
+    "pad_gait_motion_speed",
+    "pad_gait_motion_std",
+    "pad_gait_aspect_range",
+    "pad_gait_area_change",
+    "pad_yolo_conf_mean"
+  ],
+  "baseline": {
+    "per_year": [
+      {
+        "year": 2020,
+        "lgb_auc": 0.8578513298657934,
+        "xgb_auc": 0.8587512104283055,
+        "ens_auc": 0.8591734643292879,
+        "n_train": 243558,
+        "n_test": 47882
+      },
+      {
+        "year": 2021,
+        "lgb_auc": 0.8642582431570263,
+        "xgb_auc": 0.8669296474135835,
+        "ens_auc": 0.8664895144715049,
+        "n_train": 291440,
+        "n_test": 47476
+      },
+      {
+        "year": 2022,
+        "lgb_auc": 0.8671862377439579,
+        "xgb_auc": 0.8687034760342605,
+        "ens_auc": 0.8688473506658188,
+        "n_train": 338916,
+        "n_test": 46841
+      },
+      {
+        "year": 2023,
+        "lgb_auc": 0.8685657867885851,
+        "xgb_auc": 0.8699336697974993,
+        "ens_auc": 0.8700038793936213,
+        "n_train": 385757,
+        "n_test": 47274
+      },
+      {
+        "year": 2024,
+        "lgb_auc": 0.8704283209154862,
+        "xgb_auc": 0.8720010095960204,
+        "ens_auc": 0.8719842752281813,
+        "n_train": 433031,
+        "n_test": 46752
+      },
+      {
+        "year": 2025,
+        "lgb_auc": 0.869458281079876,
+        "xgb_auc": 0.8705545807530966,
+        "ens_auc": 0.8708123257628156,
+        "n_train": 479783,
+        "n_test": 47497
+      }
+    ],
+    "summary": {
+      "mean_lgb": 0.8662913665917874,
+      "mean_xgb": 0.867812265670461,
+      "mean_ens": 0.8678851349752049
+    }
+  },
+  "v21_paddock": {
+    "per_year": [
+      {
+        "year": 2020,
+        "lgb_auc": 0.8578513298657934,
+        "xgb_auc": 0.8585264547614461,
+        "ens_auc": 0.859048316958839,
+        "n_train": 243558,
+        "n_test": 47882
+      },
+      {
+        "year": 2021,
+        "lgb_auc": 0.8642582431570263,
+        "xgb_auc": 0.8661202141786872,
+        "ens_auc": 0.866006394083797,
+        "n_train": 291440,
+        "n_test": 47476
+      },
+      {
+        "year": 2022,
+        "lgb_auc": 0.8671862377439579,
+        "xgb_auc": 0.8683008761376491,
+        "ens_auc": 0.8685479595457767,
+        "n_train": 338916,
+        "n_test": 46841
+      },
+      {
+        "year": 2023,
+        "lgb_auc": 0.8685657867885851,
+        "xgb_auc": 0.8701401599286838,
+        "ens_auc": 0.870245086446192,
+        "n_train": 385757,
+        "n_test": 47274
+      },
+      {
+        "year": 2024,
+        "lgb_auc": 0.8704283209154862,
+        "xgb_auc": 0.8718616749134049,
+        "ens_auc": 0.8719676627768644,
+        "n_train": 433031,
+        "n_test": 46752
+      },
+      {
+        "year": 2025,
+        "lgb_auc": 0.869458281079876,
+        "xgb_auc": 0.8704852109327523,
+        "ens_auc": 0.8708259639852891,
+        "n_train": 479783,
+        "n_test": 47497
+      }
+    ],
+    "summary": {
+      "mean_lgb": 0.8662913665917874,
+      "mean_xgb": 0.8675724318087706,
+      "mean_ens": 0.8677735639661264
+    }
+  },
+  "delta": {
+    "d_lgb": 0.0,
+    "d_xgb": -0.0002398338616903528,
+    "d_ens": -0.00011157100907854822
+  },
+  "elapsed_min": 5.6931619564692175
+}

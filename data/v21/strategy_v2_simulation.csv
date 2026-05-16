@@ -1,0 +1,530 @@
+﻿race_id,date,course,race_num,race_name,condition,top1_score,base_inv,base_pay,base_pnl,s7only_recommended,s7only_inv,s7only_pay,v2_recommended,v2_bet_size,v2_inv,v2_pay,v2_pnl,v2_ev_top1,v2_p_calibrated,v2_strategy_7_pass,v2_reason
+202606020501,20260314.0,中山,1,中山1R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020502,20260314.0,中山,2,中山2R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020503,20260314.0,中山,3,中山3R,D,,700.0,570.0,-130.0,True,700,570.0,True,700,700,570.0,-130.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020504,20260314.0,中山,4,中山4R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020505,20260314.0,中山,5,レース,C,0.1988226976964497,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.36417588838751475,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020506,20260314.0,中山,6,レース,C,0.1574649023659729,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.29022543165618103,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020507,20260314.0,中山,7,レース,A,0.1834722115245527,700.0,1780.0,1080.0,True,700,1780.0,True,2100,2100,5340.0,3240.0,10.0,0.3534305480671869,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020508,20260314.0,中山,8,レース,D,0.1507907490291375,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.28555352432039627,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020509,20260314.0,中山,9,レース,A,0.165856199793038,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.3410993398551266,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020510,20260314.0,中山,10,レース,C,0.164323526226143,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.3400264683583001,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020511,20260314.0,中山,11,レース,C,0.1584094431395503,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.2908866101976852,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020512,20260314.0,中山,12,レース,D,0.1458860514200565,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.25212023599403954,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202607010101,20260314.0,中京,1,中京1R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010102,20260314.0,中京,2,中京2R,D,,700.0,7380.0,6680.0,True,700,7380.0,True,700,700,7380.0,6680.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010103,20260314.0,中京,3,中京3R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010104,20260314.0,中京,4,中京4R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010105,20260314.0,中京,5,中京5R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010106,20260314.0,中京,6,中京6R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010107,20260314.0,中京,7,中京7R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010108,20260314.0,中京,8,中京8R,D,,700.0,3550.0,2850.0,True,700,3550.0,True,700,700,3550.0,2850.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010109,20260314.0,中京,9,中京9R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010110,20260314.0,中京,10,中京10R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010111,20260314.0,中京,11,中京11R,A,,700.0,1360.0,660.0,True,700,1360.0,True,700,700,1360.0,660.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010112,20260314.0,中京,12,中京12R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010701,20260314.0,阪神,1,レース,A,0.1982245367876736,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.36375717575137145,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010702,20260314.0,阪神,2,レース,D,0.1599380887460698,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.29195666212224886,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010703,20260314.0,阪神,3,レース,A,0.1674913735178,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.34224396146245994,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010704,20260314.0,阪神,4,レース,D,0.1860397796196033,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.3552278457337223,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010705,20260314.0,阪神,5,レース,C,0.1742542610871586,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.346977982761011,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010706,20260314.0,阪神,6,レース,A,0.194749209091597,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.36132444636411787,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010707,20260314.0,阪神,7,レース,D,0.1630161503254485,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.2941113052278139,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010708,20260314.0,阪神,8,レース,A,0.2008423744472429,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.44058966211307005,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010709,20260314.0,阪神,9,レース,D,0.1391963459638832,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.24743744217471822,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010710,20260314.0,阪神,10,レース,A,0.1750338241879171,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.34752367693154196,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010711,20260314.0,阪神,11,レース,D,0.1664454231935292,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.3415117962354704,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202609010712,20260314.0,阪神,12,レース,A,0.1669098857095986,700.0,270.0,-430.0,True,700,270.0,True,2100,2100,810.0,-1290.0,10.0,0.341836919996719,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202606020601,20260315.0,中山,1,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020602,20260315.0,中山,2,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020603,20260315.0,中山,3,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020604,20260315.0,中山,4,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020605,20260315.0,中山,5,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020606,20260315.0,中山,6,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020607,20260315.0,中山,7,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020608,20260315.0,中山,8,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020609,20260315.0,中山,9,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020610,20260315.0,中山,10,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020611,20260315.0,中山,11,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020612,20260315.0,中山,12,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010201,20260315.0,中京,1,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010202,20260315.0,中京,2,レース,A,,700.0,1250.0,550.0,True,700,1250.0,True,700,700,1250.0,550.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010203,20260315.0,中京,3,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010204,20260315.0,中京,4,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010205,20260315.0,中京,5,レース,C,,700.0,1080.0,380.0,True,700,1080.0,True,700,700,1080.0,380.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010206,20260315.0,中京,6,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010207,20260315.0,中京,7,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010208,20260315.0,中京,8,レース,A,,700.0,1780.0,1080.0,True,700,1780.0,True,700,700,1780.0,1080.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010209,20260315.0,中京,9,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010210,20260315.0,中京,10,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010211,20260315.0,中京,11,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010212,20260315.0,中京,12,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010801,20260315.0,阪神,1,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010802,20260315.0,阪神,2,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010803,20260315.0,阪神,3,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010805,20260315.0,阪神,5,レース,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010806,20260315.0,阪神,6,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010807,20260315.0,阪神,7,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010808,20260315.0,阪神,8,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010809,20260315.0,阪神,9,レース,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202609010810,20260315.0,阪神,10,レース,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010811,20260315.0,阪神,11,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010812,20260315.0,阪神,12,レース,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020701,20260321.0,中山,1,中山1R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020702,20260321.0,中山,2,中山2R,A,,700.0,860.0,160.0,True,700,860.0,True,700,700,860.0,160.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020703,20260321.0,中山,3,中山3R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020704,20260321.0,中山,4,中山4R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020705,20260321.0,中山,5,中山5R,A,,700.0,1200.0,500.0,True,700,1200.0,True,700,700,1200.0,500.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020706,20260321.0,中山,6,中山6R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020707,20260321.0,中山,7,中山7R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020709,20260321.0,中山,9,館山特別,C,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606020710,20260321.0,中山,10,韓国馬事会杯,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020711,20260321.0,中山,11,フラワーC,C,,700.0,22810.0,22110.0,True,700,22810.0,True,700,700,22810.0,22110.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606020712,20260321.0,中山,12,4歳以上1勝クラス,D,,700.0,5830.0,5130.0,True,700,5830.0,True,700,700,5830.0,5130.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010301,20260321.0,中京,1,中京1R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010302,20260321.0,中京,2,中京2R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010303,20260321.0,中京,3,中京3R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010304,20260321.0,中京,4,中京4R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010305,20260321.0,中京,5,中京5R,C,,700.0,3320.0,2620.0,True,700,3320.0,True,700,700,3320.0,2620.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010306,20260321.0,中京,6,中京6R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010307,20260321.0,中京,7,中京7R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010308,20260321.0,中京,8,4歳以上1勝クラス,A,,700.0,1600.0,900.0,True,700,1600.0,True,700,700,1600.0,900.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010309,20260321.0,中京,9,岡崎特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202607010310,20260321.0,中京,10,豊明S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010311,20260321.0,中京,11,ファルコンS,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010312,20260321.0,中京,12,4歳以上1勝クラス,A,,700.0,1910.0,1210.0,True,700,1910.0,True,700,700,1910.0,1210.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010901,20260321.0,阪神,1,阪神1R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010902,20260321.0,阪神,2,阪神2R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010903,20260321.0,阪神,3,阪神3R,A,,700.0,1040.0,340.0,True,700,1040.0,True,700,700,1040.0,340.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010904,20260321.0,阪神,4,阪神4R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010905,20260321.0,阪神,5,阪神5R,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010906,20260321.0,阪神,6,阪神6R,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010907,20260321.0,阪神,7,阪神7R,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010908,20260321.0,阪神,8,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010909,20260321.0,阪神,9,淡路特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609010910,20260321.0,阪神,10,淀屋橋S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010911,20260321.0,阪神,11,若葉S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609010912,20260321.0,阪神,12,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030101,20260328.0,中山,1,3歳未勝利,D,,700.0,870.0,170.0,True,700,870.0,True,700,700,870.0,170.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030102,20260328.0,中山,2,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030103,20260328.0,中山,3,3歳未勝利,D,,700.0,610.0,-90.0,True,700,610.0,True,700,700,610.0,-90.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030104,20260328.0,中山,4,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030105,20260328.0,中山,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030106,20260328.0,中山,6,3歳1勝クラス,A,,700.0,380.0,-320.0,True,700,380.0,True,700,700,380.0,-320.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030107,20260328.0,中山,7,4歳以上1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202606030109,20260328.0,中山,9,ブラッドストーンS,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030110,20260328.0,中山,10,伏竜S,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202606030111,20260328.0,中山,11,日経賞,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030112,20260328.0,中山,12,4歳以上2勝クラス,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010501,20260328.0,中京,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010502,20260328.0,中京,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010503,20260328.0,中京,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010504,20260328.0,中京,4,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010505,20260328.0,中京,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010507,20260328.0,中京,7,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010508,20260328.0,中京,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010509,20260328.0,中京,9,ロイヤルバンコクスポーツクラブ賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010510,20260328.0,中京,10,ターフオーソリティーオブインディア賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010511,20260328.0,中京,11,マレーシアC,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010512,20260328.0,中京,12,フィリピンT,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020102,20260328.0,阪神,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020103,20260328.0,阪神,3,3歳未勝利,D,,700.0,440.0,-260.0,True,700,440.0,True,700,700,440.0,-260.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020104,20260328.0,阪神,4,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020105,20260328.0,阪神,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020106,20260328.0,阪神,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020107,20260328.0,阪神,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020109,20260328.0,阪神,9,君子蘭賞,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202609020110,20260328.0,阪神,10,仲春特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020111,20260328.0,阪神,11,毎日杯,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202609020112,20260328.0,阪神,12,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030201,20260329.0,中山,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030202,20260329.0,中山,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030203,20260329.0,中山,3,3歳未勝利,C,,700.0,620.0,-80.0,True,700,620.0,True,700,700,620.0,-80.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030204,20260329.0,中山,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030205,20260329.0,中山,5,3歳未勝利,A,,700.0,2700.0,2000.0,True,700,2700.0,True,700,700,2700.0,2000.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030206,20260329.0,中山,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030207,20260329.0,中山,7,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030208,20260329.0,中山,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030209,20260329.0,中山,9,ミモザ賞,E,,700.0,830.0,130.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202606030210,20260329.0,中山,10,船橋S,D,,700.0,4010.0,3310.0,True,700,4010.0,True,700,700,4010.0,3310.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030211,20260329.0,中山,11,マーチS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030212,20260329.0,中山,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010601,20260329.0,中京,1,3歳未勝利,D,,700.0,890.0,190.0,True,700,890.0,True,700,700,890.0,190.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010602,20260329.0,中京,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010603,20260329.0,中京,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010604,20260329.0,中京,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010605,20260329.0,中京,5,3歳未勝利,C,,700.0,980.0,280.0,True,700,980.0,True,700,700,980.0,280.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010606,20260329.0,中京,6,4歳以上1勝クラス,A,,700.0,12440.0,11740.0,True,700,12440.0,True,700,700,12440.0,11740.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010607,20260329.0,中京,7,4歳以上1勝クラス,A,,700.0,1750.0,1050.0,True,700,1750.0,True,700,700,1750.0,1050.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010608,20260329.0,中京,8,大寒桜賞,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202607010609,20260329.0,中京,9,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010610,20260329.0,中京,10,伊勢S,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010611,20260329.0,中京,11,高松宮記念,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202607010612,20260329.0,中京,12,鈴鹿特別,D,,700.0,4920.0,4220.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020201,20260329.0,阪神,1,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020202,20260329.0,阪神,2,3歳未勝利,A,,700.0,1590.0,890.0,True,700,1590.0,True,700,700,1590.0,890.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020203,20260329.0,阪神,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020205,20260329.0,阪神,5,3歳未勝利,A,,700.0,370.0,-330.0,True,700,370.0,True,700,700,370.0,-330.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020206,20260329.0,阪神,6,3歳1勝クラス,D,,700.0,1670.0,970.0,True,700,1670.0,True,700,700,1670.0,970.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020207,20260329.0,阪神,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020208,20260329.0,阪神,8,四国新聞杯,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202609020209,20260329.0,阪神,9,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020210,20260329.0,阪神,10,御堂筋S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020211,20260329.0,阪神,11,六甲S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020212,20260329.0,阪神,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030301,20260404.0,中山,1,3歳未勝利,D,,700.0,1590.0,890.0,True,700,1590.0,True,700,700,1590.0,890.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030302,20260404.0,中山,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030303,20260404.0,中山,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030305,20260404.0,中山,5,3歳未勝利,C,,700.0,2630.0,1930.0,True,700,2630.0,True,700,700,2630.0,1930.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030306,20260404.0,中山,6,3歳未勝利,A,,700.0,4640.0,3940.0,True,700,4640.0,True,700,700,4640.0,3940.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030307,20260404.0,中山,7,4歳以上1勝クラス,A,,700.0,2910.0,2210.0,True,700,2910.0,True,700,700,2910.0,2210.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030308,20260404.0,中山,8,4歳以上1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202606030309,20260404.0,中山,9,山吹賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030310,20260404.0,中山,10,千葉日報杯,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030311,20260404.0,中山,11,ダービー卿CT,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030312,20260404.0,中山,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020302,20260404.0,阪神,2,3歳未勝利,D,,700.0,3060.0,2360.0,True,700,3060.0,True,700,700,3060.0,2360.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020303,20260404.0,阪神,3,3歳未勝利,A,,700.0,1080.0,380.0,True,700,1080.0,True,700,700,1080.0,380.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020304,20260404.0,阪神,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020305,20260404.0,阪神,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020306,20260404.0,阪神,6,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020307,20260404.0,阪神,7,4歳以上1勝クラス,A,,700.0,400.0,-300.0,True,700,400.0,True,700,700,400.0,-300.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020308,20260404.0,阪神,8,4歳以上2勝クラス,D,,700.0,630.0,-70.0,True,700,630.0,True,700,700,630.0,-70.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020309,20260404.0,阪神,9,アザレア賞,A,,700.0,790.0,90.0,True,700,790.0,True,700,700,790.0,90.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020310,20260404.0,阪神,10,ポラリスS,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020311,20260404.0,阪神,11,チャーチルダウンズC,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020312,20260404.0,阪神,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030401,20260405.0,中山,1,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030402,20260405.0,中山,2,3歳未勝利,D,,700.0,580.0,-120.0,True,700,580.0,True,700,700,580.0,-120.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030403,20260405.0,中山,3,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030405,20260405.0,中山,5,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030406,20260405.0,中山,6,3歳1勝クラス,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030407,20260405.0,中山,7,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030408,20260405.0,中山,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030409,20260405.0,中山,9,安房特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606030410,20260405.0,中山,10,アリエスS,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030411,20260405.0,中山,11,美浦S,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030412,20260405.0,中山,12,4歳以上2勝クラス,A,,700.0,640.0,-60.0,True,700,640.0,True,700,700,640.0,-60.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030509,20260405.0,中山,9,山藤賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020401,20260405.0,阪神,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020402,20260405.0,阪神,2,3歳未勝利,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202609020403,20260405.0,阪神,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020404,20260405.0,阪神,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020405,20260405.0,阪神,5,3歳1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202609020406,20260405.0,阪神,6,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020407,20260405.0,阪神,7,4歳以上2勝クラス,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020408,20260405.0,阪神,8,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020409,20260405.0,阪神,9,バイオレットS,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020410,20260405.0,阪神,10,心斎橋S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020411,20260405.0,阪神,11,大阪杯,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020412,20260405.0,阪神,12,天満橋S,D,,700.0,54840.0,54140.0,True,700,54840.0,True,700,700,54840.0,54140.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010101,20260411.0,福島,1,3歳未勝利,C,,700.0,1390.0,690.0,True,700,1390.0,True,700,700,1390.0,690.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010102,20260411.0,福島,2,3歳未勝利,D,,700.0,770.0,70.0,True,700,770.0,True,700,700,770.0,70.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010103,20260411.0,福島,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010104,20260411.0,福島,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010105,20260411.0,福島,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010106,20260411.0,福島,6,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010107,20260411.0,福島,7,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010108,20260411.0,福島,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010109,20260411.0,福島,9,浄土平特別,C,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010110,20260411.0,福島,10,花見山特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010111,20260411.0,福島,11,吾妻小富士S,C,,700.0,14120.0,13420.0,True,700,14120.0,True,700,700,14120.0,13420.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010112,20260411.0,福島,12,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030501,20260411.0,中山,1,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030502,20260411.0,中山,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030503,20260411.0,中山,3,3歳未勝利,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202606030505,20260411.0,中山,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030506,20260411.0,中山,6,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030507,20260411.0,中山,7,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030508,20260411.0,中山,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030510,20260411.0,中山,10,卯月S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030511,20260411.0,中山,11,ニュージーランドT,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030512,20260411.0,中山,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020501,20260411.0,阪神,1,3歳未勝利,X,,700.0,1160.0,460.0,True,700,1160.0,True,700,700,1160.0,460.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020502,20260411.0,阪神,2,3歳未勝利,D,,700.0,840.0,140.0,True,700,840.0,True,700,700,840.0,140.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020503,20260411.0,阪神,3,3歳未勝利,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202609020504,20260411.0,阪神,4,3歳未勝利,C,,700.0,5850.0,5150.0,True,700,5850.0,True,700,700,5850.0,5150.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020505,20260411.0,阪神,5,3歳1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202609020506,20260411.0,阪神,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020507,20260411.0,阪神,7,4歳以上1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202609020508,20260411.0,阪神,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020509,20260411.0,阪神,9,明石特別,A,,700.0,190.0,-510.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020510,20260411.0,阪神,10,大阪―ハンブルクC,A,,700.0,910.0,210.0,True,700,910.0,True,700,700,910.0,210.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020511,20260411.0,阪神,11,阪神牝馬S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020512,20260411.0,阪神,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010201,20260412.0,福島,1,3歳未勝利,C,,700.0,1330.0,630.0,True,700,1330.0,True,700,700,1330.0,630.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010202,20260412.0,福島,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010203,20260412.0,福島,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010204,20260412.0,福島,4,3歳未勝利,D,,700.0,4960.0,4260.0,True,700,4960.0,True,700,700,4960.0,4260.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010205,20260412.0,福島,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010206,20260412.0,福島,6,4歳以上1勝クラス,C,,700.0,2610.0,1910.0,True,700,2610.0,True,700,700,2610.0,1910.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010207,20260412.0,福島,7,4歳以上1勝クラス,C,,700.0,3090.0,2390.0,True,700,3090.0,True,700,700,3090.0,2390.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010208,20260412.0,福島,8,4歳以上1勝クラス,D,,700.0,3770.0,3070.0,True,700,3770.0,True,700,700,3770.0,3070.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010209,20260412.0,福島,9,燧ケ岳特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010210,20260412.0,福島,10,喜多方特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010211,20260412.0,福島,11,福島民報杯,C,,700.0,12760.0,12060.0,True,700,12760.0,True,700,700,12760.0,12060.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010212,20260412.0,福島,12,4歳以上1勝クラス,C,,700.0,2820.0,2120.0,True,700,2820.0,True,700,700,2820.0,2120.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030601,20260412.0,中山,1,3歳未勝利,D,,700.0,510.0,-190.0,True,700,510.0,True,700,700,510.0,-190.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030602,20260412.0,中山,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030603,20260412.0,中山,3,3歳未勝利,D,,700.0,5630.0,4930.0,True,700,5630.0,True,700,700,5630.0,4930.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030605,20260412.0,中山,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030606,20260412.0,中山,6,3歳1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030607,20260412.0,中山,7,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030608,20260412.0,中山,8,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030609,20260412.0,中山,9,印西特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606030610,20260412.0,中山,10,あけぼのS,A,,700.0,1620.0,920.0,True,700,1620.0,True,700,700,1620.0,920.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030611,20260412.0,中山,11,春雷S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030612,20260412.0,中山,12,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020601,20260412.0,阪神,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020602,20260412.0,阪神,2,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020603,20260412.0,阪神,3,3歳未勝利,D,,700.0,510.0,-190.0,True,700,510.0,True,700,700,510.0,-190.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020604,20260412.0,阪神,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020605,20260412.0,阪神,5,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020606,20260412.0,阪神,6,4歳以上1勝クラス,A,,700.0,18760.0,18060.0,True,700,18760.0,True,700,700,18760.0,18060.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020607,20260412.0,阪神,7,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020608,20260412.0,阪神,8,川西特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020609,20260412.0,阪神,9,忘れな草賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020610,20260412.0,阪神,10,京橋S,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020611,20260412.0,阪神,11,桜花賞,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020612,20260412.0,阪神,12,梅田S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010301,20260418.0,福島,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010302,20260418.0,福島,2,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010303,20260418.0,福島,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010304,20260418.0,福島,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010305,20260418.0,福島,5,3歳未勝利,C,,700.0,1110.0,410.0,True,700,1110.0,True,700,700,1110.0,410.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010306,20260418.0,福島,6,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010307,20260418.0,福島,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010308,20260418.0,福島,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010309,20260418.0,福島,9,ひめさゆり賞,A,,700.0,9780.0,9080.0,True,700,9780.0,True,700,700,9780.0,9080.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010310,20260418.0,福島,10,桑折特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010311,20260418.0,福島,11,ラジオ福島賞,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010312,20260418.0,福島,12,4歳以上1勝クラス,D,,700.0,1890.0,1190.0,True,700,1890.0,True,700,700,1890.0,1190.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030701,20260418.0,中山,1,3歳未勝利,D,,700.0,540.0,-160.0,True,700,540.0,True,700,700,540.0,-160.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030702,20260418.0,中山,2,3歳未勝利,A,,700.0,1240.0,540.0,True,700,1240.0,True,700,700,1240.0,540.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030703,20260418.0,中山,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030704,20260418.0,中山,4,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030705,20260418.0,中山,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030706,20260418.0,中山,6,3歳1勝クラス,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202606030707,20260418.0,中山,7,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030708,20260418.0,中山,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030709,20260418.0,中山,9,袖ケ浦特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606030710,20260418.0,中山,10,下総S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030712,20260418.0,中山,12,葛飾特別,D,,700.0,1560.0,860.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020701,20260418.0,阪神,1,3歳未勝利,C,,700.0,630.0,-70.0,True,700,630.0,True,700,700,630.0,-70.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020702,20260418.0,阪神,2,3歳未勝利,D,,700.0,270.0,-430.0,True,700,270.0,True,700,700,270.0,-430.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020703,20260418.0,阪神,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020704,20260418.0,阪神,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020705,20260418.0,阪神,5,3歳1勝クラス,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202609020706,20260418.0,阪神,6,3歳1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020707,20260418.0,阪神,7,4歳以上1勝クラス,A,,700.0,1530.0,830.0,True,700,1530.0,True,700,700,1530.0,830.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020708,20260418.0,阪神,8,4歳以上1勝クラス,A,,700.0,660.0,-40.0,True,700,660.0,True,700,700,660.0,-40.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020709,20260418.0,阪神,9,吹田特別,D,,700.0,3460.0,2760.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020710,20260418.0,阪神,10,丹波特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020711,20260418.0,阪神,11,アンタレスS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020712,20260418.0,阪神,12,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010401,20260419.0,福島,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010402,20260419.0,福島,2,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010403,20260419.0,福島,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010404,20260419.0,福島,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010405,20260419.0,福島,5,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010406,20260419.0,福島,6,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010407,20260419.0,福島,7,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010408,20260419.0,福島,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010409,20260419.0,福島,9,須賀川特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010410,20260419.0,福島,10,奥の細道特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010411,20260419.0,福島,11,福島牝馬S,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010412,20260419.0,福島,12,4歳以上1勝クラス,D,,700.0,2460.0,1760.0,True,700,2460.0,True,700,700,2460.0,1760.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030801,20260419.0,中山,1,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030802,20260419.0,中山,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030803,20260419.0,中山,3,3歳未勝利,A,,700.0,1690.0,990.0,True,700,1690.0,True,700,700,1690.0,990.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030804,20260419.0,中山,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030805,20260419.0,中山,5,3歳1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030806,20260419.0,中山,6,3歳1勝クラス,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202606030807,20260419.0,中山,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030808,20260419.0,中山,8,利根川特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606030809,20260419.0,中山,9,野島崎特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202606030810,20260419.0,中山,10,京葉S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030811,20260419.0,中山,11,皐月賞,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202606030812,20260419.0,中山,12,サンシャインS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020801,20260419.0,阪神,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020802,20260419.0,阪神,2,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020803,20260419.0,阪神,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020805,20260419.0,阪神,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020806,20260419.0,阪神,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020807,20260419.0,阪神,7,3歳1勝クラス,A,,700.0,2580.0,1880.0,True,700,2580.0,True,700,700,2580.0,1880.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020808,20260419.0,阪神,8,4歳以上1勝クラス,A,,700.0,1660.0,960.0,True,700,1660.0,True,700,700,1660.0,960.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020809,20260419.0,阪神,9,蓬莱峡特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202609020810,20260419.0,阪神,10,陽春S,D,,700.0,840.0,140.0,True,700,840.0,True,700,700,840.0,140.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020811,20260419.0,阪神,11,立雲峡S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202609020812,20260419.0,阪神,12,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010501,20260425.0,福島,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010502,20260425.0,福島,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010503,20260425.0,福島,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010504,20260425.0,福島,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010505,20260425.0,福島,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010506,20260425.0,福島,6,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010507,20260425.0,福島,7,4歳以上1勝クラス,D,,700.0,3840.0,3140.0,True,700,3840.0,True,700,700,3840.0,3140.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010508,20260425.0,福島,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010509,20260425.0,福島,9,雪うさぎ賞,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010510,20260425.0,福島,10,医王寺特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010511,20260425.0,福島,11,福島中央テレビ杯,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010512,20260425.0,福島,12,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020101,20260425.0,東京,1,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020102,20260425.0,東京,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020103,20260425.0,東京,3,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020104,20260425.0,東京,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020105,20260425.0,東京,5,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020106,20260425.0,東京,6,3歳1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020107,20260425.0,東京,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020108,20260425.0,東京,8,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020109,20260425.0,東京,9,石和特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202605020110,20260425.0,東京,10,鎌倉S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020111,20260425.0,東京,11,青葉賞,C,,700.0,2280.0,1580.0,True,700,2280.0,True,700,700,2280.0,1580.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020112,20260425.0,東京,12,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030101,20260425.0,京都,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030102,20260425.0,京都,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030103,20260425.0,京都,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030105,20260425.0,京都,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030106,20260425.0,京都,6,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030107,20260425.0,京都,7,3歳1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030108,20260425.0,京都,8,あやめ賞,E,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202608030109,20260425.0,京都,9,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030110,20260425.0,京都,10,観月橋S,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030111,20260425.0,京都,11,天王山S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030112,20260425.0,京都,12,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010601,20260426.0,福島,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010602,20260426.0,福島,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010603,20260426.0,福島,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010604,20260426.0,福島,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010605,20260426.0,福島,5,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010606,20260426.0,福島,6,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010607,20260426.0,福島,7,4歳以上1勝クラス,C,,700.0,2750.0,2050.0,True,700,2750.0,True,700,700,2750.0,2050.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010608,20260426.0,福島,8,4歳以上1勝クラス,D,,700.0,1250.0,550.0,True,700,1250.0,True,700,700,1250.0,550.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010609,20260426.0,福島,9,飯盛山特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010610,20260426.0,福島,10,尾瀬特別,C,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202603010611,20260426.0,福島,11,モルガナイトS,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202603010612,20260426.0,福島,12,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020201,20260426.0,東京,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020202,20260426.0,東京,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020203,20260426.0,東京,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020204,20260426.0,東京,4,3歳未勝利,A,,700.0,1280.0,580.0,True,700,1280.0,True,700,700,1280.0,580.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020205,20260426.0,東京,5,3歳未勝利,C,,700.0,2020.0,1320.0,True,700,2020.0,True,700,700,2020.0,1320.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020206,20260426.0,東京,6,3歳1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020207,20260426.0,東京,7,4歳以上1勝クラス,C,,700.0,620.0,-80.0,True,700,620.0,True,700,700,620.0,-80.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020208,20260426.0,東京,8,4歳以上2勝クラス,D,,700.0,1930.0,1230.0,True,700,1930.0,True,700,700,1930.0,1230.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020209,20260426.0,東京,9,湘南S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020210,20260426.0,東京,10,オアシスS,C,,700.0,2110.0,1410.0,True,700,2110.0,True,700,700,2110.0,1410.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020211,20260426.0,東京,11,フローラS,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020212,20260426.0,東京,12,4歳以上2勝クラス,D,,700.0,2920.0,2220.0,True,700,2920.0,True,700,700,2920.0,2220.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030201,20260426.0,京都,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030202,20260426.0,京都,2,3歳未勝利,C,,700.0,330.0,-370.0,True,700,330.0,True,700,700,330.0,-370.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030203,20260426.0,京都,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030205,20260426.0,京都,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030206,20260426.0,京都,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030207,20260426.0,京都,7,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030208,20260426.0,京都,8,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030209,20260426.0,京都,9,比良山特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202608030210,20260426.0,京都,10,センテニアルパークS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030211,20260426.0,京都,11,マイラーズC,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030212,20260426.0,京都,12,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010102,20260502.0,新潟,2,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010103,20260502.0,新潟,3,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010105,20260502.0,新潟,5,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010106,20260502.0,新潟,6,3歳未勝利,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202604010107,20260502.0,新潟,7,4歳以上1勝クラス,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010108,20260502.0,新潟,8,4歳以上1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202604010109,20260502.0,新潟,9,わらび賞,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010110,20260502.0,新潟,10,胎内川特別,X,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202604010111,20260502.0,新潟,11,三条S,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020301,20260502.0,東京,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020302,20260502.0,東京,2,3歳未勝利,B,,700.0,350.0,-350.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202605020303,20260502.0,東京,3,3歳未勝利,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202605020304,20260502.0,東京,4,3歳未勝利,A,,700.0,1150.0,450.0,True,700,1150.0,True,700,700,1150.0,450.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020305,20260502.0,東京,5,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020306,20260502.0,東京,6,4歳以上1勝クラス,E,,700.0,120.0,-580.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_E
+202605020307,20260502.0,東京,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020308,20260502.0,東京,8,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020309,20260502.0,東京,9,是政S,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020310,20260502.0,東京,10,スイートピーS,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020311,20260502.0,東京,11,京王杯SC,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020312,20260502.0,東京,12,4歳以上2勝クラス,B,,700.0,1810.0,1110.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202608030301,20260502.0,京都,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030302,20260502.0,京都,2,3歳未勝利,X,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030303,20260502.0,京都,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030304,20260502.0,京都,4,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030305,20260502.0,京都,5,3歳未勝利,A,,700.0,730.0,30.0,True,700,730.0,True,700,700,730.0,30.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030306,20260502.0,京都,6,4歳以上1勝クラス,B,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202608030307,20260502.0,京都,7,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030308,20260502.0,京都,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030309,20260502.0,京都,9,矢車賞,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030310,20260502.0,京都,10,京極特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202608030311,20260502.0,京都,11,ユニコーンS,B,,700.0,860.0,160.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_cond_B
+202608030312,20260502.0,京都,12,4歳以上1勝クラス,A,,700.0,2390.0,1690.0,True,700,2390.0,True,700,700,2390.0,1690.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010201,20260503.0,新潟,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010202,20260503.0,新潟,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010203,20260503.0,新潟,3,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010205,20260503.0,新潟,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010206,20260503.0,新潟,6,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010207,20260503.0,新潟,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010208,20260503.0,新潟,8,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010209,20260503.0,新潟,9,咲花特別,A,,700.0,670.0,-30.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202604010211,20260503.0,新潟,11,越後S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010212,20260503.0,新潟,12,4歳以上1勝クラス,D,,700.0,3680.0,2980.0,True,700,3680.0,True,700,700,3680.0,2980.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020401,20260503.0,東京,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020402,20260503.0,東京,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020403,20260503.0,東京,3,3歳未勝利,A,,700.0,560.0,-140.0,True,700,560.0,True,700,700,560.0,-140.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020404,20260503.0,東京,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020405,20260503.0,東京,5,3歳未勝利,C,,700.0,2540.0,1840.0,True,700,2540.0,True,700,700,2540.0,1840.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020406,20260503.0,東京,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020407,20260503.0,東京,7,4歳以上1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020408,20260503.0,東京,8,4歳以上2勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020409,20260503.0,東京,9,府中S,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020410,20260503.0,東京,10,ブリリアントS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020411,20260503.0,東京,11,プリンシパルS,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202605020412,20260503.0,東京,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030401,20260503.0,京都,1,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030402,20260503.0,京都,2,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030403,20260503.0,京都,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030404,20260503.0,京都,4,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030405,20260503.0,京都,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030406,20260503.0,京都,6,3歳1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030407,20260503.0,京都,7,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030408,20260503.0,京都,8,御池特別,D,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202608030409,20260503.0,京都,9,六波羅特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202608030410,20260503.0,京都,10,朱雀S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030411,20260503.0,京都,11,天皇賞(春),C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202608030412,20260503.0,京都,12,東大路S,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,0.0,0.0,True,strategy_7_pass + score_unavailable_fallback
+202604010401,20260510.0,新潟,1,3歳未勝利,C,,700.0,800.0,100.0,True,700,800.0,True,1400,1400,1600.0,200.0,2.7140174193106037,0.4928800270945703,True,strategy_7_pass + ev_mid (2.71>=2.0) → 2x
+202604010402,20260510.0,新潟,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.4915513299743655,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202604010403,20260510.0,新潟,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,1.9502607990340992,0.6059648966237398,True,strategy_7_pass + ev_base (1.95)
+202604010405,20260510.0,新潟,5,3歳未勝利,C,,700.0,3900.0,3200.0,True,700,3900.0,True,2100,2100,11700.0,9600.0,4.8496015168687086,0.5658736217258441,True,strategy_7_pass + ev_high (4.85>=3.0) → 3x
+202604010407,20260510.0,新潟,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,6.018509709751559,0.7146967785748535,True,strategy_7_pass + ev_high (6.02>=3.0) → 3x
+202604010408,20260510.0,新潟,8,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.6376468394537412,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202604010409,20260510.0,新潟,9,荒川峡特別,A,,700.0,12570.0,11870.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202604010410,20260510.0,新潟,10,五泉特別,A,,700.0,0.0,-700.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202604010411,20260510.0,新潟,11,谷川岳S,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,3.2822781476872938,0.6720304533080601,True,strategy_7_pass + ev_high (3.28>=3.0) → 3x
+202604010412,20260510.0,新潟,12,4歳以上1勝クラス,D,,700.0,1400.0,700.0,True,700,1400.0,True,2100,2100,4200.0,2100.0,5.695224721216153,0.6588765327998319,True,strategy_7_pass + ev_high (5.70>=3.0) → 3x
+202605020601,20260510.0,東京,1,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.46787799834174304,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202605020602,20260510.0,東京,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,1.7276375220830509,0.5145970439216431,True,strategy_7_pass + ev_base (1.73)
+202605020603,20260510.0,東京,3,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.2960318517507132,0.6962374288287864,True,strategy_7_pass + ev_mid (2.30>=2.0) → 2x
+202605020604,20260510.0,東京,4,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.2809671994265974,0.6000212122379549,True,strategy_7_pass + ev_mid (2.28>=2.0) → 2x
+202605020605,20260510.0,東京,5,3歳1勝クラス,C,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.8405504292288932,0.807779962742418,True,strategy_7_pass + ev_mid (2.84>=2.0) → 2x
+202605020606,20260510.0,東京,6,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,8.060958755724235,0.7144128025572078,True,strategy_7_pass + ev_high (8.06>=3.0) → 3x
+202605020607,20260510.0,東京,7,4歳以上1勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,4.283552007421092,0.708858347565094,True,strategy_7_pass + ev_high (4.28>=3.0) → 3x
+202605020608,20260510.0,東京,8,4歳以上2勝クラス,D,,700.0,2810.0,2110.0,True,700,2810.0,True,1400,1400,5620.0,4220.0,2.11574503166535,0.8053017319432536,True,strategy_7_pass + ev_mid (2.12>=2.0) → 2x
+202605020609,20260510.0,東京,9,日吉特別,A,,700.0,1810.0,1110.0,False,0,0.0,False,0,0,0.0,0.0,0.0,0.0,False,strategy_7_06_tokubetsu
+202605020610,20260510.0,東京,10,メトロポリタンS,A,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,7.947852950097565,0.7556643786415882,True,strategy_7_pass + ev_high (7.95>=3.0) → 3x
+202605020611,20260510.0,東京,11,NHKマイルC,C,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.7920939581213648,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202605020612,20260510.0,東京,12,立夏S,C,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,10.0,0.7645150516428629,True,strategy_7_pass + ev_high (10.00>=3.0) → 3x
+202608030601,20260510.0,京都,1,3歳未勝利,A,,700.0,550.0,-150.0,True,700,550.0,True,2100,2100,1650.0,-450.0,3.0071757994163995,0.6718950226497666,True,strategy_7_pass + ev_high (3.01>=3.0) → 3x
+202608030602,20260510.0,京都,2,3歳未勝利,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,5.2327598402563575,0.7976167585651955,True,strategy_7_pass + ev_high (5.23>=3.0) → 3x
+202608030603,20260510.0,京都,3,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,700,700,0.0,-700.0,1.8328778652987867,0.6197137923695077,True,strategy_7_pass + ev_base (1.83)
+202608030604,20260510.0,京都,4,3歳未勝利,C,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.407469708533505,0.6369309484106216,True,strategy_7_pass + ev_mid (2.41>=2.0) → 2x
+202608030605,20260510.0,京都,5,3歳未勝利,A,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,4.543820861621476,0.4895388431637018,True,strategy_7_pass + ev_high (4.54>=3.0) → 3x
+202608030606,20260510.0,京都,6,4歳以上1勝クラス,A,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.2034996829985256,0.7382352231934018,True,strategy_7_pass + ev_mid (2.20>=2.0) → 2x
+202608030607,20260510.0,京都,7,3歳1勝クラス,A,,700.0,690.0,-10.0,True,700,690.0,True,1400,1400,1380.0,-20.0,2.8771395070967696,0.7692816162589382,True,strategy_7_pass + ev_mid (2.88>=2.0) → 2x
+202608030608,20260510.0,京都,8,4歳以上1勝クラス,D,,700.0,1430.0,730.0,True,700,1430.0,True,2100,2100,4290.0,2190.0,7.0605387043280095,0.7380803727039651,True,strategy_7_pass + ev_high (7.06>=3.0) → 3x
+202608030609,20260510.0,京都,9,烏丸S,A,,700.0,0.0,-700.0,True,700,0.0,True,1400,1400,0.0,-1400.0,2.5403395270952878,0.8016662292740129,True,strategy_7_pass + ev_mid (2.54>=2.0) → 2x
+202608030610,20260510.0,京都,10,橘S,D,,700.0,450.0,-250.0,True,700,450.0,True,2100,2100,1350.0,-750.0,5.4505528296589505,0.787570544771535,True,strategy_7_pass + ev_high (5.45>=3.0) → 3x
+202608030611,20260510.0,京都,11,平城京S,C,,700.0,680.0,-20.0,True,700,680.0,True,700,700,680.0,-20.0,1.9811205190431573,0.8665165605581375,True,strategy_7_pass + ev_base (1.98)
+202608030612,20260510.0,京都,12,4歳以上2勝クラス,D,,700.0,0.0,-700.0,True,700,0.0,True,2100,2100,0.0,-2100.0,4.830119453906631,0.8142932132283658,True,strategy_7_pass + ev_high (4.83>=3.0) → 3x
