@@ -433,3 +433,61 @@ $ curl -sS http://www11.jrdb.com/nowracedata/data/2026/20260516/now_racedata_jso
 now_racedata_callback({"limit4_data":[...], "now_data":{"now_racekey":"04261512",
 "now_hassotime":"1630"}, ...})
 ```
+
+---
+
+## 11. ★ 5/16 evening 最終判定: TYB 永久放棄 ★ (Sub-task 11 統合)
+
+### 11.1 判定根拠
+
+Sub-task 6 (`docs/TYB_MERGE_BUG_AUDIT_2026_05_16.md`) と本設計 doc を統合した結果:
+
+- ★ V15 model `num_feature() = 145` で **truncate 明示** (`predict_core.py:2160-2163`)、 TYB 5 features は X 末尾で必ず削除される ★
+- ★ TYB 5 features の content audit ★:
+  - `jrdb_odds_idx`: corr_target +0.4214 ≈ \|popularity\| 0.4242 → **LEAK 確定**
+  - `jrdb_paddock_idx`: corr_target +0.3539、 delivery 17:00 JST = post-race confirmed (P0-3 Sub-task 5-4)
+  - `jrdb_live_composite_idx`: corr_target +0.2573、 odds+padock 合成 = 部分 LEAK
+  - `jrdb_body_code`: corr_target +0.0121 = safe だが信号ゼロ
+  - `jrdb_demeanor_code`: corr_target +0.0041 = safe だが信号ゼロ
+- ★ 5 features 中 採用候補 = 0 ★ (LEAK 3 件 + 信号ゼロ 2 件)
+- ★ P0-4 fetch 経路を確立しても 取り込む value は 0 ★
+
+### 11.2 永久放棄の verdict
+
+本 §0 で「★ 真の経路 ★ JRDB tyokuzen path」 を技術的には発見したが、 Sub-task 6 で content の value がゼロ確定したため:
+
+- ★ P0-4 着手なし (5/18+ 実装 plan §5 は ALL CANCEL) ★
+- ★ `tools/v21/jrdb_tyb_live_fetch.py` 改修 frozen ★
+- ★ `tools/register_tyb_live_fetch_schtasks.ps1` 新規作成なし ★
+- ★ schtask 実登録なし ★
+- ★ shadow eval 30R 集積なし ★
+- ★ V15 production は完全不変、 既存 race_auto_notify 内 `fetch_jrdb_tyb()` の silent failure は behavior 維持 ★
+
+### 11.3 工数節約
+
+| 想定 (P0-4 設計) | 実際 (永久放棄) |
+|------------------|------------------|
+| 段階 1 (fetch script) 12h | 0 |
+| 段階 2 (schtask + shadow eval) 7h | 0 |
+| 段階 3 (live 観測) 5/23-5/24 passive | 0 |
+| 段階 4 (GO/NO-GO 判定) 別 sub-task | 0 |
+| **合計 2-3 日 → 0 日** | **節約 2-3 日** |
+
+### 11.4 代替 path 候補 (5/24+ 検討、 別 sub-task)
+
+★ 推奨優先順位 ★:
+1. **JV-Link O1 連続 odds** (4 段階 snapshot、 時系列 odds shift feature) — 推奨優先
+2. **JV-Link TCOV** (馬場 リアルタイム、 公式経路) — HTML scrape 代替
+3. **netkeiba SP テキスト数値化高度化** (BERT embedding 等)
+4. **JRDB CYB merge bug fix verify only** (採用判断は別 sub-task)
+
+★ 詳細は `docs/P0_4_FINAL_VERDICT_2026_05_16.md` 参照 ★
+
+### 11.5 V15 production 不変 (再確認)
+
+- `keiba_model_v15_central*.pkl.gz` 再 save なし
+- `data/_v15_optuna_df_cache.pkl.gz` 再 build なし
+- `tools/predict_core.py` / `tools/daily_predict.py` / `tools/race_auto_notify.py` / `app.py` 変更なし
+- `train/train_v135_ft_transformer.py:build_v134_dataframe` 不変
+
+★ honest 注記: 「永久放棄」 は本 sub-task 11 の content ベース verdict、 user 最終判断は別 sentence ★
