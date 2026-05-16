@@ -1,0 +1,375 @@
+{
+  "meta": {
+    "task": "Sub-task 15 paper sim",
+    "oof_train_year": null,
+    "n_oof_train": 283722,
+    "n_live_samples": 347,
+    "live_date_range": [
+      "20260314",
+      "20260516"
+    ],
+    "generated_at": "2026-05-16T23:28:10.658372"
+  },
+  "results": {
+    "baseline": {
+      "method": "baseline",
+      "n_samples": 347,
+      "auc": 0.5100916803503011,
+      "brier": 0.288738099324373,
+      "ece": 0.16638249118272055,
+      "p_cal_min": 0.1311486446481089,
+      "p_cal_max": 0.8201017116708118,
+      "p_cal_mean": 0.47667977548986096,
+      "p_cal_std": 0.19690813853724476,
+      "realized_pnl": 22010.0,
+      "realized_inv": 242900.0,
+      "realized_roi": 1.0906134211609715,
+      "threshold_sweep": [
+        {
+          "threshold": 0.0,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.1,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.2,
+          "n_bets": 280,
+          "investment": 196000.0,
+          "profit": 9960.0,
+          "roi": 1.0508163265306123
+        },
+        {
+          "threshold": 0.3,
+          "n_bets": 267,
+          "investment": 186900.0,
+          "profit": 10760.0,
+          "roi": 1.0575708935259498
+        },
+        {
+          "threshold": 0.35,
+          "n_bets": 256,
+          "investment": 179200.0,
+          "profit": 17690.0,
+          "roi": 1.0987165178571427
+        },
+        {
+          "threshold": 0.4,
+          "n_bets": 241,
+          "investment": 168700.0,
+          "profit": 17600.0,
+          "roi": 1.104327208061648
+        },
+        {
+          "threshold": 0.45,
+          "n_bets": 215,
+          "investment": 150500.0,
+          "profit": 24210.0,
+          "roi": 1.1608637873754153
+        },
+        {
+          "threshold": 0.5,
+          "n_bets": 189,
+          "investment": 132300.0,
+          "profit": 38580.0,
+          "roi": 1.291609977324263
+        }
+      ]
+    },
+    "platt": {
+      "method": "platt",
+      "n_samples": 347,
+      "auc": 0.5100916803503011,
+      "brier": 0.3053171883692829,
+      "ece": 0.20147210600522328,
+      "p_cal_min": 0.10563615604466918,
+      "p_cal_max": 0.8974713180626136,
+      "p_cal_mean": 0.5148864995841527,
+      "p_cal_std": 0.2511855865924474,
+      "realized_pnl": 22010.0,
+      "realized_inv": 242900.0,
+      "realized_roi": 1.0906134211609715,
+      "threshold_sweep": [
+        {
+          "threshold": 0.0,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.1,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.2,
+          "n_bets": 275,
+          "investment": 192500.0,
+          "profit": 11430.0,
+          "roi": 1.0593766233766233
+        },
+        {
+          "threshold": 0.3,
+          "n_bets": 259,
+          "investment": 181300.0,
+          "profit": 15590.0,
+          "roi": 1.0859900717043574
+        },
+        {
+          "threshold": 0.35,
+          "n_bets": 247,
+          "investment": 172900.0,
+          "profit": 18140.0,
+          "roi": 1.104916136495084
+        },
+        {
+          "threshold": 0.4,
+          "n_bets": 239,
+          "investment": 167300.0,
+          "profit": 19000.0,
+          "roi": 1.1135684399282726
+        },
+        {
+          "threshold": 0.45,
+          "n_bets": 219,
+          "investment": 153300.0,
+          "profit": 21410.0,
+          "roi": 1.1396607958251794
+        },
+        {
+          "threshold": 0.5,
+          "n_bets": 209,
+          "investment": 146300.0,
+          "profit": 28410.0,
+          "roi": 1.19419002050581
+        }
+      ]
+    },
+    "isotonic": {
+      "method": "isotonic",
+      "n_samples": 347,
+      "auc": 0.5093903940886699,
+      "brier": 0.28487676687912233,
+      "ece": 0.15805340477562244,
+      "p_cal_min": 0.14300572022880909,
+      "p_cal_max": 0.8555691554467564,
+      "p_cal_mean": 0.5023730671589927,
+      "p_cal_std": 0.20145474212287137,
+      "realized_pnl": 22010.0,
+      "realized_inv": 242900.0,
+      "realized_roi": 1.0906134211609715,
+      "threshold_sweep": [
+        {
+          "threshold": 0.0,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.1,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.2,
+          "n_bets": 288,
+          "investment": 201600.0,
+          "profit": 9460.0,
+          "roi": 1.0469246031746031
+        },
+        {
+          "threshold": 0.3,
+          "n_bets": 274,
+          "investment": 191800.0,
+          "profit": 7170.0,
+          "roi": 1.0373826903023984
+        },
+        {
+          "threshold": 0.35,
+          "n_bets": 261,
+          "investment": 182700.0,
+          "profit": 14190.0,
+          "roi": 1.0776683087027914
+        },
+        {
+          "threshold": 0.4,
+          "n_bets": 247,
+          "investment": 172900.0,
+          "profit": 18140.0,
+          "roi": 1.104916136495084
+        },
+        {
+          "threshold": 0.45,
+          "n_bets": 229,
+          "investment": 160300.0,
+          "profit": 19070.0,
+          "roi": 1.1189644416718652
+        },
+        {
+          "threshold": 0.5,
+          "n_bets": 198,
+          "investment": 138600.0,
+          "profit": 35400.0,
+          "roi": 1.2554112554112553
+        }
+      ]
+    },
+    "beta": {
+      "method": "beta",
+      "n_samples": 347,
+      "auc": 0.5100916803503011,
+      "brier": 0.2854137619594143,
+      "ece": 0.1638155360030331,
+      "p_cal_min": 0.14003196341837912,
+      "p_cal_max": 0.843018501539965,
+      "p_cal_mean": 0.505994256262757,
+      "p_cal_std": 0.20416348455331104,
+      "realized_pnl": 22010.0,
+      "realized_inv": 242900.0,
+      "realized_roi": 1.0906134211609715,
+      "threshold_sweep": [
+        {
+          "threshold": 0.0,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.1,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.2,
+          "n_bets": 287,
+          "investment": 200900.0,
+          "profit": 8380.0,
+          "roi": 1.0417122946739672
+        },
+        {
+          "threshold": 0.3,
+          "n_bets": 271,
+          "investment": 189700.0,
+          "profit": 7960.0,
+          "roi": 1.0419609910384817
+        },
+        {
+          "threshold": 0.35,
+          "n_bets": 261,
+          "investment": 182700.0,
+          "profit": 14190.0,
+          "roi": 1.0776683087027914
+        },
+        {
+          "threshold": 0.4,
+          "n_bets": 250,
+          "investment": 175000.0,
+          "profit": 16040.0,
+          "roi": 1.0916571428571429
+        },
+        {
+          "threshold": 0.45,
+          "n_bets": 236,
+          "investment": 165200.0,
+          "profit": 15470.0,
+          "roi": 1.0936440677966102
+        },
+        {
+          "threshold": 0.5,
+          "n_bets": 210,
+          "investment": 147000.0,
+          "profit": 27710.0,
+          "roi": 1.1885034013605442
+        }
+      ]
+    },
+    "temperature": {
+      "method": "temperature",
+      "n_samples": 347,
+      "auc": 0.5100916803503011,
+      "brier": 0.2879056492141263,
+      "ece": 0.16713031517808405,
+      "p_cal_min": 0.13431901014689354,
+      "p_cal_max": 0.8168185353416529,
+      "p_cal_mean": 0.47675968779937833,
+      "p_cal_std": 0.19474796961376886,
+      "realized_pnl": 22010.0,
+      "realized_inv": 242900.0,
+      "realized_roi": 1.0906134211609715,
+      "threshold_sweep": [
+        {
+          "threshold": 0.0,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.1,
+          "n_bets": 347,
+          "investment": 242900.0,
+          "profit": 22010.0,
+          "roi": 1.0906134211609715
+        },
+        {
+          "threshold": 0.2,
+          "n_bets": 282,
+          "investment": 197400.0,
+          "profit": 8560.0,
+          "roi": 1.0433637284701114
+        },
+        {
+          "threshold": 0.3,
+          "n_bets": 268,
+          "investment": 187600.0,
+          "profit": 10060.0,
+          "roi": 1.0536247334754798
+        },
+        {
+          "threshold": 0.35,
+          "n_bets": 256,
+          "investment": 179200.0,
+          "profit": 17690.0,
+          "roi": 1.0987165178571427
+        },
+        {
+          "threshold": 0.4,
+          "n_bets": 241,
+          "investment": 168700.0,
+          "profit": 17600.0,
+          "roi": 1.104327208061648
+        },
+        {
+          "threshold": 0.45,
+          "n_bets": 216,
+          "investment": 151200.0,
+          "profit": 23510.0,
+          "roi": 1.155489417989418
+        },
+        {
+          "threshold": 0.5,
+          "n_bets": 189,
+          "investment": 132300.0,
+          "profit": 38580.0,
+          "roi": 1.291609977324263
+        }
+      ]
+    }
+  }
+}
