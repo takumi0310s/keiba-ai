@@ -41,6 +41,7 @@ import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CALIBRATOR_PATH = os.path.join(BASE_DIR, 'data', 'calibrator_v15_pilot.pkl')
+CALIBRATOR_PATH_V2 = os.path.join(BASE_DIR, 'data', 'calibrator_v15_pilot_v2.pkl')
 SHADOW_DIR = os.path.join(BASE_DIR, 'data', 'v21')
 os.makedirs(SHADOW_DIR, exist_ok=True)
 
@@ -98,25 +99,46 @@ def strategy_7_filter(race_name: str, condition: str, distance: int) -> tuple[bo
 
 # ===== Calibration (data/calibrator_v15_pilot.pkl 適用) =====
 
-_calibrator_cache: Optional[dict] = None
+_calibrator_cache: dict[str, Optional[dict]] = {}
+
+
+def resolve_calibrator_path(version: str) -> str:
+    """version 文字列 (v1/v2/path) を 実 file path に解決."""
+    if version in ('v1', 'pilot', 'orig', None, ''):
+        return CALIBRATOR_PATH
+    if version == 'v2':
+        return CALIBRATOR_PATH_V2
+    return version  # 任意 path 直指定
 
 
 def load_calibrator(path: str = CALIBRATOR_PATH) -> Optional[dict]:
     """Calibrator load (cache 付き). 失敗時 None."""
-    global _calibrator_cache
-    if _calibrator_cache is not None:
-        return _calibrator_cache
+    if path in _calibrator_cache:
+        return _calibrator_cache[path]
     if not os.path.exists(path):
+        _calibrator_cache[path] = None
         return None
     try:
         with open(path, 'rb') as f:
             cal = pickle.load(f)
         if not isinstance(cal, dict) or 'isotonic' not in cal:
+            _calibrator_cache[path] = None
             return None
-        _calibrator_cache = cal
+        _calibrator_cache[path] = cal
         return cal
     except Exception:
+        _calibrator_cache[path] = None
         return None
+
+
+_active_calibrator_path: str = CALIBRATOR_PATH
+
+
+def set_active_calibrator(version: str) -> str:
+    """active calibrator path を設定 (apply_calibration が参照)."""
+    global _active_calibrator_path
+    _active_calibrator_path = resolve_calibrator_path(version)
+    return _active_calibrator_path
 
 
 def apply_calibration(raw_probs: np.ndarray, blend: float = CALIB_BLEND) -> np.ndarray:
@@ -135,7 +157,7 @@ def apply_calibration(raw_probs: np.ndarray, blend: float = CALIB_BLEND) -> np.n
         calibrated probabilities (0-1)
     """
     arr = np.asarray(raw_probs, dtype=float)
-    cal = load_calibrator()
+    cal = load_calibrator(_active_calibrator_path)
     if cal is None:
         return arr
     try:
@@ -623,17 +645,21 @@ def load_full_predictions(date_str: str) -> Optional[pd.DataFrame]:
         return None
 
 
-def shadow_eval(date_str: str):
+def shadow_eval(date_str: str, calibrator_version: str = 'v1'):
     """daily_predictions/{date}.csv を読み strategy_v2 shadow を出力.
 
     Discord 通知なし、 cumulative_results.csv 書き込みなし。
-    出力: data/v21/strategy_v2_shadow_{date}.csv
+    出力: data/v21/strategy_v2_shadow_{date}[_v2].csv (v2 calibrator 時は suffix 付与)
+
+    calibrator_version: 'v1' (orig 21 sample) / 'v2' (315 sample retrain)
 
     odds 取得 順:
       1. daily_predictions_full/{date}.csv (全頭 V15_score + odds、 推奨)
       2. odds_base_{date}.csv (top1_num の odds のみ、 fallback)
       3. odds=10.0 fallback (最低限)
     """
+    active = set_active_calibrator(calibrator_version)
+    print(f'[INFO] calibrator: {calibrator_version} ({active})')
     daily_path = os.path.join(BASE_DIR, 'data', 'daily_predictions', f'{date_str}.csv')
     if not os.path.exists(daily_path):
         print(f'[ERROR] {daily_path} 未生成')
@@ -744,7 +770,8 @@ def shadow_eval(date_str: str):
             elif v2['bet_size'] == BET_3X:
                 bet3x += 1
 
-    out_csv = os.path.join(SHADOW_DIR, f'strategy_v2_shadow_{date_str}.csv')
+    suffix = '' if calibrator_version in ('v1', 'pilot', 'orig') else f'_{calibrator_version}'
+    out_csv = os.path.join(SHADOW_DIR, f'strategy_v2_shadow_{date_str}{suffix}.csv')
     pd.DataFrame(rows_out).to_csv(out_csv, index=False, encoding='utf-8-sig')
 
     print('=' * 60)
@@ -767,10 +794,16 @@ def main():
     ap = argparse.ArgumentParser(description='Strategy Layer v2 (V15 production 不変)')
     ap.add_argument('--backtest', action='store_true', help='cumulative_results.csv で retrospective')
     ap.add_argument('--shadow', metavar='YYYYMMDD', help='当日 daily_predictions で shadow eval')
+    ap.add_argument(
+        '--calibrator',
+        default='v1',
+        choices=['v1', 'v2', 'pilot', 'orig'],
+        help='calibrator version: v1=orig 21 sample / v2=retrain 315 sample (default v1)'
+    )
     args = ap.parse_args()
 
     if args.shadow:
-        return shadow_eval(args.shadow)
+        return shadow_eval(args.shadow, calibrator_version=args.calibrator)
 
     if args.backtest:
         out_csv = os.path.join(SHADOW_DIR, 'strategy_v2_simulation.csv')
