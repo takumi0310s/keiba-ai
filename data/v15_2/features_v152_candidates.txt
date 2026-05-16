@@ -1,0 +1,28 @@
+# v15.2 候補 features (Sub-task 18 設計、 docs/SUBTASK_18_V152_FE_COMPLETE_DESIGN_2026_05_16.md)
+# priority A (8 features)
+breeder_dist_1
+paci_gekiso_race_rank
+breeder_dist_1_race_rank
+paci_gekiso_idx
+kta_ichi_pred_race_rank
+paci_lsidx_race_rank
+kta_ichi_idx_pred
+cha_chukan_idx_race_zscore
+
+# priority B (9 features)
+breeder_track_1
+cha_oikiri_idx_trend
+cha_chukan_time_idx
+paci_ls_idx_rank
+paci_gekiso_rank
+kab_turf_baba_x_bracket
+cha_shimai_time_3r_mean
+kab_straight_sa_x_horse_num_ratio
+kab_renzoku_day
+
+# priority C 試験 round (5 features、 paci_info_idx は corr +0.41 で leak audit 必須)
+cha_oikiri_rank
+cha_awase_result
+srb_bias_straight
+kta_pace_idx_pred
+paci_info_idx

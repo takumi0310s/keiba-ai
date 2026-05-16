@@ -1,0 +1,263 @@
+{
+  "label": "file: data/v15_2/features_v152_candidates.txt",
+  "summary": {
+    "total": 22,
+    "by_verdict": {
+      "OK": 20,
+      "PREV_ONLY": 1,
+      "SUSPECT": 1
+    },
+    "leaks": [],
+    "live_only": [],
+    "prev_only": [
+      "srb_bias_straight"
+    ],
+    "suspects": [
+      "paci_info_idx"
+    ]
+  },
+  "results": [
+    {
+      "feature": "breeder_dist_1",
+      "datatype": "kka_v2",
+      "timing": "post_race",
+      "safety": "prev_only",
+      "corr_target": 0.1429,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "kka_v2 静的 breeder 集計 → 安全 [external prior corr=+0.1429 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_gekiso_race_rank",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.2,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=+0.2000 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "breeder_dist_1_race_rank",
+      "datatype": "kka_v2",
+      "timing": "post_race",
+      "safety": "prev_only",
+      "corr_target": 0.1429,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "kka_v2 静的 breeder 集計 → 安全 [external prior corr=+0.1429 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_gekiso_idx",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.2,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=+0.2000 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kta_ichi_pred_race_rank",
+      "datatype": "kta",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.1446,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "場別調教師、 当日朝 06:00 [external prior corr=+0.1446 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_lsidx_race_rank",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.275,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=-0.2750 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kta_ichi_idx_pred",
+      "datatype": "kta",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.1446,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "場別調教師、 当日朝 06:00 [external prior corr=+0.1446 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_chukan_idx_race_zscore",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": 0.03,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=+0.0300 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "breeder_track_1",
+      "datatype": "kka_v2",
+      "timing": "post_race",
+      "safety": "prev_only",
+      "corr_target": 0.105,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "kka_v2 静的 breeder 集計 → 安全 [external prior corr=+0.1050 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_oikiri_idx_trend",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": 0.067,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=+0.0670 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_chukan_time_idx",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": 0.03,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=+0.0300 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_ls_idx_rank",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.275,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=-0.2750 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_gekiso_rank",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.255,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=-0.2550 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kab_turf_baba_x_bracket",
+      "datatype": "kab",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.004,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "当日朝 06:00 (kaisai-level) [external prior corr=-0.0040 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_shimai_time_3r_mean",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": -0.083,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=-0.0830 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kab_straight_sa_x_horse_num_ratio",
+      "datatype": "kab",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.002,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "当日朝 06:00 (kaisai-level) [external prior corr=-0.0020 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kab_renzoku_day",
+      "datatype": "kab",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": -0.003,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "当日朝 06:00 (kaisai-level) [external prior corr=-0.0030 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_oikiri_rank",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": 0.011,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=+0.0110 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "cha_awase_result",
+      "datatype": "cha",
+      "timing": "minus_3_days",
+      "safety": "safe",
+      "corr_target": -0.058,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "中央木曜追切後 3-4 日前 確定 [external prior corr=-0.0580 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "srb_bias_straight",
+      "datatype": "srb",
+      "timing": "post_race",
+      "safety": "prev_only",
+      "corr_target": 0.05,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "PREV_ONLY",
+      "note": "srb = current race は LEAK、 前走 ref として要確認 [external prior corr=+0.0500 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "kta_pace_idx_pred",
+      "datatype": "kta",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.095,
+      "n_valid": 0,
+      "corr_flag": "ok_external_prior",
+      "verdict": "OK",
+      "note": "場別調教師、 当日朝 06:00 [external prior corr=+0.0950 (Sub-task 18 実測)]"
+    },
+    {
+      "feature": "paci_info_idx",
+      "datatype": "paci",
+      "timing": "morning_06",
+      "safety": "safe",
+      "corr_target": 0.4139,
+      "n_valid": 0,
+      "corr_flag": "HIGH_CORR_LEAK_SUSPECT",
+      "verdict": "SUSPECT",
+      "note": "前日夜更新 + 当日朝 06:00 sync [external prior corr=+0.4139 (Sub-task 18 実測)]"
+    }
+  ]
+}
