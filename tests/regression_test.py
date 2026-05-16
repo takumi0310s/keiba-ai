@@ -301,6 +301,71 @@ def test_odds_base_perday_csv():
     assert 'odds_base_20260412.csv' in p, f"unexpected path: {p}"
 
 
+def test_strategy_7_planC_kyoto_filter_present():
+    """戦略⑦ 案 C: race_auto_notify.py に 京都 除外 filter が実装されていること (P0-2 5/17 適用)."""
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    # 京都 filter (案 C) が存在し、 重賞除外条件付き
+    assert "course_str == '京都'" in content, "race_auto_notify.py に 京都 除外 filter (case C) がない"
+    assert 'P0-2' in content, "P0-2 案 C コメントが race_auto_notify.py にない"
+    # Graded race を保護 (Victoria Mile 等 G1 day 影響回避)
+    assert 'is_graded' in content, "is_graded 判定 (G1/G2/G3) がない"
+
+
+def test_strategy_7_planC_condition_X_filter_present():
+    """戦略⑦ 案 C: race_auto_notify.py に 条件 X 除外 filter が実装されていること (P0-2 5/17 適用)."""
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    assert "cond_key == 'X'" in content, "race_auto_notify.py に 条件 X 除外 filter (case C) がない"
+
+
+def test_strategy_7_planC_excludes_kyoto_normal_race():
+    """戦略⑦ 案 C: 京都 + 非重賞 で skip されること."""
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    # 京都 + 非重賞 → skip
+    # 条件: course_str == '京都' AND NOT (is_graded OR is_listed)
+    # 検証: filter block 内に skip メッセージあり
+    assert 'Skip 京都' in content, "京都 skip ログメッセージがない"
+
+
+def test_strategy_7_planC_excludes_condition_X():
+    """戦略⑦ 案 C: 条件 X + 非重賞 で skip されること."""
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    assert 'Skip 条件X' in content, "条件 X skip ログメッセージがない"
+
+
+def test_strategy_7_planC_preserves_other_courses():
+    """戦略⑦ 案 C: 中京/東京/阪神/新潟 等は filter で skip されないこと.
+    docs/P0_2_EXTENSION_DESIGN_2026_05_16.md §1.2: 中京 ROI 107.05% (positive) は除外しない.
+    """
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    # 中京/東京/阪神/新潟/福島 が hardcoded skip されていないこと
+    for course in ['中京', '東京', '阪神', '新潟', '福島']:
+        # filter 内に 'course_str == 中京' 等の skip ロジックがないこと
+        assert f"course_str == '{course}'" not in content, \
+            f"{course} が race_auto_notify.py で hardcoded 除外されている (案 C は 京都 のみ)"
+
+
+def test_strategy_7_planC_graded_race_protected():
+    """戦略⑦ 案 C: G1/G2/G3 + L (重賞) は 京都/条件 X でも skip されないこと.
+    5/17 ヴィクトリアマイル (東京 11R G1) は案 C 影響 0、 万一京都で重賞があっても G1 は通す.
+    """
+    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
+    with open(fpath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    # 京都 filter に 'not (is_graded or is_listed)' があるか
+    assert 'not (is_graded or is_listed)' in content, \
+        "京都/条件X filter で Graded race を保護していない"
+
+
 def test_payout_integrity_suite():
     """tests/test_payout_integrity.py の4テストが全PASSすること (4/23 payout=0バグ再発防止)"""
     import subprocess

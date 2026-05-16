@@ -180,7 +180,12 @@ def predict_and_notify(race_info, date_str):
             print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
             return
 
-        # 2. 京都 filter 削除 (Phase 4 5/10、 ユーザー要望「予測 fire + 通知含む、 候補のみ手動除外」)
+        # 2. 京都 filter (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
+        #    Kyoto×A (N=27、 p<0.001) + Kyoto×D (N=25、 p=0.021) 統計的に baseline 下回る
+        #    G/L/OPEN特別 + Graded 重賞は除外しない (Victoria Mile 等 5/17 G1 day 影響回避)
+        if course_str == '京都' and not (is_graded or is_listed):
+            print(f"    [STRATEGY7] Skip 京都 (P0-2 案 C、 5/17 適用): {race_name_str}")
+            return
         # ===== 戦略⑦ フィルタ ここまで =====
 
         # Fetch odds (full = odds + pop_rank, save base cache for change features)
@@ -269,6 +274,12 @@ def predict_and_notify(race_info, date_str):
             return
         if cond_key == 'B':
             print(f"    [STRATEGY7] Skip 条件B (重~不馬場)")
+            return
+        # 条件 X (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
+        # 単一次元 N=19 ROI 8.72% 95% CI [0.00, 26.17] 統計的に baseline 下回る
+        # Graded race 重賞は除外しない (G1/G2/G3 + L = 期待値高)
+        if cond_key == 'X' and not (is_graded or is_listed):
+            print(f"    [STRATEGY7] Skip 条件X (P0-2 案 C、 5/17 適用)")
             return
         # ===== 戦略⑦ フィルタ続き ここまで =====
 
