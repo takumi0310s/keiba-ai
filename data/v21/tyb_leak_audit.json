@@ -1,0 +1,205 @@
+{
+  "n_samples": 348,
+  "pos_rate": 0.5862068965517241,
+  "auc_v15_direct": 0.5090890522875817,
+  "auc_v15_lr_5cv": 0.46529287479065207,
+  "auc_full_5cv": 0.6082134056166857,
+  "auc_full_train": 0.6963507625272332,
+  "train_cv_gap": 0.08813735691054747,
+  "loo_results": {
+    "top1_score": {
+      "auc_drop": 0.5888533398746063,
+      "delta_from_full": -0.01936006574207938
+    },
+    "idm": {
+      "auc_drop": 0.6080238097479478,
+      "delta_from_full": -0.0001895958687379018
+    },
+    "jockey_idx": {
+      "auc_drop": 0.6127665977900267,
+      "delta_from_full": 0.004553192173341047
+    },
+    "info_idx": {
+      "auc_drop": 0.6056467944083587,
+      "delta_from_full": -0.0025666112083270187
+    },
+    "odds_idx": {
+      "auc_drop": 0.6126871073885372,
+      "delta_from_full": 0.004473701771851468
+    },
+    "padock_idx": {
+      "auc_drop": 0.5850925523609651,
+      "delta_from_full": -0.023120853255720553
+    },
+    "sogo_idx": {
+      "auc_drop": 0.6080300776113584,
+      "delta_from_full": -0.00018332800532727678
+    },
+    "bagu_change": {
+      "auc_drop": 0.6139889054057623,
+      "delta_from_full": 0.005775499789076655
+    },
+    "ashimoto": {
+      "auc_drop": 0.5998054866611877,
+      "delta_from_full": -0.008407918955497973
+    },
+    "cancel_flag": {
+      "auc_drop": 0.6082134056166857,
+      "delta_from_full": 0.0
+    },
+    "tansho_odds": {
+      "auc_drop": 0.5954288306189663,
+      "delta_from_full": -0.012784574997719345
+    },
+    "fukusho_odds": {
+      "auc_drop": 0.6239389214803728,
+      "delta_from_full": 0.01572551586368709
+    },
+    "horse_weight": {
+      "auc_drop": 0.6168368690791495,
+      "delta_from_full": 0.008623463462463787
+    },
+    "weight_diff": {
+      "auc_drop": 0.6062779108330593,
+      "delta_from_full": -0.0019354947836264236
+    },
+    "padock_mark": {
+      "auc_drop": 0.6203232186140993,
+      "delta_from_full": 0.01210981299741365
+    },
+    "kehai_code": {
+      "auc_drop": 0.6062323080120149,
+      "delta_from_full": -0.0019810976046708006
+    },
+    "baba_code": {
+      "auc_drop": 0.6118160712567777,
+      "delta_from_full": 0.00360266564009204
+    }
+  },
+  "add_results": {
+    "idm": {
+      "auc_add": 0.4717634650321182,
+      "delta_from_v15only": 0.006470590241466123
+    },
+    "jockey_idx": {
+      "auc_add": 0.6291449717918539,
+      "delta_from_v15only": 0.16385209700120185
+    },
+    "info_idx": {
+      "auc_add": 0.605447595957328,
+      "delta_from_v15only": 0.14015472116667593
+    },
+    "odds_idx": {
+      "auc_add": 0.6350464850585,
+      "delta_from_v15only": 0.16975361026784797
+    },
+    "padock_idx": {
+      "auc_add": 0.6172051500719048,
+      "delta_from_v15only": 0.15191227528125273
+    },
+    "sogo_idx": {
+      "auc_add": 0.5013878021507482,
+      "delta_from_v15only": 0.03609492736009612
+    },
+    "bagu_change": {
+      "auc_add": 0.4363976360326835,
+      "delta_from_v15only": -0.028895238757968567
+    },
+    "ashimoto": {
+      "auc_add": 0.5149523128932596,
+      "delta_from_v15only": 0.049659438102607534
+    },
+    "cancel_flag": {
+      "auc_add": 0.46529287479065207,
+      "delta_from_v15only": 0.0
+    },
+    "tansho_odds": {
+      "auc_add": 0.6463905877233402,
+      "delta_from_v15only": 0.18109771293268817
+    },
+    "fukusho_odds": {
+      "auc_add": 0.630883076185251,
+      "delta_from_v15only": 0.1655902013945989
+    },
+    "horse_weight": {
+      "auc_add": 0.4118312125115562,
+      "delta_from_v15only": -0.05346166227909588
+    },
+    "weight_diff": {
+      "auc_add": 0.4816602806660478,
+      "delta_from_v15only": 0.016367405875395757
+    },
+    "padock_mark": {
+      "auc_add": 0.5533907373133012,
+      "delta_from_v15only": 0.08809786252264917
+    },
+    "kehai_code": {
+      "auc_add": 0.43540609990958423,
+      "delta_from_v15only": -0.029886774881067835
+    },
+    "baba_code": {
+      "auc_add": 0.49478712175305956,
+      "delta_from_v15only": 0.02949424696240749
+    }
+  },
+  "single_results": {
+    "idm": {
+      "auc_best": 0.5254119008714596
+    },
+    "jockey_idx": {
+      "auc_best": 0.617953431372549
+    },
+    "info_idx": {
+      "auc_best": 0.6087282135076253
+    },
+    "odds_idx": {
+      "auc_best": 0.6221745642701525
+    },
+    "padock_idx": {
+      "auc_best": 0.6191108387799564
+    },
+    "sogo_idx": {
+      "auc_best": 0.5168845315904139
+    },
+    "bagu_change": {
+      "auc_best": 0.5081699346405228
+    },
+    "ashimoto": {
+      "auc_best": 0.5231992102396514
+    },
+    "cancel_flag": {
+      "auc_best": 0.5
+    },
+    "tansho_odds": {
+      "auc_best": 0.6444206154684096
+    },
+    "fukusho_odds": {
+      "auc_best": 0.6273658769063181
+    },
+    "horse_weight": {
+      "auc_best": 0.5041019880174292
+    },
+    "weight_diff": {
+      "auc_best": 0.5178376906318083
+    },
+    "padock_mark": {
+      "auc_best": 0.5821078431372548
+    },
+    "kehai_code": {
+      "auc_best": 0.5230290032679739
+    },
+    "baba_code": {
+      "auc_best": 0.5163739106753813
+    }
+  },
+  "tansho_audit": {
+    "matched": 12329,
+    "corr_raw": 0.9221219954399325,
+    "corr_log": 0.9664466227590394,
+    "delta_median": 0.20000000000000018,
+    "delta_std": 9.334032491952991,
+    "exact_match_rate": 0.06561764944439938,
+    "within_0_5_yen": 0.39605807445859353,
+    "within_2_0_yen": 0.7654310974126044
+  }
+}
