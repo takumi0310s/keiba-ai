@@ -1,0 +1,237 @@
+{
+  "cache": {
+    "rows": 527280,
+    "cols": 232,
+    "feature_count": 145,
+    "race_id_format": "JV 10-digit"
+  },
+  "tyb_columns_in_cache_BEFORE": {
+    "jrdb_paddock_idx": {
+      "in_cache": true,
+      "in_features_list": false,
+      "unique": 1,
+      "mean": 50.0,
+      "sample_first": 50.0
+    },
+    "jrdb_odds_idx": {
+      "in_cache": true,
+      "in_features_list": false,
+      "unique": 1,
+      "mean": 50.0,
+      "sample_first": 50.0
+    },
+    "jrdb_live_composite_idx": {
+      "in_cache": true,
+      "in_features_list": false,
+      "unique": 1,
+      "mean": 50.0,
+      "sample_first": 50.0
+    },
+    "jrdb_body_code": {
+      "in_cache": true,
+      "in_features_list": false,
+      "unique": 1,
+      "mean": 4.0,
+      "sample_first": 4.0
+    },
+    "jrdb_demeanor_code": {
+      "in_cache": true,
+      "in_features_list": false,
+      "unique": 1,
+      "mean": 2.0,
+      "sample_first": 2.0
+    }
+  },
+  "model_audit": {
+    "pattern_A_features_count": 145,
+    "pattern_B_features_count": 150,
+    "lgb_num_feature": 145,
+    "pattern_B_auc_stored": 0.8939485520467574,
+    "pattern_A_auc_stored": 0.8939485520467574,
+    "same_lgb_object": false,
+    "tyb_live_in_PB_features": true,
+    "tyb_live_in_PA_features": false,
+    "note_truncation": "predict_core slices X[:, :145] -> TYB live features at positions 145..149 are TRUNCATED, never scored"
+  },
+  "race_id_formats": {
+    "jrdb_tyb.csv": {
+      "12": 550115
+    },
+    "cumulative_results.csv": {
+      "12": 597
+    },
+    "daily_predictions/20260516.csv": {
+      "12": 35
+    },
+    "V15_cache_(JV format)": {
+      "10": 527280
+    },
+    "verdict": "mismatch: cache=10-digit JV, all others=12-digit nk. TYB merge in training requires explicit conversion."
+  },
+  "tyb_columns_after_shadow_merge": {
+    "jrdb_paddock_idx": {
+      "match_rate": 1.0,
+      "nonzero_rate": 0.3606281292671825,
+      "unique": 25,
+      "corr_target_filled": 0.35394075938986314,
+      "sample_first_5": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "jrdb_odds_idx": {
+      "match_rate": 1.0,
+      "nonzero_rate": 0.3579464421180398,
+      "unique": 7,
+      "corr_target_filled": 0.42141313951289133,
+      "sample_first_5": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "jrdb_live_composite_idx": {
+      "match_rate": 1.0,
+      "nonzero_rate": 1.0,
+      "unique": 897,
+      "corr_target_filled": 0.25725137831920014,
+      "sample_first_5": [
+        24.0,
+        21.6,
+        49.4,
+        49.2,
+        54.2
+      ]
+    },
+    "jrdb_body_code": {
+      "match_rate": 0.38398004855105444,
+      "nonzero_rate": 0.3838700500682749,
+      "unique": 8,
+      "corr_target_filled": 0.0022173410641941993,
+      "sample_first_5": [
+        NaN,
+        NaN,
+        NaN,
+        NaN,
+        NaN
+      ]
+    },
+    "jrdb_demeanor_code": {
+      "match_rate": 0.38398004855105444,
+      "nonzero_rate": 0.3838757396449704,
+      "unique": 9,
+      "corr_target_filled": 0.00015564406641446684,
+      "sample_first_5": [
+        NaN,
+        NaN,
+        NaN,
+        NaN,
+        NaN
+      ]
+    }
+  },
+  "per_year_coverage": {
+    "15": {
+      "rows": 49610,
+      "padock_nz_pct": 0.3271316266881677,
+      "odds_idx_nz_pct": 0.3462406772828059,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "16": {
+      "rows": 49699,
+      "padock_nz_pct": 0.3239703012133041,
+      "odds_idx_nz_pct": 0.3458419686512807,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "17": {
+      "rows": 48927,
+      "padock_nz_pct": 0.33421219367629323,
+      "odds_idx_nz_pct": 0.3507879085167699,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "18": {
+      "rows": 48200,
+      "padock_nz_pct": 0.34263485477178424,
+      "odds_idx_nz_pct": 0.35562240663900413,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "19": {
+      "rows": 47122,
+      "padock_nz_pct": 0.355927167777259,
+      "odds_idx_nz_pct": 0.3639701201137473,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "20": {
+      "rows": 47882,
+      "padock_nz_pct": 0.35996825529426507,
+      "odds_idx_nz_pct": 0.35848544338164656,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.0
+    },
+    "21": {
+      "rows": 47476,
+      "padock_nz_pct": 0.3670064874884152,
+      "odds_idx_nz_pct": 0.3620987446288651,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.29697110118796866
+    },
+    "22": {
+      "rows": 46841,
+      "padock_nz_pct": 0.39053393394675606,
+      "odds_idx_nz_pct": 0.36658055976601694,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.9998078606349139
+    },
+    "23": {
+      "rows": 47274,
+      "padock_nz_pct": 0.3893049033295257,
+      "odds_idx_nz_pct": 0.3625671616533401,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.999767313956932
+    },
+    "24": {
+      "rows": 46752,
+      "padock_nz_pct": 0.3955338809034908,
+      "odds_idx_nz_pct": 0.3664442162902122,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.9995508213552361
+    },
+    "25": {
+      "rows": 47497,
+      "padock_nz_pct": 0.38600332652588587,
+      "odds_idx_nz_pct": 0.3604227635429606,
+      "sogo_nz_pct": 1.0,
+      "batai_nz_pct": 0.9996841905804578
+    }
+  },
+  "reference_corr_target": {
+    "popularity": -0.4241625033181116,
+    "jrdb_idm": 0.15686448829949662,
+    "jrdb_composite_idx": 0.21236997042264807,
+    "jrdb_ze_idm_avg": 0.2719467463962507
+  },
+  "verdict": {
+    "root_cause": "(b) training-time TYB merge function does not exist; build_v134_dataframe lacks any jrdb_tyb.csv merge step. fill_v141_defaults populates 5 TYB columns with constant defaults. Format mismatch (10-digit vs 12-digit) is additionally true but the merge code itself is absent.",
+    "shadow_merge_match_rate": 1.0,
+    "shadow_features_signal": {
+      "jrdb_odds_idx": "corr=0.4214 (POST-RACE / pre-bet-close odds-based: HIGH LEAK RISK)",
+      "jrdb_paddock_idx": "corr=0.3539 (paddock observation: timing-sensitive, content safe but delivery 17:00 JST post-race)",
+      "jrdb_live_composite_idx": "corr=0.2573 (composite of odds+padock: partial leak)",
+      "jrdb_body_code": "corr=0.0022 (low signal)",
+      "jrdb_demeanor_code": "corr=0.0002 (low signal)"
+    },
+    "V15_retrain_required": true,
+    "retrain_required_reason": "V15 model.num_feature()=145 was trained without TYB columns. Saved Pattern B features list (150) contains 5 TYB names but predict_core truncates X[:, :145], so TYB values never reach the model at inference time. Even if the merge is fixed, the V15 model itself cannot use the new columns without retraining.",
+    "leak_risk_summary": "docs/TYB_LEAK_AUDIT_2026_05_16.md (Sub-task 5-4) already confirmed TYB ZIP publishes at 17:00 JST (post-race) and odds_idx/sogo_idx are odds-based. Live deployment blocked by delivery timing until publish-monitor reconnect."
+  }
+}
