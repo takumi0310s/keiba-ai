@@ -127,7 +127,7 @@ cumulative_results.csv の actual_payout を merge して:
 - production `race_auto_notify.py` への影響 0% (v2 は別 process)
 - Discord 通知なし (shadow のみ)
 - cumulative_results.csv 書き込みなし (read-only)
-- 累計収支 +13,530 円 への影響 0%
+- 累計収支 +5,240 円 への影響 0% ※ 旧 +13,530 円 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - 撤退ライン -50,000 円 への影響 0%
 
 ## 7. 失敗 時 (★ honest ★)

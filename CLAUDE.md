@@ -3,8 +3,16 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-09 (Session #86、 ★ GW 146h+ マラソン 締め + 完全自動化 plan + メモリ整理 ★)**
+Last updated: **2026-05-16 (Session #88、 ★ memory drift 一斉修正 ★)**
 
+> Session #88 (5/16 evening) で memory drift 発見 + 修正:
+> - **+¥13,530 / 119.2% は 4/27-5/6 snapshot 残存値**、 真値は **+¥5,240 / 101.33%** (n=563、 ≤2026-05-16、 全 settled)
+> - 出典: docs/ROI_DISCREPANCY_2026_05_16.md (P0-1 formal analysis)
+> - root cause: sync layer 不在 + CLAUDE.md 編集回避慣行 (詳細: docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md)
+> - 5/16 dry session で 21+ docs 真値統一 (docs/MEMORY_DRIFT_FIX_LOG_2026_05_16.md)
+> - daily_cumulative_audit.py で再発防止 (Sub-task 10 予定)
+> - 統計的有意性なし (95% CI [66.83%, 145.36%]、 100% 含む) → 楽観 自重
+>
 > Session #86 (5/9 21:00) で 完全自動化 plan + CLAUDE.md update + メモリ整理:
 > - **A**: 完全自動化 ロードマップ (5/15 80% / 9/2 90% / 12/1 100%) ([docs/FULL_AUTOMATION_ROADMAP.md](docs/FULL_AUTOMATION_ROADMAP.md))
 > - **B**: CLAUDE.md update (本 commit、 Session #46-#86 主要発見 反映)
@@ -69,12 +77,12 @@ LGB+XGB+FT-Transformer+IntraRace Attention 4モデルアンサンブルで複勝
 
 - **Streamlit**: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app
 - **GitHub**: https://github.com/takumi0310s/keiba-ai
-- **現行モデル**: **V15** (本番、150 特徴量、AUC 0.8939、本番運用 ROI 119.2%、戦略⑦込み 140%+ 想定)
+- **現行モデル**: **V15** (本番、150 特徴量、AUC 0.8939、本番運用 ROI **101.33%** / 全体 563 settled、 戦略⑦込み ~99-103% 推定) ※ 旧値 119.2% は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - 旧モデル: v13.5b は historical reference (124 特徴量、Grid Ensemble、WF AUC 0.8788)
 - 5/9 V15 案B改 単独継続 (絶対)。 5/16 V15.1 / V18/V19 共に NO-GO 確定 (Session #38)
 - Phase 3 (5/24+): sib_*_exp 修正版 + V20 学習 + JV-Link 加入 → 7/1 V20 投入候補
 - Phase 4 (7-8 月): 調教動画 AI 解析 PoC → 9/1 V21 投入候補
-- 現行 累計収支: **+13,530 円** / 撤退余裕 +63,530 円
+- 現行 累計収支: **+5,240 円** / 撤退余裕 +55,240 円 ※ 旧値 +13,530 円 は drift、 5/16 P0-1 で真値確定 (n=563、 全 settled)
 - **2段階モデル**: Pattern A（リークフリー評価用）+ Pattern B（当日情報込み実運用）
 - **検証済み**: WF 2020-2025, 実配当ROI 428.4%, 全条件PASS
 
@@ -1268,8 +1276,8 @@ Claude Codeのコンテキスト圧縮時に失われやすい重要情報はこ
 - `条件E` (頭数<=7) を除外: サンプル少
 - `条件B` (重~不馬場) を除外: サンプル少
 
-**期待効果**: ROI 119.2% → 140.3% (+21.1pt)
-**シミュレーション**: 298R → 242R, 損益 +28,240円改善
+**期待効果 (旧 drift 記述)**: ROI 119.2% → 140.3% (+21.1pt) / 298R → 242R, 損益 +28,240円改善
+※ 旧値は drift。 5/16 P0-1 真値: baseline ROI 101.33%、 戦略⑦ applied ROI 96.90% (n=466、 ≤5/10、 PnL -¥10,120)。 戦略⑦込み 100% 超え の 仮想値は cumulative 集計では 再現不能 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ### 🎯 1レース再予測ツール (4/26 動作確認)
 **ファイル**: `tools/predict_one_race.py`
@@ -1344,7 +1352,7 @@ python tools/predict_one_race.py 202605020211
 ### 投資保護 (絶対遵守)
 
 - **5/9 V15 案B改 単独継続** (Session #38 NO-GO 確定後の唯一 path)
-- **撤退ライン**: 累計 -50,000円 (現在 +13,530円、 撤退余裕 +63,530円)
+- **撤退ライン**: 累計 -50,000円 (現在 **+5,240 円**、 撤退余裕 **+55,240 円**) ※ 旧値 +13,530 / +63,530 は drift、 5/16 P0-1 で真値確定
 - **取り返し禁止** (損切り後 翌日へ持ち越さない)
 - **Phase 3-4 着手中も V15 production 完全不変保証**
 
@@ -1360,7 +1368,7 @@ python tools/predict_one_race.py 202605020211
 | **合計** | **約 10,768円/月** (7/1 以降) | — |
 
 ROI 想定:
-- V15 (現状): 119.2% (戦略⑦込み 140%) → 月利 約 2-3 万円
+- V15 (現状): **101.33%** (戦略⑦込み ~99-103% 推定) → 月利 期待値 ±¥0-3,000 (CI 含 -¥15k〜+¥20k) ※ 旧値「119.2% / 140% / 月利 2-3 万円」 は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - V20 (7/1+): WF AUC 0.880-0.890 / 戦略⑦込み 145-150% 想定 → 月利 5-10 万円
 - V21 (9/1+): V20 + 動画 features 中位想定で 145-150% → 月利 6-11 万円
 

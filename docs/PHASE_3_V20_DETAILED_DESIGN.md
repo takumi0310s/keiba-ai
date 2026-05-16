@@ -796,7 +796,7 @@ Session #39 (5/7) deliverable:
 | 3 | sib_*_exp の corr 0.169 が WF で消える | V18/V19 復活ならず → V20 影響軽微 | sib_*_exp は補助 features 扱い、 主導は V15 base + JRDB kyi |
 | 4 | paci_* 自前算出の精度不足 | V18/V19 winner_top1 復活ならず | paci 復活は best-effort、 NG なら V15 base のみで V20 構築 |
 | 5 | NAR 学習 data 不足 (1 年 stale) | NAR subset AUC < 0.83 | NAR scraping を 5/24-6/8 で update、 6/9 学習開始時に最新化 |
-| 6 | 6/30 GO 判定で NG | V20 投入延期、 V15 単独継続 | V15 案B改 維持で 7 月も +13,530 円ベース、 撤退余裕 +63,530 円 |
+| 6 | 6/30 GO 判定で NG | V20 投入延期、 V15 単独継続 | V15 案B改 維持で 7 月も +5,240 円ベース、 撤退余裕 +55,240 円 ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md) |
 
 → 全 risk 対策済、 V20 失敗でも V15 単独継続で資産保護確実。
 

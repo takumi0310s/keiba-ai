@@ -40,13 +40,14 @@
 ★ 京都 課題: 5/10 に 戦略⑦の 京都 除外 が解除されたが、 ROI 改善せず ★
 
 ### course 別 ROI summary (全期間)
-- 東京 (★): 126 R, ROI **120.2%** (主力 course)
-- 中山: 125 R, ROI 78.7% (弱い)
-- 阪神: 72 R, ROI 140.3% (★ 強い ★)
-- 中京: 60 R, ROI 57.9% (弱い)
-- 新潟: 59 R, ROI 107.0%
-- ★ 京都: 58 R, ROI 20.0% (致命的) ★
-- 新潟: 29 R, ROI 113.4%
+※ 旧記述は drift、 5/16 P0-1 真値 (n=563、 全 settled、 ≤2026-05-16) で更新 (docs/ROI_DISCREPANCY_2026_05_16.md §4.2)
+- 東京 (旧主力): 72 R, ROI **63.13%** (★ 真値 大幅 negative、 旧 120.2% は drift ★)
+- 中山: 125 R, ROI 78.69% (旧 78.7% と端数差のみ)
+- 阪神: 126 R, ROI 120.22% (旧 140.3% は drift、 真値は +¥17,830 / N=126)
+- 中京: 59 R, ROI **107.05%** (★ positive、 旧 57.9% は drift ★)
+- 福島: 72 R, ROI 140.28% (★ 真値 最強、 旧 docs に未記載 ★)
+- 京都: 69 R, ROI 97.97% (旧 20% は別 subset、 全 settled では 100% 近接)
+- 新潟: 40 R, ROI 108.61%
 
 ### 推奨 action (★ user 判断 ★)
 - ★ 京都 を 戦略⑦ で 再除外 ★ (5/10 解除を取消、 ROI 押し上げ +5pt 想定)
@@ -67,7 +68,7 @@ git status で 確認: `predict_core.py / daily_predict.py / race_auto_notify.py
 5/16-5/17 G1 day:
 - ヴィクトリアM 5/17: ★ V15 + 戦略⑦ + 案 B 改 strict 単独本番 ★
 - shadow eval は schtasks 未登録、 Discord 通知 0
-- 累計 +13,530 円 完全維持
+- 累計 +5,240 円 完全維持 ※ 旧 +13,530 円 は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ## 5. 5/18+ 即実行可能 action
 

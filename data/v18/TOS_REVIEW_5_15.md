@@ -236,7 +236,7 @@ time.sleep(1.5)  # 各 request 後
 ## V15 投資保護 (規約 視点)
 
 - V15 自体 は 私的 利用、 規約適合
-- 累計 +13,530 円 (個人 投資収益、 規約 problem なし)
+- 累計 +5,240 円 (個人 投資収益、 規約 problem なし) ※ 旧 +13,530 円 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - 但し data source 取得方法 が 規約適合 必須
 
 ## まとめ: priority action

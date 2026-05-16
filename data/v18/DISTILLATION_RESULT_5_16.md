@@ -113,7 +113,7 @@ CLAUDE.md baseline 0.8939 = V15 自身 の 6-fold WF。 5/16 学習 で V15 を 
 
 - V15 .pkl.gz / predict_core / app.py 完全不変
 - V22 Distillation は別 file (`models/v22_distilled/`)
-- 累計 +13,530 円 / 撤退余裕 +63,530 円
+- 累計 +5,240 円 / 撤退余裕 +55,240 円 ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - 5/16 (土) 戦略 = V15 戦略⑦ 案B改 単独継続 (絶対遵守)
 
 ## user 帰宅後 推奨 path (次 step)

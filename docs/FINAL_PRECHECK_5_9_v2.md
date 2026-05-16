@@ -39,7 +39,7 @@ Session #30 (FINAL_PRECHECK_5_9.md) 以降、 Session #31-#36 で多数の追加
 | multi_stage_predict 3 段階 | ✅ Session #28 |
 | JRDB 3 段 retry | ✅ Session #31 |
 | Discord retry + log | ✅ Session #31 |
-| 累計収支 | ✅ +13,530 円 (生データ確定) |
+| 累計収支 | ✅ +13,530 円 (生データ確定 当時) ※ 5/16 P0-1 真値 +¥5,240 / n=563 (docs/ROI_DISCREPANCY_2026_05_16.md) |
 | 5/5 柏記念 +310 反映 | ✅ Session #30 |
 | jrdb_features sr 拡張 (V15 動作不変) | ✅ Session #35 |
 | jrdb_features srb 追加 (V15 動作不変) | ✅ Session #36 B |

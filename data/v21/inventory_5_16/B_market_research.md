@@ -2,7 +2,7 @@
 
 **作成日**: 2026-05-16
 **調査方法**: WebSearch (Anthropic web search) + WebFetch
-**当 system 基準**: V15 本番 (AUC 0.8939, ROI 119.2% 戦略⑦込み 140%+ 想定)
+**当 system 基準**: V15 本番 (AUC 0.8939, ROI **101.33%** 戦略⑦ applied 96.90% / ≤5/10) ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 **honest 原則**: 確認できない情報は "unknown" / "未確認"。 推測は "est." 表記。 「業界最強」 は使わない。
 
 ---
@@ -190,7 +190,7 @@
 - ★ **動画 AI 解析 (V21)**: 業界 全体 未提供、 競合 不在 ★
 - ★ **4-model ensemble + 150 features**: 個人運用としては 高度、 SPAIA 18 model と比肩 ★
 - ★ **netkeiba プレミアム + JRDB + TARGET JV + JRA-VAN 統合**: data source は業界平均 以上 ★
-- 戦略⑦ で 損失 source 除外 → 実 ROI 140% 想定は競合 公開数値 と同等 (ATHENA 単勝回収率 80% / VUMA ワイド 40% 等 と比較)
+- 戦略⑦ で 損失 source 除外 → 旧記述「実 ROI 140% 想定」 は drift、 真値は 戦略⑦ applied 96.90% (n=466、 ≤5/10)。 競合 公開数値 (ATHENA 単勝回収率 80% / VUMA ワイド 40% 等) との比較 は 真値 baseline で再評価必要
 
 ### 当 system の weakness (競合比)
 - **IPAT 自動投票連携 未実装** → 運用 効率 で劣る

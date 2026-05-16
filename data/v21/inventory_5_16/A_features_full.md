@@ -6,7 +6,7 @@
 
 | モデル | Status | WF AUC | 実配当ROI | 投入日 | 備考 |
 |--------|--------|--------|----------|--------|------|
-| **V15** | production | 0.8939 | 119.2% (戦略⑦込 140%+) | 4/1 | 4-ensemble (LGB+XGB+FT+IR), 150 features, 本番継続中 |
+| **V15** | production | 0.8939 | **101.33%** (戦略⑦ applied 96.90% / ≤5/10) | 4/1 | 4-ensemble (LGB+XGB+FT+IR), 150 features, 本番継続中 ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md) |
 | V15.1 | NO-GO | 0.8943 | — | — | SKB post-race leak 確定 (skb_kishi_code_3 +480bp) |
 | V18/V19 | NO-GO | 0.886-0.887 | -10pt LIVE | — | sib抜き hybrid, 5/16 投入 NO-GO確定 |
 | V20 | PoC開発中 | 0.8752 (PoC) | unknown | 6/8→6/30 投入 検討 | NAR+JRA, 320 features, TFJV + JRDB統合 |
@@ -137,7 +137,7 @@
 | # | 強み | Evidence | 定量値 |
 |----|------|----------|--------|
 | 1 | **高精度 ensemble** | LGB + XGB + FT-Transformer + IntraRace Attention の4モデル結合 | WF AUC 0.8939 |
-| 2 | **実運用ROI** | 150 race実投票に基づく配当実測 | 119.2% (戦略⑦込 140%+) |
+| 2 | **実運用ROI** | 563 settled race の cumulative_results.csv 実測 | **101.33%** (戦略⑦ applied 96.90% / ≤5/10) ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 |
 | 3 | **リークフリー設計 厳守** | Pattern A / Pattern B 完全分離、 post-race features 全除外 | V15 leak_removed=True確認 |
 | 4 | **複合データ統合** | JRDB (124f) + netkeiba (22f) + 気象 + オッズ等の完全融合 | 150 features確認 |
 | 5 | **自動運用 完全手放し** | 7 schtasks 完全自動化、 1日0 admin touchpoint | 朝夜の手作業0 |
@@ -225,7 +225,7 @@ C:\Users\takum\keiba-ai\
 | # | 確認項目 | 現状 | 検査内容 |
 |----|---------|------|--------|
 | 1 | V15 本番継続 | ✅ unchanged | `git status` で predict_core.py / daily_predict.py / .pkl.gz 全不変 |
-| 2 | 累計損益 | +13,530円 | `tail -50 cumulative_results.csv` で最終行 status=settled確認 |
+| 2 | 累計損益 | **+5,240円** (n=563) | `tail -50 cumulative_results.csv` で最終行 status=settled確認 ※ 旧 +13,530 円 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md) |
 | 3 | schtasks 登録 | 7 tasks | `tasklist /v` で7 taskが running確認 (pending race無し) |
 | 4 | Discord webhook | ✅ URL設定済 | `grep DISCORD_WEBHOOK tools/race_auto_notify.py` 確認 |
 | 5 | 5/17 G1 (ヴィクトリアM) | 読込待 | 朝6:30 `daily_predict.py` → Discord #bets 買い目 out |

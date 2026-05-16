@@ -82,7 +82,7 @@ V22 > V21 (+0.0765)、 V15 (4-model Grid 0.8939) と LGB+XGB only fair compare �
 - V21 model: `keiba_model_v21_central.pkl.gz` (別 file、 production 投入なし)
 - V22 model: `keiba_model_v22_central.pkl.gz` (別 file、 production 投入なし)
 - Strategy 8 sidecar: V15 と 別 process / 別 Discord channel
-- 累計収支 +13,530 円 守る (撤退余裕 +63,530 円)
+- 累計収支 +5,240 円 守る (撤退余裕 +55,240 円) ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ---
 

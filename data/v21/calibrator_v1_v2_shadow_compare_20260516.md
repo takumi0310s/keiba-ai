@@ -53,7 +53,7 @@
 - 投票実体: ★ 既存 `tools/race_auto_notify.py` の戦略⑦ ★ (v1/v2 どちらも介入なし)
 - 5/16 today + 5/17 ヴィクトリアM: V15 + 戦略⑦ + 案 B 改 strict のみ
 - shadow csv は read-only artifact、 Discord 通知 0、 cumulative 書き込み 0
-- 累計 +13,530 円 完全維持
+- 累計 +5,240 円 完全維持 ※ 旧 +13,530 円 は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ## 6. 5/18+ 運用 plan
 

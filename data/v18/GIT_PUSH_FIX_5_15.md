@@ -169,7 +169,7 @@ git push origin main
 
 - V15 .pkl.gz / predict_core / app.py 完全不変
 - history rewrite は repo metadata のみ、 production model / data 不変
-- 累計 +13,530 円 / 撤退余裕 +63,530 円
+- 累計 +5,240 円 / 撤退余裕 +55,240 円 ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ## まとめ
 

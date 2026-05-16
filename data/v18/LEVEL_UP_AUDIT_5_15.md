@@ -160,7 +160,7 @@
 
 - V15 .pkl.gz / predict_core / daily_predict / app.py 完全不変
 - 41 新 features は V20+/V22 学習用 別 csv
-- 累計 +13,530 円 / 撤退余裕 +63,530 円
+- 累計 +5,240 円 / 撤退余裕 +55,240 円 ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ## ★ 帰宅後 user 5 分 task (再掲) ★
 
@@ -200,7 +200,7 @@
 
 ### 投資安全
 
-累計 **+13,530 円**、 撤退余裕 **+63,530 円**。 全 phase V15 protected。
+累計 **+5,240 円**、 撤退余裕 **+55,240 円**。 全 phase V15 protected。 ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ### 真の bottleneck
 

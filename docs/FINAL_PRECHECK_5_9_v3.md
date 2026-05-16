@@ -72,7 +72,7 @@ keiba_model_v15_central_live.pkl.gz
 
 - [x] netkeiba Cookie 有効 (`tools/refresh_cookie.py --check`)
 - [x] JRDB extracted/Bac 最新 (5/3 確認)
-- [x] data/cumulative_results.csv 累計 (USER 実: +13,530円、 5/6 真相確定)
+- [x] data/cumulative_results.csv 累計 (USER 実: +13,530円、 5/6 真相確定) ※ 当時 record、 5/16 P0-1 真値 +¥5,240 / n=563 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ### 2.5 Discord webhook (Session #40 B 由来)
 
@@ -159,7 +159,7 @@ schtasks /Create /TN "Keiba-FinalHealthCheck_5_8" ^
 | -50,000 ≦ x < -10,000 | 警告 | 全停止 |
 | < -50,000 | **撤退** | 完全停止 |
 
-現在 (5/8 深夜): **+13,530 円**、 撤退余裕 **+63,530 円**。
+現在 (5/8 深夜): **+13,530 円**、 撤退余裕 **+63,530 円**。 ※ 当時 record、 5/16 P0-1 真値: **+¥5,240** / 撤退余裕 **+¥55,240** (docs/ROI_DISCREPANCY_2026_05_16.md)
 5/9 max loss = -2,100 円 (撤退余裕の 3.3% のみ消費)。
 
 ---

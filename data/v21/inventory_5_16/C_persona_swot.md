@@ -6,6 +6,14 @@ date: 2026-05-16
 
 ★ honest report ★ — 「業界最高」「最強」 等の 誇大表現 排除、 全 数値は出典付き。
 
+★★ 5/16 evening P0-1 真値 update (Sub-task 9) ★★
+- 本 doc に 多数現れる **119.2% / +13,530 円 / 京都 ROI 20% / 中京 ROI 57.9% / 阪神 ROI 140.3% / 東京 ROI 120.2%** 等は 4/27-5/6 snapshot 残存 drift。
+- 真値 baseline = **ROI 101.33% / PnL +¥5,240 / n=563** (全 settled、 ≤2026-05-16)。
+- 場別 真値: 福島 140.28% / 阪神 120.22% / 中京 107.05% / 新潟 108.61% / 京都 97.97% / 中山 78.69% / 東京 63.13%。
+- 旧 「京都 20% / 中京 57.9%」 は別 subset (5/16 session_5_16_evening_summary の特定 cut)、 全 settled では 京都 97.97% / 中京 107.05% で 致命的 negative ではない。
+- 出典: docs/ROI_DISCREPANCY_2026_05_16.md §4.2、 docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md。
+- 以降本文中の旧値は doc 当時記述 そのままで残置 (drift 経緯 record 用途)、 真値での再評価 が必要な箇所は **§0 評価前提 table** 参照。
+
 ---
 
 ## 0. 評価前提 (★ 実測 数値 ★)
@@ -18,18 +26,19 @@ date: 2026-05-16
 | **実運用 累計 ROI (戦略⑦前)** | **93.23%** | data/cumulative_results.csv (529 settled) |
 | **実運用 累計 profit** | **-25,070 円** ※ | data/cumulative_results.csv |
 | 戦略⑦ +pt (累計 baseline 比) | +3.67pt → 96.90% | session_5_16_evening_summary |
-| CLAUDE.md 記載 累計 +13,530 円 | 注: 戦略⑦込み別系統 集計 / strategy_7_planB 適用後の 仮想値 と 推定。 cumulative_results.csv の生集計とは乖離 | MEMORY |
-| 京都 ROI | 20.0% (N=58) | session_5_16_evening_summary |
-| 阪神 ROI | 140.3% (N=72) | session_5_16_evening_summary |
-| 東京 ROI | 120.2% (N=126) | session_5_16_evening_summary |
-| 中山 ROI | 78.7% (N=125) | session_5_16_evening_summary |
-| 中京 ROI | 57.9% (N=60) | session_5_16_evening_summary |
+| CLAUDE.md 記載 累計 +13,530 円 (★ drift ★) | 5/16 P0-1 真値 **+¥5,240** (n=563、 全 settled、 ≤2026-05-16)。 旧 +13,530 円 は 4/27-5/6 snapshot 残存値、 cumulative では再現不能 (docs/ROI_DISCREPANCY_2026_05_16.md) | MEMORY drift / docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md |
+| 京都 ROI | **97.97%** (N=69、 5/16 P0-1 真値) ※ 旧 20.0% は別 subset、 全 settled では 100% 近接 | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
+| 阪神 ROI | **120.22%** (N=126、 5/16 P0-1 真値) ※ 旧 140.3% / N=72 は drift | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
+| 東京 ROI | **63.13%** (N=72、 5/16 P0-1 真値) ※ 旧 120.2% / N=126 は drift、 真値は ★ 大幅 negative ★ | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
+| 中山 ROI | **78.69%** (N=125、 5/16 P0-1 真値) ※ 旧 78.7% は端数差のみ | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
+| 中京 ROI | **107.05%** (N=59、 5/16 P0-1 真値) ※ 旧 57.9% / N=60 は drift、 真値は ★ positive ★ | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
+| 福島 ROI | **140.28%** (N=72、 5/16 P0-1 真値) ★ 真値 最強、 旧 docs に未記載 | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
 | 動画 features coverage | 0% (paddock 12 PoC のみ実装、 production 未稼働) | phase_a_poc_result |
 | calibrator v2 sample | 21 → 315 (15x) | calibrator_v2_summary |
 | schtasks 数 | 6+ (DailyPredict/Results/PremiumScrape/Watchdog/NightlySanity/RaceAutoNotify) | CLAUDE.md |
 | V22 / V20+ 改善 試行 | 8 回全 fail (V15 越え 未達) | recent commits |
 
-★ assumption: 「119.2% / +13,530円」は MEMORY 記載値だが、 cumulative_results.csv の 生 ROI 93.23% とは 乖離。 おそらく 戦略⑦ + 案 B 改 + 重賞除外 等を 仮想適用 した集計、 または別 source。 ペルソナ評価 では **両方併記**。
+★ 確定 (5/16 P0-1): 「119.2% / +13,530 円」 は 4/27-5/6 snapshot 残存 drift。 真値 baseline = ROI 101.33% / PnL +¥5,240 (n=563、 全 settled、 ≤2026-05-16)。 戦略⑦ applied = 96.90% / -¥10,120 (n=466、 ≤5/10)。 docs/ROI_DISCREPANCY_2026_05_16.md。 ペルソナ評価では 真値で再評価。
 
 ---
 

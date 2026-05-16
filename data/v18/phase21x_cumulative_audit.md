@@ -2,6 +2,10 @@
 
 > Opus 4.7 / read-only audit / fabrication なし
 > ★ ユーザー寝てる、 朝確認用 ★
+>
+> ★★ 5/16 evening P0-1 update (Sub-task 9): 本 doc 中の 「+¥13,530 採用」 結論は **drift snapshot**。
+> 真値 baseline は 5/16 全 settled n=563 で ROI 101.33% / PnL **+¥5,240**。
+> 詳細: docs/ROI_DISCREPANCY_2026_05_16.md / docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md ★★
 
 ---
 

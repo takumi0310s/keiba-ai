@@ -98,7 +98,7 @@ RTX 4070 Ti SUPER 16GB は 余裕あり、 weekend 集中で 1-2 ヶ月で完了
 | V15 model file (.pkl.gz) | ✅ 不変 |
 | schtask | ✅ 不変 |
 | 戦略⑦ / 案 B 改 logic | ✅ 不変 |
-| 累計 +¥14,140 | ✅ 維持 (撤退余裕 +¥63,420) |
+| 累計 +¥5,240 | ✅ 維持 (撤退余裕 +¥55,240) ※ 旧 +¥14,140 / +¥63,420 は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md) |
 
 V21 = 完全に動画上乗せ phase、 V20 / V15 fallback 必須。
 

@@ -18,7 +18,7 @@
 
 3. **5/9 1 day summary** (Discord、 前日 20:00 送信済)
    - 5/9 戦績 ROI
-   - 累計 (前日 +13,530 円 → 5/9 反映後)
+   - 累計 (前日 +13,530 円 → 5/9 反映後) ※ 旧 +13,530 円 は当時 record、 5/16 P0-1 真値 +¥5,240 / n=563 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 4. **SaveAllHorseScores_0930 完了通知** (★ 5/10 初回 ★)
    - 全馬 score 保存 (Session #71 新機能)
@@ -97,7 +97,7 @@ schtasks /Query /FO LIST | Select-String "DailyPredict|MorningWeightCheck|SaveAl
 - 累計 -10,000 円 → yellow alert (Discord 通知)
 - 累計 -50,000 円 → ★ halt ★ (即時 全停止)
 
-現状 (5/9 朝): **+13,530 円** / 撤退余裕 **+63,530 円**
+現状 (5/9 朝): **+13,530 円** / 撤退余裕 **+63,530 円** ※ 当時 record、 5/16 P0-1 真値 +¥5,240 / 撤退余裕 +¥55,240 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ## 困った時の参照
 

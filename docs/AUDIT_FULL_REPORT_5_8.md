@@ -186,7 +186,7 @@
 ✅ schtasks (DailyPredict / DailyPremiumScrape / DailyResults / WeeklyReport / NightlySanity 等) **完全不変**
 ✅ dev branch **触らない** (audit doc は main 直 push)
 ✅ 5/9 朝 V15 daily_predict 完全同一動作 保証
-✅ 累計 +13,530 円 維持 (撤退余裕 +63,530 円、 -50,000円 撤退ライン)
+✅ 累計 +5,240 円 維持 (撤退余裕 +55,240 円、 -50,000円 撤退ライン) ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ---
 

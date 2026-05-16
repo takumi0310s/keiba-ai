@@ -109,8 +109,8 @@ DISCORD_WEBHOOK_JACKPOT=https://discord.com/api/webhooks/...   # Strategy 8 専�
 
 ## 6. 投資 状況 (本日も完全保護)
 
-- 累計収支: **+13,530 円**
-- 撤退余裕: +63,530 円
+- 累計収支: **+5,240 円** ※ 旧 +13,530 円 は drift
+- 撤退余裕: **+55,240 円** ※ 旧 +63,530 円 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
 - V15 自動運用 完全継続中
 - 5/16 戦略 変更なし
 

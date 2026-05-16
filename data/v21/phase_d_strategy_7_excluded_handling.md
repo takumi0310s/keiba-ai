@@ -16,7 +16,7 @@ session: Terminal D (Phase D)
 | 条件 E (頭数 ≤ 7) | sample 少、 統計信頼性低 (CI [103%, 133%]) | 過小 sample 投票回避 |
 | 条件 B (重〜不良馬場) | sample 少 (N=847) | 過小 sample 投票回避 |
 
-→ V15 production の投票 race 数を 約 19% 削減し、 ROI 119.2% → 140.3% (戦略⑦込み) を実現。
+→ V15 production の投票 race 数を 約 19% 削減 (戦略⑦ applied、 旧記述「ROI 119.2% → 140.3% 実現」 は drift。 5/16 P0-1 真値: baseline 93.23% → 戦略⑦ applied 96.90% / +3.67pt / ≤5/10 / n=466、 PnL は依然 -¥10,120。 docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ---
 
