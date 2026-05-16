@@ -92,7 +92,8 @@
 
 | # | feature | 期待 AUC delta | 期待 ROI delta | 工数 | risk | 採用優先度 |
 |---|---------|---------------|----------------|------|------|-----------|
-| 1 | **動画 features 完成** (V21) | est. +0.005 | est. +5pt | 5/31+ | 中 (data 量 / 学習 リソース) | ★★★★ (継続) |
+| 0 ★NEW★ | **JRDB TYB breakthrough** (commit b4948d6a + d3b78683) | +0.1429 (5CV, n=348、 baseline 異常で過大評価 risk) | est. +2-5pt (P0-3 PASS 後) | 完了 (実装)、 5/18+ paper | 中 (P0-3 leak 監査 必須) | ★★★★ (P0-3 PASS 条件) |
+| 1 | ~~動画 features 完成 (V21)~~ ★ **永久放棄** ★ | — | — | — | 規約 NG (YT/RV/SP/NEXT/アプリ 全部) | — (撤回) |
 | 2 | **重賞 G1 専門 model** | est. +0.003 (重賞のみ) | est. +10pt (重賞 復帰) | 1-2 週間 | 中 (data 少、 過学習 risk) | ★★★ |
 | 3 | **strategy 8 Jackpot LIVE 投入** | n/a | est. +5-10pt (低投資 高配当) | 1 週間 (shadow → live) | 中 | ★★★ |
 | 4 | **calibrator v2** | n/a (AUC 不変) | est. +2-3pt (期待値 精度) | 5/18+ 検証中 | 低 | ★★★ |
@@ -105,8 +106,12 @@
 | 11 | **pace 配分シミュレーション** (EquinEdge 風) | est. +0.001 | est. +1-2pt | 2 週間 | 低 | ★ |
 | 12 | **payout 分布予測** (固定 700円 → 期待値 連動) | n/a | est. +3-5pt | 2 週間 | 中 | ★★ |
 | 13 | **馬主 / 牧場 features** | est. +0.0005 | est. +0pt | 1 週間 | 低 | ★ |
-| 14 | **障害競走 model 再構築** | n/a | est. 機会少 | 2-3 週間 | 低 | ★ (不要) |
-| 15 | **LINE 通知** | n/a | n/a (運用便利のみ) | 1-2 日 | 低 | ★ |
+| 14 | ~~gait analysis / pose estimation~~ ★ **永久放棄** ★ | — | — | — | 動画 source 規約 NG | — (撤回) |
+| 15 | ~~動画 AI 解析 (paddock/patrol/chokyou)~~ ★ **永久放棄** ★ | — | — | — | 同上 | — (撤回) |
+| 16 | **障害競走 model 再構築** | n/a | est. 機会少 | 2-3 週間 | 低 | ★ (不要) |
+| 17 | **LINE 通知** | n/a | n/a (運用便利のみ) | 1-2 日 | 低 | ★ |
+
+★ 動画系 3 件 (V21 paddock/patrol/chokyou + gait analysis + 動画 AI 解析) は ★ 永久放棄 ★ (YouTube / JRA RV / netkeiba SP / JRA-VAN NEXT / JRA アプリ 全 規約 NG)。 5/16 evening の master doc で確定。
 
 ---
 

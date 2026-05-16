@@ -194,7 +194,7 @@ date: 2026-05-16
 | W3 | 中京 ROI 57.9% (N=60) | 同上 |
 | W4 | 中山 ROI 78.7% (N=125) | 同上 |
 | W5 | 戦略⑦除外 R (重賞 / 06_平場 / 京都 / 条件 E) で 機会損失 | strategy_7_planB |
-| W6 | 動画 features 0% coverage (paddock PoC 89 entries のみ) | phase_a_poc_result |
+| W6 | ~~動画 features 0% coverage~~ → ★ **永久放棄** ★ (YT/RV/SP/NEXT/アプリ 全規約 NG) | 5/16 evening 確定 |
 | W7 | calibrator v1 21 sample over-fit (v2 315 で発覚) | calibrator_v2_summary |
 | W8 | V22 / V20+ 改善 試行 8 回全 fail (V15 plateau) | recent commits |
 | W9 | push 不能 (114MB CSV blocking) | session_5_16 |
@@ -209,7 +209,7 @@ date: 2026-05-16
 
 | # | 機会 |
 |---|------|
-| O1 | V21 動画 features 完成 (5/31+ で 30 features 真値化、 V21 stacking +0.005 AUC 想定) |
+| ~~O1~~ | ~~V21 動画 features 完成~~ → ★ **削除 (永久放棄)** ★ |
 | O2 | 重賞専門 model 投入 (戦略⑦除外 R 復帰、 GI 月 2-4 R 取り込み) |
 | O3 | calibrator v2 paper eval 30 R 後採用 (over-confidence 解消で over-bet 防止) |
 | O4 | JV-Link production fetch unlock 完了 (5/15) — jrdb_paci / jra_payouts 代替 path |
@@ -217,6 +217,7 @@ date: 2026-05-16
 | O6 | LLM 統合 (GPT-4o + race description で「なぜ」説明性 向上、 初心者 ペルソナ 改善) |
 | O7 | NAR 統合 (V20 で着手、 投票 R 数 2x 候補) |
 | O8 | strategy_layer_v2 (calibrator + 京都/中京 除外で +5pt 想定) |
+| O9 ★NEW★ | **JRDB TYB breakthrough** (5/16 commit b4948d6a、 +0.143 AUC 5CV、 P0-3 leak 監査 PASS 後採用) |
 
 ### Threats (6 件)
 
@@ -227,7 +228,7 @@ date: 2026-05-16
 | T3 | 競馬離れ / 市場縮小 (流動性 低下で 戦略⑦ R 数減) |
 | T4 | AI 規制強化 (GenAI 政策、 LLM 統合 制限可能性) |
 | T5 | ★ V15 plateau / V22 8 fail / saturation 仮説 ★ (model 進化 停滞 = 数年後 ROI 退化) |
-| T6 | 動画解析 規約 (RV / netkeiba 動画 利用許諾 グレーゾーン) |
+| ~~T6~~ | ~~動画解析 規約~~ → ★ **解消 (動画系 永久放棄で T6 自動消滅)** ★ |
 
 ---
 
@@ -237,10 +238,10 @@ date: 2026-05-16
 
 | 番号 | 戦略 | 関連 |
 |------|------|------|
-| SO1 | 自動運用 (S5+S10) + V21 動画完成 (O1) → 業界 frontier maintain | S5 × O1 |
+| SO1 | 自動運用 (S5+S10) + 完全自動化 plan (O5) → 0-touch 運用 maintain | S5 × O5 |
 | SO2 | HONEST report (S7) + LLM 統合 (O6) → 説明性で 差別化、 初心者 ペルソナ 評価 +1★ | S7 × O6 |
 | SO3 | リークフリー (S3) + 重賞 model (O2) → 戦略⑦除外 R 復帰、 プロ ペルソナ 評価 +1★ | S3 × O2 |
-| SO4 | 4-model ensemble (S4) + V21 stacking (O1) → meta-learning で plateau 突破 (assumption) | S4 × O1 |
+| SO4 ★NEW★ | 4-model ensemble (S4) + JRDB TYB breakthrough (O9) → V15+TYB stacking で plateau 突破 path | S4 × O9 |
 | SO5 | JV-Link unlock (S12) + JV-Link prod (O4) → bug 復旧 path 確保 | S12 × O4 |
 
 ### W-O (弱み × 機会、 改善戦略)
@@ -249,7 +250,7 @@ date: 2026-05-16
 |------|------|------|
 | WO1 | 京都 ROI 20% (W2) + strategy_layer_v2 (O8) → 再除外で +5pt 想定 | W2 × O8 |
 | WO2 | 中京 ROI 57.9% (W3) + strategy_layer_v2 (O8) → 除外検討で +2pt | W3 × O8 |
-| WO3 | 動画 0% coverage (W6) + V21 完成 (O1) → 5/31+ 真値化で coverage 100% | W6 × O1 |
+| WO3 ★NEW★ | V15 plateau (W8) + JRDB TYB breakthrough (O9) → 動画なし plateau 突破 path (P0-3 PASS 条件) | W8 × O9 |
 | WO4 | calibrator v1 over-fit (W7) + v2 paper eval (O3) → 30R 後採用で 健全化 | W7 × O3 |
 | WO5 | 重賞 model なし (W14) + 重賞専門 model (O2) → 戦略⑦除外 R 復帰 | W14 × O2 |
 | WO6 | NAR 未完 (W15) + NAR 統合 (O7) → V20 で R 数 2x | W15 × O7 |
@@ -267,8 +268,8 @@ date: 2026-05-16
 
 | 番号 | 戦略 | 関連 |
 |------|------|------|
-| WT1 | 動画 0% (W6) + 規約変更 risk (T6) → 早期 PoC 達成必要、 規約整理 並行 | W6 × T6 |
-| WT2 | V22 8 fail (W8) + plateau (T5) → 大規模 architecture 変更 (graph NN / transformer 系) を中期 計画化、 短期は 戦略 layer 改善優先 | W8 × T5 |
+| ~~WT1~~ | ~~動画 0% (W6) + 規約変更 risk (T6) → 早期 PoC~~ → ★ **削除 (永久放棄)** ★ | — |
+| WT2 | V22 8 fail (W8) + plateau (T5) → 大規模 architecture 変更 (graph NN / transformer 系) を中期 計画化、 短期は JRDB TYB + 戦略 layer 改善優先 | W8 × T5 |
 | WT3 | push 不能 (W9) + AI 規制 (T4) → reproducibility リスク、 LFS migration 早期実施 | W9 × T4 |
 | WT4 | リアルタイム odds 限定 (W12) + 競合 ML 化 (T2) → 直前 odds 取り込み 改善 (5 分前 → 1 分前) | W12 × T2 |
 
@@ -309,13 +310,13 @@ date: 2026-05-16
 2. ★ 京都 ROI 20% / backtest vs live 乖離 (428% vs 93%) ★ (W1 + W2) — 数値 信頼性 への 直撃
 3. 戦略⑦ 除外 R の機会損失 + 重賞 model 不在 (W5 + W14) — プロ pathway 阻害
 
-### 次の 30 日 (5/16-6/15) 最優先 アクション 3 件
+### 次の 30 日 (5/16-6/15) 最優先 アクション 3 件 (★ 動画撤回 + TYB 反映 ★)
 
 | 優先度 | アクション | 期待 効果 |
 |-------|-----------|---------|
 | 1 | 京都 / 中京 を 戦略⑦ で 再除外 (WO1+WO2) | +5-7pt ROI |
 | 2 | calibrator v2 paper eval 30 R → 採用 (WO4) | over-bet 解消、 ROI 安定化 |
-| 3 | V21 動画 features 5/31+ production 化 (WO3 + O1) | plateau 突破の唯一 path |
+| 3 ★NEW★ | JRDB TYB breakthrough → P0-3 leak 監査 → P1-0 paper shadow eval → P2-1 v15.2 再学習 (WO3 + O9) | 動画なし plateau 突破 path |
 
 ### 中期 (6 月以降) 計画
 

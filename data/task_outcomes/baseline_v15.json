@@ -1,0 +1,99 @@
+{
+  "version": "V15",
+  "calculation_date": "2026-05-16",
+  "production_state": "commit d3b78683 (5/16 evening)",
+  "metrics": {
+    "wf_auc": {
+      "value": 0.8939,
+      "source": "CLAUDE.md (4-model ensemble: LGB+XGB+FT+IR)",
+      "window": "2020-2025 WF 6-fold"
+    },
+    "actual_roi": {
+      "adopted_value": 101.33,
+      "adopted_source": "P0-1 真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)、 cumulative_results.csv n=563 全 baseline",
+      "adopted_pnl_yen": 5240,
+      "adopted_n_races": 563,
+      "adopted_window": "2026-03-14 〜 2026-05-16",
+      "bootstrap_ci_95_includes_100pct": true,
+      "statistical_significance": "★ いずれの scope でも 統計的有意でない、 5/16 単日 +¥30,310 が baseline を 押し上げ ★",
+      "candidate_values": {
+        "raw_cumulative_93_23": {
+          "value": 93.23,
+          "source": "data/cumulative_results.csv 529 settled rows、 戦略⑦ 適用前 baseline (older snapshot)",
+          "inv": 370300,
+          "pay": 345230,
+          "pnl": -25070
+        },
+        "raw_cumulative_5_16_evening": {
+          "value": 101.33,
+          "source": "data/cumulative_results.csv 563 settled rows (5/16 evening recompute)",
+          "inv": 394100,
+          "pay": 399340,
+          "pnl": 5240
+        },
+        "strategy_7_applied_96_90": {
+          "value": 96.90,
+          "source": "Terminal B 5/16 evening、 戦略⑦ subset",
+          "delta_vs_baseline": 3.67
+        },
+        "claude_md_119_2": {
+          "value": 119.2,
+          "source": "CLAUDE.md / memory 記述、 calculation source 不明",
+          "warning": "P0-1 で出典追跡中、 真値未確定"
+        }
+      },
+      "adopted_baseline_pending": "P0-1 完了で確定"
+    },
+    "cumulative_pnl_yen": {
+      "adopted_value": 5240,
+      "adopted_source": "P0-1 真値確定、 cumulative_results.csv n=563 全 baseline",
+      "value_candidates": {
+        "memory_plus_13530": {
+          "value": 13530,
+          "source": "CLAUDE.md / memory、 出典 unknown (★ 別系統 / 手動集計と推定 ★)",
+          "warning": "再現不能"
+        },
+        "cumulative_csv_5_16_plus_5240": {
+          "value": 5240,
+          "source": "★ P0-1 真値 ★ cumulative_results.csv 5/16 evening recompute"
+        },
+        "cumulative_csv_older_minus_25070": {
+          "value": -25070,
+          "source": "Terminal B 5/16 evening older snapshot n=529"
+        }
+      }
+    },
+    "hit_rate_top3": {
+      "value": 0.5382,
+      "calculation": "data/cumulative_results.csv の top1_finish <= 3 の rate (status=settled、 5/16 evening)",
+      "n_settled": 563,
+      "n_hit": 303
+    },
+    "trio_hit_rate": {
+      "value": 0.2185,
+      "n_settled": 563,
+      "n_hit": 123,
+      "calculation": "trio_hit == 1 の rate"
+    },
+    "sample_n_races": 563,
+    "n_top1_filled": 54,
+    "n_settled": 563,
+    "n_pending": 33
+  },
+  "constraints": {
+    "withdraw_limit_yen": -50000,
+    "vote_limit_daily_yen": 2100,
+    "vote_size_per_race_yen": 700
+  },
+  "honest_notes": [
+    "★ P0-1 真値確定 ★ ROI 101.33% / PnL +¥5,240 / n=563、 bootstrap 95% CI 100% 含む = 統計的有意でない",
+    "WF AUC 0.8939 は v13.5b で 0.8788、 V15 で 0.8939、 source CLAUDE.md",
+    "cumulative_results.csv の top1_num filled は 54/563 のみ (95% 欠損、 既知 bug)",
+    "★ 119.2% (CLAUDE.md) は 4/18 snapshot 残存値、 出典 unknown (memory drift) ★",
+    "★ +¥13,530 (CLAUDE.md) は再現不能、 別系統 / 手動集計と推定 ★",
+    "5/16 単日 +¥30,310 (227% ROI、 11/34 hit) が baseline 全体を 93.23% → 101.33% に押し上げ、 統計偶然の可能性大",
+    "場別 worst: 東京 63.13% / 中山 78.69% (合計 -¥37,230)、 5/18+ 拡張除外候補",
+    "条件別 worst: X 8.72% (新規除外候補) / E 12.34% (戦略⑦既) / B 26.96% (戦略⑦既)",
+    "monte_carlo 破産率 0% (3 万円+) は 過去 simulation"
+  ]
+}

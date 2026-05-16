@@ -116,6 +116,7 @@
 | F | **JV-Link COM unlock** | 5/15 AM完了 (32-bit Python venv設定済) | 6/1 production fetch | TFJV full解析 → V20学習 |
 | G | **完全自動化 roadmap** | 5/15 80%達成、 9/2 90%、 12/1 100% | 9/2 review | admin touchpoint削減 |
 | H | **戦略⑦ 京都 再除外検討** | ROI 20% (N=58)発見、 5/10解除取消検討 | 5/31 judgment | +5pt ROI期待値 |
+| I ★NEW★ | **P1-0 TYB calibrator shadow eval** | P0-3 leak 監査 PASS が条件 | 5/18+ 30R 蓄積 | Welch's t-test p<0.05 |
 
 ---
 
@@ -160,6 +161,7 @@
 | 8 | **リアルタイム odds 5分前 snapshot のみ** | 5分前取得のみ、 直前 odds変動 未対応 | — | 当面 limitation 受け入れ |
 | 9 | **LINE通知 未対応** | Discord webhook のみ | — | Q2後半 検討 (優先度低) |
 | 10 | **戦略⑦除外 R 機会損失** | 重賞 / 06_平場特別 / 少頭数の除外が 最適かは未検証 | — | 6/30 v2検討 (現在 v1継続) |
+| 11 | ★ **JRDB TYB merge bug 1 年以上 0% 結合** ★ | 548K rows TYB data が V15 で 0% 結合だった (5/16 evening 発見) | — | commit b4948d6a で実装、 P0-3 leak 監査必須 |
 
 ---
 

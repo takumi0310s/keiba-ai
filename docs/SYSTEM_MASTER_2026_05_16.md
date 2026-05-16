@@ -342,24 +342,105 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 ---
 
-## 10. ★ 30 日 priority 3 件 (5/16-6/15) ★
+## 11. ★ 30 日 priority (動画撤回 + TYB 反映、 5/16 改訂) ★
 
-| 優先度 | アクション | 期待効果 | 工数 | risk |
-|--------|-----------|---------|------|------|
-| **1** | **京都 / 中京 戦略⑦再除外** (WO1+WO2) | **+5-7pt ROI** | 1 日 (filter 追加) | 低 |
-| **2** | **calibrator v2 paper eval 30 R → 採用** (WO4) | **over-bet 解消、 +2-3pt ROI** | 5/18+ 蓄積 | 低 |
-| **3** | **V21 動画 features 5/31+ production 化** (WO3 + O1) | **plateau 突破唯一 path、 +0.005 AUC** | 5/17-5/31 | 中 |
+### P0 (5/17 G1 day 守備 + 5/17 21:00+ 監査 / 真値確定)
+| # | task | 工数 | 期待効果 |
+|---|------|------|---------|
+| P0-1 | ROI 乖離真値確定 (read-only formal analysis) | 1-2h | 全戦略判断の前提整う |
+| P0-2 | 京都/中京 戦略⑦再除外 (data 判断) | 1h | est. +5-7pt ROI |
+| P0-3 ★NEW★ | TYB calibrator leak 監査 | 1-2h | production 投入可否判定 |
 
-### 中期 (6 月以降) 計画
+### P1 (5/18-5/24、 paper eval)
+| # | task | 工数 | 期待効果 |
+|---|------|------|---------|
+| P1-0 ★NEW、 最優先★ | TYB calibrator paper shadow eval (P0-3 PASS が条件) | 5/18+ | 30R 蓄積後採用判定 |
+| P1-1 | calibrator v1 paper eval (継続) | 5/18+ | 30R 蓄積 |
+| P1-2 | JRDB tyb/cha feature engineering | 1 週 | est. +0.005 AUC |
+| P1-3 | netkeiba マスターコース評価 | 1 週 | est. +1-2pt ROI |
 
-| アクション | 期限 | 関連 |
-|-----------|------|------|
-| 重賞専門 model 投入検討 | 6 月内 | SO3、 W14 + O2 |
-| backtest vs live ROI 乖離 formal analysis | 6 月内 | DS ペルソナ要件、 W1 |
-| LFS migration (push 復旧) | 7 月 | W9 |
-| 自動 model drift alert (course/条件 ROI < 80%) | 7 月 | 京都発見 lag 再発防止 |
-| V21 paper trade 6/1-6/30 | 6 月 | V21 production 投入判定 |
-| V20 NAR 統合 | Q3 2026 | W15 + O7 |
+### P2 (5/25-5/31)
+| # | task | 工数 | 期待効果 |
+|---|------|------|---------|
+| P2-1 | v15.2 再学習 (TYB features 含む、 P0-3 PASS 前提) | 1-2 週 | est. +0.005-0.01 AUC |
+| P2-2 | 市場依存度低減 | 1 週 | est. +1pt ROI |
+| P2-3 | EV > 1 フィルタ + 案 B 改 strict 強化 | 1 週 | est. +2-3pt ROI |
+| P2-4 ★NEW★ | TYB daily fetch schtask 登録 + monitor | 30 分 | 5/9-5/15 停止再発防止 |
+
+### P3 (6 月以降)
+| # | task | 工数 | 期待効果 |
+|---|------|------|---------|
+| P3-1 | 重賞専門 model 開発 (戦略⑦除外 R 復帰) | 1-2 週 | est. +10pt ROI (重賞復帰) |
+| P3-2 | NAR 統合 (V20、 投票 R 数 2x) | 6 月内 | est. +月数千円 |
+| P3-3 | backtest vs live ROI 乖離 formal analysis | 1 週 | DS 透明性確保 |
+
+### P4 (インフラ、 随時)
+| # | task | 工数 | 期待効果 |
+|---|------|------|---------|
+| P4-1 | LFS migration (push 復旧) | 1 日 | reproducibility 改善 |
+| P4-2 | 自動 model drift 検出 + 月次 alert | 2 週 | 5/16 京都 ROI 20% 発見 lag 再発防止 |
+| P4-3 | outcome dashboard (Sub-task 2 で着手) | 完了 | 各 task Before/After 可視化 |
+
+---
+
+## ★ 動画系 (Phase A) 永久放棄 (5/16 evening 追記) ★
+
+### 根拠
+
+| Source | 規約 | 状況 |
+|--------|------|------|
+| YouTube | 利用規約「ダウンロード禁止」明文 + AI学習禁止明示 | NG |
+| JRA レーシングビュアー | 私的使用範囲外不可、 ストリーミングのみ | NG |
+| netkeiba SP 動画 | 規約 + IP ban 経験あり | NG |
+| JRA-VAN NEXT 動画 | レーシングビュアーと同条件 | NG |
+| JRA アプリ | 私的利用範囲明文 | NG |
+
+### V21 動画 AI 永久放棄
+
+- パドック CNN (12 features)
+- パトロール YOLO (8 features)
+- 調教 keypoint (10 features)
+
+全 30 動画 features 構想は ★ 永久放棄 ★。 既存 file (tools/v21/paddock_*, patrol_*, chokyou_*) は archive 化判断は後日。
+
+### 代替 path
+
+★ 動画なし 数値 source 最大化 ★ で plateau 突破を目指す:
+- JRDB 26 datatypes 完全活用 (現状 TYB 0% 結合 bug 等)
+- netkeiba SP テキスト (厩舎コメント / 追切コメント) 完全活用
+- 戦略 layer 改善 (戦略⑦ / calibrator / EV 動的閾値)
+- 真値確定 (ROI 乖離 解消)
+
+---
+
+## ★ JRDB TYB breakthrough (5/16 evening) ★
+
+### 実装 (commit b4948d6a)
+
+| metric | V15 only | V15 + TYB | delta |
+|--------|---------:|----------:|------:|
+| 5CV AUC | 0.4653 | 0.6082 | +0.1429 ★ |
+| n_samples | 348 | 348 | — |
+| pos_rate | 0.587 | 0.587 | — |
+
+### 真の signal (LR coef、 standardized)
+
+- padock_idx +0.44 (★ パドック指数 真の signal ★)
+- tansho_odds -0.58 (単勝オッズ高 = top3 入らず)
+- weight_diff -0.23 (馬体重 増減)
+- top1_score +0.20 (V15 は補完的)
+
+### ★ 過大評価 risk 認識 (commit d3b78683) ★
+
+- baseline AUC 0.4653 = task 設計問題 (top1_score は race 内 normalize 済)
+- +0.1429 改善幅は baseline の異常さ起因の可能性大
+- train 0.696 vs CV 0.608、 gap 0.088 = over-fit 兆候
+- n=348 は production 判断 不十分
+- leak 監査 (P0-3) 未完了 — tansho_odds が -15 min snapshot か race 確定か audit 必須
+
+### production 投入条件
+
+★ P0-3 leak 監査 PASS + paper shadow eval 30R 統計的有意 (Welch's t-test p<0.05) ★ 両方満たすこと。
 
 ---
 
@@ -401,27 +482,38 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 ---
 
-## 12. 業界 frontier 評価
+## 13. ★ 当 system 立ち位置 (動画なし frontier path、 5/16 改訂) ★
 
-### 当 system の strength (競合比)
+### 当 system の strength (動画なし 競合比)
 
-- ★ **動画 AI 解析 (V21)**: 業界全体 未提供、 商用競合 不在 ★
-- ★ **4-model ensemble + 150 features**: 個人運用としては高度、 SPAIA 18 model と比肩 ★
-- ★ **netkeiba プレミアム + JRDB + TARGET JV + JRA-VAN 統合**: data source は業界平均以上 ★
+- ★ **JRDB TYB breakthrough (5/16 evening)** ★ — padock_idx / tansho_odds / weight_diff を V15 + TYB stacking で +0.143 AUC 改善 path 発見 (★ honest: paper eval + leak 監査 PASS 後 採用 ★)
+- ★ **4-model ensemble + 150 features** ★ — 個人運用としては高度
+- ★ **JRDB 26 datatypes + netkeiba プレミアム + TFJV 統合** ★ — data source 業界平均以上
 - 戦略⑦ で損失 source 除外 → 公開 ATHENA 単勝回収率 80% / VUMA ワイド 40% と比較で 競争力
 
-### 当 system の weakness (競合比)
+### 当 system の weakness (動画なし 競合比)
 
 - IPAT 自動投票連携 未実装 → 運用効率で劣る
-- LINE 通知なし → general user 向け なし (個人運用なら問題なし)
+- LINE 通知なし → 個人運用なら問題なし
 - 重賞 G1 専門 model なし → 戦略⑦除外で機会損失
 - 三連単 / WIDE 拡張なし → 券種多様性で劣る
-- UI: Streamlit のみ、 モバイル UI 弱い
-- ユーザー基盤 ゼロ (個人運用) → 公開サービスと比較不能
+- ROI 乖離 (CLAUDE.md 119.2% vs cumulative 93.23%) — P0-1 で真値確定中
+
+### ★ 動画なし path での目標 ★
+
+| 目標 | 期日 | 達成基準 |
+|------|------|---------|
+| ★ 動画なし限界点 突破 ★ | 6/30 | WF AUC 0.9020+ / 実 ROI 110%+ / 累計 +¥50K |
+| 重賞 model + 戦略⑦除外 R 復帰 | 6/30 | 月 2-4 GI 取り込み + ROI 維持 |
+| TYB production 投入 | 6/1+ | P0-3 PASS + paper eval 30R 統計的有意 |
 
 ### 「業界最強」 か?
 
-**NO** (honest)。 netkeiba / SPAIA / 競馬ブック等 商用サービスは ユーザー体験 / 取材一次情報 / IPAT 連携 で先行。 ただし AI モデル精度 / 動画 AI / data 統合 では **個人運用トップクラスの可能性**。 V21 動画 AI 完成 + IPAT 連携 + 重賞 model で「個人運用業界 frontier」 を狙える。
+**NO** (honest)。 動画ありの商用サービスは 進化中。 但し ★ 動画なし path の個人運用 frontier ★ では:
+- JRDB 完全活用 + netkeiba SP テキスト + 戦略 layer breakthrough で
+- **WF AUC 0.91+ / ROI 110%+** を 6/30 までに 達成可能性
+
+★ 動画なし frontier への一歩 = JRDB TYB breakthrough (5/16) ★
 
 ---
 
