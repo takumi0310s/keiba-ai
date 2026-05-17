@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010609",
+  "race_meta": {
+    "race_id": "202604010609",
+    "race_name": "飛竜特別",
+    "course": "新潟",
+    "condition": "D",
+    "num_horses": 16,
+    "distance": 1000,
+    "race_num": 9
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "dist_le_1000m"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 13,
+      "horse_name": "グランプレジール",
+      "V15_score": 0.6064124677197261,
+      "odds": 7.4
+    },
+    {
+      "horse_num": 16,
+      "horse_name": "ミエノブラボー",
+      "V15_score": 0.5088625305917346,
+      "odds": 7.1
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "パレスドフィーヌ",
+      "V15_score": 0.3670263016902989,
+      "odds": 38.4
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ブラックティンカー",
+      "V15_score": 0.3493072543626668,
+      "odds": 9.7
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ベルタソ",
+      "V15_score": 0.329912874094843,
+      "odds": 11.6
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 13,
+      "v15_prob": 0.6064124677197261,
+      "corrected_prob": 0.5064124677197261
+    },
+    {
+      "horse_num": 16,
+      "v15_prob": 0.5088625305917346,
+      "corrected_prob": 0.4088625305917346
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.3493072543626668,
+      "corrected_prob": 0.2745891165387671
+    },
+    {
+      "horse_num": 15,
+      "v15_prob": 0.2942388694306961,
+      "corrected_prob": 0.2719959311011588
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.3670263016902989,
+      "corrected_prob": 0.26702630169029884
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

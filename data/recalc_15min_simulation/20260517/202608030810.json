@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030810",
+  "race_meta": {
+    "race_id": "202608030810",
+    "race_name": "錦S",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 13,
+    "distance": 1600,
+    "race_num": 10
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 1,
+      "horse_name": "セブンマジシャン",
+      "V15_score": 0.7360537532575128,
+      "odds": 8.6
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ゼンダンハヤブサ",
+      "V15_score": 0.5953839398165409,
+      "odds": 11.5
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "バレルターン",
+      "V15_score": 0.5844069799856271,
+      "odds": 9.1
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "チェルノボーグ",
+      "V15_score": 0.5099725475355031,
+      "odds": 13.2
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "カズミクラーシュ",
+      "V15_score": 0.4625709101256418,
+      "odds": 9.0
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 1,
+      "v15_prob": 0.7360537532575128,
+      "corrected_prob": 0.6360537532575128
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.5953839398165409,
+      "corrected_prob": 0.49538393981654094
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.5844069799856271,
+      "corrected_prob": 0.4844069799856271
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.5099725475355031,
+      "corrected_prob": 0.40997254753550316
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.4465691682981685,
+      "corrected_prob": 0.3904813288388773
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

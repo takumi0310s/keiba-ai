@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030807",
+  "race_meta": {
+    "race_id": "202608030807",
+    "race_name": "4歳以上1勝クラス",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 12,
+    "distance": 2000,
+    "race_num": 7
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 12,
+      "horse_name": "サミダレナイツ",
+      "V15_score": 0.5239618065395775,
+      "odds": 5.0
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "デリュージョン",
+      "V15_score": 0.4547103336350958,
+      "odds": 5.0
+    },
+    {
+      "horse_num": 6,
+      "horse_name": "メイショウアゴナス",
+      "V15_score": 0.4368099022676032,
+      "odds": 12.1
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "オーシンエス",
+      "V15_score": 0.4279714406326106,
+      "odds": 5.6
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "レイデラティエラ",
+      "V15_score": 0.3173502298224985,
+      "odds": 11.9
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 12,
+      "v15_prob": 0.5239618065395775,
+      "corrected_prob": 0.4275243947498157
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.4547103336350958,
+      "corrected_prob": 0.37551293693126686
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.4279714406326106,
+      "corrected_prob": 0.35083867342248143
+    },
+    {
+      "horse_num": 6,
+      "v15_prob": 0.4368099022676032,
+      "corrected_prob": 0.3368099022676032
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.3092085679066997,
+      "corrected_prob": 0.280854914729652
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

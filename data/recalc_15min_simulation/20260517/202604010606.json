@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010606",
+  "race_meta": {
+    "race_id": "202604010606",
+    "race_name": "3歳未勝利",
+    "course": "新潟",
+    "condition": "A",
+    "num_horses": 13,
+    "distance": 1800,
+    "race_num": 6
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 3,
+      "horse_name": "オーケーリアン",
+      "V15_score": 0.5409850842493511,
+      "odds": 7.3
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "エコロラヴァー",
+      "V15_score": 0.4871552802998822,
+      "odds": 4.0
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ブエノスオプティマ",
+      "V15_score": 0.3824746315399762,
+      "odds": 11.1
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ライトオブジアース",
+      "V15_score": 0.3717700939634833,
+      "odds": 4.5
+    },
+    {
+      "horse_num": 6,
+      "horse_name": "タイセイルビー",
+      "V15_score": 0.2664956299622896,
+      "odds": 7.9
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 3,
+      "v15_prob": 0.5409850842493511,
+      "corrected_prob": 0.4409850842493511
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.4871552802998822,
+      "corrected_prob": 0.4135939433035648
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.3717700939634833,
+      "corrected_prob": 0.3281805411627621
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3824746315399762,
+      "corrected_prob": 0.29422863874685207
+    },
+    {
+      "horse_num": 6,
+      "v15_prob": 0.2664956299622896,
+      "corrected_prob": 0.22330045305541849
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    0
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

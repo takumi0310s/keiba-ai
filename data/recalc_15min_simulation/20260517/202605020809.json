@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020809",
+  "race_meta": {
+    "race_id": "202605020809",
+    "race_name": "テレ玉杯",
+    "course": "東京",
+    "condition": "A",
+    "num_horses": 12,
+    "distance": 1600,
+    "race_num": 9
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 4,
+      "horse_name": "ジーティーマン",
+      "V15_score": 0.5939994191518034,
+      "odds": 3.8
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "エルマーゴ",
+      "V15_score": 0.5017389376648537,
+      "odds": 3.3
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "ミッキースターダム",
+      "V15_score": 0.4338935740171696,
+      "odds": 12.8
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "オリバナム",
+      "V15_score": 0.4325371569053533,
+      "odds": 12.2
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "シルバーレイン",
+      "V15_score": 0.4091178054758582,
+      "odds": 5.7
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 4,
+      "v15_prob": 0.5939994191518034,
+      "corrected_prob": 0.4987463492846132
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.5017389376648537,
+      "corrected_prob": 0.4458241130632359
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.4091178054758582,
+      "corrected_prob": 0.34045985181314287
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.4338935740171696,
+      "corrected_prob": 0.33389357401716957
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.4325371569053533,
+      "corrected_prob": 0.33253715690535335
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

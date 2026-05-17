@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030809",
+  "race_meta": {
+    "race_id": "202608030809",
+    "race_name": "白川特別",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 10,
+    "distance": 2400,
+    "race_num": 9
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 5,
+      "horse_name": "ファーングロット",
+      "V15_score": 0.6738476262444687,
+      "odds": 1.8
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "サトノソティラス",
+      "V15_score": 0.6271560464427174,
+      "odds": 7.5
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "メイショウアイル",
+      "V15_score": 0.5198453204813075,
+      "odds": 9.9
+    },
+    {
+      "horse_num": 6,
+      "horse_name": "アスクデッドヒート",
+      "V15_score": 0.5144050807461806,
+      "odds": 4.9
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "ベイラム",
+      "V15_score": 0.3260548785462548,
+      "odds": 10.0
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 5,
+      "v15_prob": 0.6738476262444687,
+      "corrected_prob": 0.6304683373106863
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.6271560464427174,
+      "corrected_prob": 0.5271560464427174
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.5198453204813075,
+      "corrected_prob": 0.4198453204813075
+    },
+    {
+      "horse_num": 6,
+      "v15_prob": 0.5144050807461806,
+      "corrected_prob": 0.41931263879483827
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.3260548785462548,
+      "corrected_prob": 0.2594675320331885
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

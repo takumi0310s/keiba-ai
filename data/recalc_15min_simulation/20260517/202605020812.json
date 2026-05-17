@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020812",
+  "race_meta": {
+    "race_id": "202605020812",
+    "race_name": "BSイレブン賞",
+    "course": "東京",
+    "condition": "D",
+    "num_horses": 16,
+    "distance": 1400,
+    "race_num": 12
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 16,
+      "horse_name": "テリフィックプラン",
+      "V15_score": 0.8159176657969719,
+      "odds": 8.6
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "アスクアイルビゼア",
+      "V15_score": 0.6915221625313756,
+      "odds": 10.4
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ラファル",
+      "V15_score": 0.6861010366919025,
+      "odds": 5.7
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "メイケイレイン",
+      "V15_score": 0.6152693169655049,
+      "odds": 4.9
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "コーラルクラウン",
+      "V15_score": 0.5611094709840883,
+      "odds": 5.9
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 16,
+      "v15_prob": 0.8159176657969719,
+      "corrected_prob": 0.7159176657969719
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.6915221625313756,
+      "corrected_prob": 0.5915221625313756
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.6861010366919025,
+      "corrected_prob": 0.5861010366919025
+    },
+    {
+      "horse_num": 13,
+      "v15_prob": 0.6152693169655049,
+      "corrected_prob": 0.5152693169655049
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.5611094709840883,
+      "corrected_prob": 0.4611094709840883
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

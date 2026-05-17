@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030811",
+  "race_meta": {
+    "race_id": "202608030811",
+    "race_name": "栗東S",
+    "course": "京都",
+    "condition": "D",
+    "num_horses": 16,
+    "distance": 1400,
+    "race_num": 11
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 1,
+      "horse_name": "インユアパレス",
+      "V15_score": 0.7273860382582022,
+      "odds": 6.5
+    },
+    {
+      "horse_num": 16,
+      "horse_name": "ナムラクララ",
+      "V15_score": 0.7099817819400044,
+      "odds": 7.6
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "ジャスティンアース",
+      "V15_score": 0.7061050519322203,
+      "odds": 3.9
+    },
+    {
+      "horse_num": 6,
+      "horse_name": "ルークススペイ",
+      "V15_score": 0.6049437345695107,
+      "odds": 17.0
+    },
+    {
+      "horse_num": 11,
+      "horse_name": "ベルジュロネット",
+      "V15_score": 0.5841885015912714,
+      "odds": 6.4
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 1,
+      "v15_prob": 0.7273860382582022,
+      "corrected_prob": 0.6273860382582023
+    },
+    {
+      "horse_num": 16,
+      "v15_prob": 0.7099817819400044,
+      "corrected_prob": 0.6099817819400044
+    },
+    {
+      "horse_num": 13,
+      "v15_prob": 0.7061050519322203,
+      "corrected_prob": 0.6061050519322203
+    },
+    {
+      "horse_num": 6,
+      "v15_prob": 0.6049437345695107,
+      "corrected_prob": 0.5049437345695107
+    },
+    {
+      "horse_num": 11,
+      "v15_prob": 0.5841885015912714,
+      "corrected_prob": 0.48418850159127147
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

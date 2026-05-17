@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030804",
+  "race_meta": {
+    "race_id": "202608030804",
+    "race_name": "3歳未勝利",
+    "course": "京都",
+    "condition": "C",
+    "num_horses": 17,
+    "distance": 1600,
+    "race_num": 4
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 17,
+      "horse_name": "フレッチャアズーラ",
+      "V15_score": 0.7069201287274419,
+      "odds": 6.5
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "アロハ",
+      "V15_score": 0.4752111926228242,
+      "odds": 7.6
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ペプチドブッドレア",
+      "V15_score": 0.3754080400424144,
+      "odds": 9.8
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "ジャミールアイン",
+      "V15_score": 0.2963349299082419,
+      "odds": 30.3
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "セコンドトゥベスト",
+      "V15_score": 0.2855804170115305,
+      "odds": 3.7
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 17,
+      "v15_prob": 0.7069201287274419,
+      "corrected_prob": 0.6069201287274419
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.4752111926228242,
+      "corrected_prob": 0.3752111926228242
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3754080400424144,
+      "corrected_prob": 0.29311375297400033
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.2855804170115305,
+      "corrected_prob": 0.2786631414908099
+    },
+    {
+      "horse_num": 11,
+      "v15_prob": 0.2620427358622723,
+      "corrected_prob": 0.23469417714074173
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

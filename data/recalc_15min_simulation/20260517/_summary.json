@@ -1,0 +1,20 @@
+{
+  "date": "20260517",
+  "total_races": 34,
+  "voted_after_strategy_7c": 19,
+  "skip_reasons": {
+    "dist_le_1000m": 1,
+    "non_graded_tokubetsu": 2,
+    "kyoto_non_graded": 12
+  },
+  "severity_counts": {
+    "none": 13,
+    "minor": 15,
+    "major": 4,
+    "critical": 2
+  },
+  "noise_pct": 0.05,
+  "rng_seed": 42,
+  "generated_at": "2026-05-17T15:07:39.016192",
+  "note": "paper simulation only, V15 production 不変、 Discord 実発火なし、 G1 day blocked"
+}

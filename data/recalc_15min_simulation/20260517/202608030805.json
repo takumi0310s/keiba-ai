@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030805",
+  "race_meta": {
+    "race_id": "202608030805",
+    "race_name": "3歳未勝利",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 10,
+    "distance": 2000,
+    "race_num": 5
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 3,
+      "horse_name": "エンジェルボイス",
+      "V15_score": 0.3688731253464474,
+      "odds": 6.7
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "ウインラファーガ",
+      "V15_score": 0.3238000537317135,
+      "odds": 4.5
+    },
+    {
+      "horse_num": 5,
+      "horse_name": "オンザムービー",
+      "V15_score": 0.2843686180088859,
+      "odds": 5.9
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "ライツェントライゼ",
+      "V15_score": 0.279977726044923,
+      "odds": 5.1
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "グリミスティ",
+      "V15_score": 0.2209228343174537,
+      "odds": 8.4
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 3,
+      "v15_prob": 0.3688731253464474,
+      "corrected_prob": 0.3030224695923447
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.3238000537317135,
+      "corrected_prob": 0.2926692953636838
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.279977726044923,
+      "corrected_prob": 0.2571332216269428
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.2843686180088859,
+      "corrected_prob": 0.247803412806839
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.2209228343174537,
+      "corrected_prob": 0.19178220229163478
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    0
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

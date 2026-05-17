@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010610",
+  "race_meta": {
+    "race_id": "202604010610",
+    "race_name": "信濃川特別",
+    "course": "新潟",
+    "condition": "C",
+    "num_horses": 16,
+    "distance": 2000,
+    "race_num": 10
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "non_graded_tokubetsu"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 14,
+      "horse_name": "マリアイリダータ",
+      "V15_score": 0.8333525776569792,
+      "odds": 3.2
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "クロシェットノエル",
+      "V15_score": 0.5615783183716412,
+      "odds": 8.8
+    },
+    {
+      "horse_num": 15,
+      "horse_name": "パッションリッチ",
+      "V15_score": 0.5389891601813083,
+      "odds": 5.7
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "タッチアンドムーブ",
+      "V15_score": 0.5322099875612817,
+      "odds": 10.6
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "コンフォルツァ",
+      "V15_score": 0.4496464384265157,
+      "odds": 7.0
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 14,
+      "v15_prob": 0.8333525776569792,
+      "corrected_prob": 0.7333525776569793
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.5615783183716412,
+      "corrected_prob": 0.4615783183716412
+    },
+    {
+      "horse_num": 15,
+      "v15_prob": 0.5389891601813083,
+      "corrected_prob": 0.4389891601813083
+    },
+    {
+      "horse_num": 13,
+      "v15_prob": 0.5322099875612817,
+      "corrected_prob": 0.4322099875612817
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.4496464384265157,
+      "corrected_prob": 0.3582101799953711
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

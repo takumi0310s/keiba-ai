@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020804",
+  "race_meta": {
+    "race_id": "202605020804",
+    "race_name": "3歳未勝利",
+    "course": "東京",
+    "condition": "C",
+    "num_horses": 17,
+    "distance": 1800,
+    "race_num": 4
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 16,
+      "horse_name": "クカイリモク",
+      "V15_score": 0.62156903795058,
+      "odds": 2.1
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "イニスフェイル",
+      "V15_score": 0.3350408354552616,
+      "odds": 18.8
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "マジックパレス",
+      "V15_score": 0.3201422515291702,
+      "odds": 2.0
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "ルシアージュ",
+      "V15_score": 0.2268908375905274,
+      "odds": 24.1
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ニシノマルガリート",
+      "V15_score": 0.2225781576697621,
+      "odds": 33.7
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 16,
+      "v15_prob": 0.62156903795058,
+      "corrected_prob": 0.5744900786803557
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.3201422515291702,
+      "corrected_prob": 0.36842128685601516
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.3350408354552616,
+      "corrected_prob": 0.24988588006109969
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.2268908375905274,
+      "corrected_prob": 0.17124828814297247
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.2225781576697621,
+      "corrected_prob": 0.16487372167110542
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    1,
+    1,
+    0,
+    0
+  ],
+  "severity": "major",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

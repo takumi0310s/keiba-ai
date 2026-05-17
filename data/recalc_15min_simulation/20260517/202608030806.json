@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030806",
+  "race_meta": {
+    "race_id": "202608030806",
+    "race_name": "3歳1勝クラス",
+    "course": "京都",
+    "condition": "C",
+    "num_horses": 16,
+    "distance": 1800,
+    "race_num": 6
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 14,
+      "horse_name": "ロードアマルフィ",
+      "V15_score": 0.5883956682204795,
+      "odds": 9.3
+    },
+    {
+      "horse_num": 6,
+      "horse_name": "システマソラー",
+      "V15_score": 0.586952139437727,
+      "odds": 5.1
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "ベルウッドピース",
+      "V15_score": 0.4413938856118083,
+      "odds": 26.2
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "ラブインアクション",
+      "V15_score": 0.4299751356281912,
+      "odds": 27.5
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ジャイアンバローズ",
+      "V15_score": 0.3537636769046745,
+      "odds": 10.8
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 14,
+      "v15_prob": 0.5883956682204795,
+      "corrected_prob": 0.48839566822047953
+    },
+    {
+      "horse_num": 6,
+      "v15_prob": 0.586952139437727,
+      "corrected_prob": 0.48695213943772697
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.4413938856118083,
+      "corrected_prob": 0.3413938856118083
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.4299751356281912,
+      "corrected_prob": 0.32997513562819114
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3247104450884567,
+      "corrected_prob": 0.3135850360690424
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

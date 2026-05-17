@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030801",
+  "race_meta": {
+    "race_id": "202608030801",
+    "race_name": "3歳未勝利",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 14,
+    "distance": 1800,
+    "race_num": 1
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 3,
+      "horse_name": "マカロンブルー",
+      "V15_score": 0.7261635183446482,
+      "odds": 3.2
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ルージュエピック",
+      "V15_score": 0.4209728594935881,
+      "odds": 5.9
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ワイルドカグラ",
+      "V15_score": 0.3244765375563531,
+      "odds": 21.9
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "シエーナカラー",
+      "V15_score": 0.2883965610582912,
+      "odds": 4.8
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "ノーブルクインダム",
+      "V15_score": 0.2452994891532347,
+      "odds": 4.7
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 3,
+      "v15_prob": 0.7261635183446482,
+      "corrected_prob": 0.6261635183446482
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.4209728594935881,
+      "corrected_prob": 0.3441483386044083
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.2883965610582912,
+      "corrected_prob": 0.264152977658617
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3244765375563531,
+      "corrected_prob": 0.2413518085857279
+    },
+    {
+      "horse_num": 13,
+      "v15_prob": 0.2452994891532347,
+      "corrected_prob": 0.23544877430140884
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    0
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

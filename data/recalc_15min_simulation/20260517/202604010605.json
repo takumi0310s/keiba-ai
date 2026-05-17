@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010605",
+  "race_meta": {
+    "race_id": "202604010605",
+    "race_name": "3歳未勝利",
+    "course": "新潟",
+    "condition": "C",
+    "num_horses": 16,
+    "distance": 2000,
+    "race_num": 5
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 8,
+      "horse_name": "ウインターブレス",
+      "V15_score": 0.3696500472163993,
+      "odds": 6.9
+    },
+    {
+      "horse_num": 13,
+      "horse_name": "レゼルフォート",
+      "V15_score": 0.2944007100670151,
+      "odds": 2.8
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ラップトップ",
+      "V15_score": 0.292059379939132,
+      "odds": 18.3
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "ウインポーシャ",
+      "V15_score": 0.2812443076897182,
+      "odds": 6.0
+    },
+    {
+      "horse_num": 5,
+      "horse_name": "ブランニューホーム",
+      "V15_score": 0.2561326185862986,
+      "odds": 9.0
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 13,
+      "v15_prob": 0.2944007100670151,
+      "corrected_prob": 0.3165981350647968
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.3696500472163993,
+      "corrected_prob": 0.30105571280520094
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.2812443076897182,
+      "corrected_prob": 0.24926102803084224
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.292059379939132,
+      "corrected_prob": 0.22088974647415466
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.2561326185862986,
+      "corrected_prob": 0.21381979986873836
+    }
+  ],
+  "rank_changes_per_position": [
+    1,
+    1,
+    1,
+    1,
+    0
+  ],
+  "severity": "critical",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

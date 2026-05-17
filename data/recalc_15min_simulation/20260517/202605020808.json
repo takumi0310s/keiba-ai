@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020808",
+  "race_meta": {
+    "race_id": "202605020808",
+    "race_name": "4歳以上1勝クラス",
+    "course": "東京",
+    "condition": "C",
+    "num_horses": 15,
+    "distance": 1800,
+    "race_num": 8
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 8,
+      "horse_name": "エデルクローネ",
+      "V15_score": 0.6022943871262686,
+      "odds": 3.9
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "アドミラルシップ",
+      "V15_score": 0.5837335870492636,
+      "odds": 4.2
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "バズアップビート",
+      "V15_score": 0.5339595666963939,
+      "odds": 5.0
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "ホウオウペトリュス",
+      "V15_score": 0.2835720895344392,
+      "odds": 9.4
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "ヴァーナリー",
+      "V15_score": 0.2735181290365554,
+      "odds": 9.2
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 8,
+      "v15_prob": 0.6022943871262686,
+      "corrected_prob": 0.5022943871262686
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.5837335870492636,
+      "corrected_prob": 0.4837335870492636
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.5339595666963939,
+      "corrected_prob": 0.4339595666963939
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.2835720895344392,
+      "corrected_prob": 0.23200740694544633
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.2735181290365554,
+      "corrected_prob": 0.22389238043702106
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

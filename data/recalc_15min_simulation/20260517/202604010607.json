@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010607",
+  "race_meta": {
+    "race_id": "202604010607",
+    "race_name": "4歳以上1勝クラス",
+    "course": "新潟",
+    "condition": "A",
+    "num_horses": 13,
+    "distance": 2000,
+    "race_num": 7
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 1,
+      "horse_name": "マイネルアウルム",
+      "V15_score": 0.6190682828072013,
+      "odds": 8.5
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ベネスピラ",
+      "V15_score": 0.5821257176314398,
+      "odds": 5.6
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "ディーンズリスター",
+      "V15_score": 0.5560851264037909,
+      "odds": 3.7
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "アンドローゼス",
+      "V15_score": 0.5408879990033053,
+      "odds": 10.9
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "ダノンアトラス",
+      "V15_score": 0.4545818056193506,
+      "odds": 3.6
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 1,
+      "v15_prob": 0.6190682828072013,
+      "corrected_prob": 0.5190682828072013
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.5821257176314398,
+      "corrected_prob": 0.48212571763143985
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.5560851264037909,
+      "corrected_prob": 0.4681266424011257
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.5408879990033053,
+      "corrected_prob": 0.44088799900330533
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.4545818056193506,
+      "corrected_prob": 0.40097166487656394
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

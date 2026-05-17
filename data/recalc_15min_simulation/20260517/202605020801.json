@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020801",
+  "race_meta": {
+    "race_id": "202605020801",
+    "race_name": "3歳未勝利",
+    "course": "東京",
+    "condition": "C",
+    "num_horses": 16,
+    "distance": 1600,
+    "race_num": 1
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 2,
+      "horse_name": "ミライヘノティアラ",
+      "V15_score": 0.4257371409562377,
+      "odds": 6.8
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "イデアクリスタル",
+      "V15_score": 0.3767292658476702,
+      "odds": 7.7
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "ビリキナータ",
+      "V15_score": 0.3244536351404772,
+      "odds": 5.6
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "キミガハマ",
+      "V15_score": 0.2577607161253751,
+      "odds": 17.8
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "デルマザオウ",
+      "V15_score": 0.2270197296153898,
+      "odds": 28.3
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 2,
+      "v15_prob": 0.4257371409562377,
+      "corrected_prob": 0.3443444200632359
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3767292658476702,
+      "corrected_prob": 0.30096326457523775
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.3244536351404772,
+      "corrected_prob": 0.280783944252315
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.2079627236464048,
+      "corrected_prob": 0.226763307846716
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.2577607161253751,
+      "corrected_prob": 0.19682301627409135
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

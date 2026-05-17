@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030812",
+  "race_meta": {
+    "race_id": "202608030812",
+    "race_name": "4歳以上2勝クラス",
+    "course": "京都",
+    "condition": "D",
+    "num_horses": 13,
+    "distance": 1400,
+    "race_num": 12
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 11,
+      "horse_name": "メイショウカイト",
+      "V15_score": 0.6553068521467225,
+      "odds": 6.0
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ホウオウトランプ",
+      "V15_score": 0.6422344944940243,
+      "odds": 5.0
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "タガノアンファン",
+      "V15_score": 0.592773320327657,
+      "odds": 5.5
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "インブロリオ",
+      "V15_score": 0.5783161287428398,
+      "odds": 7.4
+    },
+    {
+      "horse_num": 5,
+      "horse_name": "ダノンブランニュー",
+      "V15_score": 0.5061791206457564,
+      "odds": 6.3
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 11,
+      "v15_prob": 0.6553068521467225,
+      "corrected_prob": 0.5553068521467225
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.6422344944940243,
+      "corrected_prob": 0.5422344944940243
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.592773320327657,
+      "corrected_prob": 0.49277332032765697
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.5783161287428398,
+      "corrected_prob": 0.4783161287428398
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.5061791206457564,
+      "corrected_prob": 0.40617912064575645
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

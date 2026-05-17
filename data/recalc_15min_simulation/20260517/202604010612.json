@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010612",
+  "race_meta": {
+    "race_id": "202604010612",
+    "race_name": "4歳以上1勝クラス",
+    "course": "新潟",
+    "condition": "D",
+    "num_horses": 11,
+    "distance": 1200,
+    "race_num": 12
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 4,
+      "horse_name": "シルフレイ",
+      "V15_score": 0.5262363743353292,
+      "odds": 4.6
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "エルムラント",
+      "V15_score": 0.5074283409039527,
+      "odds": 5.2
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "バシリス",
+      "V15_score": 0.4685487764930751,
+      "odds": 5.6
+    },
+    {
+      "horse_num": 5,
+      "horse_name": "ジーティームッシュ",
+      "V15_score": 0.3925920710066623,
+      "odds": 5.9
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "スーパーバイザー",
+      "V15_score": 0.2811824827799645,
+      "odds": 6.5
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 4,
+      "v15_prob": 0.5262363743353292,
+      "corrected_prob": 0.4367159424838384
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.5074283409039527,
+      "corrected_prob": 0.41292683552095183
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.4685487764930751,
+      "corrected_prob": 0.3824828057482532
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.3925920710066623,
+      "corrected_prob": 0.32753603205687404
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.2811824827799645,
+      "corrected_prob": 0.24488762495578947
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

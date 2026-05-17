@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030808",
+  "race_meta": {
+    "race_id": "202608030808",
+    "race_name": "4歳以上2勝クラス",
+    "course": "京都",
+    "condition": "A",
+    "num_horses": 8,
+    "distance": 1900,
+    "race_num": 8
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 4,
+      "horse_name": "ソウルアンドジャズ",
+      "V15_score": 0.7385055855878426,
+      "odds": 6.9
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "ゴッドエスパーダ",
+      "V15_score": 0.7261242302806605,
+      "odds": 2.9
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "レッドボブ",
+      "V15_score": 0.693577969958909,
+      "odds": 5.2
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "ジョータルマエ",
+      "V15_score": 0.6750780975637836,
+      "odds": 7.1
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "ブルーワール",
+      "V15_score": 0.5411326135986562,
+      "odds": 5.4
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 4,
+      "v15_prob": 0.7385055855878426,
+      "corrected_prob": 0.6385055855878427
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.7261242302806605,
+      "corrected_prob": 0.6261242302806606
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.693577969958909,
+      "corrected_prob": 0.593577969958909
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.6750780975637836,
+      "corrected_prob": 0.5750780975637836
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.5411326135986562,
+      "corrected_prob": 0.4411326135986562
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

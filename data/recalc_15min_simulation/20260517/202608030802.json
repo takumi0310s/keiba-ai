@@ -1,0 +1,84 @@
+{
+  "race_id": "202608030802",
+  "race_meta": {
+    "race_id": "202608030802",
+    "race_name": "3歳未勝利",
+    "course": "京都",
+    "condition": "D",
+    "num_horses": 16,
+    "distance": 1400,
+    "race_num": 2
+  },
+  "strategy_7c": {
+    "skipped": true,
+    "reason": "kyoto_non_graded"
+  },
+  "morning_top5": [
+    {
+      "horse_num": 9,
+      "horse_name": "サトノフレイ",
+      "V15_score": 0.5348240411753795,
+      "odds": 4.1
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "プッシュフォワード",
+      "V15_score": 0.357039596021817,
+      "odds": 18.7
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "マクアケ",
+      "V15_score": 0.3497746544474432,
+      "odds": 9.8
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "モズプリフォール",
+      "V15_score": 0.3429086464599882,
+      "odds": 2.8
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "ジャカルタバオ",
+      "V15_score": 0.2439566535075692,
+      "odds": 6.8
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 9,
+      "v15_prob": 0.5348240411753795,
+      "corrected_prob": 0.44853000250562886
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.3429086464599882,
+      "corrected_prob": 0.3484861225644738
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.3497746544474432,
+      "corrected_prob": 0.27599184724028414
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.357039596021817,
+      "corrected_prob": 0.26618774420106817
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.2439566535075692,
+      "corrected_prob": 0.214082791865371
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    1,
+    0,
+    1,
+    0
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

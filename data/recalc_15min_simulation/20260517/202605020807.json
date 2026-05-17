@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020807",
+  "race_meta": {
+    "race_id": "202605020807",
+    "race_name": "3歳1勝クラス",
+    "course": "東京",
+    "condition": "A",
+    "num_horses": 8,
+    "distance": 1600,
+    "race_num": 7
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 5,
+      "horse_name": "ヴァロアーク",
+      "V15_score": 0.5729989396063474,
+      "odds": 4.0
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "サトノマティーニ",
+      "V15_score": 0.5417632839826289,
+      "odds": 3.3
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "ブルースカイブルー",
+      "V15_score": 0.3444139651947254,
+      "odds": 6.8
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "リアライズリバティ",
+      "V15_score": 0.320280208832972,
+      "odds": 4.0
+    },
+    {
+      "horse_num": 2,
+      "horse_name": "トミーバローズ",
+      "V15_score": 0.3188542663381479,
+      "odds": 4.8
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 5,
+      "v15_prob": 0.5729989396063474,
+      "corrected_prob": 0.47434871291581654
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.5417632839826289,
+      "corrected_prob": 0.47362589445072695
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.320280208832972,
+      "corrected_prob": 0.2961209125252978
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3444139651947254,
+      "corrected_prob": 0.2869322275100137
+    },
+    {
+      "horse_num": 2,
+      "v15_prob": 0.3188542663381479,
+      "corrected_prob": 0.28634474696342865
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    1,
+    1,
+    0
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

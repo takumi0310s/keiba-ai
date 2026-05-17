@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010602",
+  "race_meta": {
+    "race_id": "202604010602",
+    "race_name": "3歳未勝利",
+    "course": "新潟",
+    "condition": "A",
+    "num_horses": 9,
+    "distance": 1800,
+    "race_num": 2
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 6,
+      "horse_name": "エタンセル",
+      "V15_score": 0.8078037703556471,
+      "odds": 1.5
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "アデルフィー",
+      "V15_score": 0.3716210522299268,
+      "odds": 5.1
+    },
+    {
+      "horse_num": 1,
+      "horse_name": "ナウオアネヴァー",
+      "V15_score": 0.2425568960164449,
+      "odds": 6.6
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "クロームクロス",
+      "V15_score": 0.1793984209545309,
+      "odds": 17.4
+    },
+    {
+      "horse_num": 9,
+      "horse_name": "カフジマリボー",
+      "V15_score": 0.1770279507434297,
+      "odds": 12.4
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 6,
+      "v15_prob": 0.8078037703556471,
+      "corrected_prob": 0.7601296195774415
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.3716210522299268,
+      "corrected_prob": 0.31932001563277146
+    },
+    {
+      "horse_num": 1,
+      "v15_prob": 0.2425568960164449,
+      "corrected_prob": 0.21367080975951858
+    },
+    {
+      "horse_num": 9,
+      "v15_prob": 0.1770279507434297,
+      "corrected_prob": 0.14913647314033704
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.1793984209545309,
+      "corrected_prob": 0.14248657051277408
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

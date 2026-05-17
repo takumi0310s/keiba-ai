@@ -1,0 +1,84 @@
+{
+  "race_id": "202604010611",
+  "race_meta": {
+    "race_id": "202604010611",
+    "race_name": "弥彦S",
+    "course": "新潟",
+    "condition": "C",
+    "num_horses": 16,
+    "distance": 1800,
+    "race_num": 11
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 6,
+      "horse_name": "エストゥペンダ",
+      "V15_score": 0.7223609279537972,
+      "odds": 2.9
+    },
+    {
+      "horse_num": 3,
+      "horse_name": "ミナデオロ",
+      "V15_score": 0.7142240562065845,
+      "odds": 6.0
+    },
+    {
+      "horse_num": 8,
+      "horse_name": "バッデレイト",
+      "V15_score": 0.6484586182282659,
+      "odds": 10.4
+    },
+    {
+      "horse_num": 7,
+      "horse_name": "マイエレメント",
+      "V15_score": 0.4211801362067705,
+      "odds": 7.9
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "ピンキープロミス",
+      "V15_score": 0.3746586786250986,
+      "odds": 32.4
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 6,
+      "v15_prob": 0.7223609279537972,
+      "corrected_prob": 0.6223609279537973
+    },
+    {
+      "horse_num": 3,
+      "v15_prob": 0.7142240562065845,
+      "corrected_prob": 0.6142240562065845
+    },
+    {
+      "horse_num": 8,
+      "v15_prob": 0.6484586182282659,
+      "corrected_prob": 0.5484586182282659
+    },
+    {
+      "horse_num": 7,
+      "v15_prob": 0.4211801362067705,
+      "corrected_prob": 0.33396571743114145
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.3746586786250986,
+      "corrected_prob": 0.27465867862509863
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "severity": "none",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}

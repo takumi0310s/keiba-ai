@@ -1,0 +1,84 @@
+{
+  "race_id": "202605020802",
+  "race_meta": {
+    "race_id": "202605020802",
+    "race_name": "3歳未勝利",
+    "course": "東京",
+    "condition": "D",
+    "num_horses": 16,
+    "distance": 1400,
+    "race_num": 2
+  },
+  "strategy_7c": {
+    "skipped": false,
+    "reason": null
+  },
+  "morning_top5": [
+    {
+      "horse_num": 14,
+      "horse_name": "デスサイズ",
+      "V15_score": 0.6492385391944431,
+      "odds": 1.6
+    },
+    {
+      "horse_num": 10,
+      "horse_name": "ロードクローザー",
+      "V15_score": 0.5167051270491596,
+      "odds": 7.4
+    },
+    {
+      "horse_num": 12,
+      "horse_name": "シンギュラリティ",
+      "V15_score": 0.4945301967578996,
+      "odds": 39.5
+    },
+    {
+      "horse_num": 4,
+      "horse_name": "エルアン",
+      "V15_score": 0.3858642853834648,
+      "odds": 36.2
+    },
+    {
+      "horse_num": 5,
+      "horse_name": "マナイアカラニ",
+      "V15_score": 0.3659059812422805,
+      "odds": 5.2
+    }
+  ],
+  "simulated_15min_top5": [
+    {
+      "horse_num": 14,
+      "v15_prob": 0.6492385391944431,
+      "corrected_prob": 0.6348220182199003
+    },
+    {
+      "horse_num": 10,
+      "v15_prob": 0.5167051270491596,
+      "corrected_prob": 0.41670512704915963
+    },
+    {
+      "horse_num": 12,
+      "v15_prob": 0.4945301967578996,
+      "corrected_prob": 0.3945301967578996
+    },
+    {
+      "horse_num": 5,
+      "v15_prob": 0.3659059812422805,
+      "corrected_prob": 0.31284962728845034
+    },
+    {
+      "horse_num": 4,
+      "v15_prob": 0.3858642853834648,
+      "corrected_prob": 0.28586428538346476
+    }
+  ],
+  "rank_changes_per_position": [
+    0,
+    0,
+    0,
+    1,
+    1
+  ],
+  "severity": "minor",
+  "note": "dummy -15 min odds = 朝 8:00 odds ± 5% noise (paper simulation only)"
+}
