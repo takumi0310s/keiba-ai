@@ -1,0 +1,96 @@
+{
+  "stored_auc_field_in_pkl": 0.8939485520467574,
+  "ensemble_weights": {
+    "lgb": 0.5036339408713449,
+    "xgb": 0.496366059128655,
+    "mlp": 0
+  },
+  "trained_at": "2026-04-08T23:32:37.533143",
+  "n_features": 145,
+  "fold_results": [
+    {
+      "year": 2020,
+      "train_n": 243558,
+      "valid_n": 47882,
+      "lgb_auc": 0.893160380145123,
+      "xgb_auc": 0.8790012367559237,
+      "lgbxgb_auc_stored_weights": 0.8870790804597701,
+      "lgbxgb_auc_equal_weights": 0.887027914981057,
+      "elapsed_sec": 0.2
+    },
+    {
+      "year": 2021,
+      "train_n": 291440,
+      "valid_n": 47476,
+      "lgb_auc": 0.8987657682979797,
+      "xgb_auc": 0.8841730099212988,
+      "lgbxgb_auc_stored_weights": 0.8925325263359152,
+      "lgbxgb_auc_equal_weights": 0.8924804909525819,
+      "elapsed_sec": 0.2
+    },
+    {
+      "year": 2022,
+      "train_n": 338916,
+      "valid_n": 46841,
+      "lgb_auc": 0.8997058732308866,
+      "xgb_auc": 0.8853238066296819,
+      "lgbxgb_auc_stored_weights": 0.8935679943539505,
+      "lgbxgb_auc_equal_weights": 0.8935171223741074,
+      "elapsed_sec": 0.2
+    },
+    {
+      "year": 2023,
+      "train_n": 385757,
+      "valid_n": 47274,
+      "lgb_auc": 0.8995847259107219,
+      "xgb_auc": 0.8858146272645677,
+      "lgbxgb_auc_stored_weights": 0.8936777611689362,
+      "lgbxgb_auc_equal_weights": 0.8936284995252285,
+      "elapsed_sec": 0.2
+    },
+    {
+      "year": 2024,
+      "train_n": 433031,
+      "valid_n": 46752,
+      "lgb_auc": 0.9009712508887747,
+      "xgb_auc": 0.8876278241395833,
+      "lgbxgb_auc_stored_weights": 0.8953320127600695,
+      "lgbxgb_auc_equal_weights": 0.8952836914115676,
+      "elapsed_sec": 0.2
+    },
+    {
+      "year": 2025,
+      "train_n": 479783,
+      "valid_n": 47497,
+      "lgb_auc": 0.9019174219207737,
+      "xgb_auc": 0.8865502023047136,
+      "lgbxgb_auc_stored_weights": 0.8954944058934817,
+      "lgbxgb_auc_equal_weights": 0.8954399231029608,
+      "elapsed_sec": 0.2
+    }
+  ],
+  "mean_6fold_2020_2025": {
+    "lgb": 0.89901757006571,
+    "xgb": 0.8847484511692949,
+    "lgbxgb_stored_weights": 0.8929472968286872,
+    "lgbxgb_equal_weights": 0.8928962737245838
+  },
+  "mean_5fold_2021_2025": {
+    "lgb": 0.9001890080498274,
+    "xgb": 0.8858978940519691,
+    "lgbxgb_stored_weights": 0.8941209401024706,
+    "lgbxgb_equal_weights": 0.8940699454732893
+  },
+  "single_2025": {
+    "year": 2025,
+    "train_n": 479783,
+    "valid_n": 47497,
+    "lgb_auc": 0.9019174219207737,
+    "xgb_auc": 0.8865502023047136,
+    "lgbxgb_auc_stored_weights": 0.8954944058934817,
+    "lgbxgb_auc_equal_weights": 0.8954399231029608,
+    "elapsed_sec": 0.2
+  },
+  "note": "Read-only inference. The single V15 .pkl.gz was trained on ALL years <= 2025 (NOT a true WF). Therefore for years 2020..2024 the validation rows were INCLUDED in training, making fold AUCs leaky upper bounds (not genuine WF generalization). For the 2025 fold the validation rows were also included in training (model trained on all data). See v15_2/v15_baseline_lgb_xgb_*.json for the genuine WF retrain baseline (lightweight). This file proves the stored .pkl is a SINGLE-RUN all-data model and quantifies the in-sample inference AUC.",
+  "elapsed_sec": 2.9
+}
