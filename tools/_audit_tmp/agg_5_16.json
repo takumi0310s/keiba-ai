@@ -1,0 +1,171 @@
+{
+  "N_total": 34,
+  "cov5_dist": {
+    "0": 0,
+    "1": 9,
+    "2": 12,
+    "3": 13
+  },
+  "cov3_dist": {
+    "0": 5,
+    "1": 13,
+    "2": 12,
+    "3": 4
+  },
+  "mean_cov5": 2.1176470588235294,
+  "mean_cov3": 1.4411764705882353,
+  "top5_complete_R": 13,
+  "top5_complete_pct": 38.23529411764706,
+  "top3_complete_R": 4,
+  "top3_complete_pct": 11.76470588235294,
+  "zero_R": 0,
+  "tier": [
+    {
+      "tier": "1勝C",
+      "N": 7,
+      "cov5_complete": 2,
+      "mean_cov5": 1.8571428571428572,
+      "complete_pct": 28.57142857142857
+    },
+    {
+      "tier": "2勝C",
+      "N": 1,
+      "cov5_complete": 0,
+      "mean_cov5": 2.0,
+      "complete_pct": 0.0
+    },
+    {
+      "tier": "3-1勝C",
+      "N": 2,
+      "cov5_complete": 1,
+      "mean_cov5": 2.5,
+      "complete_pct": 50.0
+    },
+    {
+      "tier": "G3",
+      "N": 1,
+      "cov5_complete": 0,
+      "mean_cov5": 1.0,
+      "complete_pct": 0.0
+    },
+    {
+      "tier": "L",
+      "N": 2,
+      "cov5_complete": 1,
+      "mean_cov5": 2.0,
+      "complete_pct": 50.0
+    },
+    {
+      "tier": "OP/L",
+      "N": 1,
+      "cov5_complete": 0,
+      "mean_cov5": 2.0,
+      "complete_pct": 0.0
+    },
+    {
+      "tier": "OP特",
+      "N": 5,
+      "cov5_complete": 2,
+      "mean_cov5": 2.2,
+      "complete_pct": 40.0
+    },
+    {
+      "tier": "未勝利",
+      "N": 15,
+      "cov5_complete": 7,
+      "mean_cov5": 2.2666666666666666,
+      "complete_pct": 46.666666666666664
+    }
+  ],
+  "strat7_remain_N": 19,
+  "strat7_complete_R": 10,
+  "strat7_complete_pct": 52.63157894736842,
+  "strat7_excluded_R": 15,
+  "box_top5_invest": 34000,
+  "box_top5_known_payout": 14900,
+  "box_top5_unknown_hit_R": 5,
+  "box_top5_lower_roi_pct": 43.8235294117647,
+  "box_top5_hit_R": 13,
+  "box_top5_hit_pct": 38.23529411764706,
+  "strat7_box_invest": 19000,
+  "strat7_box_known_payout": 13850,
+  "strat7_box_lower_roi_pct": 72.89473684210527,
+  "strat7_box_hit_R": 10,
+  "strat7_box_unknown_R": 3,
+  "cur_7pt_invest": 23800,
+  "cur_7pt_payout_sum": 54110,
+  "cur_7pt_hit_R": 11,
+  "cur_7pt_roi_pct": 227.35294117647058,
+  "strat7_cur_7pt_invest": 13300,
+  "strat7_cur_7pt_payout": 13850,
+  "strat7_cur_7pt_hit_R": 7,
+  "strat7_cur_7pt_roi_pct": 104.13533834586465,
+  "key_races": [
+    {
+      "race_id": "202604010511",
+      "course": "新潟",
+      "race_num": 11,
+      "race_name": "新潟大賞典",
+      "tier": "G3",
+      "top5_nums": [
+        14,
+        4,
+        6,
+        3,
+        15
+      ],
+      "finish_nums": [
+        3,
+        9,
+        11
+      ],
+      "cov5": 1,
+      "trio_hit_7pt": 0,
+      "trio_payout_7pt": 0
+    },
+    {
+      "race_id": "202605020711",
+      "course": "東京",
+      "race_num": 11,
+      "race_name": "六社S",
+      "tier": "L",
+      "top5_nums": [
+        6,
+        7,
+        2,
+        4,
+        8
+      ],
+      "finish_nums": [
+        4,
+        7,
+        8
+      ],
+      "cov5": 3,
+      "trio_hit_7pt": 0,
+      "trio_payout_7pt": 0
+    },
+    {
+      "race_id": "202608030711",
+      "course": "京都",
+      "race_num": 11,
+      "race_name": "鞍馬S",
+      "tier": "L",
+      "top5_nums": [
+        13,
+        16,
+        15,
+        9,
+        12
+      ],
+      "finish_nums": [
+        3,
+        6,
+        12
+      ],
+      "cov5": 1,
+      "trio_hit_7pt": 0,
+      "trio_payout_7pt": 0
+    }
+  ]
+}
