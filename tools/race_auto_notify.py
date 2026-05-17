@@ -154,12 +154,14 @@ def predict_and_notify(race_info, date_str):
         if not horses:
             print("    No horse data")
             _p0_5_notify_log(race_id, None, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='no_horse_data')
+            _v2_log_phase2_safe(race_id, None, None, None, None, None, None, channel='skip', strategy_7c_skip=False, strategy_7c_reason='no_horse_data')
             return
 
         # Skip obstacle races
         if rinfo.get('surface') == '障':
             print("    Skipping obstacle race")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='obstacle_race')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=False, strategy_7c_reason='obstacle_race')
             return
 
         num_horses = len(horses)
@@ -169,6 +171,7 @@ def predict_and_notify(race_info, date_str):
         if distance <= 1000:
             print("    Skipping <=1000m")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='distance_le_1000')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=False, strategy_7c_reason='distance_le_1000')
             return
 
         # ===== 戦略⑦ フィルタ (race_name + course) =====
@@ -182,6 +185,7 @@ def predict_and_notify(race_info, date_str):
         if '特別' in race_name_str and not (is_graded or is_listed or is_open_tokubetsu):
             print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_06_tokubetsu')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_06_tokubetsu')
             return
 
         # 2. 京都 filter (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
@@ -190,6 +194,7 @@ def predict_and_notify(race_info, date_str):
         if course_str == '京都' and not (is_graded or is_listed):
             print(f"    [STRATEGY7] Skip 京都 (P0-2 案 C、 5/17 適用): {race_name_str}")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17')
             return
         # ===== 戦略⑦ フィルタ ここまで =====
 
@@ -277,10 +282,12 @@ def predict_and_notify(race_info, date_str):
         if cond_key == 'E':
             print(f"    [STRATEGY7] Skip 条件E (頭数<=7)")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
             return
         if cond_key == 'B':
             print(f"    [STRATEGY7] Skip 条件B (重~不馬場)")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_B')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_B')
             return
         # 条件 X (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
         # 単一次元 N=19 ROI 8.72% 95% CI [0.00, 26.17] 統計的に baseline 下回る
@@ -288,6 +295,7 @@ def predict_and_notify(race_info, date_str):
         if cond_key == 'X' and not (is_graded or is_listed):
             print(f"    [STRATEGY7] Skip 条件X (P0-2 案 C、 5/17 適用)")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_X_p0_2_5_17')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_X_p0_2_5_17')
             return
         # ===== 戦略⑦ フィルタ続き ここまで =====
 
@@ -352,6 +360,7 @@ def predict_and_notify(race_info, date_str):
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
         _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
+        _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
 
     except Exception as e:
         print(f"    ERROR: {e}")
@@ -364,6 +373,10 @@ def predict_and_notify(race_info, date_str):
             pass
         try:
             _p0_5_notify_log(race_id, None, datetime.now().isoformat(), channel='error', strategy_7c_skip=False, strategy_7c_reason=f'exception:{str(e)[:100]}')
+        except Exception:
+            pass
+        try:
+            _v2_log_phase2_safe(race_id, None, None, None, None, None, None, channel='error', strategy_7c_skip=False, strategy_7c_reason=f'exception:{str(e)[:100]}')
         except Exception:
             pass
 
@@ -526,6 +539,49 @@ def main():
         send_discord("Auto-Notify終了", f"{date_str}: 全レース完了", color="blue")
     except Exception:
         pass
+
+
+def _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type,
+                         channel='bets', strategy_7c_skip=False, strategy_7c_reason=None):
+    """race_notify_log v2 phase 2 (pre_vote) safe wrapper。
+
+    ★ 既存 logic 完全不変、 log 出力 file IO のみ ★
+
+    log fail / import fail で例外を投げない (race_auto_notify の logic に影響なし)。
+    """
+    try:
+        from race_notify_log_v2 import log_phase2 as _v2_log_phase2
+
+        race_meta = {}
+        if rinfo:
+            try:
+                race_meta = {
+                    'race_name': str(race_name) if race_name else '',
+                    'course': str(rinfo.get('course', '')),
+                    'distance': rinfo.get('distance', 0),
+                    'surface': rinfo.get('surface', ''),
+                    'condition': rinfo.get('condition', ''),
+                    'start_time': str(rinfo.get('start_time', '')),
+                }
+            except Exception:
+                race_meta = {'race_name': str(race_name) if race_name else ''}
+        elif race_name:
+            race_meta = {'race_name': str(race_name)}
+
+        _v2_log_phase2(
+            race_id=race_id,
+            race_meta=race_meta,
+            formation_actual=bets,
+            vote_time_odds=odds_dict or {},
+            strategy_7c_skip=strategy_7c_skip,
+            strategy_7c_reason=strategy_7c_reason,
+            channel=channel,
+            cond_key=cond_key,
+            bet_type=bet_type,
+        )
+    except Exception as _e:
+        import sys as _sys
+        print(f"[race_notify_log_v2 wrapper fail] {_e}", file=_sys.stderr)
 
 
 def _p0_5_notify_log(race_id, race_name, notified_at, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None):

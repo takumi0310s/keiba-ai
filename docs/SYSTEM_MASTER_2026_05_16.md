@@ -10,9 +10,9 @@
 
 ## 0. Executive summary (★ 3 段落で 全体把握 ★)
 
-**system 概要**: 中央 JRA 競馬予測 AI。 V15 (4-model ensemble: LGB+XGB+FT-Transformer+IntraRace Attention、 150 features) を本番運用。 リークフリー設計を厳守し、 朝 06:30 自動全 R 予測 → 5 分前 Discord 通知 → 夜 20:00 結果照合の自動 pipeline を 7 schtasks で構成。 戦略⑦ (06_平場特別 / 京都 / 条件 E / B 除外) + 案 B 改 strict で 投票精度向上。
+**system 概要**: 中央 JRA 競馬予測 AI。 V15 (★ **LGB + XGB 2-model** production ★、 booster 145 features、 5/17 V15-audit-1 確定) を本番運用。 ※ 旧記述 「4-model ensemble (LGB+XGB+FT+IR)、 150 features」 は drift — FT/IR は v15_master の WF 評価専用で `.pkl.gz` には未保存。 リークフリー設計を厳守し、 朝 06:30 自動全 R 予測 → 5 分前 Discord 通知 → 夜 20:00 結果照合の自動 pipeline を 7 schtasks で構成。 戦略⑦ (06_平場特別 / 京都 / 条件 E / B 除外) + 案 B 改 strict で 投票精度向上。
 
-**現状 数値 (★ ROI 乖離 注意 ★)**: WF AUC **0.8939** (V15)、 v13.5b backtest ROI 428.4% (JRA 公式配当)、 **実運用累計 ROI 93.23% / -25,070円** (cumulative_results.csv 529 settled rows、 ★ CLAUDE.md 記載 119.2% / +13,530円 とは乖離 — 戦略⑦ + 案 B 改 仮想適用後 集計と推定、 別系統 計算源と思われる)。 5/16 evening commit 4 件で calibrator v2 retrain (21→315 sample、 isotonic 飽和解消)、 strategy_layer_v2 --calibrator option、 京都 ROI 20% 発見。 累計 +13,530円維持 (CLAUDE.md 記載)、 撤退余裕 +63,530円。
+**現状 数値 (★ 5/17 V15-audit 真値 ★)**: stored `.pkl.auc` 0.8939 は LGB train-set self-eval (in-sample)、 **genuine WF 6-fold mean LGB+XGB = 0.8678** / 4-model Grid 5-fold mean = 0.8858 (V15-audit-2)。 v13.5b backtest ROI 428.4% (歴史 reference)。 **実運用累計 ROI 98.34% / PnL ¥-6,920 / n=596** (≤2026-05-17、 V15-audit-4、 cumulative_results.csv settled)。 bootstrap 95% CI [66.33%, 138.05%] 100% 含む → ★ 統計的有意 勝ち なし ★。 撤退余裕 ¥43,080 (¥-50,000 ライン まで)。
 
 **最大 opportunity と threat**: opportunity = **V21 動画 features** (パドック 12 + パトロール 8 + 調教 10 = 30 features)、 商用 競合不在で業界 frontier。 threat = **V15 plateau** (V22 / V20+ 改善試行 8 回全 fail) + **京都 ROI 20%** + **backtest 428% vs live 93% の大幅乖離**。 30 日 priority 3 件: ①京都/中京 戦略⑦再除外 (+5-7pt ROI 想定)、 ②calibrator v2 paper eval 30 R 後採用、 ③V21 動画 5/31+ production 化。
 
@@ -24,7 +24,7 @@
 
 | モデル | Status | WF AUC | 実 ROI | 投入日 | 備考 |
 |--------|--------|--------|----------|--------|------|
-| **V15** | ★ **production** ★ | **0.8939** | 119.2% (CLAUDE.md) / 93.23% (cumulative 実測) | 4/1 | 4-ensemble、 150 features |
+| **V15** | ★ **production** ★ | stored 0.8939 (= in-sample LGB train-set, LEAKY) / **genuine WF 0.8678** (LGB+XGB) / Grid 4-model 5-fold 0.8858 | **98.34%** (cumulative 真値、 n=596、 5/17 V15-audit-4) | 4/1 | ★ **LGB+XGB 2-model** ★ (mlp=None, FT/IR は .pkl 未保存)、 145 features booster |
 | V15.1 | NO-GO | 0.8943 | — | — | SKB post-race leak 確定 (skb_kishi_code_3 +480bp) |
 | V18/V19 | NO-GO | 0.886-0.887 | -10pt LIVE | — | sib 抜き hybrid、 5/16 投入 NO-GO 確定 |
 | V20 | PoC 開発中 | 0.8752 | unknown | 6/8→6/30 GO 検討 | NAR+JRA、 320 features、 TFJV + JRDB 統合 |
@@ -210,8 +210,8 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 ### 7-2. ペルソナ 2: 中級者 (年 10-12 万円投資) — ★★★★☆ (4/5)
 
-**強み**: 自動運用完成 (6+ schtasks)、 透明性 (cumulative_results.csv)、 戦略⑦ + 案 B 改で micro-management 不要、 WF AUC 0.8939 数値根拠。
-**弱み**: ★ 実 ROI 93.23% vs CLAUDE.md 119.2% の **乖離** ★、 戦略⑦ 除外 R で機会損失感、 カスタマイズ性低 (700 円 hardcoded)、 京都 ROI 20% 発見 lag 1 ヶ月超。
+**強み**: 自動運用完成 (6+ schtasks)、 透明性 (cumulative_results.csv)、 戦略⑦ + 案 B 改で micro-management 不要、 genuine WF AUC 0.8678 (V15-audit-2、 LGB+XGB) 数値根拠。
+**弱み**: ★ 実 ROI 98.34% (V15-audit-4、 5/17 反映)、 CI [66.33%, 138.05%] 100% 含む = 統計的有意なし ★、 戦略⑦ 除外 R で機会損失感、 カスタマイズ性低 (700 円 hardcoded)、 京都 ROI 20% 発見 lag 1 ヶ月超。
 **最優先改善**: ROI 集計 統一 (乖離解消) + 月次 Discord ROI summary。
 
 ### 7-3. ペルソナ 3: プロ (年 100 万円+) — ★★★☆☆ (3/5)
@@ -222,7 +222,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 ### 7-4. ペルソナ 4: データサイエンティスト — ★★★★☆ (4/5)
 
-**強み**: ★ リークフリー設計 + 失敗教訓蓄積 ★ (odds_log / SKB / dam_top3r / sib hybrid 等)、 HONEST report 文化 (V22 8 fail 記述)、 4-model ensemble IR 35% 貢献、 expanding window 厳守、 WF 6-fold + 年別 gap 監視 (>0.05 過学習)。
+**強み**: ★ リークフリー設計 + 失敗教訓蓄積 ★ (odds_log / SKB / dam_top3r / sib hybrid 等)、 HONEST report 文化 (V22 8 fail 記述)、 v15_master では 4-model Grid ensemble IR 35% 貢献 (WF 評価専用、 production の .pkl は LGB+XGB のみ — V15-audit-1)、 expanding window 厳守、 WF 6-fold + 年別 gap 監視 (>0.05 過学習)。
 **弱み**: ★ V22 / V20+ 8 fail → V15 plateau ★、 features 124→150 で AUC delta ~0 (diminishing returns)、 ★ backtest 428% vs live 93% **大幅乖離** ★、 v13.5b Grid 年ごと最適化 (test leak 疑い)、 calibrator v1 21 sample over-fit、 push 不能 (reproducibility risk)。
 **最優先改善**: Grid Search 重み CV 固定 + backtest vs live ROI 乖離 formal analysis。
 
@@ -240,10 +240,10 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 | # | 強み | evidence |
 |---|------|---------|
-| S1 | WF AUC 0.8939 (V15) | CLAUDE.md |
-| S2 | v13.5b backtest ROI 428.4% | CLAUDE.md (JRA 公式配当 2023-2025、 10,314 R) |
+| S1 | genuine WF AUC 0.8678 (V15 LGB+XGB) / 0.8858 (Grid 4-model 5-fold) | V15-audit-2 (★ 旧記述 0.8939 は LGB train-set self-eval、 in-sample LEAKY ★) |
+| S2 | v13.5b backtest ROI 428.4% | CLAUDE.md (JRA 公式配当 2023-2025、 10,314 R) ※ 歴史 reference、 V15 cumulative とは別 |
 | S3 | リークフリー設計 — LEAK_FEATURES 18 件明示 | CLAUDE.md 8 章 |
-| S4 | 4-model ensemble (IR 35% 貢献) | CLAUDE.md |
+| S4 | v15_master の 4-model Grid ensemble (IR 35% 貢献、 WF 評価専用) | V15-audit-1 (★ production .pkl は LGB+XGB only、 FT/IR 未保存 ★) |
 | S5 | 7 schtasks 自動運用 | CLAUDE.md 定期タスク |
 | S6 | Discord 3 channel リアルタイム通知 | CLAUDE.md |
 | S7 | HONEST report 文化 (V22 8 fail / SKB LEAK / dam_top3r 等 documented) | CLAUDE.md |
@@ -257,7 +257,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 | # | 弱み | evidence |
 |---|------|---------|
-| W1 | ★ 実運用 ROI 93.23% vs CLAUDE.md 119.2% の **乖離** ★ | cumulative_results.csv 実測 |
+| W1 | ★ 実運用 ROI 98.34% (V15-audit-4、 5/17 反映)、 CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし ★ | cumulative_results.csv 実測 n=596 (旧 119.2% / 93.23% は何れも drift) |
 | W2 | ★ 京都 ROI 20.0% (N=58) ★ | session_5_16 |
 | W3 | 中京 ROI 57.9% (N=60) | 同上 |
 | W4 | 中山 ROI 78.7% (N=125) | 同上 |
@@ -308,7 +308,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 | SO1 | 自動運用 (S5+S10) + V21 動画完成 (O1) → 業界 frontier maintain | S5 × O1 |
 | SO2 | HONEST report (S7) + LLM 統合 (O6) → 説明性で差別化 | S7 × O6 |
 | SO3 | リークフリー (S3) + 重賞 model (O2) → 戦略⑦除外 R 復帰 | S3 × O2 |
-| SO4 | 4-model ensemble (S4) + V21 stacking (O1) → meta-learning で plateau 突破 | S4 × O1 |
+| SO4 | v15_master 4-model Grid (S4) を v15_full で production 化 (FT+IR 有効化、 +0.018 AUC 想定) + V21 stacking (O1) → meta-learning で plateau 突破 | S4 × O1 |
 | SO5 | JV-Link unlock (S12) + production fetch (O4) → bug 復旧 path | S12 × O4 |
 
 ### 9-2. W-O (弱み × 機会、 改善戦略)
@@ -446,22 +446,24 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 ## 11. ★ critical 注意事項 ★
 
-### 11-1. ROI 乖離 (CLAUDE.md vs cumulative 実測)
+### 11-1. ROI 真値統一 (5/17 V15-audit-4 で確定)
 
-- CLAUDE.md / MEMORY: 累計 +13,530 円、 ROI 119.2% (戦略⑦込 140%+)
-- cumulative_results.csv 実測 (529 settled rows): **ROI 93.23%、 PnL -25,070 円**
-- top1_num filled subset のみ (20 rows): ROI 14.64%、 PnL -11,950 円
+- 旧 CLAUDE.md / MEMORY drift: 累計 +13,530 円、 ROI 119.2% (戦略⑦込 140%+)
+- 5/16 P0-1 真値: ROI 101.33%、 PnL +¥5,240、 n=563 (≤2026-05-16)
+- **★ 5/17 V15-audit-4 真値 (5/17 G1 day 反映後) ★: ROI 98.34%、 PnL ¥-6,920、 n=596**
+- bootstrap 95% CI [66.33%, 138.05%] 100% 含む → ★ 統計的有意 勝ち なし ★
+- 5/17 G1 day 単日 ROI 47.36% / PnL ¥-12,160 / hit 6/33 (18.18%) が baseline を押し下げ
 
-**推定原因**:
+**推定原因 (旧 drift)**:
 - 戦略⑦ + 案 B 改 仮想適用後の集計と推定 (実際は betting 規律で実 bet は subset)
 - 「+13,530 円」 は別系統 計算源 (manual 集計?) と思われる
-- 検証 必要: backtest vs live ROI 大幅乖離 (428% vs 93%) の formal analysis
+- 検証 必要: backtest 428% vs live 98% の formal analysis (戦略 / 期間 / オッズ取得タイミング の差)
 
-**user judgment 必要**: どちらの数値を 公式 baseline とするか。 5/18+ shadow eval で 別途検証。
+★ 5/17 audit 後の公式 baseline = ROI 98.34% / PnL ¥-6,920 / n=596 ★
 
 ### 11-2. V15 plateau 仮説
 
-- V20、 V22 (base / distill / enhanced)、 V18/V19 (sib 抜き) **計 8 試行全 fail** (V15 AUC 0.8939 越え未達)
+- V20、 V22 (base / distill / enhanced)、 V18/V19 (sib 抜き) **計 8 試行全 fail** (V15 の stored .pkl.auc 0.8939 = LGB train-set self-eval 越え未達、 真の genuine WF baseline は 0.8678 — V15-audit-2)
 - 単純な features 追加 / re-architecture で 改善不可と確証
 - ★ plateau 突破の唯一 path = ★ V21 動画 features (業界未踏 frontier) ★
 - 5/31+ で coverage 1,000+ R 達成 + 6/1-6/30 paper trade で 真の効果検証
@@ -477,7 +479,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 
 - V15 + 戦略⑦ + 案 B 改 strict 単独本番
 - shadow eval / v2 calibrator は schtasks 未登録、 Discord 通知 0、 production 影響 0
-- 累計 +13,530 円 (CLAUDE.md 記載) 完全維持目標
+- 累計 PnL ¥-6,920 (5/17 V15-audit-4) → 撤退ライン -¥50,000 まで余裕 ¥43,080
 - 投票上限 ¥2,100/日、 手動投票継続
 
 ---
@@ -487,7 +489,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 ### 当 system の strength (動画なし 競合比)
 
 - ★ **JRDB TYB breakthrough (5/16 evening)** ★ — padock_idx / tansho_odds / weight_diff を V15 + TYB stacking で +0.143 AUC 改善 path 発見 (★ honest: paper eval + leak 監査 PASS 後 採用 ★)
-- ★ **4-model ensemble + 150 features** ★ — 個人運用としては高度
+- ★ **LGB+XGB 2-model production (V15)、 booster 145 features** ★ — 個人運用としては高度 (v15_master の 4-model Grid は WF 評価専用、 production .pkl は LGB+XGB のみ — V15-audit-1)
 - ★ **JRDB 26 datatypes + netkeiba プレミアム + TFJV 統合** ★ — data source 業界平均以上
 - 戦略⑦ で損失 source 除外 → 公開 ATHENA 単勝回収率 80% / VUMA ワイド 40% と比較で 競争力
 
@@ -497,7 +499,7 @@ jra_races (781K) / training (955K) / odds_history (778K) / netkeiba_siblings_exp
 - LINE 通知なし → 個人運用なら問題なし
 - 重賞 G1 専門 model なし → 戦略⑦除外で機会損失
 - 三連単 / WIDE 拡張なし → 券種多様性で劣る
-- ROI 乖離 (CLAUDE.md 119.2% vs cumulative 93.23%) — P0-1 で真値確定中
+- ROI 真値 = 98.34% (V15-audit-4、 5/17、 n=596)、 CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし (旧 119.2% は drift、 P0-1 → V15-audit-4 で 真値確定)
 
 ### ★ 動画なし path での目標 ★
 
@@ -550,7 +552,7 @@ C:\Users\takum\keiba-ai\
 │   ├── jra_races_full.csv                 # 781K (2015-2026)
 │   ├── training_times.csv                 # 955K
 │   ├── odds_history.csv                   # 778K
-│   ├── cumulative_results.csv             # 564 (実 ROI 93.23%、 CLAUDE.md 119.2% 乖離)
+│   ├── cumulative_results.csv             # 596 settled (実 ROI 98.34% / PnL ¥-6,920、 5/17 V15-audit-4 真値、 ★ formation drift: race-time formation 永久喪失、 trio_bets_str は AM 8:00 morning prediction のみ — data-audit-3 ★)
 │   ├── jrdb/ × 17                         # JRDB datatypes (548K each)
 │   ├── daily_predictions/                 # {ymd}.csv × 30 days
 │   ├── daily_results/                     # {ymd}.csv × 30 days
@@ -572,7 +574,7 @@ C:\Users\takum\keiba-ai\
 │   └── [100+ csv/json/log]
 │
 └── models/
-    ├── v15_lgb.pkl.gz, v15_xgb.pkl.gz, ... # V15 4 ensemble (★ 不変厳守 ★)
+    ├── keiba_model_v15_central.pkl.gz, keiba_model_v15_central_live.pkl.gz   # ★ V15 production = LGB+XGB 2-model (mlp=None, FT/IR 未保存) ★、 V15-audit-1、 不変厳守
     └── v21/                               # V21 meta-model 格納予定
 ```
 
@@ -584,7 +586,7 @@ C:\Users\takum\keiba-ai\
 - schtasks 既存 不変
 - destructive git op 永久 NG (filter-repo / push --force / lfs migrate)
 - fabrication 0 厳守 (HONEST report 文化)
-- 撤退ライン -50,000 円 (現累計 CLAUDE.md +13,530 円、 撤退余裕 +63,530 円)
+- 撤退ライン -50,000 円 (現累計 ¥-6,920、 撤退余裕 ¥43,080、 5/17 V15-audit-4 真値) ※ 旧 +13,530 / +63,530 / +5,240 / +55,240 は drift
 - 取り返し禁止 (損切り後 翌日へ持ち越さない)
 - 投票上限 ¥2,100/日 (案 B 改 strict)
 
@@ -594,7 +596,7 @@ C:\Users\takum\keiba-ai\
 
 - 本 master doc は 3 並行 agent (A_features_full / B_market_research / C_persona_swot) + 親統合
 - 全数値は出典付き、 「期待」「推定」 値は明示、 「業界最高」 「最強」 表現 排除
-- ★ critical 発見 ★: ROI 乖離 (CLAUDE.md 119.2% vs cumulative 93.23%) は honest 報告
+- ★ critical 発見 ★: ROI 真値統一 (旧 CLAUDE.md 119.2% / +13,530 は drift、 5/17 V15-audit-4 真値 98.34% / PnL ¥-6,920 / n=596) — docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md
 - ★ V15 plateau ★: V22 / V20+ 8 試行全 fail を honest 受容、 V21 動画 (frontier) が唯一 path
 - ★ 30 日 priority 3 件 ★: 京都/中京 再除外 + calibrator v2 採用 + V21 動画 5/31+
 

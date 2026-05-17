@@ -43,8 +43,8 @@
 
 | 項目 | before | after |
 |------|--------|-------|
-| Model | V15 (150 features) | **V20** (320K records 学習、 4-model ensemble) |
-| AUC | 0.8939 | **0.900-0.905 想定** |
+| Model | V15 (★ LGB+XGB 2-model production、 booster 145 features ★、 V15-audit-1) | **V20** (320K records 学習、 4-model ensemble 想定) |
+| AUC | stored .pkl.auc 0.8939 (LGB train-set in-sample LEAKY) / genuine WF 0.8678 (LGB+XGB) / Grid 4-model 5-fold 0.8858 — V15-audit-2 | **0.900-0.905 想定** |
 | 動画 features | なし | **JRA-VAN RV (5/15 trial→) 統合** |
 | 投票判断 | 戦略⑦ + 案B改 (人手 rule) | **AI score base** (model 直接出力) |
 | 買い目選定 | rule 7 点 fix | **AI 提案 + 上限 rule** |
@@ -109,7 +109,7 @@
 - V20 (7/1) も V15 並行 1 ヶ月後 archive 判定
 - V22 RL は paper trading 1 ヶ月 → GO 判定後 production
 - ★ 累計 -50,000円 撤退ライン 厳守 ★
-- 現状 累計 **+5,240円** (撤退余裕 **+55,240円**) ※ 旧 +13,530 / +63,530 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
+- 現状 累計 **¥-6,920** (撤退余裕 **¥43,080**、 5/17 V15-audit-4 真値) ※ 旧 +13,530 / +63,530 / +5,240 / +55,240 は drift、 5/16 P0-1 → 5/17 V15-audit-4 で 真値確定 (docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md)
 
 ## 月額 cost 想定 (12/1+)
 

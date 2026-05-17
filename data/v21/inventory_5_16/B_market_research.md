@@ -2,7 +2,7 @@
 
 **作成日**: 2026-05-16
 **調査方法**: WebSearch (Anthropic web search) + WebFetch
-**当 system 基準**: V15 本番 (AUC 0.8939, ROI **101.33%** 戦略⑦ applied 96.90% / ≤5/10) ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md)
+**当 system 基準 (5/17 V15-audit 真値)**: V15 本番 (★ **LGB+XGB 2-model**、 booster 145 features ★、 stored `.pkl.auc` 0.8939 = LGB train-set self-eval (in-sample LEAKY)、 **genuine WF 0.8678** (LGB+XGB) / Grid 4-model 5-fold 0.8858)、 累計 ROI **98.34%** / PnL **¥-6,920** / n=596 (5/17 V15-audit-4、 CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし) ※ 旧 119.2% / 140%+ / 101.33% は drift、 5/16 P0-1 → 5/17 V15-audit-4 で 真値確定
 **honest 原則**: 確認できない情報は "unknown" / "未確認"。 推測は "est." 表記。 「業界最強」 は使わない。
 
 ---
@@ -50,8 +50,8 @@
 
 ## 2. 当 system gap 分析 (★ 足りない機能 list ★)
 
-### 当 system 現状機能 (再掲)
-- 4-model ensemble (LGB+XGB+FT+IR)、 150 features、 AUC 0.8939
+### 当 system 現状機能 (再掲、 5/17 V15-audit 真値)
+- ★ **LGB+XGB 2-model production** ★ (v15_master の 4-model Grid (LGB+XGB+FT+IR) は WF 評価専用、 production .pkl は LGB+XGB のみ — V15-audit-1)、 ★ **booster 145 features** ★ (Pattern B list 150 だが truncate)、 genuine WF AUC **0.8678** (LGB+XGB) / Grid 5-fold mean 0.8858 — V15-audit-2
 - 6 条件分類、 三連複 7点 / 馬連 2点 自動生成
 - 朝 daily_predict + 5 分前 race_auto_notify
 - **Discord** 通知のみ
@@ -188,7 +188,7 @@
 
 ### 当 system の strength (競合比)
 - ★ **動画 AI 解析 (V21)**: 業界 全体 未提供、 競合 不在 ★
-- ★ **4-model ensemble + 150 features**: 個人運用としては 高度、 SPAIA 18 model と比肩 ★
+- ★ **LGB+XGB 2-model production (V15)、 booster 145 features**: 個人運用としては 高度、 SPAIA 18 model と比肩 ★ (v15_master の 4-model Grid (FT+IR 込み) は WF 評価専用、 production .pkl は LGB+XGB のみ — V15-audit-1。 v15_full で FT+IR 有効化 +0.018 AUC が次の improvement path)
 - ★ **netkeiba プレミアム + JRDB + TARGET JV + JRA-VAN 統合**: data source は業界平均 以上 ★
 - 戦略⑦ で 損失 source 除外 → 旧記述「実 ROI 140% 想定」 は drift、 真値は 戦略⑦ applied 96.90% (n=466、 ≤5/10)。 競合 公開数値 (ATHENA 単勝回収率 80% / VUMA ワイド 40% 等) との比較 は 真値 baseline で再評価必要
 

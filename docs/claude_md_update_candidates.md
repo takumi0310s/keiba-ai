@@ -4,10 +4,10 @@
 **対象**: `C:\Users\takum\keiba-ai\CLAUDE.md` (1325 行)
 **実施タイミング**: **Phase 3 移行 (5/24+) で正式更新**、本書は事前棚卸し
 
-> ★★ 5/16 evening P0-1 update (Sub-task 9): 本 doc 中の **119.2% / 140.3% / 月利 2-3 万円** 等は drift。
-> 真値 (n=563、 ≤2026-05-16): **ROI 101.33% / PnL +¥5,240 / 撤退余裕 +¥55,240**。
-> 戦略⑦ applied (≤5/10、 n=466): ROI 96.90% / PnL -¥10,120。
-> 詳細: docs/ROI_DISCREPANCY_2026_05_16.md。 ★★
+> ★★ 5/17 V15-audit final resolution (Sub-task D): 本 doc 中の **119.2% / 140.3% / 月利 2-3 万円 / 0.8939 / 4-model / 150 features** 等は全て drift。
+> 真値 (n=596、 ≤2026-05-17、 V15-audit-4): **ROI 98.34% / PnL ¥-6,920 / 撤退余裕 ¥43,080** / CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし。
+> V15 真値 (V15-audit-1/2/3): architecture = LGB+XGB 2-model production、 booster 145 features、 genuine WF AUC 0.8678 (LGB+XGB) / 0.8858 (Grid 4-model 5-fold)、 stored .pkl.auc 0.8939 は LGB train-set self-eval (in-sample LEAKY)。
+> 詳細: docs/V15_AUDIT_1〜5_2026_05_17.md / docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md。 ★★
 
 ---
 

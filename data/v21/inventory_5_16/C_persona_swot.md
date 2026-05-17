@@ -6,12 +6,14 @@ date: 2026-05-16
 
 ★ honest report ★ — 「業界最高」「最強」 等の 誇大表現 排除、 全 数値は出典付き。
 
-★★ 5/16 evening P0-1 真値 update (Sub-task 9) ★★
-- 本 doc に 多数現れる **119.2% / +13,530 円 / 京都 ROI 20% / 中京 ROI 57.9% / 阪神 ROI 140.3% / 東京 ROI 120.2%** 等は 4/27-5/6 snapshot 残存 drift。
-- 真値 baseline = **ROI 101.33% / PnL +¥5,240 / n=563** (全 settled、 ≤2026-05-16)。
-- 場別 真値: 福島 140.28% / 阪神 120.22% / 中京 107.05% / 新潟 108.61% / 京都 97.97% / 中山 78.69% / 東京 63.13%。
-- 旧 「京都 20% / 中京 57.9%」 は別 subset (5/16 session_5_16_evening_summary の特定 cut)、 全 settled では 京都 97.97% / 中京 107.05% で 致命的 negative ではない。
-- 出典: docs/ROI_DISCREPANCY_2026_05_16.md §4.2、 docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md。
+★★ 5/17 V15-audit final resolution (Sub-task D) ★★
+- 本 doc に 多数現れる **119.2% / +13,530 円 / 0.8939 / 4-model / 150 features / 京都 ROI 20% / 中京 ROI 57.9% / 阪神 ROI 140.3% / 東京 ROI 120.2%** 等は 4/27-5/6 snapshot 残存 drift。
+- ★ V15 architecture 真値 (V15-audit-1): **LGB+XGB 2-model production** (mlp=None, FT/IR は .pkl 未保存、 v15_master の 4-model Grid は WF 評価専用) ★
+- ★ V15 AUC 真値 (V15-audit-2): stored `.pkl.auc` 0.8939 は **LGB train-set self-eval (in-sample LEAKY)**、 **genuine WF 6-fold mean LGB+XGB = 0.8678** / Grid 4-model 5-fold mean = 0.8858 ★
+- ★ V15 features 真値 (V15-audit-1/3): **145 booster features** (Pattern B list 150 だが truncate で 145) ★
+- ★ cumulative ROI 真値 (V15-audit-4、 5/17 G1 day 反映後): **ROI 98.34% / PnL ¥-6,920 / n=596** (全 settled、 ≤2026-05-17、 CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし) ★
+- 場別 真値 (5/16 baseline): 福島 140.28% / 阪神 120.22% / 中京 107.05% / 新潟 108.61% / 京都 97.97% / 中山 78.69% / 東京 63.13% (5/17 G1 day で 微変動、 詳細 docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md)
+- 出典: docs/V15_AUDIT_1〜5_2026_05_17.md、 docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md。
 - 以降本文中の旧値は doc 当時記述 そのままで残置 (drift 経緯 record 用途)、 真値での再評価 が必要な箇所は **§0 評価前提 table** 参照。
 
 ---
@@ -20,13 +22,17 @@ date: 2026-05-16
 
 | 項目 | 値 | 出典 |
 |------|---:|------|
-| V15 WF AUC | 0.8939 | CLAUDE.md |
-| v13.5b WF AUC | 0.8788 | CLAUDE.md (backtest 値) |
-| v13.5b backtest ROI | 428.4% | CLAUDE.md (JRA 公式 配当、 2023-2025、 10,314 R) |
-| **実運用 累計 ROI (戦略⑦前)** | **93.23%** | data/cumulative_results.csv (529 settled) |
-| **実運用 累計 profit** | **-25,070 円** ※ | data/cumulative_results.csv |
-| 戦略⑦ +pt (累計 baseline 比) | +3.67pt → 96.90% | session_5_16_evening_summary |
-| CLAUDE.md 記載 累計 +13,530 円 (★ drift ★) | 5/16 P0-1 真値 **+¥5,240** (n=563、 全 settled、 ≤2026-05-16)。 旧 +13,530 円 は 4/27-5/6 snapshot 残存値、 cumulative では再現不能 (docs/ROI_DISCREPANCY_2026_05_16.md) | MEMORY drift / docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md |
+| V15 architecture | ★ **LGB+XGB 2-model** (mlp=None, FT/IR 未保存) ★ | V15-audit-1 |
+| V15 booster features | **145** | V15-audit-1/3 |
+| V15 stored `.pkl.auc` (drift) | 0.8939 (= LGB train-set self-eval、 in-sample LEAKY) | V15-audit-2 |
+| **V15 genuine WF 6-fold LGB+XGB** | **0.8678** | V15-audit-2 |
+| V15 Grid 4-model 5-fold mean | 0.8858 | V15-audit-2 (`data/v15_master_report.json`) |
+| v13.5b WF AUC (歴史) | 0.8788 | CLAUDE.md (backtest 値、 historical reference) |
+| v13.5b backtest ROI (歴史) | 428.4% | CLAUDE.md (JRA 公式 配当、 2023-2025、 10,314 R、 historical reference) |
+| **★ 実運用 累計 ROI (5/17 V15-audit-4 真値) ★** | **98.34%** / PnL **¥-6,920** / n=596 | docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md |
+| 95% CI bootstrap (10K iter) | [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし | V15-audit-4 |
+| 撤退余裕 | **¥43,080** (撤退ライン -¥50,000 まで) | V15-audit-4 |
+| 過去 drift 値 (経緯 record) | +13,530円 / 119.2% (旧 CLAUDE.md) / 0.8939 in-sample / 4-model / 150 features | V15-audit-1〜4 で全 訂正 |
 | 京都 ROI | **97.97%** (N=69、 5/16 P0-1 真値) ※ 旧 20.0% は別 subset、 全 settled では 100% 近接 | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
 | 阪神 ROI | **120.22%** (N=126、 5/16 P0-1 真値) ※ 旧 140.3% / N=72 は drift | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
 | 東京 ROI | **63.13%** (N=72、 5/16 P0-1 真値) ※ 旧 120.2% / N=126 は drift、 真値は ★ 大幅 negative ★ | docs/ROI_DISCREPANCY_2026_05_16.md §4.2 |
@@ -38,7 +44,7 @@ date: 2026-05-16
 | schtasks 数 | 6+ (DailyPredict/Results/PremiumScrape/Watchdog/NightlySanity/RaceAutoNotify) | CLAUDE.md |
 | V22 / V20+ 改善 試行 | 8 回全 fail (V15 越え 未達) | recent commits |
 
-★ 確定 (5/16 P0-1): 「119.2% / +13,530 円」 は 4/27-5/6 snapshot 残存 drift。 真値 baseline = ROI 101.33% / PnL +¥5,240 (n=563、 全 settled、 ≤2026-05-16)。 戦略⑦ applied = 96.90% / -¥10,120 (n=466、 ≤5/10)。 docs/ROI_DISCREPANCY_2026_05_16.md。 ペルソナ評価では 真値で再評価。
+★ 確定 (5/17 V15-audit-4): 旧 「119.2% / +13,530 円 / 4-model / 0.8939 WF / 150 features」 全て drift。 真値 baseline = ROI **98.34%** / PnL **¥-6,920** / n=596 (全 settled、 ≤2026-05-17)。 95% CI [66.33%, 138.05%] 100% 含む = ★ 統計的有意 勝ち なし ★。 docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md。 ペルソナ評価では 真値で再評価。
 
 ---
 
@@ -72,10 +78,10 @@ date: 2026-05-16
 - 自動運用 schtasks 6 件 → 朝予測 / 5 分前通知 / 結果照合 全 自動 (hand-off OK)
 - 透明性: 全買い目 cumulative_results.csv に 記録 → 後追い検証 可能
 - 戦略⑦ + 案 B 改 で 個別 R 単位 micro-management 不要
-- WF AUC 0.8939 / v13.5b backtest ROI 428% など 数値根拠あり
+- genuine WF AUC 0.8678 (V15-audit-2、 LGB+XGB) / v13.5b backtest ROI 428% など 数値根拠あり (旧記述 0.8939 は in-sample LEAKY、 V15-audit-2 で 真値訂正)
 
 ### 弱み (この ペルソナにとって)
-- ★ 実運用 累計 ROI 93.23% (cumulative 生集計) と CLAUDE.md 記載 119.2% に **乖離** ★ → 中級者は気づく可能性
+- ★ 実運用 累計 ROI 98.34% (V15-audit-4 真値) / PnL ¥-6,920 / CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし ★ → 中級者は気づく可能性 (旧 CLAUDE.md 119.2% / cumulative 93.23% は何れも drift、 5/17 audit で訂正)
 - 戦略⑦ 除外 R で 「機会損失感」 (06_平場 / 京都 / 重賞 等で V15 の score を見ても 購入できない 構造)
 - カスタマイズ性 低: 投票額 700 円 hardcoded、 条件 7 種 hardcoded
 - 京都 ROI 20% の 致命的 問題が 5/16 まで 発見されなかった → 監視機構 不足
@@ -122,15 +128,15 @@ date: 2026-05-16
 ### 強み (この ペルソナにとって)
 - ★ リークフリー設計 が 経験則 + 失敗教訓 で 強化 ★ — odds_log / horse_weight / SKB / dam_top3r / sib_top3_rate hybrid (Session #38) 等、 5 件 以上の 大規模 リーク発見・除去 documented
 - ★ HONEST report 文化 ★ — V22 8 回失敗、 V20 expanding NO-GO、 V15.1 SKB LEAK を 隠蔽せず 記述
-- 4-model ensemble (LGB+XGB+FT+IR) で IR (IntraRace Attention) が 35% 貢献 — レース内 相対性 を 真に学習 (zero-sum 問題への対応)
+- v15_master の 4-model Grid ensemble (LGB+XGB+FT+IR) で IR (IntraRace Attention) が 35% 貢献 — レース内 相対性 を 真に学習 (zero-sum 問題への対応) ※ ★ production .pkl は LGB+XGB only、 FT/IR は WF 評価専用、 改善 path = v15_full で有効化 (+0.018 AUC) — V15-audit-1 ★
 - expanding window 厳守 (cumsum - current) で 静的 CSV リーク を 防止
 - WF 6-fold (2020-2025) + 年別 gap 監視 (>0.05 で 過学習 判定、 v12.1 で 実際に 不採用)
 - 4 source data 統合 (JRDB / netkeiba / TFJV / JV-Link) で 多重独立検証 可能
 
 ### 弱み (この ペルソナにとって)
-- ★ V22 / V20+ 8 試行 全 fail → V15 plateau (AUC 0.8939) ★ — saturation 仮説、 architecture breakthrough 不在
-- features 数 124 → 150 (V15) → さらなる feature engineering で AUC delta ~0 → diminishing returns
-- backtest ROI 428.4% vs 実運用 93.23% の **大幅乖離** → market impact / selection bias / live degradation の 説明不足
+- ★ V22 / V20+ 8 試行 全 fail → V15 plateau (stored .pkl.auc 0.8939 = in-sample LEAKY、 genuine WF 0.8678) ★ — saturation 仮説、 architecture breakthrough 不在 ※ 但し ★ V15 自体が FT/IR 未保存 = production は LGB+XGB のみ、 v15_full で 4-model 有効化 +0.018 AUC が次の improvement path ★ — V15-audit-2
+- features 数 124 → 145 (V15 booster) → さらなる feature engineering で AUC delta ~0 → diminishing returns ※ 旧 「150」 は Pattern B features list、 booster は 145 — V15-audit-1
+- backtest ROI 428.4% vs 実運用 98.34% (V15-audit-4 真値) の **大幅乖離** → market impact / selection bias / live degradation / 戦略・期間・オッズ取得タイミングの差 の 説明不足
 - v13.5b の Grid Search 重み が 年ごと最適化 → ★ test set leakage の可能性 ★ (年毎 grid は WF spirit に違反する 場合あり)
 - code 品質: predict_core.py に FutureWarning 15+ (CLAUDE.md 既知)、 cumulative_results.csv に top1_num/score 95% 欠損 (既知 bug)
 - calibrator v1 が 21 sample で over-fit (orig Brier 0.19 → v2 0.24 で 真値発覚) → ★ 統計的厳密性 軽視 ★ の前例
@@ -181,10 +187,10 @@ date: 2026-05-16
 
 | # | 強み | evidence |
 |---|------|------|
-| S1 | WF AUC 0.8939 (V15) | CLAUDE.md |
-| S2 | v13.5b backtest ROI 428.4% (JRA 公式 配当) | CLAUDE.md |
+| S1 | genuine WF 6-fold mean LGB+XGB **0.8678** / Grid 4-model 5-fold mean 0.8858 (V15) ※ 旧 0.8939 は LGB train-set self-eval (in-sample LEAKY) | V15-audit-2 |
+| S2 | v13.5b backtest ROI 428.4% (JRA 公式 配当、 歴史 reference) | CLAUDE.md |
 | S3 | リークフリー設計 — LEAK_FEATURES 18 件明示 | CLAUDE.md 8 章 |
-| S4 | 4-model ensemble (LGB+XGB+FT+IR、 IR 35% 貢献) | CLAUDE.md |
+| S4 | v15_master の 4-model Grid (LGB+XGB+FT+IR、 IR 35% 貢献) — ただし WF 評価専用、 production .pkl は **LGB+XGB 2-model only** (mlp=None、 FT/IR 未保存) | V15-audit-1 |
 | S5 | 6+ schtasks 自動運用 | CLAUDE.md 定期タスク |
 | S6 | Discord リアルタイム通知 3 channel | CLAUDE.md |
 | S7 | HONEST report 文化 (V22 8 fail / SKB LEAK / dam_top3r 等 fabrication 防止) | CLAUDE.md 失敗教訓 |
@@ -198,7 +204,7 @@ date: 2026-05-16
 
 | # | 弱み | evidence |
 |---|------|------|
-| W1 | 実運用 累計 ROI 93.23% (cumulative 529 settled) vs CLAUDE.md 119.2% の **乖離** | data/cumulative_results.csv 実測 |
+| W1 | 実運用 累計 ROI **98.34%** / PnL **¥-6,920** / n=596 (5/17 V15-audit-4 真値、 全 settled) / CI [66.33%, 138.05%] 100% 含む = ★ 統計的有意 勝ち なし ★ | data/cumulative_results.csv 実測 (旧 119.2% / 93.23% は何れも drift) |
 | W2 | 京都 ROI 20.0% (N=58、 致命的) | session_5_16_evening_summary |
 | W3 | 中京 ROI 57.9% (N=60) | 同上 |
 | W4 | 中山 ROI 78.7% (N=125) | 同上 |
@@ -250,7 +256,7 @@ date: 2026-05-16
 | SO1 | 自動運用 (S5+S10) + 完全自動化 plan (O5) → 0-touch 運用 maintain | S5 × O5 |
 | SO2 | HONEST report (S7) + LLM 統合 (O6) → 説明性で 差別化、 初心者 ペルソナ 評価 +1★ | S7 × O6 |
 | SO3 | リークフリー (S3) + 重賞 model (O2) → 戦略⑦除外 R 復帰、 プロ ペルソナ 評価 +1★ | S3 × O2 |
-| SO4 ★NEW★ | 4-model ensemble (S4) + JRDB TYB breakthrough (O9) → V15+TYB stacking で plateau 突破 path | S4 × O9 |
+| SO4 ★NEW★ | v15_full で 4-model Grid 有効化 (FT+IR) + JRDB TYB breakthrough (O9) → V15+TYB stacking + FT/IR で plateau 突破 path (+0.018 AUC 想定、 production .pkl は現状 LGB+XGB のみ — V15-audit-1) | S4 × O9 |
 | SO5 | JV-Link unlock (S12) + JV-Link prod (O4) → bug 復旧 path 確保 | S12 × O4 |
 
 ### W-O (弱み × 機会、 改善戦略)
@@ -289,7 +295,7 @@ date: 2026-05-16
 | ペルソナ | 最優先改善 | 理由 |
 |---------|----------|------|
 | 1. 初心者 | ★ 月予算入力 → 自動 R 数調整 + 「なぜ」 1 行説明 (LLM) ★ | 月 1 万円 vs 必要 21,000 円の 予算 mismatch 致命的、 SO2 で 解決 |
-| 2. 中級者 | ★ ROI 集計の 統一 (cumulative 93.23% vs CLAUDE 119.2% 乖離 解消) + 月次 Discord ROI summary ★ | 透明性 = 中級者の信頼の源、 W1 解消 |
+| 2. 中級者 | ★ ROI 真値統一済 (98.34% / PnL ¥-6,920、 5/17 V15-audit-4) + 月次 Discord ROI summary ★ | 旧 119.2% / 93.23% 乖離は V15-audit-4 で 真値統一済、 残課題は 月次 Discord summary (W1 解消の継続課題) |
 | 3. プロ | ★ 重賞専門 model + 三連単拡張 + 投票額 Kelly criterion ★ | scaling + 戦略⑦除外 R 復帰、 W5+W11+W14 解消、 SO3 |
 | 4. データサイエンティスト | ★ Grid Search 重み CV 固定 + backtest vs live ROI 乖離 formal analysis ★ | v13.5b の test leak 疑い解消、 W1 への 科学的説明、 STat 厳密性 確保 |
 | 5. 完全自動運用 志望 | ★ 自動 model drift 検出 + 月次 alert (course/条件別 ROI < 80% で Discord) ★ | 京都 ROI 20% を 自動発見できなかった (5/16 まで 1 ヶ月超 放置) の再発防止、 WO1+WO2 |
@@ -312,11 +318,11 @@ date: 2026-05-16
 ### 強みの本質 3 件
 1. ★ リークフリー + HONEST report 文化 ★ (S3 + S7) — 競合 と 差別化 する 最大の moat
 2. 自動運用 6+ schtasks + watchdog (S5 + S10) — 0-touch 運用 の 基盤
-3. 4-model ensemble + IR 35% 貢献 (S4) — レース内 相対性 を 捕捉する 設計
+3. v15_master の 4-model Grid + IR 35% 貢献 (S4) — レース内 相対性 を 捕捉する 設計、 ただし ★ production .pkl は LGB+XGB only ★、 v15_full で FT/IR 有効化 +0.018 AUC が next improvement path (V15-audit-1)
 
 ### 弱みの本質 3 件
 1. ★ V15 plateau (V22 8 fail) ★ (W8) — 中期 5 年 持続性 への 最大 threat
-2. ★ 京都 ROI 20% / backtest vs live 乖離 (428% vs 93%) ★ (W1 + W2) — 数値 信頼性 への 直撃
+2. ★ 京都 ROI 20% (旧 subset cut、 全 settled で 97.97%) / backtest vs live 乖離 (428% vs 98.34%、 真値) ★ (W1 + W2) — 数値 信頼性 への 直撃、 5/17 V15-audit-4 で真値統一済
 3. 戦略⑦ 除外 R の機会損失 + 重賞 model 不在 (W5 + W14) — プロ pathway 阻害
 
 ### 次の 30 日 (5/16-6/15) 最優先 アクション 3 件 (★ 動画撤回 + TYB 反映 ★)
@@ -340,5 +346,5 @@ date: 2026-05-16
 
 注 1: 「業界最高」「最強」 表現 排除済。
 注 2: 数値 全 出典付き、 想定 / assumption は明示。
-注 3: 119.2% vs 93.23% の 乖離 は CLAUDE.md と 実測値 の 差異 を そのまま記述 (推定 解釈 並記)。
+注 3: 旧 119.2% / 93.23% / 101.33% 乖離 は 5/17 V15-audit-4 で 真値 98.34% / PnL ¥-6,920 / n=596 に統一済 (docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md)。 architecture / WF AUC / features count / formation record も V15-audit-1〜5 / data-audit-1〜4 で 訂正済 (docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md)。
 

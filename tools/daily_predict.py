@@ -93,6 +93,81 @@ def _append_prediction_to_csv(row, date_str):
             pass
 
 
+def _v2_log_phase1_safe(row, race_info, date_str, odds_dict=None, sorted_df=None):
+    """race_notify_log v2 phase 1 (morning_predict) safe wrapper。
+
+    ★ 既存 daily_predict logic 完全不変、 log 出力 file IO のみ ★
+
+    log fail / import fail で例外を投げない (daily_predict 続行)。
+    """
+    try:
+        # tools/ を sys.path に追加して import 可能化
+        _tools_dir = os.path.dirname(os.path.abspath(__file__))
+        if _tools_dir not in sys.path:
+            sys.path.insert(0, _tools_dir)
+        from race_notify_log_v2 import log_phase1 as _v2_log_phase1
+
+        race_id = row.get('race_id')
+
+        race_meta = {
+            'race_name': row.get('race_name', ''),
+            'course': row.get('course', ''),
+            'race_num': row.get('race_num', 0),
+            'distance': row.get('distance', 0),
+            'surface': row.get('surface', ''),
+            'track_condition': row.get('track_condition', ''),
+            'num_horses': row.get('num_horses', 0),
+            'condition': row.get('condition', ''),
+            'bet_type': row.get('bet_type', ''),
+            'investment': row.get('investment', 0),
+        }
+
+        # top1-5 ranking
+        ranking_top5 = []
+        try:
+            if sorted_df is not None and len(sorted_df) > 0:
+                for i in range(min(5, len(sorted_df))):
+                    r = sorted_df.iloc[i]
+                    ranking_top5.append({
+                        'rank': i + 1,
+                        'umaban': int(r.get('馬番', 0)),
+                        'name': str(r.get('馬名', '')),
+                        'score': float(r.get('スコア', 0)),
+                    })
+        except Exception:
+            # fallback to top1-3 from row
+            for k in ('top1', 'top2', 'top3'):
+                num = row.get(f'{k}_num', 0)
+                name = row.get(f'{k}_name', '')
+                if num:
+                    ranking_top5.append({'rank': int(k[-1]), 'umaban': int(num), 'name': str(name)})
+
+        formation_planned = row.get('trio_bets', '')
+
+        # morning_odds (sorted_df から取得試行)
+        morning_odds = odds_dict or {}
+        if not morning_odds and sorted_df is not None:
+            try:
+                for _, r in sorted_df.iterrows():
+                    odds_val = r.get('odds', r.get('オッズ', 0))
+                    uma = int(r.get('馬番', 0))
+                    if uma and odds_val:
+                        morning_odds[uma] = float(odds_val)
+            except Exception:
+                pass
+
+        _v2_log_phase1(
+            race_id=race_id,
+            race_meta=race_meta,
+            ranking_top5=ranking_top5,
+            formation_planned=formation_planned,
+            morning_odds=morning_odds,
+            date_str=date_str,
+        )
+    except Exception as _e:
+        print(f"[race_notify_log_v2 phase1 wrapper fail] {_e}", file=sys.stderr)
+
+
 # ===== シグナルハンドラ（Ctrl+C / CLOSE 時の緊急停止） =====
 
 _SHUTDOWN_STATE = {'requested': False, 'date': None}
@@ -429,6 +504,13 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                     _append_prediction_to_csv(row, date_str)
                 except Exception as _e:
                     print(f"  [WARN] 逐次CSV書込失敗: {_e}")
+
+            # race_notify_log v2 phase 1 (★ 既存 logic 完全不変、 log 出力のみ ★)
+            try:
+                _v2_log_phase1_safe(row, race_info, date_str, odds_dict=None,
+                                     sorted_df=sorted_df)
+            except Exception:
+                pass
 
             # コンソール出力
             print(f"  条件: {cond_key} ({cond_profile['desc']})")

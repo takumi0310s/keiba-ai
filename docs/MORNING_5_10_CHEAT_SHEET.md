@@ -97,7 +97,7 @@ schtasks /Query /FO LIST | Select-String "DailyPredict|MorningWeightCheck|SaveAl
 - 累計 -10,000 円 → yellow alert (Discord 通知)
 - 累計 -50,000 円 → ★ halt ★ (即時 全停止)
 
-現状 (5/9 朝): **+13,530 円** / 撤退余裕 **+63,530 円** ※ 当時 record、 5/16 P0-1 真値 +¥5,240 / 撤退余裕 +¥55,240 (docs/ROI_DISCREPANCY_2026_05_16.md)
+現状 (5/9 朝): **+13,530 円** / 撤退余裕 **+63,530 円** ※ 当時 record、 5/16 P0-1 → 5/17 V15-audit-4 真値: **¥-6,920** / 撤退余裕 **¥43,080** (docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md)
 
 ## 困った時の参照
 
@@ -111,7 +111,7 @@ schtasks /Query /FO LIST | Select-String "DailyPredict|MorningWeightCheck|SaveAl
 
 ## 全体 status (5/9 21:00 時点)
 
-- ✅ V15 production: 健全 (AUC 0.8939)
+- ✅ V15 production: 健全 (AUC 0.8939) ※ ★ 5/17 V15-audit-2 で 真値訂正: stored .pkl.auc 0.8939 は LGB train-set self-eval (in-sample LEAKY)、 genuine WF LGB+XGB 0.8678 / Grid 4-model 5-fold 0.8858 (docs/V15_AUDIT_2_WF_AUC_2026_05_17.md) ★
 - ✅ schtasks 50 件: 健全 (Session #77 で silent_runner.vbs 修正済)
 - ✅ Stage 2 通知: 5/16 復活予定 (dev/two-stage merge plan あり)
 - ✅ 全馬 score: 5/10 から 自動収集

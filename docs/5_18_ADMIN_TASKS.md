@@ -1,6 +1,6 @@
 # 5/18 朝 admin 作業手順 (★ 寝起き 1 doc ★)
 
-> **目的**: 5/18 朝に admin 権限で schtask 4 件 (計 8 task) を 1 回で登録する。
+> **目的**: 5/18 朝に admin 権限で schtask 5 件 (計 9 task) を 1 回で登録する。
 > **対象**: takumi 本人、 Windows PowerShell (管理者として実行) で実施。
 > **所要**: 5-10 分 (登録 1-2 分 + 動作確認 3-5 分)。
 > **絶対不変**: V15 / predict_core / 既存 schtasks。 admin 操作は本 doc の手順 のみ。
@@ -34,7 +34,7 @@
 
 ---
 
-## 1. 登録対象 schtask (4 件 / 計 8 task)
+## 1. 登録対象 schtask (5 件 / 計 9 task)
 
 | # | schtask 名 | timing | bat | priority | admin |
 |---|-----------|--------|-----|----------|-------|
@@ -42,8 +42,9 @@
 | 2 | Keiba-FeaturesIntegrityCheck | DAILY 22:00 | `tools/register_features_integrity_schtask.bat` | 中 | 必須 |
 | 3 | Keiba-AnomalyCheck-* (5 件) | DAILY 06:30 / 08:30 / 09:40 / 14:10 / 17:00 | `tools/register_anomaly_detector_schtask.bat` | 高 | 必須 |
 | 4 | Keiba-DailyCumulativeAudit | DAILY 21:00 | `tools/register_daily_cumulative_audit_schtask.bat` | 中 | 必須 |
+| 5 | Keiba-RaceNotifyLogV2-Aggregator | DAILY 20:30 | `tools/register_race_notify_log_v2_aggregator_schtask.bat` | 中 | 必須 |
 
-**bat 実在確認 (5/17 完了)**: 4 ファイル全て tools/ 配下に存在確認済。
+**bat 実在確認 (5/17 完了)**: 5 ファイル全て tools/ 配下に存在確認済。
 
 ---
 
@@ -115,6 +116,23 @@
 ★ 既存 conflict: なし (DailyResultsEvening 20:00 完了の 1h 後)。
 ★ logs/daily_cumulative_audit.log に出力。
 
+### 2-5. Keiba-RaceNotifyLogV2-Aggregator (★ Sub-task C で追加 ★)
+
+| 項目 | 値 |
+|------|----|
+| schtask 名 | `Keiba-RaceNotifyLogV2-Aggregator` |
+| timing | DAILY 20:30 |
+| 実行 cmd | `python tools/race_notify_log_v2_aggregator.py >> logs/race_notify_log_v2_aggregator.log 2>&1` |
+| run level | HIGHEST (admin) |
+| 初回 fire | 5/18 (SUN) 20:30 |
+| 動作確認 | `schtasks /Query /TN "Keiba-RaceNotifyLogV2-Aggregator"` |
+| rollback | `schtasks /Delete /TN "Keiba-RaceNotifyLogV2-Aggregator" /F` |
+
+★ 既存 conflict: なし (DailyResultsEvening 20:00 完了の 30 分後、 CumulativeAudit 21:00 の 30 分前)。
+★ 3 phase log (phase1 朝予定 + phase2 投票時 confirmation + phase3 実 result) を集計。
+★ 真の race-time formation ROI を 5/18+ から永続記録 (cumulative trio_bets_str ≠ race-time)。
+★ 詳細: `docs/RACE_NOTIFY_LOG_V2_GUIDE.md`
+
 ---
 
 ## 3. 登録手順 (step-by-step)
@@ -141,6 +159,9 @@ cd C:\Users\takum\keiba-ai
 
 # 2-4. CumulativeAudit
 .\tools\register_daily_cumulative_audit_schtask.bat
+
+# 2-5. RaceNotifyLogV2-Aggregator (★ Sub-task C ★)
+.\tools\register_race_notify_log_v2_aggregator_schtask.bat
 ```
 
 ★ 各 bat の戻り値を必ず確認。 ERROR が出たら 次に進まず Section 8 rollback へ。
@@ -151,7 +172,7 @@ cd C:\Users\takum\keiba-ai
 schtasks /Query /FO LIST | findstr "Keiba"
 ```
 
-期待 output: 既存 (DailyJrdbKyi/DailyPredict/MorningWeightCheck/DailyResultsEvening/NightlySanity etc.) + 新規 8 件 (LiveOrchestrator/FeaturesIntegrity/AnomalyCheck×5/CumulativeAudit) = 計 13+件。
+期待 output: 既存 (DailyJrdbKyi/DailyPredict/MorningWeightCheck/DailyResultsEvening/NightlySanity etc.) + 新規 9 件 (LiveOrchestrator/FeaturesIntegrity/AnomalyCheck×5/CumulativeAudit/RaceNotifyLogV2-Aggregator) = 計 14+件。
 
 各 task の Next Run Time も確認:
 ```powershell
@@ -159,6 +180,7 @@ schtasks /Query /TN "Keiba-LiveOrchestrator-15min" /V /FO LIST | findstr "Next"
 schtasks /Query /TN "Keiba-FeaturesIntegrityCheck" /V /FO LIST | findstr "Next"
 schtasks /Query /TN "Keiba-AnomalyCheck-0630" /V /FO LIST | findstr "Next"
 schtasks /Query /TN "Keiba-DailyCumulativeAudit" /V /FO LIST | findstr "Next"
+schtasks /Query /TN "Keiba-RaceNotifyLogV2-Aggregator" /V /FO LIST | findstr "Next"
 ```
 
 ### Step 4: Discord 手動通知
@@ -170,6 +192,7 @@ schtasks /Query /TN "Keiba-DailyCumulativeAudit" /V /FO LIST | findstr "Next"
 - Keiba-FeaturesIntegrityCheck (DAILY 22:00)
 - Keiba-AnomalyCheck-* (DAILY 06:30/08:30/09:40/14:10/17:00)
 - Keiba-DailyCumulativeAudit (DAILY 21:00)
+- Keiba-RaceNotifyLogV2-Aggregator (DAILY 20:30)
 初回 fire: 本日 08:30 LiveOrchestrator
 ```
 
@@ -192,6 +215,7 @@ schtasks /Query /TN "Keiba-DailyCumulativeAudit" /V /FO LIST | findstr "Next"
 | **17:00** | **★ AnomalyCheck-1700 (新規) ★** | 開催後集計 |
 | 18:00 | DailyResults (SAT/SUN) | 既存 |
 | 20:00 | DailyResults / DailyResultsEvening | 既存 |
+| **20:30** | **★ RaceNotifyLogV2-Aggregator (新規) ★** | 3 phase log 集計 |
 | **21:00** | **★ CumulativeAudit (新規) ★** | DailyResults 完了後 |
 | **22:00** | **★ FeaturesIntegrity (新規) ★** | 当日 cache update 後 |
 | 23:00 | Keiba-NightlySanity | 既存 |
@@ -279,6 +303,7 @@ schtasks /Delete /TN "Keiba-AnomalyCheck-0940" /F
 schtasks /Delete /TN "Keiba-AnomalyCheck-1410" /F
 schtasks /Delete /TN "Keiba-AnomalyCheck-1700" /F
 schtasks /Delete /TN "Keiba-DailyCumulativeAudit" /F
+schtasks /Delete /TN "Keiba-RaceNotifyLogV2-Aggregator" /F
 ```
 
 ### 単一 task のみ解除
@@ -297,7 +322,7 @@ Glob "tools/unregister_*_schtask.bat"
 
 ## 9. 動作確認 checklist (5/18 admin 実行後)
 
-- [ ] `schtasks /Query | findstr Keiba` で 新規 8 件登録確認
+- [ ] `schtasks /Query | findstr Keiba` で 新規 9 件登録確認
 - [ ] 各 schtask の Next Run Time が期待 timing
 - [ ] `logs/` directory が書き込み可能
 - [ ] Discord webhook 環境変数 (`DISCORD_WEBHOOK_UPDATES`) 設定確認
@@ -306,6 +331,7 @@ Glob "tools/unregister_*_schtask.bat"
 - [ ] 5/18 08:30 LiveOrchestrator 初回 fire の log 確認 (★ 登録直後 ★)
 - [ ] 5/18 21:00 CumulativeAudit 初回 fire の log 確認 (★ 当日夜 ★)
 - [ ] 5/18 22:00 FeaturesIntegrity 初回 fire の log 確認 (★ 当日夜 ★)
+- [ ] 5/18 20:30 RaceNotifyLogV2-Aggregator 初回 fire の log 確認 (★ 当日夜 ★)
 
 ---
 
@@ -330,12 +356,16 @@ Glob "tools/unregister_*_schtask.bat"
 | `tools/anomaly_auto_detector.bat` | AnomalyCheck 本体 (schtask 起動先) |
 | `tools/daily_cumulative_audit.bat` | CumulativeAudit 本体 (schtask 起動先) |
 | `tools/features_integrity_monitor.py` | FeaturesIntegrity 本体 (python) |
+| `tools/register_race_notify_log_v2_aggregator_schtask.bat` | RaceNotifyLogV2-Aggregator 登録 |
+| `tools/race_notify_log_v2_aggregator.py` | RaceNotifyLogV2-Aggregator 本体 (python) |
+| `tools/race_notify_log_v2.py` | 3 phase logger module |
+| `docs/RACE_NOTIFY_LOG_V2_GUIDE.md` | race_notify_log v2 設計 doc |
 
 ## 付録 B: 1 行 動作確認 cmd 集
 
 ```powershell
-# 新規 8 件 一括確認
-schtasks /Query /FO LIST | findstr "Keiba-LiveOrchestrator Keiba-FeaturesIntegrity Keiba-AnomalyCheck Keiba-DailyCumulativeAudit"
+# 新規 9 件 一括確認
+schtasks /Query /FO LIST | findstr "Keiba-LiveOrchestrator Keiba-FeaturesIntegrity Keiba-AnomalyCheck Keiba-DailyCumulativeAudit Keiba-RaceNotifyLogV2"
 
 # Next Run Time 確認
 schtasks /Query /FO LIST /V | findstr /C:"TaskName" /C:"Next Run Time" | findstr /B "TaskName" /A:"Next Run"

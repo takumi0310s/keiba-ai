@@ -6,7 +6,7 @@
 
 | モデル | Status | WF AUC | 実配当ROI | 投入日 | 備考 |
 |--------|--------|--------|----------|--------|------|
-| **V15** | production | 0.8939 | **101.33%** (戦略⑦ applied 96.90% / ≤5/10) | 4/1 | 4-ensemble (LGB+XGB+FT+IR), 150 features, 本番継続中 ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md) |
+| **V15** | production | stored `.pkl.auc` 0.8939 = LGB train-set self-eval (in-sample LEAKY) / **genuine WF 0.8678** (LGB+XGB) / Grid 4-model 5-fold 0.8858 — V15-audit-2 | **98.34%** (cumulative 真値、 n=596、 5/17 V15-audit-4、 CI [66.33%, 138.05%] 100% 含む) | 4/1 | ★ **LGB+XGB 2-model production** ★ (mlp=None, FT/IR は .pkl 未保存、 WF 評価専用) — V15-audit-1、 **145 features (booster)** ※ 旧 「4-ensemble / 150 features / 119.2% / 140%+」 は全て drift、 5/16 P0-1 → 5/17 V15-audit で 真値確定 |
 | V15.1 | NO-GO | 0.8943 | — | — | SKB post-race leak 確定 (skb_kishi_code_3 +480bp) |
 | V18/V19 | NO-GO | 0.886-0.887 | -10pt LIVE | — | sib抜き hybrid, 5/16 投入 NO-GO確定 |
 | V20 | PoC開発中 | 0.8752 (PoC) | unknown | 6/8→6/30 投入 検討 | NAR+JRA, 320 features, TFJV + JRDB統合 |
@@ -19,7 +19,7 @@
 
 | Component | 役割 | 更新頻度 | 出力 |
 |-----------|------|--------|------|
-| `tools/predict_core.py` | V15 core inference (150 features) | オンデマンド | `df['final_score']` (1着確率) |
+| `tools/predict_core.py` | V15 core inference (Pattern B features list 150 だが booster 145、 LGB+XGB 2-model) | オンデマンド | `df['final_score']` (1着確率) |
 | `tools/daily_predict.py` | 全日朝 6:30 自動予測 | 毎営業日 | `data/daily_predictions/{YYYMMDD}.csv` |
 | `tools/race_auto_notify.py` | 5分前リアルタイム + Discord | レース1時間前~ | Discord #bets / #updates |
 | `tools/daily_results.py` | 結果自動回収 + 配当確定 | 夜 20:00 | `data/daily_results/{YYYMMDD}.csv` |
@@ -94,7 +94,7 @@
 | netkeiba_siblings_expanding.csv | 531K | 2015-2025 | 血統 |
 | netkeiba_training_eval.csv | 531K | 2020-2026 | 調教評価 |
 | jrdb_*.csv (17種) | 548K each | 2020-2026 | JRDB features |
-| features_merged_all.csv | 467K | 2020-2025 | 全150 features統合 |
+| features_merged_all.csv | 467K | 2020-2025 | 全 features 統合 (V15 booster は 145、 ※ 150 は Pattern B features list、 V15-audit-1) |
 | calibration_full.csv | 315 | 2026-03-14~ | calibrator v2学習用 |
 | cumulative_results.csv | 564 | 2026-03-14~ | 投票実績 |
 | daily_predictions/*.csv | 35-40/日 | 2026-04+ | 朝予測スナップショット |
@@ -136,14 +136,14 @@
 
 | # | 強み | Evidence | 定量値 |
 |----|------|----------|--------|
-| 1 | **高精度 ensemble** | LGB + XGB + FT-Transformer + IntraRace Attention の4モデル結合 | WF AUC 0.8939 |
-| 2 | **実運用ROI** | 563 settled race の cumulative_results.csv 実測 | **101.33%** (戦略⑦ applied 96.90% / ≤5/10) ※ 旧 119.2% / 140%+ は drift、 5/16 P0-1 真値 |
+| 1 | **production model** | ★ V15 production: LGB+XGB 2-model (mlp=None, FT/IR は .pkl 未保存) ★、 v15_master の 4-model Grid は WF 評価専用 (V15-audit-1) | stored `.pkl.auc` 0.8939 (in-sample LEAKY) / **genuine WF 0.8678** (LGB+XGB) / Grid 4-model 5-fold 0.8858 — V15-audit-2 |
+| 2 | **実運用ROI** | 596 settled race の cumulative_results.csv 実測 (5/17 V15-audit-4) | **98.34%** / PnL ¥-6,920 / CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし ※ 旧 119.2% / 140%+ / 101.33% は drift、 5/16 P0-1 → 5/17 V15-audit-4 で 真値確定 |
 | 3 | **リークフリー設計 厳守** | Pattern A / Pattern B 完全分離、 post-race features 全除外 | V15 leak_removed=True確認 |
-| 4 | **複合データ統合** | JRDB (124f) + netkeiba (22f) + 気象 + オッズ等の完全融合 | 150 features確認 |
+| 4 | **複合データ統合** | JRDB (124f) + netkeiba (22f) + 気象 + オッズ等の完全融合 | ★ V15 booster 145 features ★ (Pattern B features list 150 だが truncate で 145 — V15-audit-1/3) |
 | 5 | **自動運用 完全手放し** | 7 schtasks 完全自動化、 1日0 admin touchpoint | 朝夜の手作業0 |
 | 6 | **リアルタイム通知** | レース5分前に買い目自動生成、 Discord webhook 即通知 | 毎R × 700円 |
 | 7 | **HONEST report厳守** | 全数値を生データ実測、 fabrication 0 | 3 commit (5/16 evening) 全honest確認 |
-| 8 | **投資保護 (多段階撤退)** | -50,000円絶対撤退ライン + 段階的損失管理 | 累計余裕 +63,530円確保 |
+| 8 | **投資保護 (多段階撤退)** | -50,000円絶対撤退ライン + 段階的損失管理 | 撤退余裕 **¥43,080** (累計 ¥-6,920、 5/17 V15-audit-4 真値) ※ 旧 +63,530 / +55,240 は drift |
 
 ---
 
@@ -174,7 +174,7 @@ C:\Users\takum\keiba-ai\
 ├── keiba_model_v21_central.pkl.gz         # V21 skeleton (未稼働)
 ├── keiba_model_v22_*.pkl.gz               # V22 試行版 (全NO-GO)
 ├── tools/
-│   ├── predict_core.py                    # V15 core inference (★ 150 features)
+│   ├── predict_core.py                    # V15 core inference (★ booster 145 features、 Pattern B list 150 だが truncate ★、 LGB+XGB 2-model — V15-audit-1)
 │   ├── daily_predict.py                   # 朝6:30 自動実行
 │   ├── race_auto_notify.py                # リアルタイム + Discord
 │   ├── daily_results.py                   # 結果取得
@@ -225,7 +225,7 @@ C:\Users\takum\keiba-ai\
 | # | 確認項目 | 現状 | 検査内容 |
 |----|---------|------|--------|
 | 1 | V15 本番継続 | ✅ unchanged | `git status` で predict_core.py / daily_predict.py / .pkl.gz 全不変 |
-| 2 | 累計損益 | **+5,240円** (n=563) | `tail -50 cumulative_results.csv` で最終行 status=settled確認 ※ 旧 +13,530 円 は drift、 5/16 P0-1 真値 (docs/ROI_DISCREPANCY_2026_05_16.md) |
+| 2 | 累計損益 | **¥-6,920** (n=596、 5/17 V15-audit-4 反映) | `tail -50 cumulative_results.csv` で最終行 status=settled確認 ※ 旧 +13,530 / +5,240 は drift、 5/16 P0-1 → 5/17 V15-audit-4 で 真値確定 (docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md) |
 | 3 | schtasks 登録 | 7 tasks | `tasklist /v` で7 taskが running確認 (pending race無し) |
 | 4 | Discord webhook | ✅ URL設定済 | `grep DISCORD_WEBHOOK tools/race_auto_notify.py` 確認 |
 | 5 | 5/17 G1 (ヴィクトリアM) | 読込待 | 朝6:30 `daily_predict.py` → Discord #bets 買い目 out |

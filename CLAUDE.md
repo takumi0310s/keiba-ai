@@ -3,15 +3,20 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-16 (Session #88、 ★ memory drift 一斉修正 ★)**
+Last updated: **2026-05-17 (Session #89、 ★ memory drift 5 件全訂正 final resolution ★)**
 
-> Session #88 (5/16 evening) で memory drift 発見 + 修正:
-> - **+¥13,530 / 119.2% は 4/27-5/6 snapshot 残存値**、 真値は **+¥5,240 / 101.33%** (n=563、 ≤2026-05-16、 全 settled)
-> - 出典: docs/ROI_DISCREPANCY_2026_05_16.md (P0-1 formal analysis)
-> - root cause: sync layer 不在 + CLAUDE.md 編集回避慣行 (詳細: docs/MEMORY_DRIFT_ROOT_CAUSE_2026_05_16.md)
-> - 5/16 dry session で 21+ docs 真値統一 (docs/MEMORY_DRIFT_FIX_LOG_2026_05_16.md)
-> - daily_cumulative_audit.py で再発防止 (Sub-task 10 予定)
-> - 統計的有意性なし (95% CI [66.83%, 145.36%]、 100% 含む) → 楽観 自重
+> Session #89 (5/17 evening) で memory drift 5 件 全訂正 完了 (docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md):
+> | # | item | 旧値 (drift) | 真値 (audit 出典) | resolved |
+> |---|---|---|---|---|
+> | 1 | 累計 ROI | 119.2% | **98.34%** (V15-audit-4、 5/17 G1 day 反映、 CI [66.33, 138.05] 100% 含む) | ✅ |
+> | 2 | architecture | 4-model (LGB+XGB+FT+IR) | **LGB+XGB 2-model production** (FT/IR は .pkl 未保存、 WF 評価専用) — V15-audit-1 | ✅ |
+> | 3 | WF AUC | 0.8939 | **0.8678** (LGB+XGB genuine WF) / 0.8858 (Grid 4-model 5-fold) — V15-audit-2 | ✅ |
+> | 4 | features count | 150 | **145** (booster)、 Pattern B 150 だが truncate で 145 — V15-audit-1/3 | ✅ |
+> | 5 | formation record | 記録あり | ★ **race-time formation 永久喪失** ★ — data-audit-3 | ✅ |
+>
+> Session #88 (5/16 evening) で drift 1 (ROI/PnL) 発見 + P0-1 真値確定 → 5/17 audit で 残る 4 件確定。
+> 出典 audit: V15-audit-1〜5 (docs/V15_AUDIT_*_2026_05_17.md) + data-audit-1〜4 (docs/DATA_AUDIT_*_2026_05_17.md)。
+> 統計的有意性なし (95% CI [66.33%, 138.05%]、 100% 含む) → 楽観 自重、 5/24+ paper eval で v15_full FT+IR 有効化 検証。
 >
 > Session #86 (5/9 21:00) で 完全自動化 plan + CLAUDE.md update + メモリ整理:
 > - **A**: 完全自動化 ロードマップ (5/15 80% / 9/2 90% / 12/1 100%) ([docs/FULL_AUTOMATION_ROADMAP.md](docs/FULL_AUTOMATION_ROADMAP.md))
@@ -73,16 +78,17 @@ Last updated: **2026-05-16 (Session #88、 ★ memory drift 一斉修正 ★)**
 **競馬AI予測システム（中央競馬専用）**
 
 JRA中央競馬の全レースをAIで予測し、条件別に最適な買い目を自動生成するシステム。
-LGB+XGB+FT-Transformer+IntraRace Attention 4モデルアンサンブルで複勝圏（3着以内）を予測し、6つの条件分類に基づいて三連複/馬連の買い目を推奨する。
+★ V15 production の真の architecture = **LGB+XGB 2-model** ★ (FT-Transformer / IntraRace Attention は v15_master の WF 評価専用、 `.pkl.gz` には未保存。 production inference は LGB+XGB のみ — V15-audit-1)。 6 条件分類に基づき 三連複/馬連 の買い目を自動生成。
 
 - **Streamlit**: https://keiba-ai-l2klehd4rfoupnj5g7rw8b.streamlit.app
 - **GitHub**: https://github.com/takumi0310s/keiba-ai
-- **現行モデル**: **V15** (本番、150 特徴量、AUC 0.8939、本番運用 ROI **101.33%** / 全体 563 settled、 戦略⑦込み ~99-103% 推定) ※ 旧値 119.2% は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
+- **現行モデル**: **V15** (本番、★ 145 features booster ★ / Pattern B features list 150 だが 5 件 truncate で booster 145、★ LGB+XGB 2-model ★、 stored `.pkl.auc = 0.8939` は **LGB train-set self-eval (in-sample)**、 真の genuine WF LGB+XGB = **0.8678** / Grid 4-model 5-fold = **0.8858** — V15-audit-2)
+- 本番運用 ROI: **98.34%** / **PnL ¥-6,920** / n=596 (≤2026-05-17、 全 settled、 V15-audit-4)、 bootstrap 95% CI **[66.33%, 138.05%]** 100% 含む = ★ 統計的有意 勝ち なし ★
 - 旧モデル: v13.5b は historical reference (124 特徴量、Grid Ensemble、WF AUC 0.8788)
 - 5/9 V15 案B改 単独継続 (絶対)。 5/16 V15.1 / V18/V19 共に NO-GO 確定 (Session #38)
 - Phase 3 (5/24+): sib_*_exp 修正版 + V20 学習 + JV-Link 加入 → 7/1 V20 投入候補
 - Phase 4 (7-8 月): 調教動画 AI 解析 PoC → 9/1 V21 投入候補
-- 現行 累計収支: **+5,240 円** / 撤退余裕 +55,240 円 ※ 旧値 +13,530 円 は drift、 5/16 P0-1 で真値確定 (n=563、 全 settled)
+- 現行 累計収支: **¥-6,920** / 撤退余裕 **¥43,080** (5/17 反映、 V15-audit-4) ※ 旧値 +13,530 / +5,240 は drift、 5/16 P0-1 → 5/17 audit で 真値確定
 - **2段階モデル**: Pattern A（リークフリー評価用）+ Pattern B（当日情報込み実運用）
 - **検証済み**: WF 2020-2025, 実配当ROI 428.4%, 全条件PASS
 
@@ -233,7 +239,24 @@ LGB+XGB+FT-Transformer+IntraRace Attention 4モデルアンサンブルで複勝
 - **Pattern A（評価用）**: リークフリー厳守。モデルの真の実力を評価
 - **Pattern B（実運用）**: 使える情報は全て使って最高精度で予測
 
-### Pattern A スペック（v13.5b、現行）
+### ★ V15 真値 (5/17 V15-audit-1〜5 確定) ★
+
+| 項目 | 真値 | 出典 |
+|------|------|------|
+| ensemble architecture | **LGB + XGB 2-model** (mlp=None, FT/IR は .pkl 未保存) | V15-audit-1 |
+| ensemble_weights (stored) | `{lgb: 0.5036, xgb: 0.4964, mlp: 0}` | V15-audit-1 |
+| Pattern A booster features | **145** | V15-audit-1/3 |
+| Pattern B features list | 150 (但し booster 入力後 5 件 truncate → 145) | V15-audit-1 |
+| stored `.pkl.auc` | 0.8939485520467574 ★ = LGB train-set self-eval (in-sample) ★ | V15-audit-2 |
+| stored .pkl 自己 inference 6-fold mean (2020-25) | 0.8929 | V15-audit-2 (LEAKY upper bound) |
+| **genuine WF 6-fold mean LGB+XGB** (fold ごと retrain) | **0.8678** | V15-audit-2 |
+| **genuine WF 5-fold mean LGB+XGB** (2021-25) | 0.8695 | V15-audit-2 |
+| v15_master_report.json Grid 4-model 5-fold mean | 0.8858 | V15-audit-2 |
+| RED_IMP_BUT_CONST | **0 件** | V15-audit-3 / T1 monitor |
+
+★ drift 訂正: CLAUDE.md の旧記述 「WF AUC 0.8939 / 4-model ensemble / 150 features」 は全て drift。 真値は 上表参照。 production の inference は LGB+XGB only。
+
+### Pattern A スペック（v13.5b、historical reference）
 - ファイル: `keiba_model_v135_central.pkl.gz`（LGB+XGB）+ FT/IRモデルは動的学習
 - WF AUC: **0.8788**（walk-forward 2020-2025平均, 4-model grid ensemble）
 - 特徴量: **124個**（リークフリー、JRDB連携含む）
@@ -971,20 +994,31 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 ---
 
-## 現行モデルのベースライン（これを下回る変更は一切採用しない）
+## 現行モデルのベースライン（V15 真値、 5/17 V15-audit 反映）
 
-- **WF AUC: 0.8788**（walk-forward 2020-2025平均, 4-model grid ensemble, v13.5b）
-- **年別WF AUC**: 2020=0.8515, 2021=0.8806, 2022=0.8830, 2023=0.8845, 2024=0.8853, 2025=0.8851
-- **実配当ROI**: A=355%(trio), B=347%(trio), C=623%(trio), D=361%(trio), E=196%(umaren), X=701%(trio) — **全体428.4%**
-- **全条件ROI 100%超え**（全条件v13.4以上を確認済み）
-- **旧ベースライン（v13.4 LGB+XGB）**: WF AUC 0.8656, 実配当ROI 361.9%
-- **旧ベースライン（V12 LGB単体）**: WF AUC 0.8037, 実配当ROI ~205%
+★ ★ ★ 重要: 旧 CLAUDE.md に書かれた「WF AUC 0.8788 (v13.5b)」「WF AUC 0.8939 (V15)」 は何れも production の genuine WF 値ではない (前者は v13.5b の Grid mean / 後者は LGB train-set self-eval)。 真の V15 production の genuine WF baseline は以下。 ★ ★ ★
+
+### V15 production (5/17 V15-audit-1〜5 真値)
+- ★ architecture: **LGB + XGB 2-model** (mlp=None, FT/IR は .pkl.gz 未保存) ★
+- ★ features: **145** (booster) / Pattern B 150 だが truncate で 145 ★
+- ★ **genuine WF 6-fold mean LGB+XGB = 0.8678** ★ (V15-audit-2、 fold ごと retrain)
+- ★ 5-fold mean (2021-25) LGB+XGB = 0.8695 / Grid 4-model 5-fold mean = 0.8858 ★
+- stored `.pkl.auc` = 0.8939 は LGB train-set self-eval (in-sample、 LEAKY)、 generalization 指標ではない
+- ★ 累計運用 ROI = **98.34%** / PnL **¥-6,920** / n=596 (≤2026-05-17、 V15-audit-4) ★
+- bootstrap 95% CI [66.33%, 138.05%] 100% 含む → ★ 統計的有意 勝ち なし ★
+
+### 旧ベースライン (historical reference)
+- v13.5b 4-model Grid Ensemble: WF AUC 0.8788, 実配当ROI 428.4% (歴史 reference)
+- v13.4 LGB+XGB: WF AUC 0.8656, 実配当ROI 361.9%
+- V12 LGB単体: WF AUC 0.8037, 実配当ROI ~205%
+
+注: v13.5b の「実配当ROI 428.4%」 は backtest 計算値、 V15 の cumulative 98.34% (実運用 settled) と直接比較不能 (期間 / 投票戦略 / オッズ取得タイミング 全く異なる)。
 
 ## 重要ルール
 
 1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A。実運用予測はPattern B
 2. バックテストは必ず**ウォークフォワード**（時系列分割）で実施
-3. **改善が確認できない変更は採用しない**: WF AUC > 0.8788 かつ全年AUC > 0.85 かつ 実ROI全条件v13.5b以上
+3. **改善が確認できない変更は採用しない**: V15 真値 baseline (genuine WF LGB+XGB = 0.8678 / Grid 4-model = 0.8858) を超え、 cumulative ROI (98.34%、 5/17) を有意改善 (CI [66.33%, 138.05%] を上抜け)
 4. app.pyを変更したら必ず**python構文チェック**してからcommit
 5. 大きなデータファイル(.csv)は.gitignoreで除外、ローカル保持
 6. モデル更新時はAUCが既存モデルを上回る場合のみ本番反映
@@ -1276,7 +1310,7 @@ Claude Codeのコンテキスト圧縮時に失われやすい重要情報はこ
 - `条件E` (頭数<=7) を除外: サンプル少
 - `条件B` (重~不馬場) を除外: サンプル少
 
-**期待効果 (旧 drift 記述)**: ROI 119.2% → 140.3% (+21.1pt) / 298R → 242R, 損益 +28,240円改善
+**期待効果 (旧 drift 記述)**: ROI 119.2% → 140.3% (+21.1pt) / 298R → 242R, 損益 +28,240円改善 ※ ★ 旧 119.2% 自体 drift、 5/17 V15-audit-4 真値 98.34% / PnL ¥-6,920 ★
 ※ 旧値は drift。 5/16 P0-1 真値: baseline ROI 101.33%、 戦略⑦ applied ROI 96.90% (n=466、 ≤5/10、 PnL -¥10,120)。 戦略⑦込み 100% 超え の 仮想値は cumulative 集計では 再現不能 (docs/ROI_DISCREPANCY_2026_05_16.md)
 
 ### 🎯 1レース再予測ツール (4/26 動作確認)
@@ -1294,10 +1328,10 @@ python tools/predict_one_race.py 202605020211
 - **Week 3 (5/11-5/17)**: v16 学習実行 (Ryzen 7 + 32GB + 16GB GPU で2-3時間)
 - **Week 4 (5/18-5/24)**: A/B検証 → 5/末 v16 本番投入
 
-### 🎯 v16 目標
-- **AUC**: 0.895+ (v15: 0.8939)
-- **特徴量数**: 148 (-2)
-- **ROI** (戦略⑦込み): 140%+
+### 🎯 v16 目標 (旧 plan、 V15 真値 audit 後 v15_full / v15.2 / V22 への再 frame 想定)
+- **AUC** (旧記述): 0.895+ (v15: 0.8939) ※ 真値 V15 genuine WF LGB+XGB 0.8678 / Grid 4-model 0.8858 (V15-audit-2)、 目標は 0.8678 → 0.88+ 推移
+- **特徴量数** (旧記述): 148 (-2) ※ 真 V15 booster 145、 -2 = 143 が真の意図
+- **ROI** (戦略⑦込み): 140%+ ※ V15 実 cumulative 98.34% (5/17) からの増分、 統計的有意 (CI 100% を上抜け) が必要
 - **京都ROI**: 80%+ (course_renovated 永久化効果)
 - **本番切替**: 5月末
 
@@ -1352,9 +1386,10 @@ python tools/predict_one_race.py 202605020211
 ### 投資保護 (絶対遵守)
 
 - **5/9 V15 案B改 単独継続** (Session #38 NO-GO 確定後の唯一 path)
-- **撤退ライン**: 累計 -50,000円 (現在 **+5,240 円**、 撤退余裕 **+55,240 円**) ※ 旧値 +13,530 / +63,530 は drift、 5/16 P0-1 で真値確定
+- **撤退ライン**: 累計 -50,000円 (現在 **¥-6,920**、 撤退余裕 **¥43,080**、 5/17 V15-audit-4 反映) ※ 旧値 +13,530 / +63,530 / +5,240 / +55,240 は drift、 5/16 P0-1 → 5/17 audit で 真値確定
 - **取り返し禁止** (損切り後 翌日へ持ち越さない)
 - **Phase 3-4 着手中も V15 production 完全不変保証**
+- **★ formation record drift (5/17 data-audit-3) ★**: race-time 実通知 formation は ★ 永久喪失 ★ (race_auto_notify.py が独立予測 → Discord 送信のみ、 不揮発化なし)。 cumulative_results.csv の trio_bets_str は AM 8:00 morning prediction のみ。 5/18+ race_notify_log v2 で record 開始予定 (Sub-task C)
 
 ### 月額コスト + ROI 試算
 
@@ -1368,7 +1403,7 @@ python tools/predict_one_race.py 202605020211
 | **合計** | **約 10,768円/月** (7/1 以降) | — |
 
 ROI 想定:
-- V15 (現状): **101.33%** (戦略⑦込み ~99-103% 推定) → 月利 期待値 ±¥0-3,000 (CI 含 -¥15k〜+¥20k) ※ 旧値「119.2% / 140% / 月利 2-3 万円」 は drift、 5/16 P0-1 で真値確定 (docs/ROI_DISCREPANCY_2026_05_16.md)
+- V15 (現状): **98.34%** (5/17 V15-audit-4 反映、 戦略⑦込み 96.90% 戦略適用後 subset) → 月利 期待値 統計的にゼロ近辺 (CI [66.33%, 138.05%] 100% 含む) ※ 旧値「119.2% / 140% / 月利 2-3 万円」 は drift、 5/16 P0-1 → 5/17 V15-audit-4 で 真値確定
 - V20 (7/1+): WF AUC 0.880-0.890 / 戦略⑦込み 145-150% 想定 → 月利 5-10 万円
 - V21 (9/1+): V20 + 動画 features 中位想定で 145-150% → 月利 6-11 万円
 
