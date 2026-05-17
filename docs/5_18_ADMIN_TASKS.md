@@ -7,11 +7,30 @@
 
 ---
 
-## 0. 前提 (★ 5/17 G1 day 終了後の朝 ★)
+## 0. 初回 fire timing (★ option A 推奨 ★)
+
+5/18 (SUN) 朝 06:30-07:00 admin 登録
+→ 08:30 ★ 5/18 当日 即 fire ★ (5/18 SUN 当日レース paper eval 開始)
+
+| option | 初回 fire | sample N (5/18-6/16) | 推奨 |
+|--------|----------|---------------------|------|
+| **A** (★ default ★) | **5/18 (SUN) 08:30 当日 即 fire** | **~54 R** (9 day × 6 R/day) | ★ 推奨 ★ |
+| B | 5/23 (SAT) 08:30 初回 fire (5/18 skip) | ~48 R (8 day × 6 R/day) | sample N -6R |
+
+★ 推奨: **option A** (sample N 増 → 採用判定 6/17 まで統計検定力 改善)
+
+★ option B 採用 path: schtask 登録後に `/Disable` で 5/22 まで一時停止、 5/23 (SAT) 朝に `/Enable` で再開。 詳細は `docs/5_18_OPTION_A_OR_B_DECISION.md`。
+
+★ default 動作 (本 doc Section 3 通り登録): option A (5/18 当日 fire)。
+
+---
+
+## 0-A. 前提 (★ 5/17 G1 day 終了後の朝 ★)
 
 - 5/17 (土) G1 day 終了済
 - 5/18 (日) 朝に admin schtask 登録 → 同日 08:30 から LiveOrchestrator 初回 fire
 - 5/18 (日) も開催あり → 即 paper eval 開始可能
+- ★ 5/17-5/23 は mock=True 強制 (paper test only)、 5/24 から実 fetch 開始 (夜-4-A 整合) ★
 
 ---
 
@@ -240,8 +259,10 @@ schtasks /Query /TN "Keiba-DailyCumulativeAudit" /V /FO LIST | findstr "Next"
 | 6/14 | SAT | week 5 |
 | 6/15 | SUN | week 5 |
 
-= 9 day (★ 5/18 含む ★)、 各 day ~12 R (戦略⑦案 C 適用後) = **~108 R 蓄積目標**
+= 9 day (★ 5/18 含む ★、 option A)、 各 day ~6 R (戦略⑦案 C 適用後) = **~54 R 蓄積目標**
 最低 30 R で 採用判定可能 (6/17 N3 checklist 参照)。
+
+★ option B (5/18 skip) 採用時: 8 day × 6 R = ~48 R、 sample N -6R で 検定力 軽微低下。
 
 ---
 

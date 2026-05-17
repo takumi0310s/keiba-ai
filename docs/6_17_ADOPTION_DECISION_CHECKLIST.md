@@ -63,9 +63,12 @@ P0-5 paper:
 - V15 と P0-5 を pair で resample
 - mean ROI delta の 95% CI 算出
 
-### 4-3. sample size
-- 24-32 R (週末 6 R × 4 週末 paper eval)
-- 最低 24 R で 検定実施可能、 32 R で 推奨
+### 4-3. sample size (★ option A 想定 ★)
+- 5/18 (SUN) - 6/16 (MON): 9 day weekend (5/18, 5/23, 5/24, 5/31, 6/1, 6/7, 6/8, 6/14, 6/15)
+- 6 R/day × 9 day = ~54 R (戦略⑦案 C 適用後の bet 可能 race)
+- 最低 30 R で 採用判定可能、 ~54 R で 推奨
+
+★ option B (5/18 skip) 想定: 8 day × 6 R = ~48 R、 sample N -6R / 検定力 -3% (軽微)
 
 ---
 
@@ -116,15 +119,16 @@ P0-5 paper:
 
 ## 9. ★ 統計検定力 不足 risk ★
 
-n=24-32 で Welch's t-test の検出力:
+n=~54 (option A) で Welch's t-test の検出力 想定 (★ assumption ★、 sample 想定 power 計算):
 
-| ROI delta | 標準偏差 | power |
-|-----------|---------|-------|
-| +5pt | 30pt | ~0.3 (★ 不十分 ★) |
-| +10pt | 30pt | ~0.5 |
-| +15pt | 30pt | ~0.7 |
+| ROI delta | 標準偏差 | power (n=54, option A) | power (n=48, option B) |
+|-----------|---------|----------------------|----------------------|
+| +5pt | 30pt | ~0.5 (改善) | ~0.47 |
+| +10pt | 30pt | ~0.75 | ~0.72 |
+| +15pt | 30pt | ~0.9 | ~0.87 |
 
-→ n=30 では小差検出は困難、 大差 (+10pt+) のみ確実検出。
+→ n=54 でも +1-3pt の小差検出は依然困難、 +5pt 以上で検出力 改善。
+→ option A vs B の検定力差は軽微 (~3%)、 但し sample N 増は honest な判定に寄与。
 → NO-GO 判定が出ても 「差分なし」 とは限らない (★ honest ★)、 蓄積継続推奨。
 
 ---
