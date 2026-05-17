@@ -153,11 +153,13 @@ def predict_and_notify(race_info, date_str):
         race_name, horses, horse_ids, rinfo = parse_shutuba(race_id)
         if not horses:
             print("    No horse data")
+            _p0_5_notify_log(race_id, None, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='no_horse_data')
             return
 
         # Skip obstacle races
         if rinfo.get('surface') == '障':
             print("    Skipping obstacle race")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='obstacle_race')
             return
 
         num_horses = len(horses)
@@ -166,6 +168,7 @@ def predict_and_notify(race_info, date_str):
         # Skip 1000m or less
         if distance <= 1000:
             print("    Skipping <=1000m")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='distance_le_1000')
             return
 
         # ===== 戦略⑦ フィルタ (race_name + course) =====
@@ -178,6 +181,7 @@ def predict_and_notify(race_info, date_str):
         is_open_tokubetsu = any(s in race_name_str for s in ['杯', '賞', 'ステークス', 'カップ', 'ハンデ'])
         if '特別' in race_name_str and not (is_graded or is_listed or is_open_tokubetsu):
             print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_06_tokubetsu')
             return
 
         # 2. 京都 filter (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
@@ -185,6 +189,7 @@ def predict_and_notify(race_info, date_str):
         #    G/L/OPEN特別 + Graded 重賞は除外しない (Victoria Mile 等 5/17 G1 day 影響回避)
         if course_str == '京都' and not (is_graded or is_listed):
             print(f"    [STRATEGY7] Skip 京都 (P0-2 案 C、 5/17 適用): {race_name_str}")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17')
             return
         # ===== 戦略⑦ フィルタ ここまで =====
 
@@ -271,15 +276,18 @@ def predict_and_notify(race_info, date_str):
         # ===== 戦略⑦ フィルタ続き (条件判定後) =====
         if cond_key == 'E':
             print(f"    [STRATEGY7] Skip 条件E (頭数<=7)")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
             return
         if cond_key == 'B':
             print(f"    [STRATEGY7] Skip 条件B (重~不馬場)")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_B')
             return
         # 条件 X (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
         # 単一次元 N=19 ROI 8.72% 95% CI [0.00, 26.17] 統計的に baseline 下回る
         # Graded race 重賞は除外しない (G1/G2/G3 + L = 期待値高)
         if cond_key == 'X' and not (is_graded or is_listed):
             print(f"    [STRATEGY7] Skip 条件X (P0-2 案 C、 5/17 適用)")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_X_p0_2_5_17')
             return
         # ===== 戦略⑦ フィルタ続き ここまで =====
 
@@ -343,6 +351,7 @@ def predict_and_notify(race_info, date_str):
             pp_stars=_pp_stars, pp_matched=_pp_matched)
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
+        _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
 
     except Exception as e:
         print(f"    ERROR: {e}")
@@ -351,6 +360,10 @@ def predict_and_notify(race_info, date_str):
         try:
             from notify import send_discord
             send_discord("予測エラー", f"{race_info['course']}{race_info['race_num']}R: {str(e)[:100]}", color="red")
+        except Exception:
+            pass
+        try:
+            _p0_5_notify_log(race_id, None, datetime.now().isoformat(), channel='error', strategy_7c_skip=False, strategy_7c_reason=f'exception:{str(e)[:100]}')
         except Exception:
             pass
 
@@ -513,6 +526,50 @@ def main():
         send_discord("Auto-Notify終了", f"{date_str}: 全レース完了", color="blue")
     except Exception:
         pass
+
+
+def _p0_5_notify_log(race_id, race_name, notified_at, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None):
+    """P0-5 用 通知済 race log 出力 (★ 既存 logic 完全不変、 file IO のみ ★)
+
+    出力: data/race_notify_log/YYYYMMDD.json (append)
+
+    fail 時は log エラーのみ stderr 出力、 通知 logic に影響なし。
+    """
+    try:
+        from pathlib import Path
+        import json as _json
+        from datetime import datetime as _dt
+
+        log_dir = Path(__file__).resolve().parents[1] / 'data' / 'race_notify_log'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        date_str = _dt.now().strftime('%Y%m%d')
+        log_file = log_dir / f'{date_str}.json'
+
+        if log_file.exists():
+            try:
+                with open(log_file, 'r', encoding='utf-8') as f:
+                    logs = _json.load(f)
+                if not isinstance(logs, list):
+                    logs = []
+            except Exception:
+                logs = []
+        else:
+            logs = []
+
+        logs.append({
+            'race_id': str(race_id) if race_id is not None else None,
+            'race_name': str(race_name) if race_name else None,
+            'notified_at': str(notified_at),
+            'channel': channel,
+            'strategy_7c_skip': bool(strategy_7c_skip),
+            'strategy_7c_reason': str(strategy_7c_reason) if strategy_7c_reason else None,
+        })
+
+        with open(log_file, 'w', encoding='utf-8') as f:
+            _json.dump(logs, f, indent=2, ensure_ascii=False)
+    except Exception as _e:
+        import sys as _sys
+        print(f"[P0-5 log fail] {_e}", file=_sys.stderr)
 
 
 if __name__ == '__main__':
