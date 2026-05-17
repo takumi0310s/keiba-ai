@@ -1,0 +1,25 @@
+{
+  "date": "20260516",
+  "seed": 42,
+  "noise_std": 0.05,
+  "n_races_evaluated": 34,
+  "severity_distribution": {
+    "none": 18,
+    "minor": 5,
+    "major": 8,
+    "critical": 4
+  },
+  "morning_hits": 12,
+  "mock_hits": 12,
+  "delta_hits": 0,
+  "morning_invest": 23800,
+  "morning_payout": 54110,
+  "morning_roi_pct": 227.35294117647058,
+  "mock_invest": 23800,
+  "mock_payout": 54110,
+  "mock_roi_pct": 227.35294117647058,
+  "delta_roi_pt": 0.0,
+  "strategy_c_candidates": 19,
+  "strategy_c_morning_roi": 104.13533834586465,
+  "strategy_c_mock_roi": 104.13533834586465
+}
