@@ -1,0 +1,349 @@
+{
+  "generated_at": "2026-05-17 17:06:03",
+  "budget_sec": 3600,
+  "note": "V15 cache (527K rows, 145 features) ベース、 LGB single (★ FT/IR 抜き ★). AUC は 全 fold で top3 binary 固定 eval (apples-to-apples). fold = 2023/2024/2025 直近 3 年 (60 min budget 内収束のため). LEAK 監査: full vs leak_free (odds/pop 8 features 抜き) を併走.",
+  "n_rows": 527280,
+  "n_features_full": 145,
+  "leak_features_removed": [
+    "odds_change_rate",
+    "odds_sharp_drop",
+    "oz_base_pop_rank",
+    "oz_fukusho_base_log",
+    "oz_tansho_base_log",
+    "paci_ninki_idx",
+    "pop_rank_change",
+    "prev_odds_log"
+  ],
+  "fold_years": [
+    2023,
+    2024,
+    2025
+  ],
+  "lgb_params": {
+    "objective": "binary",
+    "metric": "auc",
+    "boosting_type": "gbdt",
+    "num_leaves": 63,
+    "learning_rate": 0.07,
+    "feature_fraction": 0.8,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 5,
+    "min_child_samples": 50,
+    "reg_alpha": 0.1,
+    "reg_lambda": 0.1,
+    "verbose": -1,
+    "seed": 42,
+    "n_jobs": -1,
+    "num_boost_round": 250,
+    "early_stop": 20
+  },
+  "results": {
+    "full_top3": {
+      "label": "top3 (V15 current baseline)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8675915189398952,
+          "brier": 0.11439339233043533,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 93.01835234788354,
+          "roi_actual": 283.3002645502648,
+          "hit_rate": 17.447916666666664,
+          "n_races_eval": 3456,
+          "elapsed_sec": 11.125246524810791
+        },
+        {
+          "year": 2024,
+          "auc": 0.8695932616483796,
+          "brier": 0.11439699487205805,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 85.07964926792957,
+          "roi_actual": 291.9576336614555,
+          "hit_rate": 17.486971627099017,
+          "n_races_eval": 3454,
+          "elapsed_sec": 11.32263970375061
+        },
+        {
+          "year": 2025,
+          "auc": 0.8687050321608654,
+          "brier": 0.11422458097011322,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 75.58661484391146,
+          "roi_actual": 296.4644063124525,
+          "hit_rate": 16.642547033285094,
+          "n_races_eval": 3455,
+          "elapsed_sec": 11.455963850021362
+        }
+      ],
+      "avg_auc": 0.8686299375830467,
+      "avg_brier": 0.1143383227242022,
+      "avg_roi_inflated": 84.5615388199082,
+      "avg_roi_actual": 290.5741015080576,
+      "avg_hit_rate": 17.19247844235026,
+      "n_features": 145
+    },
+    "full_win": {
+      "label": "win (1st binary)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8577786961559786,
+          "brier": 0.15890371975639828,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 85.4427728174603,
+          "roi_actual": 276.47080302028235,
+          "hit_rate": 16.34837962962963,
+          "n_races_eval": 3456,
+          "elapsed_sec": 10.80288290977478
+        },
+        {
+          "year": 2024,
+          "auc": 0.860858486162916,
+          "brier": 0.16123609602105124,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 83.5332260732898,
+          "roi_actual": 285.5167231918824,
+          "hit_rate": 16.589461493920094,
+          "n_races_eval": 3454,
+          "elapsed_sec": 10.463958024978638
+        },
+        {
+          "year": 2025,
+          "auc": 0.8583792569038587,
+          "brier": 0.1639764733006324,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 72.84398097994621,
+          "roi_actual": 232.98001516091227,
+          "hit_rate": 15.542691751085384,
+          "n_races_eval": 3455,
+          "elapsed_sec": 10.541837453842163
+        }
+      ],
+      "avg_auc": 0.8590054797409178,
+      "avg_brier": 0.16137209635936065,
+      "avg_roi_inflated": 80.60665995689875,
+      "avg_roi_actual": 264.9891804576923,
+      "avg_hit_rate": 16.16017762487837,
+      "n_features": 145
+    },
+    "full_ev_weighted": {
+      "label": "EV weighted (top3 × trio_payout)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8676005929033228,
+          "brier": 0.11442186125203029,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 82.29896990740741,
+          "roi_actual": 258.7041170634922,
+          "hit_rate": 16.95601851851852,
+          "n_races_eval": 3456,
+          "elapsed_sec": 10.530940771102905
+        },
+        {
+          "year": 2024,
+          "auc": 0.8660639612081134,
+          "brier": 0.11655330652696334,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 103.00161303664474,
+          "roi_actual": 307.85259326660616,
+          "hit_rate": 17.139548349739435,
+          "n_races_eval": 3454,
+          "elapsed_sec": 10.71100640296936
+        },
+        {
+          "year": 2025,
+          "auc": 0.862760841584618,
+          "brier": 0.11770739633962256,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 109.24160843498024,
+          "roi_actual": 282.0196402728964,
+          "hit_rate": 17.134587554269174,
+          "n_races_eval": 3455,
+          "elapsed_sec": 9.943622350692749
+        }
+      ],
+      "avg_auc": 0.8654751318986847,
+      "avg_brier": 0.11622752137287207,
+      "avg_roi_inflated": 98.18073045967746,
+      "avg_roi_actual": 282.8587835343316,
+      "avg_hit_rate": 17.076718140842377,
+      "n_features": 145
+    },
+    "leakfree_top3": {
+      "label": "top3 (V15 current baseline) (leak-free)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8662261643122702,
+          "brier": 0.11484931363660689,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 87.50169560185184,
+          "roi_actual": 266.96566358024694,
+          "hit_rate": 17.30324074074074,
+          "n_races_eval": 3456,
+          "elapsed_sec": 10.398903131484985
+        },
+        {
+          "year": 2024,
+          "auc": 0.8680524912434054,
+          "brier": 0.11500410851317856,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 77.43226321449251,
+          "roi_actual": 297.97343314859256,
+          "hit_rate": 17.544875506658947,
+          "n_races_eval": 3454,
+          "elapsed_sec": 10.740792751312256
+        },
+        {
+          "year": 2025,
+          "auc": 0.8658026091588996,
+          "brier": 0.11521654444058961,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 77.66976473020465,
+          "roi_actual": 333.55826614292585,
+          "hit_rate": 16.526772793053546,
+          "n_races_eval": 3455,
+          "elapsed_sec": 10.832208395004272
+        }
+      ],
+      "avg_auc": 0.8666937549048584,
+      "avg_brier": 0.11502332219679168,
+      "avg_roi_inflated": 80.86790784884965,
+      "avg_roi_actual": 299.4991209572551,
+      "avg_hit_rate": 17.12496301348441,
+      "n_features": 137
+    },
+    "leakfree_win": {
+      "label": "win (1st binary) (leak-free)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8565467110293801,
+          "brier": 0.15857667094801728,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 93.94238343253963,
+          "roi_actual": 276.792190255732,
+          "hit_rate": 16.608796296296298,
+          "n_races_eval": 3456,
+          "elapsed_sec": 10.164109945297241
+        },
+        {
+          "year": 2024,
+          "auc": 0.8577948697320769,
+          "brier": 0.16132874035218073,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 76.921672594921,
+          "roi_actual": 252.4070780599444,
+          "hit_rate": 16.270990156340474,
+          "n_races_eval": 3454,
+          "elapsed_sec": 10.238182783126831
+        },
+        {
+          "year": 2025,
+          "auc": 0.8555620046401838,
+          "brier": 0.16415408307572404,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 67.29570808352278,
+          "roi_actual": 266.22913651712474,
+          "hit_rate": 15.224312590448625,
+          "n_races_eval": 3455,
+          "elapsed_sec": 10.096399068832397
+        }
+      ],
+      "avg_auc": 0.8566345284672136,
+      "avg_brier": 0.161353164791974,
+      "avg_roi_inflated": 79.38658803699447,
+      "avg_roi_actual": 265.1428016109337,
+      "avg_hit_rate": 16.034699681028467,
+      "n_features": 137
+    },
+    "leakfree_ev_weighted": {
+      "label": "EV weighted (top3 × trio_payout) (leak-free)",
+      "folds": [
+        {
+          "year": 2023,
+          "auc": 0.8663970938576507,
+          "brier": 0.11481374821144776,
+          "n_train": 385757,
+          "n_test": 47274,
+          "roi_inflated": 88.98609374999995,
+          "roi_actual": 263.9977402998237,
+          "hit_rate": 17.650462962962962,
+          "n_races_eval": 3456,
+          "elapsed_sec": 10.47934341430664
+        },
+        {
+          "year": 2024,
+          "auc": 0.8646797316175269,
+          "brier": 0.11687128492698096,
+          "n_train": 433031,
+          "n_test": 46752,
+          "roi_inflated": 98.50098022996112,
+          "roi_actual": 313.744175145449,
+          "hit_rate": 17.95020266357846,
+          "n_races_eval": 3454,
+          "elapsed_sec": 9.918102025985718
+        },
+        {
+          "year": 2025,
+          "auc": 0.8618638811619762,
+          "brier": 0.11804578519479134,
+          "n_train": 479783,
+          "n_test": 47497,
+          "roi_inflated": 96.053639032458,
+          "roi_actual": 307.640479636138,
+          "hit_rate": 16.584659913169318,
+          "n_races_eval": 3455,
+          "elapsed_sec": 10.717649698257446
+        }
+      ],
+      "avg_auc": 0.8643135688790512,
+      "avg_brier": 0.11657693944440668,
+      "avg_roi_inflated": 94.51357100413968,
+      "avg_roi_actual": 295.1274650271369,
+      "avg_hit_rate": 17.395108513236913,
+      "n_features": 137
+    }
+  },
+  "comparison": {
+    "baseline_full_top3_auc": 0.8686299375830467,
+    "full_win_auc_delta": -0.009624457842128953,
+    "full_ev_auc_delta": -0.0031548056843619943,
+    "full_top3_roi_inflated": 84.5615388199082,
+    "full_ev_roi_inflated": 98.18073045967746,
+    "full_top3_roi_actual": 290.5741015080576,
+    "full_ev_roi_actual": 282.8587835343316,
+    "leak_audit_top3_auc_drop": 0.0019361826781882918,
+    "leak_audit_ev_auc_drop": 0.0011615630196335491,
+    "leak_audit_top3_roi_inflated_drop": 3.693630971058539,
+    "leak_audit_ev_roi_inflated_drop": 3.667159455537785,
+    "verdict_note": "V15 production 4-ens WF AUC 0.8939 は本 eval の LGB single (3-fold直近) と 直接比較 不可。 ★ delta で判定 ★. paper ROI inflated は Phase 2 (3 月 396.2% claim) と同 estimator → 真贋: o1*o2*o3*20 は 実配当の 約 2x で systematically inflated (CLAUDE.md Phase 2-3 検証済). 実配当 (roi_actual) を判定基準とする."
+  },
+  "phase2_396pct_verdict": {
+    "claim": "396.2% (3 月 phase 2 ev_weighted overall_estimated_roi)",
+    "source": "tools/validation_2_target_variable.py + backtest_central_leakfree.estimate_payouts (o1*o2*o3*20)",
+    "verdict": "INFLATED ESTIMATOR (NOT honest real ROI)",
+    "evidence": [
+      "Phase 2 で place_current も 同 estimator で 368.8% → ev_weighted の advantage は +27.4pt のみ",
+      "CLAUDE.md Phase 2b/3 検証: o1*o2*o3*20 は 実配当 の 約 2x (jra_payouts 比 ~16x 推定 → 実 ~2x)",
+      "Phase 3 実配当 検証で trio 真 ROI = 225.8% (place_current 同程度) → 396.2% は 50-60% 過大",
+      "本 eval roi_inflated vs roi_actual を見て 同様の inflation 比 を確認"
+    ]
+  }
+}
