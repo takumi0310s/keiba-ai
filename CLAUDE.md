@@ -3,8 +3,16 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-17 (Session #89、 ★ memory drift 5 件全訂正 final resolution ★)**
+Last updated: **2026-05-18 (Session #90 B-2、 ★ CLAUDE.md drift 30 件 全 verify + context-correct 確認 ★)**
 
+> Session #90 B-2 (5/18 17:30) で CLAUDE.md 内 drift 30 件 全 verify:
+> - 119.2% ×3 件: 全 「旧値 / drift 引用 + 真値 98.34% 注釈」 形式で OK
+> - 13,530 ×2 件: 全 「旧値 / drift 引用 + 真値 ¥-6,920 注釈」 形式で OK
+> - 4-model ×17 件: 全 「v13.5b historical 事実 / Grid 4-model = WF 評価専用真値 / drift 引用」 で OK (1 件 V20 plan に追記)
+> - 0.8939 ×7 件: 全 「stored .pkl.auc 真値 (= LGB train-set self-eval) / drift 引用」 で OK
+> - 150 features ×1 件: drift 引用 で OK
+> → ★ context-mismatch 0 件 ★、 単純 replace_all 禁止、 line-by-line honest 訂正 (docs/B2_CLAUDE_MD_FULL_DRIFT_RESOLUTION_2026_05_18.md)
+>
 > Session #89 (5/17 evening) で memory drift 5 件 全訂正 完了 (docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md):
 > | # | item | 旧値 (drift) | 真値 (audit 出典) | resolved |
 > |---|---|---|---|---|
@@ -1362,7 +1370,7 @@ python tools/predict_one_race.py 202605020211
 | 期間 | 内容 |
 |------|------|
 | 6/9-6/13 | JV-Link parser 実装 (RACE/HR/O1/TCOV/WOOD/BLOD)、 過去 1 年 bulk fetch + 整合チェック |
-| 6/14-6/20 | V20 学習 data spec 確定 (JRA + NAR 統合、 共通 80 features、 SKB 完全除外、 sib_*_exp 込み)、 V20 v1 学習 (4-model ensemble) |
+| 6/14-6/20 | V20 学習 data spec 確定 (JRA + NAR 統合、 共通 80 features、 SKB 完全除外、 sib_*_exp 込み)、 V20 v1 学習 (4-model ensemble 計画、 但し V15-audit-1 で V15 production が LGB+XGB 2-model のみ判明 → V20 は ★ FT/IR の .pkl 保存 ★ も含めた full ensemble production 化を必須化) |
 | 6/21-6/25 | V20 WF 検証 (6-fold、 2020-2025)、 LIVE retro |
 | 6/26-6/28 | V20 paper trading (週末) |
 | 6/29-6/30 | GO/no-go 最終判定 (WF AUC ≥ 0.880 / LIVE retro ≥ 30% / shift ≤ 12x / NAR AUC ≥ 0.83 / paper ROI ≥ 110% / LEAK 監査 PASS) |
