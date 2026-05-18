@@ -1,0 +1,25 @@
+{
+  "optuna_best_auc_2025": 0.8980735799159958,
+  "optuna_weights_tight": {
+    "lgb": 0.13269917700579567,
+    "xgb": 0.1337296564923257,
+    "ft": 0.07195207907854013,
+    "ir": 0.6616190874233385
+  },
+  "current_stored_weights": {
+    "lgb": 0.2333,
+    "xgb": 0.2917,
+    "ft": 0.125,
+    "ir": 0.35
+  },
+  "current_stored_auc_2025": 0.8900867065895923,
+  "fivefold_mean_weights": {
+    "lgb": 0.2,
+    "xgb": 0.27,
+    "ft": 0.13,
+    "ir": 0.4
+  },
+  "fivefold_mean_auc_2025": 0.8917854506601461,
+  "note": "IR AUC on 2025 single fold = 0.8999 (inflated vs stored 0.8790 due to scaler fitted on 2020-2024). Tight constraints applied.",
+  "decision": "stored weights already optimal from 6-fold grid search; Optuna on single fold unreliable"
+}
