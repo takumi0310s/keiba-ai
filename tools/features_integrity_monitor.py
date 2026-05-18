@@ -36,6 +36,14 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+# Windows cp932 console で 絵文字 / yen sign 印字 → utf-8 化 (schtask redirect 対策)
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 

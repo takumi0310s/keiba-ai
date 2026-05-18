@@ -37,7 +37,7 @@
 
 | Component | 役割 | 起動 | 出力 |
 |-----------|------|------|------|
-| `tools/predict_core.py` | V15 core inference (150 features) | オンデマンド | `df['final_score']` |
+| `tools/predict_core.py` | V15 core inference (Pattern B list 150 / booster **145** truncate、 V15-audit-1) | オンデマンド | `df['final_score']` |
 | `tools/daily_predict.py` | 朝 06:30 全 R 予測 | schtask daily | `data/daily_predictions/{ymd}.csv` |
 | `tools/race_auto_notify.py` | 5 分前リアルタイム + Discord | schtask race-time | Discord #bets |
 | `tools/daily_results.py` | 夜 20:00 結果照合 + 配当確定 | schtask daily | `data/daily_results/{ymd}.csv` |

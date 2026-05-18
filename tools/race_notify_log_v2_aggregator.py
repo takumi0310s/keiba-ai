@@ -19,6 +19,14 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# Windows cp932 console で 絵文字 / yen sign 印字 → utf-8 化 (schtask redirect 対策)
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 sys.path.insert(0, str(BASE_DIR / 'tools'))

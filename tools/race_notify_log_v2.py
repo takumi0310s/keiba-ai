@@ -44,6 +44,29 @@ def _write_json(out_file: Path, data: dict) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
 
 
+def _validate_race_id(race_id) -> bool:
+    """race_id validation: digit 10-12 桁 必須。
+
+    無効な race_id (None / 'None' / 'nan' / '' / 非 digit / 桁数不正) を
+    検出して log skip するための gate。
+    """
+    if race_id is None:
+        return False
+    try:
+        s = str(race_id).strip()
+    except Exception:
+        return False
+    if not s:
+        return False
+    if s in ('None', 'none', 'NONE', 'nan', 'NaN', 'NAN', 'null', 'NULL'):
+        return False
+    if not s.isdigit():
+        return False
+    if not (10 <= len(s) <= 12):
+        return False
+    return True
+
+
 def log_phase1(race_id, race_meta=None, ranking_top5=None,
                formation_planned=None, morning_odds=None,
                date_str=None):
@@ -59,6 +82,10 @@ def log_phase1(race_id, race_meta=None, ranking_top5=None,
 
     fail 時は stderr 出力のみ、 例外を投げない。
     """
+    if not _validate_race_id(race_id):
+        print(f"[race_notify_log_v2 phase1 SKIP] invalid race_id: {race_id!r}",
+              file=sys.stderr)
+        return
     try:
         d = date_str or _today_str()
         out_dir = _log_root() / d / 'phase1'
@@ -99,6 +126,10 @@ def log_phase2(race_id, race_meta=None, formation_actual=None,
 
     fail 時は stderr のみ。
     """
+    if not _validate_race_id(race_id):
+        print(f"[race_notify_log_v2 phase2 SKIP] invalid race_id: {race_id!r}",
+              file=sys.stderr)
+        return
     try:
         d = date_str or _today_str()
         out_dir = _log_root() / d / 'phase2'
@@ -147,6 +178,10 @@ def log_phase3(race_id, real_top3=None, real_payouts=None,
 
     fail 時は stderr のみ。
     """
+    if not _validate_race_id(race_id):
+        print(f"[race_notify_log_v2 phase3 SKIP] invalid race_id: {race_id!r}",
+              file=sys.stderr)
+        return
     try:
         d = date_str or _today_str()
         out_dir = _log_root() / d / 'phase3'

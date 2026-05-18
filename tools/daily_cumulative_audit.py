@@ -30,6 +30,14 @@ from pathlib import Path
 
 import pandas as pd
 
+# Windows cp932 console で 絵文字 / yen sign 印字 → utf-8 化 (schtask redirect 対策)
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 REPO = Path(__file__).resolve().parents[1]
 CUM_CSV = REPO / "data" / "cumulative_results.csv"
 BASELINE_JSON = REPO / "data" / "task_outcomes" / "baseline_v15.json"

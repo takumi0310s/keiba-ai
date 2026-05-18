@@ -73,9 +73,10 @@ def main():
     # 簡易版: race 内 top3 が Jackpot 軸 + popularity 1,2,3 候補に含まれるか
     print(f'\n=== Jackpot 馬 trio 軸 simulation (1 race の Jackpot 該当 1 頭 を 軸 / pop 1-3 を相手) ===')
 
-    df_with_jpot = race_stats_with_jpot.merge(df[['race_id', 'horse_id', 'popularity',
-                                                      'is_jackpot', 'top3', 'finish']],
-                                                 on='race_id', how='inner')
+    # ★ FIX: race_id を Jackpot race に絞った df 取得
+    jpot_race_ids = race_stats_with_jpot['race_id'].tolist()
+    df_with_jpot = df[df['race_id'].isin(jpot_race_ids)].copy()
+    print(f'[INFO] Jackpot race の全馬: {len(df_with_jpot):,}')
 
     # race ごとに 1 jackpot 馬 取得
     jpot_axis = df_with_jpot[df_with_jpot['is_jackpot'] == 1].sort_values(['race_id', 'horse_id'])

@@ -37,11 +37,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# Windows cp932 console で 絵文字記号印字 → utf-8 化
+# Windows cp932 console で 絵文字記号印字 → utf-8 化 (schtask redirect 対策、 errors='replace' で 安全化)
 if sys.platform == 'win32':
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
-        sys.stderr.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
     except Exception:
         pass
 
