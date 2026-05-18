@@ -45,8 +45,8 @@ def test_log_phase1_missing_fields_ok(tmp_path, monkeypatch):
     """ranking/odds 等 None でも fail しない。"""
     monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
     from race_notify_log_v2 import log_phase1, read_phase
-    log_phase1(race_id='X1', date_str='20260518')
-    rec = read_phase('X1', 1, date_str='20260518')
+    log_phase1(race_id='202605020199', date_str='20260518')
+    rec = read_phase('202605020199', 1, date_str='20260518')
     assert rec is not None
     assert rec['ranking_top5'] == []
     assert rec['morning_odds'] == {}
@@ -133,8 +133,9 @@ def test_log_phase3_miss(tmp_path, monkeypatch):
 
 # ----- Robustness -----
 
-def test_log_phase_failure_does_not_raise():
+def test_log_phase_failure_does_not_raise(tmp_path, monkeypatch):
     """異常な引数でも例外を投げない。"""
+    monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
     from race_notify_log_v2 import log_phase1, log_phase2, log_phase3
     # 何が起きても raise しない (try/except で包んでいる)
     try:
@@ -143,6 +144,51 @@ def test_log_phase_failure_does_not_raise():
         log_phase3(None, None, None, None)
     except Exception as e:
         pytest.fail(f"log_phase* should never raise: {e}")
+
+
+# ----- race_id validation (None.json bug fix) -----
+
+def test_race_id_none_skipped(tmp_path, monkeypatch):
+    """race_id=None で log skip、 None.json が作成されない。"""
+    monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
+    from race_notify_log_v2 import log_phase1, log_phase2, log_phase3
+
+    log_phase1(None, {}, [], '', date_str='20260518')
+    log_phase2(None, {}, None, None, False, None, 'bets', None, None,
+               date_str='20260518')
+    log_phase3(None, [], {}, {}, date_str='20260518')
+
+    for phase in (1, 2, 3):
+        none_file = tmp_path / '20260518' / f'phase{phase}' / 'None.json'
+        assert not none_file.exists(), f"None.json should not be created at phase{phase}"
+
+
+def test_race_id_nan_skipped(tmp_path, monkeypatch):
+    """race_id='nan' / 'None' (string) で log skip。"""
+    monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
+    from race_notify_log_v2 import log_phase1
+
+    for bad in ('nan', 'NaN', 'None', 'null', '', '   '):
+        log_phase1(bad, {}, [], '', date_str='20260518')
+        bad_file = tmp_path / '20260518' / 'phase1' / f'{bad}.json'
+        assert not bad_file.exists(), f"phase1/{bad}.json should not be created"
+
+
+def test_race_id_invalid_format_skipped(tmp_path, monkeypatch):
+    """race_id 非 digit / 桁不正 で log skip。"""
+    monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
+    from race_notify_log_v2 import log_phase1
+
+    invalid_ids = ['abc', '123', '202605020', '2026050201010101', 'R1', '12-34-56']
+    for bad in invalid_ids:
+        log_phase1(bad, {}, [], '', date_str='20260518')
+        bad_file = tmp_path / '20260518' / 'phase1' / f'{bad}.json'
+        assert not bad_file.exists(), f"phase1/{bad}.json should not be created"
+
+    # 正常な race_id (12 桁 digit) は通る
+    log_phase1('202605020101', {}, [], '', date_str='20260518')
+    good_file = tmp_path / '20260518' / 'phase1' / '202605020101.json'
+    assert good_file.exists(), "valid race_id should be logged"
 
 
 def test_read_phase_nonexistent_returns_none(tmp_path, monkeypatch):
@@ -255,11 +301,11 @@ def test_aggregator_complete_race(tmp_path, monkeypatch):
 
     # log_root を tmp_path に固定して 3 phase 書き込み
     from race_notify_log_v2 import log_phase1, log_phase2, log_phase3
-    log_phase1('R1', race_meta={'race_name': 'test'}, formation_planned='5-7-9',
+    log_phase1('202605020201', race_meta={'race_name': 'test'}, formation_planned='5-7-9',
                date_str='20260518')
-    log_phase2('R1', race_meta={'race_name': 'test'}, formation_actual=[(5, 7, 9)],
+    log_phase2('202605020201', race_meta={'race_name': 'test'}, formation_actual=[(5, 7, 9)],
                channel='bets', cond_key='A', bet_type='trio', date_str='20260518')
-    log_phase3('R1', real_top3=[5, 7, 9], real_payouts={'trio': 1500},
+    log_phase3('202605020201', real_top3=[5, 7, 9], real_payouts={'trio': 1500},
                hit_miss={'trio_hit': True}, date_str='20260518')
 
     # aggregator も同じ env を見る必要 → reload
@@ -281,10 +327,10 @@ def test_aggregator_skip_strategy_7c(tmp_path, monkeypatch):
     monkeypatch.setenv('RACE_NOTIFY_LOG_V2_ROOT', str(tmp_path))
 
     from race_notify_log_v2 import log_phase2, log_phase3
-    log_phase2('R2', race_meta={'race_name': 'kyoto'}, formation_actual=None,
+    log_phase2('202608010101', race_meta={'race_name': 'kyoto'}, formation_actual=None,
                strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17',
                channel='skip', cond_key='A', bet_type='trio', date_str='20260518')
-    log_phase3('R2', real_top3=[1, 2, 3], real_payouts={'trio': 0},
+    log_phase3('202608010101', real_top3=[1, 2, 3], real_payouts={'trio': 0},
                hit_miss={'trio_hit': False}, date_str='20260518')
 
     import importlib
