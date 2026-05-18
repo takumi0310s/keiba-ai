@@ -1,7 +1,7 @@
 {
   "version": "V15",
-  "calculation_date": "2026-05-17",
-  "production_state": "5/17 V15-audit final resolution 後の真値統一 (memory drift 5 件 全訂正)",
+  "calculation_date": "2026-05-18T17:00",
+  "production_state": "5/18 17:00 status_verify 後の真値統一 (5/17 G1 day +33R 反映)",
   "metrics": {
     "wf_auc": {
       "adopted_value": 0.8678,
@@ -15,12 +15,15 @@
       "note": "stored .pkl AUC 0.8939 は LGB train-set self-eval (in-sample)、 真の genuine WF generalization は 0.8678 (-0.026)、 Grid 4-model 5-fold でも -0.008 だが production .pkl は LGB+XGB のみ"
     },
     "actual_roi": {
-      "adopted_value": 98.34,
-      "adopted_source": "V15-audit-4 (5/17 G1 day 反映)、 cumulative_results.csv n=596 全 settled、 docs/V15_AUDIT_4_CUMULATIVE_ROI_5_17_2026.md",
-      "adopted_pnl_yen": -6920,
-      "adopted_n_races": 596,
+      "adopted_value": 95.67,
+      "adopted_source": "★ 5/18 17:00 真値 (B-3 status_verify) ★ cumulative_results.csv n=629 全 settled",
+      "adopted_pnl_yen": -19080,
+      "adopted_n_races": 629,
       "adopted_window": "2026-03-14 〜 2026-05-17",
-      "bootstrap_ci_95": [66.33, 138.05],
+      "bootstrap_ci_95": [
+        64.92,
+        134.03
+      ],
       "ci_includes_100": true,
       "statistical_significance": "★ 統計的有意 勝ち なし (CI が 100% を含む) ★",
       "candidate_values_history": {
@@ -51,28 +54,54 @@
           "inv": 417200,
           "pay": 410280,
           "pnl": -6920,
-          "verdict": "★ adopted ★"
+          "verdict": "intermediate (5/17 G1 day 反映、 5/18 +33R settled 前)"
+        },
+        "_5_18_17_00_truth": {
+          "value": 95.67,
+          "source": "★ 5/18 17:00 真値 (5/17 G1 day +33R 反映後) ★ cumulative_results.csv n=629",
+          "inv": 440300,
+          "pay": 421220,
+          "pnl": -19080,
+          "verdict": "★ adopted (current truth) ★"
         }
       }
     },
     "cumulative_pnl_yen": {
-      "adopted_value": -6920,
-      "source": "V15-audit-4 (5/17 G1 day 反映)",
+      "adopted_value": -19080,
+      "source": "★ 5/18 17:00 真値 (B-3 status_verify) ★ 5/17 G1 day +33R settled 反映後",
       "drift_history": {
         "claude_md_plus_13530": "旧 CLAUDE.md drift、 出典 unknown (4/27-5/6 snapshot 残存と推定)",
         "p0_1_plus_5240": "5/16 P0-1 真値 (5/17 G1 day 反映前)",
-        "v15_audit_4_minus_6920": "★ 5/17 V15-audit-4 真値 ★ (G1 day -¥12,160 で baseline 押し下げ)"
+        "v15_audit_4_minus_6920": "★ 5/17 V15-audit-4 真値 ★ (G1 day -¥12,160 で baseline 押し下げ)",
+        "_5_18_17_00_truth": "★ 5/18 17:00 真値 ★ 5/17 +33R settled で -¥19,080"
       },
-      "withdraw_buffer_yen": 43080
+      "withdraw_buffer_yen": 30920
     },
     "architecture_truth": {
       "value": "LGB + XGB 2-model production",
       "source": "V15-audit-1 (docs/V15_AUDIT_1_MODEL_STRUCTURE_2026_05_17.md)",
       "details": {
-        "production_pkl_components": ["lightgbm.Booster (model)", "xgboost.Booster (xgb_model)"],
-        "production_pkl_dead_keys": ["mlp_model = None", "mlp_scaler = None"],
-        "production_pkl_missing_keys": ["ft_model_state", "ft_model_config", "ft_scaler_mean", "ft_scaler_scale", "cb_model", "ir_model"],
-        "ensemble_weights_stored": {"lgb": 0.5036339408713449, "xgb": 0.496366059128655, "mlp": 0},
+        "production_pkl_components": [
+          "lightgbm.Booster (model)",
+          "xgboost.Booster (xgb_model)"
+        ],
+        "production_pkl_dead_keys": [
+          "mlp_model = None",
+          "mlp_scaler = None"
+        ],
+        "production_pkl_missing_keys": [
+          "ft_model_state",
+          "ft_model_config",
+          "ft_scaler_mean",
+          "ft_scaler_scale",
+          "cb_model",
+          "ir_model"
+        ],
+        "ensemble_weights_stored": {
+          "lgb": 0.5036339408713449,
+          "xgb": 0.496366059128655,
+          "mlp": 0
+        },
         "v15_master_report_describes": "v15_master の 4-model Grid Ensemble (LGB+XGB+FT+IR、 IR 0.4 dominant) は WF 評価専用、 production .pkl には保存されず"
       },
       "drift_old": "4-model (LGB+XGB+FT+IR)"
@@ -93,34 +122,90 @@
       "drift_old": "投票 formation 記録あり (暗黙)"
     },
     "hit_rate_top3": {
-      "value": 0.5403,
-      "calculation": "(暫定: 596 settled の top1_finish<=3 rate、 5/17 反映後再計算は別途)",
-      "note": "5/16 baseline 53.82% (303/563)、 5/17 G1 day で微変動"
+      "value": 0.5439,
+      "calculation": "top1_finish<=3 rate (B-3 5/18 17:00 真値、 n=629)",
+      "note": "5/17 audit-4 53.82%、 5/18 +33R settled 反映後 再計算"
     },
     "trio_hit_rate": {
-      "value": 0.2198,
-      "n_settled": 596,
-      "n_hit": 131,
-      "calculation": "trio_hit == 1 の rate (V15-audit-4 §1)"
+      "value": 0.2146,
+      "n_settled": 629,
+      "n_hit": 135,
+      "calculation": "trio_hit == 1 の rate (B-3 5/18 17:00 真値、 n=629)"
     },
-    "sample_n_races": 596,
-    "n_settled": 596
+    "sample_n_races": 629,
+    "n_settled": 629
   },
   "constraints": {
     "withdraw_limit_yen": -50000,
-    "withdraw_buffer_yen": 43080,
+    "withdraw_buffer_yen": 30920,
     "vote_limit_daily_yen": 2100,
     "vote_size_per_race_yen": 700
   },
   "memory_drift_resolved": [
-    {"item": "累計 ROI", "old": 119.2, "new": 98.34, "resolved_at": "2026-05-17", "audit": "V15-audit-4"},
-    {"item": "PnL (円)", "old": 13530, "new": -6920, "resolved_at": "2026-05-17", "audit": "V15-audit-4"},
-    {"item": "architecture", "old": "4-model (LGB+XGB+FT+IR)", "new": "LGB+XGB 2-model production", "resolved_at": "2026-05-17", "audit": "V15-audit-1"},
-    {"item": "WF AUC", "old": 0.8939, "new": 0.8678, "new_alt_grid_4model_5fold": 0.8858, "resolved_at": "2026-05-17", "audit": "V15-audit-2"},
-    {"item": "features count", "old": 150, "new_booster": 145, "new_pattern_b_list": 150, "resolved_at": "2026-05-17", "audit": "V15-audit-1 / V15-audit-3"},
-    {"item": "formation record", "old": "記録あり (暗黙)", "new": "race-time formation 永久喪失、 trio_bets_str は AM 8:00 morning prediction のみ", "resolved_at": "2026-05-17", "audit": "data-audit-3"}
+    {
+      "item": "累計 ROI",
+      "old": 119.2,
+      "new": 98.34,
+      "resolved_at": "2026-05-17",
+      "audit": "V15-audit-4"
+    },
+    {
+      "item": "PnL (円)",
+      "old": 13530,
+      "new": -6920,
+      "resolved_at": "2026-05-17",
+      "audit": "V15-audit-4"
+    },
+    {
+      "item": "architecture",
+      "old": "4-model (LGB+XGB+FT+IR)",
+      "new": "LGB+XGB 2-model production",
+      "resolved_at": "2026-05-17",
+      "audit": "V15-audit-1"
+    },
+    {
+      "item": "WF AUC",
+      "old": 0.8939,
+      "new": 0.8678,
+      "new_alt_grid_4model_5fold": 0.8858,
+      "resolved_at": "2026-05-17",
+      "audit": "V15-audit-2"
+    },
+    {
+      "item": "features count",
+      "old": 150,
+      "new_booster": 145,
+      "new_pattern_b_list": 150,
+      "resolved_at": "2026-05-17",
+      "audit": "V15-audit-1 / V15-audit-3"
+    },
+    {
+      "item": "formation record",
+      "old": "記録あり (暗黙)",
+      "new": "race-time formation 永久喪失、 trio_bets_str は AM 8:00 morning prediction のみ",
+      "resolved_at": "2026-05-17",
+      "audit": "data-audit-3"
+    },
+    {
+      "item": "累計 ROI (5/18 17:00 status_verify 反映)",
+      "old_5_16": 101.33,
+      "old_5_17_audit_4": 98.34,
+      "new_5_18_17_00": 95.67,
+      "resolved_at": "2026-05-18T17:00",
+      "audit": "B-3 status_verify"
+    },
+    {
+      "item": "PnL (5/18 17:00 status_verify 反映)",
+      "old_5_16": 5240,
+      "old_5_17_audit_4": -6920,
+      "new_5_18_17_00": -19080,
+      "resolved_at": "2026-05-18T17:00",
+      "audit": "B-3 status_verify"
+    }
   ],
   "honest_notes": [
+    "★ 5/18 17:00 真値: ROI 95.67% / PnL ¥-19,080 / n=629、 撤退余裕 ¥30,920、 中間アラート -¥30,000 まで残 ¥10,920 ★",
+    "★ 5/18 17:00 95% CI [64.92%, 134.03%]、 100% 含む = 統計的有意 勝ち なし ★",
     "★ 5/17 audit 完了で 真値統一 (5 件 memory drift 訂正) ★",
     "★ 95% CI [66.33%, 138.05%] 100% 含む = 統計的有意 勝ち なし、 楽観 自重 ★",
     "5/17 G1 day 単日 ROI 47.36% / PnL ¥-12,160 が baseline を押し下げ (101.33% → 98.34%)",
@@ -140,6 +225,7 @@
     "docs/DATA_AUDIT_2_RESULTS_2026_05_17.md",
     "docs/DATA_AUDIT_3_FORMATION_RECORD_2026_05_17.md",
     "docs/DATA_AUDIT_4_INTEGRATED_VERDICT_2026_05_17.md",
-    "docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md"
+    "docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md",
+    "docs/B3_BASELINE_UPDATE_5_18_2026.md"
   ]
 }
