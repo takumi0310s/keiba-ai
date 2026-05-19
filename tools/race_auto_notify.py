@@ -279,6 +279,15 @@ def predict_and_notify(race_info, date_str):
         cond_key, cond_profile = classify_race_condition(rinfo, num_horses)
 
         # ===== 戦略⑦ フィルタ続き (条件判定後) =====
+
+        # === STRATEGY_C4: Cond-A 1600-1800m drag 除外 (production active、重-2 +8.62pt confirmed) ===
+        STRATEGY_C4_ENABLED = True
+        if STRATEGY_C4_ENABLED and cond_key == 'A' and 1600 <= distance <= 1800:
+            print(f"    [STRATEGY_C4] Skip Cond-A 1600-1800m: {race_name_str} dist={distance}")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_c4_condA_1600_1800')
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_c4_condA_1600_1800')
+            return
+
         if cond_key == 'E':
             print(f"    [STRATEGY7] Skip 条件E (頭数<=7)")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
