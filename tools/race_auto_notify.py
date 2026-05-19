@@ -387,6 +387,24 @@ def predict_and_notify(race_info, date_str):
                     _c1_high_ev.append(_b)
             print(f"    [STRATEGY_C1][PAPER] EV>={STRATEGY_C1_EV_THRESHOLD} bets: {len(_c1_high_ev)}/{len(bets)}")
 
+        # === STRATEGY_C2: odds 帯フィルタ (paper eval only、過剰人気/極値/東京帯) ===
+        STRATEGY_C2_PAPER_ONLY = True
+        _c2_top1_odds = 0.0
+        if len(df) > 0:
+            _uma1 = int(df.iloc[0].get('馬番', 0))
+            _c2_top1_odds = float(odds_dict.get(_uma1, odds_dict.get(str(_uma1), 0.0)))
+        _c2_skip = False
+        _c2_reason = ''
+        if _c2_top1_odds > 0:
+            if _c2_top1_odds < 1.5:
+                _c2_skip, _c2_reason = True, f'odds<1.5({_c2_top1_odds})'
+            elif _c2_top1_odds > 20.0:
+                _c2_skip, _c2_reason = True, f'odds>20({_c2_top1_odds})'
+            elif '東京' in course_str and 5.0 <= _c2_top1_odds <= 10.0:
+                _c2_skip, _c2_reason = True, f'Tokyo 5-10x({_c2_top1_odds})'
+        if STRATEGY_C2_PAPER_ONLY and _c2_skip:
+            print(f"    [STRATEGY_C2][PAPER] would skip: {_c2_reason} → {race_name_str}")
+
         # 収益パターンマッチ
         _pp_stars, _pp_matched = 0, []
         try:
