@@ -315,6 +315,17 @@ def predict_and_notify(race_info, date_str):
             bets = generate_umaren_bets(df)
         else:
             bets = generate_trio_bets(df)
+            # === STRATEGY_C3: pos2 (T1-T2-T4) bet 除外 trio 7→6点 (production active) ===
+            STRATEGY_C3_ENABLED = True
+            if STRATEGY_C3_ENABLED and bet_type == 'trio' and len(bets) >= 1:
+                top4 = [int(df.iloc[i]['馬番']) for i in range(min(4, len(df)))]
+                if len(top4) >= 4:
+                    n1, n2, n4 = top4[0], top4[1], top4[3]
+                    bet2_target = tuple(sorted([n1, n2, n4]))
+                    bets_before = len(bets)
+                    bets = [b for b in bets if tuple(sorted(b)) != bet2_target]
+                    if len(bets) < bets_before:
+                        print(f"    [STRATEGY_C3] Removed bet2 (T1-T2-T4)={list(bet2_target)} → {len(bets)}点")
 
         # 週末限定データ（波乱度・AI予測）— キャッシュ→リアルタイム取得フォールバック
         _upset_data, _newspaper_data = {}, {}
