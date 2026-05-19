@@ -1,6 +1,7 @@
 """race_notify_log v2 (3 phase) aggregator
 
 phase 1+2+3 揃った race を 集計、 真の race-time formation ROI 計算。
+8 strategy paper ROI を並行追跡。
 
 ★ daily 20:30 fire 想定 (DailyResultsEvening 20:00 後) ★
 
@@ -9,6 +10,7 @@ Usage:
   python tools/race_notify_log_v2_aggregator.py --date 20260518
   python tools/race_notify_log_v2_aggregator.py --range 20260518:20260524
   python tools/race_notify_log_v2_aggregator.py --all
+  python tools/race_notify_log_v2_aggregator.py --strategy-report
 """
 from __future__ import annotations
 
@@ -31,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 sys.path.insert(0, str(BASE_DIR / 'tools'))
 
-from race_notify_log_v2 import _log_root  # noqa: E402
+from race_notify_log_v2 import _log_root, STRATEGY_KEYS  # noqa: E402
 
 LOG_DIR = _log_root()
 OUT_DIR = BASE_DIR / 'data' / 'race_notify_log_v2_summary'
@@ -49,8 +51,28 @@ def _read_json(path):
         return None
 
 
+def _empty_strategy_stats():
+    """strategy 別集計 dict の初期値を返す。"""
+    return {k: {'n': 0, 'hits': 0, 'inv': 0, 'pay': 0} for k in STRATEGY_KEYS}
+
+
+def _finalize_strategy_stats(stats: dict) -> dict:
+    """strategy 別集計に ROI / hit_rate を追加。"""
+    out = {}
+    for k, v in stats.items():
+        roi = round(v['pay'] / v['inv'] * 100, 2) if v['inv'] > 0 else 0.0
+        hr = round(v['hits'] / v['n'] * 100, 2) if v['n'] > 0 else 0.0
+        out[k] = {
+            **v,
+            'roi_pct': roi,
+            'hit_rate_pct': hr,
+            'pnl': v['pay'] - v['inv'],
+        }
+    return out
+
+
 def aggregate_day(date_str: str) -> dict | None:
-    """1 日分の 3 phase log を集計。"""
+    """1 日分の 3 phase log を集計。8 strategy paper ROI を含む。"""
     p1_dir = LOG_DIR / date_str / 'phase1'
     p2_dir = LOG_DIR / date_str / 'phase2'
     p3_dir = LOG_DIR / date_str / 'phase3'
@@ -69,6 +91,7 @@ def aggregate_day(date_str: str) -> dict | None:
             'pay': 0,
             'roi_pct': 0.0,
             'pnl': 0,
+            'strategy_stats': _finalize_strategy_stats(_empty_strategy_stats()),
         }
 
     p1_ids = {f.stem for f in p1_dir.glob('*.json')} if p1_dir.exists() else set()
@@ -84,6 +107,7 @@ def aggregate_day(date_str: str) -> dict | None:
     voted_races = 0
     skipped_races = 0
     cond_breakdown = {}
+    strategy_stats = _empty_strategy_stats()
 
     for race_id in sorted(complete):
         p2 = _read_json(p2_dir / f'{race_id}.json')
@@ -93,6 +117,8 @@ def aggregate_day(date_str: str) -> dict | None:
 
         if p2.get('strategy_7c_skip') or p2.get('channel') in ('skip', 'error'):
             skipped_races += 1
+            # strategy paper も skip race としてカウント (inv/pay 0)
+            # → strategy_stats は更新しない (voted base の ROI を追跡)
             continue
 
         bet_type = p2.get('bet_type') or 'trio'
@@ -123,6 +149,19 @@ def aggregate_day(date_str: str) -> dict | None:
         if hit_miss.get(hit_key):
             cb['hits'] += 1
 
+        # 8 strategy paper stats (phase3 の strategy_results を利用)
+        sr = p3.get('strategy_results', {})
+        for k in STRATEGY_KEYS:
+            kdata = sr.get(k, {})
+            if not kdata or kdata.get('skipped'):
+                continue
+            ss = strategy_stats[k]
+            ss['n'] += 1
+            ss['inv'] += int(kdata.get('investment', 0) or 0)
+            ss['pay'] += int(kdata.get('payout', 0) or 0)
+            if kdata.get('hit'):
+                ss['hits'] += 1
+
     # 条件別 roi 計算
     for k, v in cond_breakdown.items():
         v['roi_pct'] = round(v['pay'] / v['inv'] * 100, 2) if v['inv'] > 0 else 0.0
@@ -143,6 +182,7 @@ def aggregate_day(date_str: str) -> dict | None:
         'roi_pct': round(total_pay / total_inv * 100, 2) if total_inv > 0 else 0.0,
         'pnl': total_pay - total_inv,
         'cond_breakdown': cond_breakdown,
+        'strategy_stats': _finalize_strategy_stats(strategy_stats),
     }
 
 
@@ -173,6 +213,25 @@ def aggregate_all() -> list[dict]:
     return results
 
 
+def _merge_strategy_stats(daily_list: list[dict]) -> dict:
+    """複数日の strategy_stats を合算して返す。"""
+    merged = {k: {'n': 0, 'hits': 0, 'inv': 0, 'pay': 0} for k in STRATEGY_KEYS}
+    for s in daily_list:
+        ss = s.get('strategy_stats', {})
+        for k in STRATEGY_KEYS:
+            kdata = ss.get(k, {})
+            merged[k]['n'] += int(kdata.get('n', 0) or 0)
+            merged[k]['hits'] += int(kdata.get('hits', 0) or 0)
+            merged[k]['inv'] += int(kdata.get('inv', 0) or 0)
+            merged[k]['pay'] += int(kdata.get('pay', 0) or 0)
+    out = {}
+    for k, v in merged.items():
+        roi = round(v['pay'] / v['inv'] * 100, 2) if v['inv'] > 0 else 0.0
+        hr = round(v['hits'] / v['n'] * 100, 2) if v['n'] > 0 else 0.0
+        out[k] = {**v, 'roi_pct': roi, 'hit_rate_pct': hr, 'pnl': v['pay'] - v['inv']}
+    return out
+
+
 def write_summary(summary, out_path=None) -> Path:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     if out_path is None:
@@ -183,7 +242,25 @@ def write_summary(summary, out_path=None) -> Path:
     return out_path
 
 
-def print_summary(summary) -> None:
+def print_strategy_report(strategy_stats: dict, header: str = '') -> None:
+    """8 strategy 集計を表示。"""
+    if header:
+        print(f"\n  {header}")
+    print(f"  {'strategy':<16} {'N':>5} {'hits':>5} {'hit%':>7} {'inv':>8} {'pay':>8} {'ROI%':>8} {'PnL':>8}")
+    print(f"  {'-'*16} {'-'*5} {'-'*5} {'-'*7} {'-'*8} {'-'*8} {'-'*8} {'-'*8}")
+    for k in STRATEGY_KEYS:
+        v = strategy_stats.get(k, {})
+        n = v.get('n', 0)
+        hits = v.get('hits', 0)
+        hr = v.get('hit_rate_pct', 0.0)
+        inv = v.get('inv', 0)
+        pay = v.get('pay', 0)
+        roi = v.get('roi_pct', 0.0)
+        pnl = v.get('pnl', 0)
+        print(f"  {k:<16} {n:>5} {hits:>5} {hr:>6.1f}% {inv:>8} {pay:>8} {roi:>7.2f}% {pnl:>+8}")
+
+
+def print_summary(summary, show_strategy: bool = True) -> None:
     if isinstance(summary, list):
         total_inv = sum(s.get('inv', 0) for s in summary)
         total_pay = sum(s.get('pay', 0) for s in summary)
@@ -196,6 +273,9 @@ def print_summary(summary) -> None:
         roi = total_pay / total_inv * 100 if total_inv > 0 else 0.0
         print(f"\n  TOTAL: voted={total_voted} hits={total_hits} "
               f"inv={total_inv}JPY pay={total_pay}JPY ROI={roi:.2f}% PnL={total_pay - total_inv:+}JPY")
+        if show_strategy:
+            merged = _merge_strategy_stats(summary)
+            print_strategy_report(merged, header='8 strategy paper ROI (cumulative)')
     else:
         s = summary
         print(f"\n=== {s['date']} ===")
@@ -208,6 +288,8 @@ def print_summary(summary) -> None:
             for k, v in sorted(s['cond_breakdown'].items()):
                 print(f"    {k}: n={v['n']} hits={v['hits']} inv={v['inv']}JPY pay={v['pay']}JPY "
                       f"ROI={v.get('roi_pct', 0)}% hit_rate={v.get('hit_rate_pct', 0)}%")
+        if show_strategy and s.get('strategy_stats'):
+            print_strategy_report(s['strategy_stats'], header='8 strategy paper ROI')
 
 
 def main():
@@ -217,6 +299,8 @@ def main():
     ap.add_argument('--all', action='store_true', help='全日付集計')
     ap.add_argument('--out', help='出力 JSON path')
     ap.add_argument('--quiet', action='store_true')
+    ap.add_argument('--no-strategy', action='store_true', help='8 strategy 表示を省略')
+    ap.add_argument('--strategy-report', action='store_true', help='8 strategy paper ROI のみ表示')
     args = ap.parse_args()
 
     if args.all:
@@ -231,7 +315,17 @@ def main():
 
     out = write_summary(result, args.out)
     if not args.quiet:
-        print_summary(result)
+        show_strategy = not args.no_strategy
+        if args.strategy_report:
+            # strategy report のみ
+            if isinstance(result, list):
+                merged = _merge_strategy_stats(result)
+                print_strategy_report(merged, header='8 strategy paper ROI (all days)')
+            else:
+                ss = result.get('strategy_stats', {})
+                print_strategy_report(ss, header=f"8 strategy paper ROI ({result.get('date', '')})")
+        else:
+            print_summary(result, show_strategy=show_strategy)
         print(f"\n  summary written to: {out}")
 
 
