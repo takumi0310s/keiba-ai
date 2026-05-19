@@ -405,6 +405,21 @@ def predict_and_notify(race_info, date_str):
         if STRATEGY_C2_PAPER_ONLY and _c2_skip:
             print(f"    [STRATEGY_C2][PAPER] would skip: {_c2_reason} → {race_name_str}")
 
+        # === STRATEGY_C3_VENUE: 場別 grid 高 ROI pocket 自動切替 (paper eval only) ===
+        # 注: C3 pos2除外 (bet フィルタ) と区別するため C3_VENUE と命名
+        STRATEGY_C3_VENUE_PAPER_ONLY = True
+        # 高 ROI pocket 定義 (重-2 audit Sub-task 13 から)
+        _C3_HIGH_ROI_POCKETS = [
+            ('中山', 'A'),   # 中山 Cond-A 高 ROI
+            ('阪神', 'C'),   # 阪神 大型レース
+            ('東京', 'C'),   # 東京 Cond-C
+            ('中京', 'A'),   # 中京 Cond-A
+        ]
+        _c3v_match = any(v in course_str and cond_key == c for v, c in _C3_HIGH_ROI_POCKETS)
+        if STRATEGY_C3_VENUE_PAPER_ONLY:
+            _c3v_status = 'HIGH_ROI_POCKET' if _c3v_match else 'standard'
+            print(f"    [STRATEGY_C3_VENUE][PAPER] venue={course_str} cond={cond_key} → {_c3v_status}")
+
         # 収益パターンマッチ
         _pp_stars, _pp_matched = 0, []
         try:
