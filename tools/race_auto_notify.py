@@ -431,6 +431,21 @@ def predict_and_notify(race_info, date_str):
         except Exception:
             pass
 
+        # === Kelly criterion hook (D-1 2026-05-19) ===
+        # cond_profile['investment'] を動的 Kelly 額で上書き（¥300-¥700、fallback ¥700）
+        try:
+            from tools.kelly_criterion import calc_dynamic_bet_amount, get_rolling_roi
+            _kelly_scores = [float(df.iloc[i]['スコア']) for i in range(min(6, len(df)))]
+            _kelly_rolling_roi = get_rolling_roi()
+            _kelly_amount = calc_dynamic_bet_amount(
+                _kelly_scores, rolling_roi=_kelly_rolling_roi)
+            cond_profile = dict(cond_profile)  # copy to avoid mutating original
+            cond_profile['investment'] = _kelly_amount
+            print(f"    [KELLY] amount=¥{_kelly_amount} rolling_roi={_kelly_rolling_roi}")
+        except Exception as _kelly_err:
+            print(f"    [KELLY] fallback ¥700: {_kelly_err}")
+        # === Kelly criterion hook ここまで ===
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）
