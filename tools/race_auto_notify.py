@@ -355,6 +355,20 @@ def predict_and_notify(race_info, date_str):
             except Exception:
                 pass
 
+        # === STRATEGY_B1: V15 top1 = 市場1番人気のとき skip (paper eval only、N=41 N不足、6/17 判定) ===
+        STRATEGY_B1_PAPER_ONLY = True
+        _b1_top1_pop = int(df.iloc[0].get('pop_rank', 0)) if len(df) > 0 else 0
+        _b1_skip = (_b1_top1_pop == 1)
+        if STRATEGY_B1_PAPER_ONLY and _b1_skip:
+            print(f"    [STRATEGY_B1][PAPER] would skip: top1 pop_rank=1 → {race_name_str}")
+
+        # === STRATEGY_B2: V15-市場 divergence: top1 pop_rank >= 3 のみ (paper eval only) ===
+        STRATEGY_B2_PAPER_ONLY = True
+        STRATEGY_B2_MIN_POP_RANK = 3
+        _b2_skip = (_b1_top1_pop > 0 and _b1_top1_pop < STRATEGY_B2_MIN_POP_RANK)
+        if STRATEGY_B2_PAPER_ONLY and _b2_skip:
+            print(f"    [STRATEGY_B2][PAPER] would skip: top1 pop_rank={_b1_top1_pop} < {STRATEGY_B2_MIN_POP_RANK} → {race_name_str}")
+
         # 収益パターンマッチ
         _pp_stars, _pp_matched = 0, []
         try:
