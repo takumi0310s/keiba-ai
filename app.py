@@ -827,6 +827,51 @@ def load_dashboard_data():
     return df
 
 
+def load_strategy_roi_data():
+    """race_notify_log_v2_summary/ から 8 strategy の paper ROI データを累積集計。
+    Returns: dict[strategy_key] -> {roi, pnl, n, hits, hit_rate, inv, pay}
+    """
+    import glob as _glob
+    strategies = ['actual', 'c3', 'c4', 'c3c4', 'no_1pop', 'divergence', 'ev_filter', 'odds_filter']
+    summary_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'race_notify_log_v2_summary')
+    combined = {s: {'n': 0, 'hits': 0, 'inv': 0, 'pay': 0} for s in strategies}
+    loaded = 0
+    try:
+        if os.path.exists(summary_dir):
+            for fpath in sorted(_glob.glob(os.path.join(summary_dir, '*.json'))):
+                try:
+                    with open(fpath, encoding='utf-8') as fp:
+                        data = json.load(fp)
+                    ss = data.get('strategy_stats', {})
+                    if not ss:
+                        continue
+                    loaded += 1
+                    for s in strategies:
+                        sv = ss.get(s, {})
+                        combined[s]['n']    += sv.get('n', 0)
+                        combined[s]['hits'] += sv.get('hits', 0)
+                        combined[s]['inv']  += sv.get('inv', 0)
+                        combined[s]['pay']  += sv.get('pay', 0)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    result = {}
+    for s in strategies:
+        c = combined[s]
+        if c['inv'] > 0:
+            roi = round(c['pay'] / c['inv'] * 100, 1)
+            pnl = c['pay'] - c['inv']
+            hr  = round(c['hits'] / c['n'] * 100, 1) if c['n'] > 0 else 0.0
+            result[s] = {'roi': roi, 'pnl': pnl, 'n': c['n'], 'hits': c['hits'],
+                         'hit_rate': hr, 'inv': c['inv'], 'pay': c['pay']}
+        else:
+            result[s] = {'roi': None, 'pnl': None, 'n': c['n'], 'hits': 0,
+                         'hit_rate': None, 'inv': 0, 'pay': 0}
+    result['_loaded_files'] = loaded
+    return result
+
+
 def render_live_dashboard():
     """リアルタイム成績ダッシュボードを描画"""
     from datetime import timedelta
@@ -1022,6 +1067,83 @@ def render_live_dashboard():
     display_recent = recent[['date', 'course', 'race_name', 'condition', 'bet_type', '結果']].copy()
     display_recent.columns = ['日付', '場所', 'レース', '条件', '券種', '結果']
     st.dataframe(display_recent, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # === 8 strategy paper ROI comparison ===
+    st.subheader("Strategy Paper ROI Comparison (8 strategies)")
+    _strat_data = load_strategy_roi_data()
+    _loaded_n = _strat_data.pop('_loaded_files', 0)
+
+    _STRATEGY_LABELS = {
+        'actual':      '実運用 (V15+戦略 7C)',
+        'c3':          'C3: pos2 除外 (6bet)',
+        'c4':          'C4: Cond-A 1600-1800m 除外',
+        'c3c4':        'C3+C4: 複合',
+        'no_1pop':     'B-1: 1 番人気除外',
+        'divergence':  'B-2: divergence 3 番人気外のみ',
+        'ev_filter':   'C-1: EV>1 フィルタ',
+        'odds_filter': 'C-2: odds 帯 1.5-20x フィルタ',
+    }
+
+    if _loaded_n == 0:
+        st.info("Paper eval データ蓄積中 (race_notify_log_v2_summary)。5/23+ fire 後に ROI が蓄積されます。")
+        st.caption("aggregator: python tools/race_notify_log_v2_aggregator.py --all")
+    else:
+        # Bar chart
+        _chart_rows = []
+        for _sk, _sl in _STRATEGY_LABELS.items():
+            _d = _strat_data.get(_sk, {})
+            _roi = _d.get('roi')
+            _chart_rows.append({
+                'strategy': _sl,
+                'ROI': _roi if _roi is not None else 0.0,
+                'has_data': _roi is not None,
+            })
+        try:
+            import altair as alt
+            _cdf = pd.DataFrame(_chart_rows)
+            _chart = (
+                alt.Chart(_cdf)
+                .mark_bar()
+                .encode(
+                    x=alt.X('strategy:N', sort=None, axis=alt.Axis(labelAngle=-30)),
+                    y=alt.Y('ROI:Q', title='ROI (%)'),
+                    color=alt.condition(
+                        alt.datum.ROI >= 100,
+                        alt.value('#2196F3'),
+                        alt.value('#FF5722'),
+                    ),
+                    tooltip=['strategy:N', 'ROI:Q'],
+                )
+                .properties(height=280, title='8 Strategy Paper ROI')
+            )
+            st.altair_chart(_chart, use_container_width=True)
+        except Exception:
+            pass
+
+    # Table (always shown)
+    _rows_tbl = []
+    for _sk, _sl in _STRATEGY_LABELS.items():
+        _d = _strat_data.get(_sk, {})
+        _roi = _d.get('roi')
+        _pnl = _d.get('pnl')
+        _rows_tbl.append({
+            'strategy': _sl,
+            'N': _d.get('n', 0),
+            'hits': _d.get('hits', 0),
+            'hit 率': f"{_d['hit_rate']:.1f}%" if _d.get('hit_rate') is not None else 'N/A',
+            'ROI': f"{_roi:.1f}%" if _roi is not None else '蓄積中',
+            'PnL': f"¥{_pnl:+,.0f}" if _pnl is not None else 'N/A',
+        })
+    st.dataframe(pd.DataFrame(_rows_tbl), use_container_width=True, hide_index=True)
+    st.caption(
+        f"Paper eval 期間: 5/23-6/16 | 採用判定: 6/17 | "
+        f"集計ファイル数: {_loaded_n} | "
+        "aggregator: python tools/race_notify_log_v2_aggregator.py"
+    )
+
+    st.markdown("---")
 
     # === データ鮮度 ===
     latest_date = df['date'].max()
