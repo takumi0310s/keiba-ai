@@ -302,6 +302,7 @@ def compute_strategy_results(
 
 def log_phase1(race_id, race_meta=None, ranking_top5=None,
                formation_planned=None, morning_odds=None,
+               features_df=None, v15_predictions=None,
                date_str=None):
     """phase 1: daily_predict 後 (朝 8:00) log。
 
@@ -311,6 +312,8 @@ def log_phase1(race_id, race_meta=None, ranking_top5=None,
         ranking_top5: top1-5 馬番 list or 同等 string
         formation_planned: 予定 formation (trio_bets string 等)
         morning_odds: 朝時点の odds dict {umaban: odds}
+        features_df: feature DataFrame for paper shadow (省略可)
+        v15_predictions: V15 predictions list for paper shadow (省略可)
         date_str: 日付 (YYYYMMDD)、 未指定なら本日
 
     fail 時は stderr 出力のみ、 例外を投げない。
@@ -324,6 +327,17 @@ def log_phase1(race_id, race_meta=None, ranking_top5=None,
         out_dir = _log_root() / d / 'phase1'
         out_file = out_dir / f'{race_id}.json'
 
+        # paper shadow (optional — requires features_df + v15_predictions)
+        paper_shadows: dict = {}
+        if features_df is not None and v15_predictions is not None:
+            try:
+                from tools.paper_shadow_v15_full import run_paper_shadow_comparison, log_paper_shadow
+                shadow_result = run_paper_shadow_comparison(race_id, features_df, v15_predictions)
+                paper_shadows = shadow_result.get('paper_shadows', {})
+                log_paper_shadow(shadow_result)
+            except Exception as _e:
+                print(f"[race_notify_log_v2 phase1 paper_shadow fail] {_e}", file=sys.stderr)
+
         data = {
             'phase': 1,
             'phase_name': 'morning_predict',
@@ -333,6 +347,7 @@ def log_phase1(race_id, race_meta=None, ranking_top5=None,
             'ranking_top5': ranking_top5 if ranking_top5 is not None else [],
             'formation_planned': formation_planned if formation_planned is not None else '',
             'morning_odds': morning_odds or {},
+            'paper_shadows': paper_shadows,
         }
         _write_json(out_file, data)
     except Exception as e:

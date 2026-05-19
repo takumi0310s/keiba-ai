@@ -215,6 +215,134 @@ def check_strategy7c(date_str: str, repo: Path = REPO) -> dict:
                    skip_count=skip_kyoto, kyoto_races=len(non_excluded))
 
 
+# === Strategy-level anomaly detection (D-6 2026-05-19) ===
+
+STRATEGY_ANOMALY_THRESHOLDS = {
+    'single_day_roi_drop': -50.0,     # 単日 ROI < -50pt
+    'hit_rate_zero_min_n': 5,          # N >= 5 で hit = 0
+    'consecutive_negative_days': 3,    # 連続 negative ROI (< 100%)
+}
+
+
+def check_strategy_anomaly(strategy_key: str, strategy_stats_history: list) -> dict | None:
+    """
+    Check if a specific strategy shows anomalous behavior.
+
+    Args:
+        strategy_key: strategy name (str)
+        strategy_stats_history: list of daily stats dicts
+            [{roi, n, hits, date}, ...]  (oldest → newest)
+
+    Returns:
+        dict {strategy, anomalies, action, details} if anomaly found, else None
+    """
+    if not strategy_stats_history:
+        return None
+
+    anomalies = []
+    latest = strategy_stats_history[-1]
+
+    # Check 1: 単日 ROI < -50pt
+    roi = latest.get('roi')
+    if roi is not None and roi < STRATEGY_ANOMALY_THRESHOLDS['single_day_roi_drop']:
+        anomalies.append(f"単日 ROI {roi:.1f}pt < -50pt")
+
+    # Check 2: hit = 0 かつ N >= threshold
+    n = latest.get('n', 0)
+    hits = latest.get('hits', 1)
+    if n >= STRATEGY_ANOMALY_THRESHOLDS['hit_rate_zero_min_n'] and hits == 0:
+        anomalies.append(f"hit = 0/{n} races")
+
+    # Check 3: 連続 consecutive_negative_days 日 ROI < 100%
+    req = STRATEGY_ANOMALY_THRESHOLDS['consecutive_negative_days']
+    recent = strategy_stats_history[-req:]
+    if (len(recent) >= req and
+            all(d.get('roi') is not None and d['roi'] < 100.0 for d in recent)):
+        anomalies.append(f"連続 {len(recent)} 日 ROI < 100%")
+
+    if anomalies:
+        return {
+            'strategy': strategy_key,
+            'anomalies': anomalies,
+            'action': 'paper_only_auto_switch',
+            'details': '; '.join(anomalies),
+        }
+    return None
+
+
+def run_strategy_anomaly_scan(log_dir: str | None = None) -> list:
+    """
+    Scan all strategy stats for anomalies from race_notify_log_v2 aggregator summaries.
+
+    Returns list of anomaly dicts for strategies with issues.
+    """
+    import glob as _glob
+
+    if log_dir is None:
+        log_dir = str(REPO / 'data' / 'race_notify_log_v2_summary')
+
+    strategies = ['actual', 'c3', 'c4', 'c3c4', 'no_1pop', 'divergence', 'ev_filter', 'odds_filter']
+    strategy_history: dict = {s: [] for s in strategies}
+
+    if os.path.isdir(log_dir):
+        for fpath in sorted(_glob.glob(os.path.join(log_dir, '*.json')))[-7:]:
+            try:
+                with open(fpath, encoding='utf-8') as fp:
+                    data = json.load(fp)
+                date_str = os.path.splitext(os.path.basename(fpath))[0]
+                for s in strategies:
+                    ss = data.get('strategy_stats', {}).get(s, {})
+                    if ss:
+                        strategy_history[s].append({
+                            'date': date_str,
+                            'roi': ss.get('roi'),
+                            'n': ss.get('n', 0),
+                            'hits': ss.get('hits', 0),
+                        })
+            except Exception:
+                pass
+
+    anomalies_found = []
+    for s in strategies:
+        result = check_strategy_anomaly(s, strategy_history[s])
+        if result:
+            anomalies_found.append(result)
+
+    return anomalies_found
+
+
+def send_strategy_anomaly_alert(anomalies: list, webhook_url: str | None = None) -> None:
+    """Send Discord alert for strategy anomalies. Falls back to stdout print."""
+    if not anomalies:
+        return
+
+    if webhook_url is None:
+        webhook_url = (os.environ.get('DISCORD_WEBHOOK_UPDATES') or
+                       os.environ.get('DISCORD_WEBHOOK_URL'))
+
+    if not webhook_url:
+        for a in anomalies:
+            print(f"[ANOMALY] {a['strategy']}: {a['details']} → {a['action']}")
+        return
+
+    try:
+        import json as _json
+        import urllib.request
+        lines = [f"⚠️ Strategy Anomaly Detected ({len(anomalies)} strategies)"]
+        for a in anomalies:
+            lines.append(f"• {a['strategy']}: {a['details']}")
+            lines.append(f"  → {a['action']}")
+        payload = {'content': '\n'.join(lines)}
+        data = _json.dumps(payload).encode()
+        req = urllib.request.Request(
+            webhook_url, data=data,
+            headers={'Content-Type': 'application/json'},
+        )
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        print(f"[anomaly strategy alert] Discord failed: {e}")
+
+
 # ---------- discord ----------
 def send_discord(severity: str, message: str, rollback_cmd: str | None = None) -> bool:
     webhook = os.environ.get('DISCORD_WEBHOOK_UPDATES') or os.environ.get('DISCORD_WEBHOOK_URL')
@@ -274,6 +402,15 @@ def main(argv=None):
         rollback = ("git revert <Sub-task 8 commit hash> --no-edit  "
                     "# 戦略⑦案 C rollback (docs/5_17_G1_DAY_CHECKLIST.md 参照)")
         send_discord('critical' if critical else 'warning', '\n'.join(lines), rollback)
+
+    # strategy-level anomaly scan (D-6)
+    strategy_anomalies = run_strategy_anomaly_scan()
+    if strategy_anomalies:
+        send_strategy_anomaly_alert(strategy_anomalies)
+        for a in strategy_anomalies:
+            print(f"  [⚠] strategy_anomaly  {a['strategy']}: {a['details']}")
+        if not args.no_discord:
+            pass  # already sent via send_strategy_anomaly_alert
 
     if critical > 0:
         return 2
