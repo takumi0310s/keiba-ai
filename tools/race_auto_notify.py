@@ -125,6 +125,13 @@ def predict_and_notify(race_info, date_str):
     race_id = race_info['race_id']
     print(f"\n  >>> Predicting: {race_info['course']}{race_info['race_num']}R ({race_id})")
 
+    # === E-1: rollback state hook (add-only, existing flags unchanged globally) ===
+    try:
+        from tools.strategy_rollback import get_effective_flags as _get_eff
+        _c4_effective, _c3_effective = _get_eff()
+    except Exception:
+        _c4_effective, _c3_effective = True, True
+
     # TYB取得（発走前に1回だけ、同一日内で共有）
     if date_str not in _tyb_fetched_dates:
         _tyb_fetched_dates.add(date_str)
@@ -282,6 +289,7 @@ def predict_and_notify(race_info, date_str):
 
         # === STRATEGY_C4: Cond-A 1600-1800m drag 除外 (production active、重-2 +8.62pt confirmed) ===
         STRATEGY_C4_ENABLED = True
+        STRATEGY_C4_ENABLED = STRATEGY_C4_ENABLED and _c4_effective  # E-1 rollback hook
         if STRATEGY_C4_ENABLED and cond_key == 'A' and 1600 <= distance <= 1800:
             print(f"    [STRATEGY_C4] Skip Cond-A 1600-1800m: {race_name_str} dist={distance}")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_c4_condA_1600_1800')
@@ -317,6 +325,7 @@ def predict_and_notify(race_info, date_str):
             bets = generate_trio_bets(df)
             # === STRATEGY_C3: pos2 (T1-T2-T4) bet 除外 trio 7→6点 (production active) ===
             STRATEGY_C3_ENABLED = True
+            STRATEGY_C3_ENABLED = STRATEGY_C3_ENABLED and _c3_effective  # E-1 rollback hook
             if STRATEGY_C3_ENABLED and bet_type == 'trio' and len(bets) >= 1:
                 top4 = [int(df.iloc[i]['馬番']) for i in range(min(4, len(df)))]
                 if len(top4) >= 4:
