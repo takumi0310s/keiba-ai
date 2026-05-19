@@ -363,8 +363,9 @@ def predict_and_notify(race_info, date_str):
             print(f"    [STRATEGY_B1][PAPER] would skip: top1 pop_rank=1 → {race_name_str}")
 
         # === STRATEGY_B2: V15-市場 divergence: top1 pop_rank >= 3 のみ (paper eval only) ===
+        # +10-20pt候補 N不足のため paper。 top1_pop_rank < MIN のとき skip (実際は log only)
         STRATEGY_B2_PAPER_ONLY = True
-        STRATEGY_B2_MIN_POP_RANK = 3
+        STRATEGY_B2_MIN_POP_RANK = 3  # pop_rank 1-2 = V15 が市場と一致 → skip
         _b2_skip = (_b1_top1_pop > 0 and _b1_top1_pop < STRATEGY_B2_MIN_POP_RANK)
         if STRATEGY_B2_PAPER_ONLY and _b2_skip:
             print(f"    [STRATEGY_B2][PAPER] would skip: top1 pop_rank={_b1_top1_pop} < {STRATEGY_B2_MIN_POP_RANK} → {race_name_str}")
