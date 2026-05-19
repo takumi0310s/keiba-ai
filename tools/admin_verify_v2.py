@@ -197,11 +197,35 @@ def run_verify() -> Dict[str, Any]:
         1 for v in py_results.values() if v.get("compile_ok") is True
     )
 
-    ready = (
-        registered_count == 0  # 5/18 1830 想定: まだ未登録 = OK to proceed admin
-        and bats_exist == len(SCHTASKS)
-        and py_compile_ok == len(set(e["py"] for e in SCHTASKS))
+    n_tasks = len(SCHTASKS)
+    n_unique_py = len(set(e["py"] for e in SCHTASKS))
+
+    # ★ F-5 fix (2026-05-19) ★
+    # 旧 ready_for_5_22_admin = (registered_count == 0) → 意味は「admin 登録前 = 着手可能」
+    # F-3 admin 完了後 (9/9 登録済) は registered_count == 9 → 旧フラグ = False (正しい動作)
+    # だが "ready for 5/22 admin: False" という表示が「準備不足」と誤読されるため
+    # 新フラグ fire_ready (5/23 発火 READY) と registration_complete を追加。
+
+    # registration_complete: schtask 9/9 登録済
+    registration_complete = (registered_count == n_tasks)
+
+    # admin_needed: 旧フラグ (0/9 = admin 登録前 = まだ /Create が必要な状態)
+    admin_needed = (registered_count == 0 and bats_exist == n_tasks and py_compile_ok == n_unique_py)
+
+    # fire_ready: 5/23 発火 READY = 9/9 登録済 + bat 全存在 + py compile OK
+    fire_ready = (
+        registered_count == n_tasks
+        and bats_exist == n_tasks
+        and py_compile_ok == n_unique_py
     )
+
+    # registration_status: 人間可読ステータス文字列
+    if registered_count == n_tasks:
+        registration_status = f"COMPLETE ({registered_count}/{n_tasks}) no admin needed"
+    elif registered_count == 0:
+        registration_status = f"NOT REGISTERED (0/{n_tasks}) run admin /Create"
+    else:
+        registration_status = f"PARTIAL ({registered_count}/{n_tasks}) check admin"
 
     return {
         "verify_time": dt.datetime.now().isoformat(timespec="seconds"),
@@ -210,10 +234,15 @@ def run_verify() -> Dict[str, Any]:
         "bats": bat_results,
         "py_modules": py_results,
         "summary": {
-            "schtasks_registered": f"{registered_count}/{len(SCHTASKS)}",
-            "bats_exist": f"{bats_exist}/{len(SCHTASKS)}",
-            "py_compile_ok": f"{py_compile_ok}/{len(set(e['py'] for e in SCHTASKS))}",
-            "ready_for_5_22_admin": ready,
+            "schtasks_registered": f"{registered_count}/{n_tasks}",
+            "bats_exist": f"{bats_exist}/{n_tasks}",
+            "py_compile_ok": f"{py_compile_ok}/{n_unique_py}",
+            # ★ 旧フラグ (後方互換 維持、意味は「admin /Create 前の着手可能状態」)
+            "ready_for_5_22_admin": admin_needed,
+            # ★ 新フラグ群 (F-5 追加)
+            "registration_complete": registration_complete,
+            "registration_status": registration_status,
+            "fire_ready": fire_ready,
         },
     }
 
@@ -227,7 +256,10 @@ def print_summary(report: Dict[str, Any]) -> None:
     print(f"  schtasks registered : {s['schtasks_registered']}")
     print(f"  bats exist          : {s['bats_exist']}")
     print(f"  py compile ok       : {s['py_compile_ok']}")
-    print(f"  ready for 5/22 admin: {s['ready_for_5_22_admin']}")
+    print(f"  registration status : {s['registration_status']}")
+    print(f"  fire_ready (5/23)   : {s['fire_ready']}")
+    # old flag (backward compat, meaning: pre-admin state = 0/9 + bat/py OK)
+    print(f"  ready_for_5_22_admin: {s['ready_for_5_22_admin']}  (old flag: 0/9 unregistered + bat/py OK)")
     print("-" * 60)
     print("schtasks detail:")
     for name, info in report["schtasks"].items():
