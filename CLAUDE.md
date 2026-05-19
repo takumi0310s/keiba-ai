@@ -3,70 +3,11 @@
 > **caveman mode**: respond like caveman. short word. no verbose. do thing, say little. result only.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-Last updated: **2026-05-18 (Session #90 B-2、 ★ CLAUDE.md drift 30 件 全 verify + context-correct 確認 ★)**
+Last updated: **2026-05-19 (Session #91 E-2、 slim 化 78k→43k bytes / 30k chars)**
 
-> Session #90 B-2 (5/18 17:30) で CLAUDE.md 内 drift 30 件 全 verify:
-> - 119.2% ×3 件: 全 「旧値 / drift 引用 + 真値 98.34% 注釈」 形式で OK
-> - 13,530 ×2 件: 全 「旧値 / drift 引用 + 真値 ¥-6,920 注釈」 形式で OK
-> - 4-model ×17 件: 全 「v13.5b historical 事実 / Grid 4-model = WF 評価専用真値 / drift 引用」 で OK (1 件 V20 plan に追記)
-> - 0.8939 ×7 件: 全 「stored .pkl.auc 真値 (= LGB train-set self-eval) / drift 引用」 で OK
-> - 150 features ×1 件: drift 引用 で OK
-> → ★ context-mismatch 0 件 ★、 単純 replace_all 禁止、 line-by-line honest 訂正 (docs/B2_CLAUDE_MD_FULL_DRIFT_RESOLUTION_2026_05_18.md)
->
-> Session #89 (5/17 evening) で memory drift 5 件 全訂正 完了 (docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md):
-> | # | item | 旧値 (drift) | 真値 (audit 出典) | resolved |
-> |---|---|---|---|---|
-> | 1 | 累計 ROI | 119.2% | **98.34%** (V15-audit-4、 5/17 G1 day 反映、 CI [66.33, 138.05] 100% 含む) | ✅ |
-> | 2 | architecture | 4-model (LGB+XGB+FT+IR) | **LGB+XGB 2-model production** (FT/IR は .pkl 未保存、 WF 評価専用) — V15-audit-1 | ✅ |
-> | 3 | WF AUC | 0.8939 | **0.8678** (LGB+XGB genuine WF) / 0.8858 (Grid 4-model 5-fold) — V15-audit-2 | ✅ |
-> | 4 | features count | 150 | **145** (booster)、 Pattern B 150 だが truncate で 145 — V15-audit-1/3 | ✅ |
-> | 5 | formation record | 記録あり | ★ **race-time formation 永久喪失** ★ — data-audit-3 | ✅ |
->
-> Session #88 (5/16 evening) で drift 1 (ROI/PnL) 発見 + P0-1 真値確定 → 5/17 audit で 残る 4 件確定。
-> 出典 audit: V15-audit-1〜5 (docs/V15_AUDIT_*_2026_05_17.md) + data-audit-1〜4 (docs/DATA_AUDIT_*_2026_05_17.md)。
-> 統計的有意性なし (95% CI [66.33%, 138.05%]、 100% 含む) → 楽観 自重、 5/24+ paper eval で v15_full FT+IR 有効化 検証。
->
-> Session #86 (5/9 21:00) で 完全自動化 plan + CLAUDE.md update + メモリ整理:
-> - **A**: 完全自動化 ロードマップ (5/15 80% / 9/2 90% / 12/1 100%) ([docs/FULL_AUTOMATION_ROADMAP.md](docs/FULL_AUTOMATION_ROADMAP.md))
-> - **B**: CLAUDE.md update (本 commit、 Session #46-#86 主要発見 反映)
-> - **C**: docs/ 全索引 (用途別 navigate + Session 別 list) ([docs/MEMORY_INDEX.md](docs/MEMORY_INDEX.md))
-> - **D**: 5/10 朝確認用 cheat sheet ([docs/MORNING_5_10_CHEAT_SHEET.md](docs/MORNING_5_10_CHEAT_SHEET.md))
->
-> Session #79-#85 (5/9 GW 締め マラソン):
-> - **#79**: V20 構築 詳細 ([docs/V20_BUILD_DETAILED_PLAN.md](docs/V20_BUILD_DETAILED_PLAN.md))
-> - **#80**: JRA-VAN RV trial guide + Phase 4 plan v2 ([docs/JRA_VAN_RV_TRIAL_GUIDE.md](docs/JRA_VAN_RV_TRIAL_GUIDE.md), [docs/PHASE_4_VIDEO_REPLAN_v2.md](docs/PHASE_4_VIDEO_REPLAN_v2.md))
-> - **#81**: JRA-VAN NEXT 自動分配 設計 ([docs/JRA_VAN_NEXT_AUTO_ALLOCATION.md](docs/JRA_VAN_NEXT_AUTO_ALLOCATION.md))
-> - **#82**: hybrid 戦略 ([docs/STRATEGY_HYBRID_DESIGN.md](docs/STRATEGY_HYBRID_DESIGN.md))
-> - **#84/#85**: V22 RL 設計 + 30 年 backtest ([docs/V22_RL_DESIGN.md](docs/V22_RL_DESIGN.md), [docs/BACKTEST_30_YEAR_DESIGN.md](docs/BACKTEST_30_YEAR_DESIGN.md))
->
-> Session #44 (5/8) で 7 領域 並行実行 + ★ TFJV フル data 即活用 ★:
-> - **A**: TFJV 構造把握 (43,000 files / 6 GB / 14 datatypes) ([data/v18/tfjv_data_inventory_5_8.md](data/v18/tfjv_data_inventory_5_8.md))
-> - **B**: tools/tfjv_parser.py 本実装 (RA/SE/HR/H1/UM/WF parser、 Shift-JIS 漢字 OK)
-> - **C**: 6 source 体制確定、 TFJV 主軸 ([data/v18/tfjv_jrdb_merge_5_8.md](data/v18/tfjv_jrdb_merge_5_8.md))
-> - **D**: V20 学習 data 6 年分 一括 parse (320K records / 10 秒) ([data/v18/v20_data_construction_5_8.md](data/v18/v20_data_construction_5_8.md))
-> - **E**: V20 PoC AUC 0.8752 (LGB single fold、 ensemble は Phase 3 で) ([data/v18/v20_poc_5_8.md](data/v18/v20_poc_5_8.md))
-> - **F**: ★ Phase 3-5 v3、 V20 投入 7/1 → **6/8** に 1 ヶ月前倒し ★ ([docs/PHASE_3_4_5_INTEGRATED_ROADMAP_v3.md](docs/PHASE_3_4_5_INTEGRATED_ROADMAP_v3.md))
-> - **G**: doc 全更新 (本 commit)
->
-> Session #43 (5/8) で 7 領域 並行実行 + ★ V15 ROI 真因発見 ★:
-> - **A**: ★ V15 ROI 44% 真因 = actual_payout NaN 集計 bug、 **真の ROI 83.96%** ([data/v18/v15_roi44_root_cause_5_8.md](data/v18/v15_roi44_root_cause_5_8.md))
-> - **B**: V20 2025-04 backfill plan (60-90 min) ([data/v18/jvlink_backfill_2025_04_actual_5_8.md](data/v18/jvlink_backfill_2025_04_actual_5_8.md))
-> - **C**: sib_exp w5 本実装 + V18/V19 再学習 + LIVE retro (BT AUC 0.8847、 LIVE 進行中)
-> - **D**: 動画 PoC 拡張 (frame 抽出 + YOLOv8 95-138ms) ([data/v18/video_poc_extended_5_8.md](data/v18/video_poc_extended_5_8.md))
-> - **E**: orchestrator 5 case test (case 1+4 動作 OK) ([tools/test_orchestrator_5_cases.py](tools/test_orchestrator_5_cases.py))
-> - **F**: 5/9 戦略 final v3 (案 A 維持 700円×3R) ([docs/PLAN_5_9_FINAL_v3.md](docs/PLAN_5_9_FINAL_v3.md))
->
-> Session #42 (5/8 日中) で 10 領域 並行 + 動画 PoC 実行:
-> - **A**: 32-bit Python quickstart 1 ページ ([docs/SETUP_PYTHON32_QUICKSTART.md](docs/SETUP_PYTHON32_QUICKSTART.md))
-> - **B+G**: 5/1-5/7 actual + V20 phased backfill ([data/v18/v20_backfill_phased_5_8.md](data/v18/v20_backfill_phased_5_8.md))
-> - **C**: 拡張 retro 4/18-5/5 (V15 案B改 ROI 44.47% / 39 races) ([data/v18/extended_retro_4_12_5_5_5_8.md](data/v18/extended_retro_4_12_5_5_5_8.md))
-> - **D**: 5/10 朝 結果照合 自動化 (verdict 6 シナリオ) ([docs/RESULT_VERIFICATION_5_10.md](docs/RESULT_VERIFICATION_5_10.md))
-> - **E**: 動画解析 feasibility GO (ultralytics 8.4 + YOLOv8 138ms 動作) ([docs/PHASE_4_VIDEO_FEASIBILITY_5_8.md](docs/PHASE_4_VIDEO_FEASIBILITY_5_8.md))
-> - **F**: sib_exp variant 探索、 **window=5 が最良 corr 0.2010** (full expanding 0.1689 から +0.032) ([data/v18/sib_exp_optimization_5_8.md](data/v18/sib_exp_optimization_5_8.md))
-> - **H**: 5/16 V18/V19 投入 plan v2 (GO 65-80%、 6 シナリオ条件分岐) ([docs/PLAN_5_16_V18_V19_DEPLOYMENT_v2.md](docs/PLAN_5_16_V18_V19_DEPLOYMENT_v2.md))
->
-> Session #41 巨大マラソン (5/8 深夜) で 8 領域 + sib_exp LIVE retro **+6.89pt 改善大成功** ([data/v18/sib_expanding_v1_retro_5_7.md](data/v18/sib_expanding_v1_retro_5_7.md))。
-> Session #39 deluxe (5/7) で 10 領域 設計済 ([Phase 3-4 統合 roadmap](docs/PHASE_3_4_INTEGRATED_ROADMAP.md))。
+> Session #88-90 (5/16-18): drift 5 件全訂正完了。V15 真値確定 (V15-audit-1〜5 / data-audit-1〜4)。
+> 5/17-18 memory drift: ROI 119.2%→98.34% / arch 4-model→LGB+XGB 2-model / AUC 0.8939→0.8678(WF) / features 150→145 / formation 永久喪失。
+> 全詳細: docs/MEMORY_DRIFT_FINAL_RESOLUTION_2026_05_17.md + docs/B2_CLAUDE_MD_FULL_DRIFT_RESOLUTION_2026_05_18.md
 
 ### JRA-VAN 加入 + JV-Link 環境 (2026-05-07 夜 確定)
 
@@ -151,94 +92,6 @@ JRA中央競馬の全レースをAIで予測し、条件別に最適な買い目
 
 ---
 
-## 3. やったこと（全実施タスク一覧）
-
-### データ取得・変換
-1. TARGET JV (C:\TFJV) からCSV抽出（SE_DATA/CK_DATA/HY_DATA/BR_DATA/KT_DATA）
-2. jra_races_full.csv 構築（781,161行、2010-2025）
-3. training_times.csv 構築（955,580行、木/坂路調教データ）
-4. odds_history.csv 構築（778,387行）
-5. blood_full.csv 構築（81,986行、血統データ）
-6. JRA公式DB配当スクレイパー構築 → jra_payouts.csv（27,541件、2018-2025）
-7. JRA馬場情報スクレイパー（クッション値・含水率）
-8. 気象庁APIスクレイパー（気温・湿度・風速・降水量）
-9. netkeiba出馬表・結果スクレイパー（db.netkeiba.comフォールバック対応）
-
-### モデル学習・改善
-1. V8ベースモデル学習
-2. V9.1基盤特徴量（43特徴量）
-3. V9.2追加特徴量（+11: career/sire/wood training）→ AUC改善
-4. V9.3追加特徴量（+13: pace/distance aptitude/frame advantage）→ AUC 0.8095
-5. Pattern A（リークフリー67特徴量）確立 → 確定オッズリーク発見・除去
-6. Pattern B（当日情報込み75特徴量）学習 → AUC 0.8460（参考値）
-7. V10アンサンブル（LGB+XGB+MLP）試行 → 不採用（WF 0.8050 < 0.8083）
-8. コース別専用モデル試行 → 不採用（過学習）
-9. Optunaハイパーパラメータ最適化（100試行）→ 微改善のみ、不採用
-10. 2段階モデル構成（学習=A、予測=B）確立
-11. V11 speed index試行 → 不採用（WF AUC 0.801 < 0.802 baseline）
-12. **V12総合再学習（+7特徴量）→ WF AUC 0.8037（+0.0031）→ 採用**
-    - dam_top3rリーク発見（全年データで計算→expanding windowに修正→マイナス寄与で除外）
-13. **v13.4 JRDB完全連携（+50特徴量）→ WF AUC 0.8610（LGB+XGB）→ 採用**
-    - 騎手・調教師・血統・レースペース等のJRDB特徴量を大量追加（74→124特徴量）
-14. **v13.5 FT-Transformer追加 → WF AUC 0.8659（3-model）→ 採用**
-    - LGB+XGB+FT-Transformer 3モデルアンサンブル
-15. **v13.5b IntraRace Attention追加 → WF AUC 0.8788（4-model grid）→ 採用（現行）**
-    - レース内馬同士の相対関係をAttentionで学習
-    - Grid Search重み最適化、IR重み0.35で最大貢献
-    - 実配当ROI 428.4%（全条件v13.4以上、JRA公式配当検証済み）
-
-### テスト・検証（22項目 + Phase 10-13）
-1. リークフリー検証（encode_categoricals/encode_sires静的解析）→ PASS
-2. 目的変数比較（Win/Place/EV weighted）→ Place最適 AUC 0.8019
-3. EVフィルタ分析（EV≥1.0閾値）→ 全レースEV≥1.0で効果なし
-4. 券種最適化（全条件×全券種）→ 現行が最適
-5. オッズギャップ分析（購入時vs確定）→ ROI影響0-5%
-6. ドローダウン分析（MDD/連敗/回復/破産確率）→ 3万円以上で破産0%
-7. 年別パフォーマンス（2020-2025 AUC/ROI）→ 安定上昇傾向
-8. データ拡張チェック（67特徴量網羅性）→ 十分
-9. 最終レポート統合 → READY判定
-10. 市場依存性テスト（prev_odds_log除外）→ LOW依存、真の能力予測
-11. サンプルサイズ検証（Bootstrap CI）→ N=20,579 HIGH信頼性
-12. ROI計算整合性チェック → 全PASS
-13. 保守的ROI見積り（BT×0.7）→ 全体142.6%
-14. 特徴量リーク監査（全67特徴量）→ PASS
-15. WFバックテスト（2020-2025, 20,579レース）→ 全条件ROI 100%超え
-16. モンテカルロシミュレーション（10,000試行×1,000レース）
-17. 5項目自動テスト（tests/test_features.py）
-18. 25項目デバッグテスト（tests/debug_all.py）
-19. 詳細ROI分析8テスト（月別/場別/クラス/芝ダ/人気/配当分布/D細分化/ストレス）
-
-### バグ修正
-1. 確定オッズ(odds_log)リーク発見・除去
-2. 条件E買い目trio→umaren切替
-3. 条件E投資額200→700円修正
-4. app.py BASE_DIR未定義修正
-5. バッチ予測：実モデル使用・結果UI再設計
-6. TRACK RECORD UI: 会場/日付ブラウザ追加
-7. 馬番昇順ソート・カンマスペース区切り表示
-8. db.netkeiba.comフォールバック対応
-9. bet_type記録バグ修正（条件別正確な記録）
-10. モデルロード絶対パス修正（Streamlit Cloud対応）
-11. 条件D 1000m以下を購入非推奨に変更（ROI 85%, N=534）
-12. predict_core.py: speed index premium cacheフォールバック追加（3特徴量が全滅していた）
-13. predict_core.py: 距離カテゴリbin不一致修正（学習5bin vs 予測4bin→5binに統一）
-14. Discord重複通知修正（3重→race_auto_notify.pyのみに統合）
-15. v12モデルロード: バージョンチェック修正（v12が特徴量18個しか生成しないバグ）
-16. num_horses_val特徴量: 出走頭数が反映されないバグ修正
-17. 調教スクレイパー: single-row HTML対応（intensity 83→466/497=94%）
-18. 調教スクレイパー: short CW時間パース + 栗Ｅ/美Ｅコース対応（4F取得 90%→96%）
-19. EV表示・レース信頼度スコア・変動投資額機能追加
-
-### インフラ整備
-1. Streamlit Cloud デプロイ
-2. Windows タスクスケジューラ設定（daily_predict/results, weekly_report）
-3. SQLiteローカルDB構築
-4. .gitignore設定（大容量CSV除外）
-5. project_status.py CLI構築
-6. バッチファイル作成（daily_predict.bat, daily_results.bat, weekly_report.bat）
-7. Cookie自動更新ツール（tools/refresh_cookie.py, Playwright自動ログイン）
-8. 週次レポート拡張（条件別成績・特徴量取得率・BT乖離率・累積ROI警告）
-
 ---
 
 ## 4. モデル詳細
@@ -284,149 +137,12 @@ JRA中央競馬の全レースをAIで予測し、条件別に最適な買い目
 - app.pyはPattern Bを優先、なければA→V12→V8にフォールバック
 - 馬場/天候データ取得失敗時は0=欠損として予測
 
-### Pattern A 全74特徴量
+### Pattern A 主要特徴量（v12 74個 → V15 145個、詳細は train/train_v92_central.py 参照）
 
-#### 基本特徴量（14個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 1 | weight_carry | 斤量(kg) |
-| 2 | age | 馬齢 |
-| 3 | distance | レース距離(m) |
-| 4 | course_enc | コース(0-9, 10=unknown) |
-| 5 | surface_enc | 芝=0, ダート=1, 障害=2 |
-| 6 | sex_enc | 牡=0, 牝=1, セン=2 |
-| 7 | num_horses_val | 出走頭数 |
-| 8 | horse_num | 馬番 |
-| 9 | bracket | 枠番(1-8) |
-| 10 | sire_enc | 父馬TOP100エンコード(0-99, 100=other) |
-| 11 | bms_enc | 母父TOP100エンコード(0-99, 100=other) |
-| 12 | location_enc | 所属(0=美浦, 1=栗東, 2=地方, 3=外国) |
-| 13 | is_nar | NAR=1, JRA=0 |
-| 14 | season | 春=0, 夏=1, 秋=2, 冬=3 |
+<!-- 74特徴量詳細テーブルは削除 (slim化)。カテゴリ: 基本14/騎手3/前走ラグ10/集計5/派生11/V9.2追加12/V9.3新規12/V12新規7 -->
 
-#### 騎手・調教師（3個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 15 | jockey_wr_calc | 騎手勝率(expanding window, alpha=30) |
-| 16 | jockey_course_wr_calc | 騎手コース別勝率(expanding, alpha=10) |
-| 17 | jockey_surface_wr | 騎手馬場別勝率(expanding, alpha=10) |
 
-#### 前走ラグ特徴量（10個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 18 | prev_finish | 前走着順 |
-| 19 | prev2_finish | 前々走着順 |
-| 20 | prev3_finish | 3走前着順 |
-| 21 | prev_last3f | 前走上がり3F |
-| 22 | prev2_last3f | 前々走上がり3F |
-| 23 | prev_pass4 | 前走4角位置 |
-| 24 | prev_prize | 前走賞金 |
-| 25 | prev_odds_log | 前走オッズ(log) |
-| 26 | rest_days | 休養日数(1-365でclip) |
-| 27 | rest_category | 休養カテゴリ(0-5: 7/15/35/64/181日区切り) |
-
-#### 集計特徴量（5個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 28 | avg_finish_3r | 直近3走平均着順 |
-| 29 | best_finish_3r | 直近3走最高着順 |
-| 30 | top3_count_3r | 直近3走の3着以内回数 |
-| 31 | finish_trend | 着順トレンド(prev3 - prev) |
-| 32 | avg_last3f_3r | 直近3走平均上がり3F |
-
-#### 派生特徴量（11個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 33 | dist_change | 前走からの距離変更(m) |
-| 34 | dist_change_abs | 距離変更絶対値 |
-| 35 | dist_cat | 距離カテゴリ(0-4) |
-| 36 | age_sex | 年齢×10+性別 |
-| 37 | age_season | 年齢×10+季節 |
-| 38 | horse_num_ratio | 馬番/頭数 |
-| 39 | bracket_pos | 枠位置(内=0, 中=1, 外=2) |
-| 40 | carry_diff | 斤量 - レース平均斤量 |
-| 41 | age_group | 年齢(2-7でclip) |
-| 42 | surface_dist_enc | 馬場×10+距離カテゴリ |
-| 43 | course_surface | コース×10+馬場 |
-
-#### V9.2追加（8個、リーク除外後）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 44 | horse_career_races | 通算出走数(expanding, 0-indexed) |
-| 45 | horse_career_wr | 通算勝率(expanding, alpha=5) |
-| 46 | horse_career_top3r | 通算複勝率(expanding, alpha=5) |
-| 47 | sire_surface_wr | 父馬産駒馬場別勝率(expanding, alpha=50) |
-| 48 | sire_dist_wr | 父馬産駒距離別勝率(expanding, alpha=50) |
-| 49 | bms_surface_wr | 母父産駒馬場別勝率(expanding, alpha=50) |
-| 50 | wood_best_4f_filled | 木馬場調教4Fベスト(14日, mean fill ~52.0s) |
-| 51 | has_wood_training | 木馬場調教データ有無 |
-
-#### V9.2派生（2個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 52 | sire_dist | 父馬×10+距離カテゴリ |
-| 53 | sire_surface | 父馬×10+馬場 |
-
-#### V9.2調教（2個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 54 | training_time_filled | 調教4Fタイム(mean fill) |
-| 55 | has_training | 調教データ有無 |
-
-#### V9.3新規（12個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 56 | prev_race_first3f | 前走前半3F(ラップデータ) |
-| 57 | prev_race_last3f | 前走後半3F(ラップデータ) |
-| 58 | prev_race_pace_diff | 前走後半3F-前半3F(ペース差) |
-| 59 | prev_agari_relative | 前走上がり相対値(個人-全体) |
-| 60 | wood_count_2w | 木馬場調教回数(2週間) |
-| 61 | sakaro_best_4f_filled | 坂路4Fベスト(14日, mean fill ~53.0s) |
-| 62 | sakaro_best_3f_filled | 坂路3Fベスト(14日, mean fill ~39.0s) |
-| 63 | has_sakaro_training | 坂路調教データ有無 |
-| 64 | total_training_count | 調教合計回数(木+坂路) |
-| 65 | horse_dist_top3r | 馬の距離別複勝率(expanding, alpha=5) |
-| 66 | horse_surface_top3r | 馬の馬場別複勝率(expanding, alpha=5) |
-| 67 | frame_course_dist_wr | 枠×コース×距離の勝率(expanding, alpha=100) |
-
-#### V12新規（7個）
-| # | 特徴量 | 説明 |
-|---|--------|------|
-| 68 | index_max_filled | netkeibaタイム指数最高値(mean fill) |
-| 69 | index_run1_filled | netkeiba前走指数(mean fill) |
-| 70 | index_avg5_filled | netkeiba5走平均指数(mean fill) |
-| 71 | time_1f_last_filled | 追切ラスト1Fタイム(mean fill ~12.5s) |
-| 72 | training_intensity_enc | 調教強度(0=不明, 1=馬なり, 2=強め, 3=一杯) |
-| 73 | sire_shinba_top3r | 種牡馬新馬戦複勝率(expanding, alpha=20) |
-| 74 | pci | ペースチェンジ指数(後半3F/前半3F) |
-
-#### V12/V12.1で不採用とした特徴量
-| 特徴量 | 理由 |
-|--------|------|
-| dam_top3r | 母産駒複勝率。初回テスト+0.023はデータリーク（全年データで計算）。expanding window修正後は-0.0006で除外 |
-| stable_comment_score | 厩舎コメントスコア。WFカバレッジ30%で不十分（追加取得中） |
-| prev_review_score | 前走不利スコア。v12.1テスト: +0.00016(微プラス)。2021年gap=0.0514>0.05で過学習判定により不採用 |
-| shinba_eval_score | 新馬評価スコア。v12.1テスト: +0.00007(ほぼゼロ)。2024-2025のみで汎化困難 |
-
-### Pattern Bの追加8特徴量
-| 特徴量 | ソース | 説明 |
-|--------|--------|------|
-| odds_log | netkeiba | 単勝オッズ(log変換) |
-| pop_rank | netkeiba | 人気順位 |
-| horse_weight | netkeiba | 当日馬体重(kg) |
-| weight_change | netkeiba | 馬体重変化(前走比) |
-| weight_change_abs | netkeiba | 馬体重変化絶対値 |
-| weight_cat | 計算 | 体重カテゴリ(0-3) |
-| weight_cat_dist | 計算 | 体重カテゴリ×距離カテゴリ |
-| condition_enc | netkeiba | 馬場状態(良=0, 稍重=1, 重=2, 不良=3) |
-| cond_surface | 計算 | 馬場×馬場種別 |
-| cushion_value | JRA公式 | クッション値(芝のみ) |
-| moisture_rate | JRA公式 | 含水率 |
-| temperature | 気象庁API | 気温(℃) |
-| humidity | 気象庁API | 湿度(%) |
-| wind_speed | 気象庁API | 風速(m/s) |
-| precipitation | 気象庁API | 降水量(mm) |
-| weather_enc | 気象庁API | 天候(晴=0, 曇=1, 雨=2, 雪=3) |
+Pattern B 追加特徴量 (8個): odds_log / pop_rank / horse_weight / weight_change / weight_change_abs / weight_cat / weight_cat_dist / condition_enc / cond_surface / cushion_value / moisture_rate / temperature / humidity / wind_speed / precipitation / weather_enc
 
 ### アンサンブル構成（v13.5b、現行）
 - **4モデル Grid Ensemble**: LightGBM + XGBoost + FT-Transformer + IntraRace Attention
@@ -533,69 +249,10 @@ def classify_condition(num_horses, distance, condition):
 
 ---
 
-## 6. テスト結果一覧
-
-### リークフリー検証 → PASS
-- encode_categoricals: ルールベース変換（リークなし）
-- encode_sires: fold毎にtrain dataのみで計算（リークなし）
-- expanding window: cumsum - current（当該レース除外）
-- 軽微な技術的リーク（fillna global mean, Bayesian prior）→ 影響無視可能
-
-### ウォークフォワード年別AUC
-| 年 | V12 (LGB) | v13.4 (LGB+XGB) | v13.5b (4-model grid) | v13.5b改善 |
-|----|-----------|-----------------|----------------------|-----------|
-| 2020 | 0.7923 | 0.8527 | 0.8515 | -0.0013 |
-| 2021 | 0.8015 | 0.8647 | 0.8806 | +0.0159 |
-| 2022 | 0.8052 | 0.8675 | 0.8830 | +0.0155 |
-| 2023 | 0.8042 | 0.8687 | 0.8845 | +0.0158 |
-| 2024 | 0.8109 | 0.8706 | 0.8853 | +0.0147 |
-| 2025 | 0.8079 | 0.8696 | 0.8851 | +0.0155 |
-| **平均** | **0.8037** | **0.8656** | **0.8788** | **+0.0127** |
-
-注: v13.4/v13.5bはJRDB特徴量追加(124個)によりv12(74個)から大幅改善。
-
-### 実配当ROI（条件別）→ 全条件100%超え
-- **v13.5b**: A: 355.4%, B: 346.8%, C: 623.0%, D: 360.8%, E: 195.7%(uma), X: 701.2% — **全体428.4%**
-- **v12**: A: 205.3%, B: 236.9%, C: 285.6%, D: 136.0%, E: 118.0%, X: 330.5%
-
-### モンテカルロ結果（10,000試行×1,000レース）
-| 初期資金 | 破産確率 | 利益確率 | 期待ROI | 平均最終資金 |
-|----------|---------|---------|---------|-------------|
-| 1万円 | 0.59% | 99.4% | 15,497% | 1,549,735円 |
-| **3万円** | **0.0%** | **100%** | **5,239%** | **1,574,242円** |
-| 10万円 | 0.0% | 100% | 1,644% | 1,644,242円 |
-
-### ドローダウン分析
-| 初期資金 | MDD平均 | MDD最悪 | 最大連敗 | 回復(avg) |
-|----------|---------|---------|---------|----------|
-| 1万円 | 25.2% | 99.7% | 37レース | 9レース |
-| 3万円 | 11.1% | 53.9% | 37レース | 3レース |
-| 10万円 | 4.6% | 16.2% | 37レース | 3レース |
-
-### 市場依存性テスト → LOW依存
-- Baseline AUC: 0.8019 → No-odds AUC: 0.7993（差: -0.0026）
-- Baseline ROI: 194.6% → No-odds ROI: 204.4%（むしろ改善）
-- **判定: 真の能力予測モデル（オッズ依存ではない）**
-
-### サンプルサイズ検証
-| 条件 | N | ROI 95%CI | 信頼性 |
-|------|---|-----------|--------|
-| A | 6,438 | [198%, 213%] | HIGH |
-| B | 847 | [213%, 261%] | LOW |
-| C | 4,774 | [272%, 300%] | MEDIUM |
-| D | 7,254 | [130%, 142%] | HIGH |
-| E | 461 | [103%, 133%] | LOW |
-| X | 805 | [292%, 369%] | LOW |
-
-### 保守的ROI見積り（BT × 0.7）
-- 補正要因: オッズ差(-7.5%), モデル劣化(-10%), 条件過学習(-10%)
-- **全体保守的ROI: 142.6%**
-- 条件別: A=143.7%, B=165.8%, C=199.9%, D=95.2%, E=82.6%, X=231.3%
-
-### 最終判定: **READY**
-- リークフリー: PASS
-- AUCベースライン: PASS
-- ROI全条件100%超え: PASS
+## 6. テスト結果 (historical, 全詳細は data/*.json 参照)
+- WF AUC: V12=0.8037 / v13.5b=0.8788 / V15 genuine=0.8678 (LGB+XGB) / Grid=0.8858
+- モンテカルロ: 初期3万円→破産0.0%、期待資金150万+
+- 保守的ROI: 全体142.6% (BT×0.7)
 
 ---
 
@@ -705,27 +362,6 @@ V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
 - **月間期待利益: +28,953円**（保守的ROI 142.6%）
 - **年間期待利益: +347,436円**
 
-### 月間レース数（推定）
-| 条件 | 月間レース | 月間投資 | 月間期待利益 |
-|------|-----------|---------|-------------|
-| A | 30 | 21,000円 | +9,177円 |
-| B | 5 | 3,500円 | +2,303円 |
-| C | 22 | 15,400円 | +15,385円 |
-| D | 40 | 28,000円 | -1,344円 |
-| E | 2 | 1,400円 | -244円 |
-| X | 4 | 2,800円 | +3,676円 |
-
-### モンテカルロ破産確率
-- **推奨初期資金: 3万円以上**（破産確率0.0%）
-- 1万円でも破産確率0.59%と極めて低い
-- 1,000レース後の期待資金: 150万円以上
-
-### ドローダウン耐性（初期3万円）
-- 平均MDD: 11.1%（約3,300円の一時的損失）
-- 最悪MDD: 53.9%（約16,000円の一時的損失）
-- 平均回復: 3レースで回復
-- 最大連敗: 37レース（全条件合算での理論値）
-
 ---
 
 ## 10. 未解決課題・今後のタスク
@@ -748,117 +384,29 @@ V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
 
 ---
 
-## 11. 全ファイル構成
+## 11. 主要ファイル構成
 
-```
-keiba-ai/
-├── app.py                          # Streamlitメインアプリ (~5200行)
-├── CLAUDE.md                       # このファイル
-├── requirements.txt                # Python依存パッケージ
-├── packages.txt                    # APTパッケージ (libgomp1)
-├── .gitignore                      # 大容量CSV除外設定
-│
-├── # === モデルファイル ===
-├── keiba_model_v135_central_live.pkl.gz # v13.5b Pattern B (実運用, 132特徴量, 現行)
-├── keiba_model_v135_central.pkl.gz  # v13.5b Pattern A (評価用, 124特徴量, 現行)
-├── keiba_model_v134_central_live.pkl.gz # v13.4 Pattern B (フォールバック)
-├── keiba_model_v134_central.pkl.gz  # v13.4 Pattern A (フォールバック)
-├── keiba_model_v12_central_live.pkl.gz # V12 Pattern B (旧版, 82特徴量)
-├── keiba_model_v12_central.pkl.gz  # V12 Pattern A (旧版, 74特徴量)
-│
-├── # === 運用スクリプト ===
-├── predict_and_log.py              # CLI予測・ログ記録
-├── check_results.py                # 結果照合・ROI計算
-├── verify_real_roi.py              # netkeiba実配当ROI検証
-├── monte_carlo_sim.py              # モンテカルロ破産確率
-├── project_status.py               # プロジェクトステータスCLI
-├── backtest_central_leakfree.py    # WFバックテスト
-├── calc_actual_roi.py              # JRA公式配当ROI計算（v12）
-├── calc_actual_roi_v135b.py        # v13.5b実配当ROI検証（v13.4比較）
-├── analyze_conditions.py           # 条件分析
-│
-├── # === データ取得 ===
-├── scrape_jra_track.py             # JRA馬場情報(クッション値/含水率)
-├── scrape_weather.py               # 気象庁API天候データ
-├── scrape_jra_payouts.py           # JRA公式DB配当データ
-│
-├── # === バッチファイル ===
-├── daily_predict.bat               # 毎朝8:00自動実行
-├── daily_results.bat               # 毎晩20:00自動実行
-├── weekly_report.bat               # 毎週月曜9:00
-│
-├── train/                          # === 学習スクリプト ===
-│   ├── train_v135b_intra_ensemble.py # **v13.5b 4-model ensemble（現行）**
-│   ├── train_v135_ft_transformer.py # v13.5 FT-Transformer + データ構築
-│   ├── train_v134_jockey_trainer.py # v13.4 JRDB騎手・調教師特徴量
-│   ├── train_v134_odds_change.py   # v13.4 オッズ変動特徴量
-│   ├── train_v134_weight_trend.py  # v13.4 馬体重トレンド特徴量
-│   ├── train_v134b_2020fix.py      # v13.4b 2020年修正版
-│   ├── train_v92_central.py        # V9.2基盤関数群（全特徴量エンジニアリング）
-│   ├── train_v92_leakfree.py       # FEATURES_PATTERN_A, LEAK_FEATURES_A定義
-│   ├── train_v12_comprehensive.py   # V12学習+WFバックテスト（旧版）
-│   ├── train_v121_comprehensive.py  # V12.1テスト（不採用: prev_review+shinba_eval）
-│   ├── optuna_tune_lgb.py          # Optunaハイパラ最適化
-│   ├── explore_features.py         # 特徴量探索
-│   └── analyze_course_distance.py  # コース/距離分析
-│
-├── tools/                          # === 運用・検証ツール ===
-│   ├── daily_predict.py            # 毎朝自動予測
-│   ├── daily_results.py            # 毎晩結果照合
-│   ├── weekly_report.py            # 週次レポート（条件別・特徴量率・乖離率・累積ROI警告）
-│   ├── refresh_cookie.py           # netkeiba Cookie自動更新（Playwright）
-│   ├── extract_jvdata.py           # TARGET JV → CSV抽出
-│   ├── validation_1_standardization_leak.py   # リーク検証
-│   ├── validation_2_target_variable.py        # 目的変数比較
-│   ├── validation_3_ev_filter.py              # EVフィルタ
-│   ├── validation_4_ticket_optimization.py    # 券種最適化
-│   ├── validation_5_odds_gap.py               # オッズギャップ
-│   ├── validation_6_drawdown.py               # ドローダウン
-│   ├── validation_7_yearly_performance.py     # 年別パフォーマンス
-│   ├── validation_8_data_augmentation.py      # データ拡張
-│   ├── validation_9_final_report.py           # 最終レポート統合
-│   ├── validation_10_market_dependency.py     # 市場依存性
-│   ├── validation_11_sample_size.py           # サンプルサイズ
-│   ├── validation_12_roi_integrity.py         # ROI整合性
-│   ├── validation_13_conservative_roi.py      # 保守的ROI
-│   ├── scrape_shinba_eval.py                  # 新馬評価スクレイパー
-│   ├── scrape_race_review.py                  # レース短評(備考)スクレイパー
-│   ├── sire_shinba_stats.py                   # 種牡馬新馬成績計算
-│   ├── compute_sibling_stats.py               # 母産駒成績計算
-│   ├── bulk_scrape_comments.py                # 厩舎コメント一括取得
-│   └── predict_core.py                        # 共通予測ロジック
-│
-├── tests/                          # === テスト ===
-│   ├── test_features.py            # 5項目自動テスト
-│   └── debug_all.py                # 25項目デバッグテスト
-│
-├── data/                           # === データ（大容量はgitignore） ===
-│   ├── jra_races_full.csv          # 781,161行 (gitignore)
-│   ├── training_times.csv          # 955,580行 (gitignore)
-│   ├── odds_history.csv            # 778,387行 (gitignore)
-│   ├── blood_full.csv              # 81,986行 (gitignore)
-│   ├── jra_payouts.csv             # 27,541件 (gitignore)
-│   ├── netkeiba_speed_index.csv    # タイム指数(142,680行, 2020-2025)
-│   ├── netkeiba_training_times.csv # 調教タイム(2,552行, 2025部分)
-│   ├── netkeiba_stable_comments.csv# 厩舎コメント(857行, 2025部分)
-│   ├── netkeiba_race_review.csv    # レース短評/備考(277,467行, 2020-2025)
-│   ├── netkeiba_shinba_eval.csv    # 新馬評価(7,998行, 2024-2025)
-│   ├── sire_shinba_stats.csv       # 種牡馬新馬成績(449種牡馬)
-│   ├── netkeiba_siblings.csv       # 母産駒成績(17,441母馬)
-│   ├── actual_roi_v135b.json       # v13.5b実配当ROI結果（v13.4比較）
-│   ├── v135b_intra_ensemble_results.json # v13.5b学習結果
-│   ├── v135_ft_transformer_results.json  # v13.5 FT学習結果
-│   ├── v12_training_results.json   # V12学習結果
-│   ├── actual_roi_results.json     # v12実配当ROI結果
-│   ├── monte_carlo_results.json    # MC結果
-│   ├── final_validation_report.json# 最終検証レポート
-│   └── ... (検証結果JSON 16ファイル)
-│
-├── logs/                           # === ログ出力 ===
-│
-└── archive/                        # === アーカイブ ===
-    └── nar/                        # 地方(NAR)関連一式
-```
+| ファイル | 用途 |
+|---------|------|
+| app.py | Streamlit メインアプリ (~5200行) |
+| tools/predict_core.py | 共通予測ロジック |
+| tools/race_auto_notify.py | レース自動通知・戦略フィルタ |
+| tools/daily_predict.py | 毎朝自動予測 |
+| tools/daily_results.py | 毎晩結果照合 |
+| tools/weekly_report.py | 週次レポート |
+| tools/kelly_criterion.py | Kelly 基準投票額計算 |
+| tools/strategy_filters.py | 戦略フィルタ関数 (C4/C3/B1/B2/C2) |
+| tools/strategy_rollback.py | 異常時自動 rollback |
+| tools/paper_shadow_v15_full.py | candidate model 並行予測 |
+| tools/anomaly_auto_detector.py | 異常検知 + strategy anomaly |
+| tools/race_notify_log_v2.py | 8 strategy 並行追跡 |
+| tools/daily_discord_report.py | Discord 日次収支レポート |
+| tools/admin_verify_v2.py | schtask/bat/py verify ツール |
+| train/train_v15_master.py | V15 学習スクリプト |
+| tests/ | pytest テストスイート |
+| models/ | candidate .pkl.gz (v15_full_optuna / v15_2) |
+| data/cumulative_results.csv | 累計予測・収支ログ |
+| data/race_notify_log_v2_summary/ | 8 strategy 日次集計 |
 
 ---
 
@@ -1129,155 +677,13 @@ python tools/setup_discord.py  # 対話式Webhookセットアップ
 
 ---
 
-## V12特徴量追加結果（2026-03-29）
+## V12特徴量追加結果（2026-03-29、historical reference）
 
-v12総合再学習で10特徴量を同時投入テスト。7個採用、3個不採用。
+v12総合再学習: 10特徴量投入→7採用3不採用。全詳細は git log 参照。
 
-| 特徴量 | ソース | WF寄与 | 判定 |
-|--------|--------|--------|------|
-| `index_avg5_filled` | speed.html 5走平均指数 | +0.00032 | ✓ 採用 |
-| `time_1f_last_filled` | oikiri.html ラスト1F | +0.00025 | ✓ 採用 |
-| `index_max_filled` | speed.html 最高指数 | +0.00019 | ✓ 採用 |
-| `index_run1_filled` | speed.html 前走指数 | +0.00019 | ✓ 採用 |
-| `sire_shinba_top3r` | 既存CSV(expanding) | 0.00000 | ✓ 採用(害なし) |
-| `pci` | ラップデータ(後半/前半3F) | 0.00000 | ✓ 採用(害なし) |
-| `training_intensity_enc` | oikiri.html 調教強度 | -0.00048 | ✓ 採用(閾値内) |
-| `dam_top3r` | netkeiba_siblings.csv | -0.00063 | ✗ **リーク修正後マイナス** |
-| `stable_comment_score` | comment.html 厩舎スコア | N/A | ✗ WFカバレッジ30%不足 |
-| `prev_review_score` | db.netkeiba 備考 | N/A | ✗ 2024-2025のみでWF不可 |
-
-### v12.1再学習テスト（2026-03-29、不採用）
-
-race_review 2020-2025全年データ取得完了後(264,973行)、2特徴量を追加テスト。
-
-| 特徴量 | 個別寄与 | v12.1(両方) | 判定 |
-|--------|---------|------------|------|
-| `prev_review_score` | +0.00016 | — | 微プラスだが採用基準未達 |
-| `shinba_eval_score` | +0.00007 | — | ほぼゼロ |
-| 両方合算 | — | AUC 0.8039 (+0.00034) | **不採用: 2021年gap=0.0514>0.05** |
-
-年別結果:
-| 年 | v12 | v12.1 | gap |
-|----|-----|-------|-----|
-| 2020 | 0.7934 | 0.7934 | 0.0438 |
-| 2021 | 0.8004 | 0.8014 | **0.0514** ✗ |
-| 2022 | 0.8061 | 0.8055 | 0.0295 |
-| 2023 | 0.8038 | 0.8046 | 0.0394 |
-| 2024 | 0.8103 | 0.8100 | 0.0277 |
-| 2025 | 0.8073 | 0.8084 | 0.0264 |
-
-不採用理由: AUC改善は微小(+0.00034)、2021年で過学習閾値超過。v12(74特徴量)を維持。
-
-### v13.5b 正式採用（2026-04-03）— 4-model Grid Ensemble
-
-v13.4 (LGB+XGB) → v13.5b (LGB+XGB+FT-Transformer+IntraRace Attention) への大規模アップグレード。
-124特徴量（JRDB連携含む）、4モデルGrid Ensemble、WF AUC 0.8788 (+0.0131 vs v13.4)。
-
-**実配当ROI検証（JRA公式配当、WF 2023-2025、10,314レース）:**
-
-| 条件 | N | v13.4 ROI | v13.5b ROI | 差分 | 判定 |
-|:---:|---:|---:|---:|---:|:---:|
-| A | 3,212 | 308.0% | **355.4%** | +47.4% | OK |
-| B | 398 | 259.4% | **346.8%** | +87.4% | OK |
-| C | 2,473 | 521.5% | **623.0%** | +101.5% | OK |
-| D | 3,581 | 314.7% | **360.8%** | +46.1% | OK |
-| E | 267 | 141.4% | **195.7%** | +54.3% | OK |
-| X | 383 | 498.9% | **701.2%** | +202.3% | OK |
-| **全体** | **10,314** | **361.9%** | **428.4%** | **+66.5%** | **ALL PASS** |
-
-**年×条件 ROI安定性（v13.5b）:**
-- 2023: A=426%, B=308%, C=712%, D=380%, E=175%, X=535%
-- 2024: A=326%, B=388%, C=563%, D=322%, E=145%, X=933%
-- 2025: A=317%, B=377%, C=598%, D=380%, E=117%, X=699%
-
-**Grid重み（年ごと最適化）:**
-- 典型: LGB=0.25, XGB=0.25-0.30, FT=0.10-0.15, IR=0.35
-- IntraRace Attentionが最大貢献（レース内相対関係を捕捉）
-
-### predict_core.pyバグ修正（2026-03-29）
-
-| バグ | 詳細 | 修正 |
-|------|------|------|
-| Speed index全滅 | build_features()がCSVのみ参照、premium cacheの実データ未使用 | premium cache JSONフォールバック追加 |
-| 距離bin不一致 | 学習: pd.cut 5bin(0-4), 予測: 4bin(0-3) | 5binに統一 |
-
-### 今後の追加データ候補（v13用）
-| データ | ファイル | 行数 | 用途 |
-|--------|---------|------|------|
-| レース短評(備考) | netkeiba_race_review.csv | 277,467 | 前走不利→巻き返し検出。v12.1で不採用(gap超過) |
-| 新馬評価 | netkeiba_shinba_eval.csv | 7,998 | 新馬戦の厩舎評価・調教ランク。表示用 |
-| 種牡馬新馬成績(静的) | sire_shinba_stats.csv | 449 | 新馬戦UIバッジ表示用(モデルはexpanding版使用) |
-| 母産駒成績(静的) | netkeiba_siblings.csv | 17,441 | 新馬戦UIバッジ表示用(モデル組込はリーク注意) |
-| 厩舎コメント | netkeiba_stable_comments.csv | ~98K(取得中→目標60%+) | カバレッジ不足で不採用。追加取得中 |
+詳細: `docs/V15_AUDIT_*_2026_05_17.md` 参照。
 
 ---
-
-## Phase 2-5 検証結果サマリー（2026-03-23〜26）
-
-| Phase | 内容 | 主要結果 |
-|-------|------|---------|
-| 2 | キャリブレーション・EV・ランカー | 全不採用。推定ROI式の膨張(~16x)を発見 |
-| 2b | ROI信頼性検証（7タスク） | リークなし、過学習なし、ランダムの10.4倍 |
-| 3 | **実配当ROI検証** | **Trio 225.8%** [CI: 198.5-264.6%] P(>100%)=100% |
-| 4 | OOS・ライブ検証 | 2025準OOS: 246.3% [201-301%] 判定VALID |
-| 5 | 市場耐性・資金管理 | 耐性HIGH、調教が最重要(-88%)、破産0.16% |
-
----
-
-## 実戦成績（2026-03-14〜04-18, dedup後 324レース）
-
-| 条件 | N | 的中 | 的中率 | ROI | 保守的見積り |
-|------|---|------|--------|-----|-------------|
-| A | 90 | 30 | 33.3% | 122.9% | 143.7% |
-| B | 9 | 0 | 0.0% | 0.0% | 165.8% |
-| C | 89 | 16 | 18.0% | 123.8% | 199.9% |
-| D | 115 | 28 | 24.4% | 144.3% | 95.2% |
-| E | 9 | 1 | 11.1% | 13.2% | 82.6% |
-| X | 12 | 1 | 8.3% | 13.8% | 231.3% |
-| **全体** | **324** | **76** | **23.5%** | **120.2%** (**+45,920円**) | 142.6% |
-
-- 全体ROI 120.2% — 保守的見積り142.6%には届かないが +45,920円のプラス運用
-- 条件D 144.3% は保守的見積り95.2%を大きく上回る（好調）
-- 条件B/E/X は N が小さく統計的に不十分（継続監視）
-- JRDB結合率: KYI(PRE_RACE) 75.9%, TYB(LIVE) 0%(正常, 当日朝発表), SED(PREV) 0%(SED csv破損-要修正)
-
-### SCRAPER-GUARD の動作変更（2026-04-19）
-
-DailyPremiumScrape AM3:00 は金22時〜月6時の SCRAPER-GUARD で停止する。
-旧仕様: 600秒おきチェックで許可まで wait ループ → タスクスケジューラと相性悪く数日停止
-新仕様: `check_scraping_allowed(mode="exit")` で即終了 → 翌日の起動で正常再開
-
-OPERATIONAL_CALLERS ホワイトリスト導入 (daily_predict / race_auto_notify /
-notify_bets_all_in_one / jrdb_health_check / daily_jrdb_kyi / daily_results)。
-daily_premium_scrape は Sat/Sun/**Mon** の 03:00-05:59 早朝スロット特例で許可。
-
-### 2026/04/19 事故と修正の記録
-
-**事故**: Sun 03:00 DailyPremiumScrape と 08:00 DailyPredict が SCRAPER-GUARD で誤停止。
-AM8:27 手動救出まで午前レース全ロス。機会損失 推定 +2,745円 (17R)。
-
-**対応**: 11 commits で完全修正完了 (e173f40d〜本commit)
-- OPERATIONAL_CALLERS ホワイトリスト導入
-- Mon 早朝特例追加 (4/13 Mon 03:00 にも同じ誤停止履歴あり)
-- daily_premium_scrape の mode="exit" 化 (wait ループ廃止)
-- process_watchdog v2 (ログ鮮度ベース)
-- daily_predict Windows Ctrl+C 対策 + resume 対応
-- 事前検証: verify_scraper_guard_sunday.py / dryrun_weekend_full.py / nightly_sanity_check.py
-
-### 来週末の運用体制
-
-- **v15 継続運用** (v16 はデータ不足で未学習 — master_index 2020-2022 が 0%)
-- **手動介入不要** (E2E検証 17タスク ALL PASS)
-- 毎晩 23:00 Keiba-NightlySanity が自動で翌日タスクを事前チェック → Discord通知
-
-### 新規タスクスケジューラ登録（2026-04-18〜19）
-
-| タスク名 | 内容 |
-|----------|------|
-| DailyJrdbKyi | AM6:00 JRDB全種別ダウンロード（Windows 11 24H2対応、wmic→PowerShell置換済） |
-| JrdbHealthCheck_Sat/Sun | AM7:30 JRDB取得健全性チェック |
-| ProcessWatchdog | 5分おき プロセス死活監視・自動再起動 |
-| **Keiba-NightlySanity** | **毎日23:00 翌日発火予定タスクの事前チェック + Discord通知** |
 
 ---
 
