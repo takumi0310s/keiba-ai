@@ -370,6 +370,23 @@ def predict_and_notify(race_info, date_str):
         if STRATEGY_B2_PAPER_ONLY and _b2_skip:
             print(f"    [STRATEGY_B2][PAPER] would skip: top1 pop_rank={_b1_top1_pop} < {STRATEGY_B2_MIN_POP_RANK} → {race_name_str}")
 
+        # === STRATEGY_C1: EV>1 trio フィルタ (paper eval only、bet-level EV 計算) ===
+        STRATEGY_C1_PAPER_ONLY = True
+        STRATEGY_C1_EV_THRESHOLD = 1.0
+        STRATEGY_C1_DEFAULT_PAYOUT = 5000  # trio 平均想定 (円)
+        if STRATEGY_C1_PAPER_ONLY and bet_type == 'trio' and len(bets) > 0:
+            _scores = {}
+            for _, _row in df.iterrows():
+                _scores[int(_row.get('馬番', 0))] = float(_row.get('スコア', 0.01))
+            _total_score = max(sum(_scores.values()), 1e-6)
+            _c1_high_ev = []
+            for _b in bets:
+                _p = (_scores.get(_b[0], 0.01) * _scores.get(_b[1], 0.01) * _scores.get(_b[2], 0.01)) / (_total_score ** 3 + 1e-9)
+                _ev = _p * STRATEGY_C1_DEFAULT_PAYOUT / 100.0
+                if _ev >= STRATEGY_C1_EV_THRESHOLD:
+                    _c1_high_ev.append(_b)
+            print(f"    [STRATEGY_C1][PAPER] EV>={STRATEGY_C1_EV_THRESHOLD} bets: {len(_c1_high_ev)}/{len(bets)}")
+
         # 収益パターンマッチ
         _pp_stars, _pp_matched = 0, []
         try:
