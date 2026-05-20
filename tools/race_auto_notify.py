@@ -457,7 +457,19 @@ def predict_and_notify(race_info, date_str):
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
         _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
-        _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
+        # race_notify_log v2: 8 strategy paper 蓄積用 predictions list 構築
+        _preds_for_v2 = []
+        try:
+            for _, _row in df.iterrows():
+                _uma = int(_row.get('馬番', 0))
+                _preds_for_v2.append({
+                    'horse_num': _uma,
+                    'pop_rank': int(_row.get('pop_rank', 99) or 99),
+                    'odds': float(odds_dict.get(_uma, odds_dict.get(str(_uma), 99.0)) or 99.0),
+                })
+        except Exception:
+            _preds_for_v2 = None
+        _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None, predictions=_preds_for_v2)
 
     except Exception as e:
         print(f"    ERROR: {e}")
@@ -639,7 +651,8 @@ def main():
 
 
 def _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type,
-                         channel='bets', strategy_7c_skip=False, strategy_7c_reason=None):
+                         channel='bets', strategy_7c_skip=False, strategy_7c_reason=None,
+                         predictions=None):
     """race_notify_log v2 phase 2 (pre_vote) safe wrapper。
 
     ★ 既存 logic 完全不変、 log 出力 file IO のみ ★
@@ -675,6 +688,7 @@ def _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, be
             channel=channel,
             cond_key=cond_key,
             bet_type=bet_type,
+            predictions=predictions,
         )
     except Exception as _e:
         import sys as _sys
