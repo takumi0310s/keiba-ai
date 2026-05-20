@@ -10,11 +10,12 @@
 ::       --date を渡さない (default = 当日)。 完成-1 では --date 明示
 :: ============================================================
 cd /d C:\Users\takum\keiba-ai
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
 set PYTHONIOENCODING=utf-8
 if not exist logs mkdir logs
 
 :: yyyymmdd 形式 (cmd %date% は環境依存、 ja-JP は 'yyyy/mm/dd')
 set TODAY=%date:~0,4%%date:~5,2%%date:~8,2%
 
-python -u tools\race_notify_log_v2_aggregator.py --date %TODAY% >> logs\keiba_race_notify_log_v2_aggregator_%TODAY%.log 2>&1
+%PYTHON_EXE% -u tools\race_notify_log_v2_aggregator.py --date %TODAY% >> logs\keiba_race_notify_log_v2_aggregator_%TODAY%.log 2>&1
 exit /b %ERRORLEVEL%

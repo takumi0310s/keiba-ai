@@ -5,6 +5,7 @@
 setlocal
 
 cd /d C:\Users\takum\keiba-ai
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
 
 :: log dir 確保 (初回 fire 時の stdout.log 書き込み対策)
 if not exist data\live_orchestrator_log mkdir data\live_orchestrator_log
@@ -12,6 +13,6 @@ if not exist data\live_orchestrator_log mkdir data\live_orchestrator_log
 :: ★ 5/24 (SAT) 以降は mock 解除予定、 5/17-5/23 は mock=True 強制 ★
 :: 今は mock=True で安全運用、 5/24 以降 user 判断で mock 解除
 
-python -u tools\live_orchestrator_main.py --mock --dry-run >> data\live_orchestrator_log\stdout.log 2>&1
+%PYTHON_EXE% -u tools\live_orchestrator_main.py --mock --dry-run >> data\live_orchestrator_log\stdout.log 2>&1
 
 endlocal

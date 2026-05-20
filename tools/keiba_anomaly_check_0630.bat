@@ -9,7 +9,8 @@
 ::       (時刻別の差別化は schtask /ST のみで実現)
 :: ============================================================
 cd /d C:\Users\takum\keiba-ai
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
 set PYTHONIOENCODING=utf-8
 if not exist logs mkdir logs
-python -u tools\anomaly_auto_detector.py >> logs\keiba_anomaly_check_0630_%date:~0,4%%date:~5,2%%date:~8,2%.log 2>&1
+%PYTHON_EXE% -u tools\anomaly_auto_detector.py >> logs\keiba_anomaly_check_0630_%date:~0,4%%date:~5,2%%date:~8,2%.log 2>&1
 exit /b %ERRORLEVEL%
