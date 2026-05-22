@@ -450,3 +450,191 @@ def format_tyb_discord_supplement(tyb_result: dict) -> str:
 
     lines.append(f"  ★ shadow only — V15 投票に非影響 ★")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Human Judgment Support (Path 1 + Path 2)
+# 6/1 観測成功後に有効化。それまでは build_tyb_discord_block() を呼んでも
+# tyb_result=None が渡るので空文字を返し、V15 に一切影響しない。
+# ---------------------------------------------------------------------------
+
+TYB_LAUNCH_DATE: str = "20260601"  # 6/1 観測成功後に手動で TYB_SHADOW_ENABLED=True
+WEIGHT_ALERT_THRESHOLD: int = 15   # |weight_diff| >= 15kg → 気配急変 alert
+
+_KEHAI_LABEL: dict[str, str] = {
+    "1": "良", "2": "普通", "3": "不振", "4": "発汗", "5": "チャカ",
+}
+_PADOCK_MARK_LABEL: dict[str, str] = {
+    "◎": "◎", "○": "○", "▲": "▲", "△": "△", "×": "×", "注": "注",
+}
+
+
+def format_tyb_horse_line(
+    row: dict,
+    horse_name: str = "",
+    rank: int = 0,
+) -> str:
+    """
+    TYB 1馬分の Discord 1行フォーマット。
+    V15 prediction dict を受け取らず、表示のみ。
+
+    Returns
+    -------
+    str
+        例: "  #5 ホワイトオーキッド 1位: 体重:480kg(+2)⚠ パドック:◎(90) 単勝:3.5倍 / 気配:良"
+    """
+    umaban = row.get("umaban") or "?"
+    hw = row.get("horse_weight")
+    wd = row.get("weight_diff")
+
+    wt_str = f"{hw}kg" if hw is not None else "?kg"
+    alert_flag = ""
+    if wd is not None:
+        wt_str += f"({wd:+d})"
+        if abs(wd) >= WEIGHT_ALERT_THRESHOLD:
+            alert_flag = "⚠"
+
+    padock_mark = str(row.get("padock_mark", "")).strip()
+    padock_idx = row.get("padock_idx")
+    padock_str = _PADOCK_MARK_LABEL.get(padock_mark, padock_mark) if padock_mark else "?"
+    if padock_idx is not None:
+        padock_str += f"({padock_idx:.0f})"
+
+    tansho = row.get("tansho_odds")
+    odds_str = f"{tansho:.1f}倍" if tansho is not None else "?倍"
+
+    kehai = str(row.get("kehai_code", "")).strip()
+    kehai_str = _KEHAI_LABEL.get(kehai, "")
+
+    name_part = f" {horse_name}" if horse_name else ""
+    rank_part = f" {rank}位:" if rank else ""
+    kehai_part = f" / 気配:{kehai_str}" if kehai_str else ""
+
+    return (
+        f"  #{umaban}{name_part}{rank_part}"
+        f" 体重:{wt_str}{alert_flag} パドック:{padock_str} 単勝:{odds_str}{kehai_part}"
+    )
+
+
+def check_tyb_anomalies(
+    tyb_result: dict,
+    top_horses: list[dict],
+) -> list[str]:
+    """
+    V15 top1-3 馬の気配急変を検出してアラート文字列リストを返す。
+    tyb_result=None または top_horses=[] → []
+
+    Parameters
+    ----------
+    top_horses : list[dict]
+        [{"umaban": 5, "horse_name": "...", "score": 0.85}, ...]
+        umaban key 必須。V15 スコア降順。
+
+    Returns
+    -------
+    list[str]
+        異常あり → 「⚠ top1 {馬名}: 馬体重減18kg → 要確認」形式のリスト
+        異常なし → []
+
+    ★ V15 prediction / 投票ロジックへの干渉なし ★
+    """
+    if not tyb_result or not top_horses:
+        return []
+
+    rows_by_uma: dict[int, dict] = {
+        int(r["umaban"]): r
+        for r in tyb_result.get("raw_rows", [])
+        if r.get("umaban") is not None
+    }
+
+    alerts: list[str] = []
+    for rank_i, horse in enumerate(top_horses[:3], start=1):
+        umaban = horse.get("umaban")
+        if umaban is None:
+            continue
+        row = rows_by_uma.get(int(umaban))
+        if row is None:
+            continue
+
+        name = horse.get("horse_name", f"#{umaban}")
+        wd = row.get("weight_diff")
+        kehai = str(row.get("kehai_code", "")).strip()
+        cancel = row.get("cancel_flag")
+
+        parts: list[str] = []
+        if wd is not None and abs(wd) >= WEIGHT_ALERT_THRESHOLD:
+            direction = "増" if wd > 0 else "減"
+            parts.append(f"馬体重{direction}{abs(wd)}kg")
+        if kehai in ("3", "4", "5"):
+            parts.append(f"気配:{_KEHAI_LABEL.get(kehai, kehai)}")
+        if cancel == 1:
+            parts.append("取消")
+
+        if parts:
+            detail = " / ".join(parts)
+            alerts.append(f"⚠ top{rank_i} {name}(#{umaban}): {detail} → 要確認")
+
+    return alerts
+
+
+def build_tyb_discord_block(
+    tyb_result: Optional[dict],
+    top_horses: list[dict],
+    race_num: Optional[int] = None,
+) -> str:
+    """
+    V15 top-5 馬の TYB 直前情報を Discord ブロックとして組み立てる。
+    tyb_result=None (disabled / fetch失敗) → "" を返す。
+
+    Parameters
+    ----------
+    tyb_result : dict | None
+        fetch_tyb_shadow() の返り値。None なら即 "" 返却。
+    top_horses : list[dict]
+        V15 スコア降順 top-N。各要素: {"umaban": int, "horse_name": str, "score": float}
+    race_num : int | None
+        レース番号 (表示用)
+
+    Returns
+    -------
+    str
+        Discord 送信用テキスト (本文末尾に \n で append 推奨)。
+        無効時は "" — 呼び出し元のロジック変更不要。
+
+    ★ V15 prediction を変更しない / 投票 formation に渡してはならない ★
+    """
+    if not tyb_result:
+        return ""
+
+    rn_label = f"R{race_num:02d} " if race_num else ""
+    lines: list[str] = [f"━━ {rn_label}直前情報 (TYB shadow) ━━"]
+
+    rows_by_uma: dict[int, dict] = {
+        int(r["umaban"]): r
+        for r in tyb_result.get("raw_rows", [])
+        if r.get("umaban") is not None
+    }
+
+    for rank_i, horse in enumerate(top_horses[:5], start=1):
+        umaban = horse.get("umaban")
+        if umaban is None:
+            continue
+        row = rows_by_uma.get(int(umaban))
+        if row is None:
+            lines.append(f"  #{umaban} {horse.get('horse_name','')} — TYB データなし")
+            continue
+        lines.append(
+            format_tyb_horse_line(row, horse_name=horse.get("horse_name", ""), rank=rank_i)
+        )
+
+    alerts = check_tyb_anomalies(tyb_result, top_horses)
+    if alerts:
+        lines.append("")
+        for a in alerts:
+            lines.append(a)
+
+    delta = tyb_result.get("delta_to_start_min")
+    timing_str = f"発走{delta:.0f}分前取得 | " if delta is not None else ""
+    lines.append(f"  {timing_str}★shadow only V15予測非影響★")
+
+    return "\n".join(lines)

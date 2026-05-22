@@ -168,5 +168,119 @@ class TestTybShadowFetcher(unittest.TestCase):
         self.assertIsNone(result, "Default-disabled fetch must return None")
 
 
+    # ── Human Judgment Support tests (Path 1 + Path 2) ────────────────────
+
+    # ------------------------------------------------------------------
+    # Test 7: format_tyb_horse_line — large weight change adds ⚠
+    # ------------------------------------------------------------------
+    def test_format_horse_line_weight_alert(self):
+        """weight_diff >= 15 → ⚠ in output."""
+        row = {
+            "umaban": 3,
+            "horse_weight": 480,
+            "weight_diff": -18,
+            "padock_mark": "◎",
+            "padock_idx": 90.0,
+            "tansho_odds": 3.5,
+            "kehai_code": "1",
+        }
+        line = tsf.format_tyb_horse_line(row, horse_name="テスト馬", rank=1)
+        self.assertIn("⚠", line, "Alert ⚠ must appear for |weight_diff|>=15")
+        self.assertIn("480kg", line)
+        self.assertIn("-18", line)
+
+    # ------------------------------------------------------------------
+    # Test 8: format_tyb_horse_line — small weight change has no ⚠
+    # ------------------------------------------------------------------
+    def test_format_horse_line_no_alert(self):
+        """weight_diff=+2 (< threshold) → no ⚠."""
+        row = {
+            "umaban": 5,
+            "horse_weight": 470,
+            "weight_diff": 2,
+            "padock_mark": "",
+            "padock_idx": 55.0,
+            "tansho_odds": 8.0,
+            "kehai_code": "2",
+        }
+        line = tsf.format_tyb_horse_line(row, rank=2)
+        self.assertNotIn("⚠", line)
+
+    # ------------------------------------------------------------------
+    # Test 9: check_tyb_anomalies — large weight change generates alert
+    # ------------------------------------------------------------------
+    def test_check_anomalies_weight_change(self):
+        """check_tyb_anomalies returns alert string for |weight_diff|>=15."""
+        tyb_result = {
+            "raw_rows": [
+                {"umaban": 1, "weight_diff": -20, "kehai_code": "1", "cancel_flag": 0},
+                {"umaban": 2, "weight_diff": 2,   "kehai_code": "2", "cancel_flag": 0},
+            ],
+        }
+        top_horses = [
+            {"umaban": 1, "horse_name": "ビッグドロップ", "score": 0.85},
+            {"umaban": 2, "horse_name": "ノーマル馬",     "score": 0.72},
+        ]
+        alerts = tsf.check_tyb_anomalies(tyb_result, top_horses)
+        self.assertGreater(len(alerts), 0, "Should produce at least 1 alert")
+        self.assertTrue(any("ビッグドロップ" in a for a in alerts))
+        self.assertTrue(any("⚠" in a for a in alerts))
+
+    # ------------------------------------------------------------------
+    # Test 10: check_tyb_anomalies — no anomaly returns empty list
+    # ------------------------------------------------------------------
+    def test_check_anomalies_none(self):
+        """Normal horses → empty alerts list."""
+        tyb_result = {
+            "raw_rows": [
+                {"umaban": 3, "weight_diff": 0, "kehai_code": "1", "cancel_flag": 0},
+            ],
+        }
+        top_horses = [{"umaban": 3, "horse_name": "ふつう馬", "score": 0.78}]
+        alerts = tsf.check_tyb_anomalies(tyb_result, top_horses)
+        self.assertEqual(alerts, [])
+
+    # ------------------------------------------------------------------
+    # Test 11: build_tyb_discord_block — None returns empty string
+    # ------------------------------------------------------------------
+    def test_build_discord_block_none(self):
+        """build_tyb_discord_block(None, ...) must return '' — V15 unaffected."""
+        result = tsf.build_tyb_discord_block(None, [{"umaban": 1, "score": 0.9}])
+        self.assertEqual(result, "")
+
+    # ------------------------------------------------------------------
+    # Test 12 (bonus): build_tyb_discord_block — valid data produces block
+    # ------------------------------------------------------------------
+    def test_build_discord_block_valid(self):
+        """build_tyb_discord_block with real data returns non-empty block with key fields."""
+        tyb_result = {
+            "race_id": "202606010611",
+            "delta_to_start_min": 18.0,
+            "raw_rows": [
+                {
+                    "umaban": 5, "horse_weight": 480, "weight_diff": -16,
+                    "padock_mark": "◎", "padock_idx": 90.0,
+                    "tansho_odds": 3.5, "kehai_code": "1", "cancel_flag": 0,
+                },
+                {
+                    "umaban": 7, "horse_weight": 466, "weight_diff": 2,
+                    "padock_mark": "○", "padock_idx": 72.0,
+                    "tansho_odds": 5.8, "kehai_code": "2", "cancel_flag": 0,
+                },
+            ],
+        }
+        top_horses = [
+            {"umaban": 5, "horse_name": "ホワイトオーキッド", "score": 0.85},
+            {"umaban": 7, "horse_name": "ブルーサファイア",   "score": 0.72},
+        ]
+        block = tsf.build_tyb_discord_block(tyb_result, top_horses, race_num=6)
+        self.assertIsInstance(block, str)
+        self.assertGreater(len(block), 0)
+        self.assertIn("ホワイトオーキッド", block)
+        self.assertIn("⚠", block, "Large weight change should trigger alert")
+        self.assertIn("shadow", block)
+        self.assertIn("非影響", block)
+
+
 if __name__ == "__main__":
     unittest.main()
