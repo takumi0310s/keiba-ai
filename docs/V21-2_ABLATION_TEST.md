@@ -87,6 +87,18 @@ All 10 TYB fields degrade 5-fold CV AUC relative to V15 baseline (0.8678).
 | `data/v21_tyb_merged.pkl.gz` | Read-only input (unchanged) |
 | `tools/v21_ablation.py` | Ablation script |
 
+## WF Cross-check (V21-2 year-based WF, 2021-2025)
+
+Separate year-based walk-forward validation (same LGB+XGB params, 5 folds 2021-2025):
+
+| | AUC |
+|---|---|
+| V15 baseline (year-WF) | 0.8696 |
+| V15 baseline (StratifiedKFold ref) | 0.8678 |
+| tansho_odds + V15 (year-WF) | 0.8696 (delta=-0.0001) |
+
+Year-WF and StratifiedKFold both confirm: no TYB field lifts V15. Results consistent.
+
 ---
 
 *V15 production files (keiba_model_v15_central.pkl.gz / predict_core.py / app.py) were not modified.*
