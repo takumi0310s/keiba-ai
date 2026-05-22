@@ -384,6 +384,141 @@ def fetch_tyb_shadow(
 
 
 # ---------------------------------------------------------------------------
+# 5/23 観測 mode API
+# ---------------------------------------------------------------------------
+def fetch_tyb_observe(
+    race_id: str,
+    start_time_str: str,
+) -> Optional[dict]:
+    """
+    5/23 観測 mode 専用 fetch。
+    TYB_SHADOW_OBSERVE_MODE=True のとき動作。
+    ★ 結果を log に記録するのみ — Discord 表示なし、投票非影響 ★
+    LiveOrchestrator から fire-and-forget で呼ぶ想定。
+    例外は全 swallow → 絶対に caller へ propagate しない。
+
+    Returns
+    -------
+    dict | None
+        観測成功時は tyb_result dict (caller は参照のみ)
+        無効 / 失敗時は None
+        ★ 返り値を V15 inference / 投票 formation に渡してはならない ★
+    """
+    # ── SAFETY GATE 1: observe mode 無効 ──────────────────────────────────
+    if not TYB_SHADOW_OBSERVE_MODE:
+        return None
+
+    # ── SAFETY GATE 2: 日付ガード ─────────────────────────────────────────
+    today_str = datetime.now().strftime("%Y%m%d")
+    if today_str < TYB_OBSERVE_LAUNCH_DATE:
+        return None
+
+    # ── 観測 fetch (fetch_tyb_shadow の enabled=True と同等) ──────────────
+    try:
+        result = fetch_tyb_shadow(race_id, start_time_str, enabled=True)
+        if result:
+            # 観測ログに追記 (data/tyb_shadow_log.csv に status=OBSERVE で記録済み)
+            logger.info(
+                "[OBSERVE] race_id=%s delta_min=%.1f num_horses=%d",
+                race_id,
+                result.get("delta_to_start_min") or -1,
+                result.get("num_horses") or 0,
+            )
+        else:
+            logger.info("[OBSERVE] race_id=%s fetch returned None", race_id)
+        # ★ Discord 表示なし — result を caller に返すが表示しない ★
+        return result
+    except Exception as e:
+        # ★ NEVER propagate — LiveOrchestrator 完全保護 ★
+        logger.warning("[OBSERVE] fetch_tyb_observe failed for %s: %s", race_id, e)
+        return None
+
+
+def summarize_observe_log(date_str: Optional[str] = None) -> dict:
+    """
+    data/tyb_shadow_log.csv から指定日 (default: today) の観測結果をサマリー。
+    5/23 夜に呼んで午前 R 取得確認に使う。
+
+    Returns
+    -------
+    dict
+        {
+          "date": "20260523",
+          "total_fetches": 12,
+          "ok_count": 12,
+          "error_count": 0,
+          "morning_ok": True,   # R01-R06 全成功
+          "afternoon_ok": True, # R07-R12 全成功
+          "min_delta": 15.3,    # 最小 delta (分)
+          "max_delta": 48.1,
+          "rows": [...]
+        }
+    """
+    if date_str is None:
+        date_str = datetime.now().strftime("%Y%m%d")
+    result = {
+        "date": date_str,
+        "total_fetches": 0,
+        "ok_count": 0,
+        "error_count": 0,
+        "morning_ok": False,
+        "afternoon_ok": False,
+        "min_delta": None,
+        "max_delta": None,
+        "rows": [],
+    }
+    if not TYB_SHADOW_LOG.exists():
+        return result
+
+    try:
+        import csv as _csv
+        rows_today = []
+        with open(TYB_SHADOW_LOG, encoding="utf-8") as f:
+            reader = _csv.DictReader(f)
+            for row in reader:
+                if date_str in row.get("fetch_time", ""):
+                    rows_today.append(row)
+
+        result["rows"] = rows_today
+        result["total_fetches"] = len(rows_today)
+        ok_rows = [r for r in rows_today if r.get("status") == "OK"]
+        result["ok_count"] = len(ok_rows)
+        result["error_count"] = len(rows_today) - len(ok_rows)
+
+        # delta stats
+        deltas = []
+        for r in ok_rows:
+            try:
+                d = float(r.get("delta_to_start_min", ""))
+                if d > 0:
+                    deltas.append(d)
+            except (ValueError, TypeError):
+                pass
+        if deltas:
+            result["min_delta"] = min(deltas)
+            result["max_delta"] = max(deltas)
+
+        # 午前/午後判定 (race_id の 11-12 桁目 = race_num)
+        morning_races = set()
+        afternoon_races = set()
+        for r in ok_rows:
+            rid = r.get("race_id", "")
+            if len(rid) == 12:
+                rnum = int(rid[10:12])
+                if rnum <= 6:
+                    morning_races.add(rnum)
+                else:
+                    afternoon_races.add(rnum)
+        result["morning_ok"] = len(morning_races) >= 1
+        result["afternoon_ok"] = len(afternoon_races) >= 1
+
+    except Exception as e:
+        logger.warning("summarize_observe_log failed: %s", e)
+
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Discord supplement formatter (optional, NOT auto-sent)
 # ---------------------------------------------------------------------------
 def format_tyb_discord_supplement(tyb_result: dict) -> str:
@@ -459,6 +594,17 @@ def format_tyb_discord_supplement(tyb_result: dict) -> str:
 # ---------------------------------------------------------------------------
 
 TYB_LAUNCH_DATE: str = "20260601"  # 6/1 観測成功後に手動で TYB_SHADOW_ENABLED=True
+
+# ── 5/23 観測 mode ────────────────────────────────────────────────────────
+# TYB_SHADOW_OBSERVE_MODE = True のとき:
+#   - fetch_tyb_observe() を有効化 (TYB_SHADOW_ENABLED が False でも動く)
+#   - ★ Discord 表示は行わない (build_tyb_discord_block の結果を捨てる)
+#   - log 記録のみ (data/tyb_shadow_log.csv + data/tyb_shadow/{date}/*.json)
+#   - 5/23 観測が完了したら False に戻す (または True のまま 5/24 実装へ)
+TYB_SHADOW_OBSERVE_MODE: bool = True   # ← 5/23 観測のため True
+
+# 観測 mode で有効化する日付 (それ以前は OBSERVE_MODE=True でも log しない)
+TYB_OBSERVE_LAUNCH_DATE: str = "20260523"
 WEIGHT_ALERT_THRESHOLD: int = 15   # |weight_diff| >= 15kg → 気配急変 alert
 
 _KEHAI_LABEL: dict[str, str] = {

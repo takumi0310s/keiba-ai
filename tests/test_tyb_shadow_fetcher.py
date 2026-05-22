@@ -282,5 +282,38 @@ class TestTybShadowFetcher(unittest.TestCase):
         self.assertIn("非影響", block)
 
 
+    # ── 観測 mode tests ───────────────────────────────────────────────────
+
+    # Test 13: TYB_SHADOW_OBSERVE_MODE が True であること (5/23 観測準備)
+    def test_observe_mode_enabled(self):
+        """5/23 観測のため TYB_SHADOW_OBSERVE_MODE は True でなければならない。"""
+        self.assertTrue(
+            tsf.TYB_SHADOW_OBSERVE_MODE,
+            "TYB_SHADOW_OBSERVE_MODE must be True for 5/23 observation",
+        )
+
+    # Test 14: fetch_tyb_observe — 日付ガード (過去日付) → None
+    @patch("tools.tyb_shadow_fetcher.datetime")
+    def test_observe_date_guard(self, mock_dt):
+        """過去日付 (20260101) の場合 fetch_tyb_observe は None を返す。"""
+        mock_dt.now.return_value.strftime.return_value = "20260101"
+        result = tsf.fetch_tyb_observe("202606010611", "1030")
+        self.assertIsNone(result, "Date guard: past date must return None")
+
+    # Test 15: fetch_tyb_observe — 例外 swallow (LiveOrchestrator 保護)
+    @patch("tools.tyb_shadow_fetcher.fetch_tyb_shadow")
+    @patch("tools.tyb_shadow_fetcher.datetime")
+    def test_observe_exception_swallow(self, mock_dt, mock_fetch):
+        """fetch_tyb_observe は例外を swallow し LiveOrchestrator を保護する。"""
+        mock_dt.now.return_value.strftime.return_value = "20260523"
+        mock_fetch.side_effect = RuntimeError("Simulated TYB network failure")
+        # must NOT raise
+        try:
+            result = tsf.fetch_tyb_observe("202605230611", "1030")
+        except Exception as e:
+            self.fail(f"fetch_tyb_observe must not propagate exceptions: {e}")
+        self.assertIsNone(result, "Exception should result in None return")
+
+
 if __name__ == "__main__":
     unittest.main()
