@@ -1,0 +1,123 @@
+{
+  "ablation": {
+    "tyb_tansho_odds": {
+      "mean_auc": 0.8662,
+      "delta": -0.0016,
+      "fold_aucs": [
+        0.8657,
+        0.8658,
+        0.8653,
+        0.8678,
+        0.8665
+      ]
+    },
+    "tyb_fukusho_odds": {
+      "mean_auc": 0.8662,
+      "delta": -0.0016,
+      "fold_aucs": [
+        0.8661,
+        0.8658,
+        0.8652,
+        0.8677,
+        0.8663
+      ]
+    },
+    "tyb_odds_idx": {
+      "mean_auc": 0.8655,
+      "delta": -0.0023,
+      "fold_aucs": [
+        0.8649,
+        0.8652,
+        0.8645,
+        0.8674,
+        0.8657
+      ]
+    },
+    "tyb_jockey_idx": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.8651,
+        0.8649,
+        0.8641,
+        0.8671,
+        0.8653
+      ]
+    },
+    "tyb_padock_idx": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.8647,
+        0.8648,
+        0.8642,
+        0.8672,
+        0.8655
+      ]
+    },
+    "tyb_info_idx": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.8647,
+        0.8649,
+        0.8643,
+        0.8671,
+        0.8654
+      ]
+    },
+    "tyb_padock_mark": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.865,
+        0.8648,
+        0.8644,
+        0.8672,
+        0.8654
+      ]
+    },
+    "tyb_ashimoto": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.865,
+        0.8649,
+        0.8643,
+        0.867,
+        0.8652
+      ]
+    },
+    "tyb_sogo_idx": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.865,
+        0.8647,
+        0.8641,
+        0.8672,
+        0.8654
+      ]
+    },
+    "tyb_bagu_change": {
+      "mean_auc": 0.8653,
+      "delta": -0.0025,
+      "fold_aucs": [
+        0.8649,
+        0.8648,
+        0.8644,
+        0.867,
+        0.8654
+      ]
+    }
+  },
+  "go_candidates": [],
+  "full_v21_wf_fold_aucs": [],
+  "full_v21_wf_auc": null,
+  "verdict": "NO-GO (no GO candidates)",
+  "baseline_auc": 0.8678,
+  "threshold": 0.88,
+  "num_boost_round": 300,
+  "cv_method": "5-fold StratifiedKFold (random_state=42)",
+  "note": "All 10 TYB fields degrade AUC vs V15 baseline. No field exceeds delta=+0.001 threshold."
+}
