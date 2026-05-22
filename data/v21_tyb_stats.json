@@ -1,0 +1,91 @@
+{
+  "created": "2026-05-22",
+  "v15_rows": 527280,
+  "v15_races": 38002,
+  "tyb_rows_total": 550115,
+  "merged_rows": 527280,
+  "merged_new_cols": 10,
+  "tyb_year_range": "2015-2026",
+  "coverage": {
+    "tyb_tansho_odds": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_fukusho_odds": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_odds_idx": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_jockey_idx": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_padock_idx": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_info_idx": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_padock_mark": {
+      "matched": 201414,
+      "total": 527280,
+      "coverage_pct": 38.2
+    },
+    "tyb_ashimoto": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_sogo_idx": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    },
+    "tyb_bagu_change": {
+      "matched": 527280,
+      "total": 527280,
+      "coverage_pct": 100.0
+    }
+  },
+  "corr_target": {
+    "tyb_tansho_odds": -0.2914,
+    "tyb_fukusho_odds": -0.2881,
+    "tyb_odds_idx": 0.4214,
+    "tyb_jockey_idx": 0.4564,
+    "tyb_padock_idx": 0.3539,
+    "tyb_info_idx": 0.4196,
+    "tyb_padock_mark": -0.2077,
+    "tyb_ashimoto": -0.0204,
+    "tyb_sogo_idx": 0.2573,
+    "tyb_bagu_change": -0.0313
+  },
+  "leak_gate": {
+    "verdict": "PASS",
+    "threshold": 0.5,
+    "max_abs_corr": 0.4564,
+    "max_corr_field": "tyb_jockey_idx",
+    "flagged_0_40_0_50": [
+      "tyb_odds_idx",
+      "tyb_jockey_idx",
+      "tyb_info_idx"
+    ],
+    "notes": [
+      "All TYB fields are PRE-RACE (published ~15min before race start)",
+      "High corr with target is expected for prediction indices",
+      "jockey_idx/info_idx/odds_idx correlate with popularity (-0.81) = normal pre-race signals",
+      "SKB leak pattern (direct finish encoding) NOT observed in TYB fields",
+      "info_idx context: JRDB analyst assessment published day of race = legitimate pre-race signal"
+    ]
+  }
+}
