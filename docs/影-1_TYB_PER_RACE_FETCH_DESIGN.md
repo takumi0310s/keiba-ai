@@ -103,10 +103,13 @@ def fetch_tyb_shadow(race_id: str, start_time: datetime, date_str: str) -> None:
 
 ## C. IP BAN 回避設計
 
-### C.1 基本方針 (netkeiba 403 事件からの教訓)
+### C.1 基本方針
 
-> netkeiba: aggressive polling → IP BAN → Cookie refresh が必要になった。
-> JRDB: 同様のリスクあり。1 shot per race を厳守。
+> **IP BAN risk の訂正 (2026-05-22 規約 audit 反映)**:
+> netkeiba 403 事件 = 「非公式 HTML scraping の aggressive polling」。
+> JRDB tyokuzen = 「有償会員が公式 URL から正規 Basic Auth でファイル取得」— カテゴリが根本的に異なる。
+> JRDB Gold Generator も同 backend で「直前情報自動取得」機能を提供しており、per-race fetch は想定使用方法。
+> → IP BAN リスクは**極低**。ただし「1 shot/race、retry なし」の方針は V15 safety 設計として維持。
 
 | 制約 | 値 |
 |------|----|
@@ -425,7 +428,7 @@ shadow data は betting decision に関与しないため。
 | 設計選択 | 理由 |
 |----------|------|
 | default DISABLED | 5/23 事故防止。有効化は明示的 flag 変更が必要 |
-| retry なし | IP BAN 回避 (netkeiba 教訓)。1 shot で失敗なら skip |
+| retry なし | V15 safety 設計。JRDB はリスク極低だが 1 shot/race が最もシンプル |
 | fire-and-forget call | V15 inference に絶対影響しない保証 |
 | 7-Zip (.lzh) | 既存 batch pipeline で動作確認済 |
 | mock/dry-run guard | test 実行 / 5/23 開催日での誤 fetch を防止 |
