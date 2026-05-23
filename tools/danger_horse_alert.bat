@@ -7,9 +7,10 @@ for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -For
 
 set LOGFILE=logs\danger_horse_alert_%TODAY%.log
 set PYTHONIOENCODING=utf-8
+set PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 
 echo [%date% %time%] DangerHorseAlert start (TODAY=%TODAY%) >> %LOGFILE%
 
-python tools\danger_horse_alert.py --date %TODAY% --discord >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\danger_horse_alert.py --date %TODAY% --discord >> %LOGFILE% 2>&1
 
 echo [%date% %time%] DangerHorseAlert done >> %LOGFILE%

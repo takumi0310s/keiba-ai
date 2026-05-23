@@ -12,6 +12,7 @@ for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -For
 set LOGFILE=logs\jrdb_retry_am9_%TODAY%.log
 set PYTHONIOENCODING=utf-8
 set PYTHONUNBUFFERED=1
+set PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 
 echo [%date% %time%] JRDB AM 9:00 retry START (TODAY=%TODAY%) >> %LOGFILE%
 
@@ -19,13 +20,13 @@ REM 06:00 の DailyJrdbKyi で取得失敗した可能性のある type を retr
 REM publish タイミング: TYB は当日朝、SED は前日結果ベースで朝公開。
 REM --force で既存 ZIP があっても再 DL、最新版上書き。
 
-python tools\scrape_jrdb.py --type TYB --force --date %TODAY% >> %LOGFILE% 2>&1
-python tools\scrape_jrdb.py --type SED --force --date %TODAY% >> %LOGFILE% 2>&1
-python tools\scrape_jrdb.py --type KYI --force --date %TODAY% >> %LOGFILE% 2>&1
-python tools\scrape_jrdb.py --type KAB --force --date %TODAY% >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\scrape_jrdb.py --type TYB --force --date %TODAY% >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\scrape_jrdb.py --type SED --force --date %TODAY% >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\scrape_jrdb.py --type KYI --force --date %TODAY% >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\scrape_jrdb.py --type KAB --force --date %TODAY% >> %LOGFILE% 2>&1
 
 REM Discord 通知 (取得結果)
-python tools\jrdb_health_check.py --silent >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\jrdb_health_check.py --silent >> %LOGFILE% 2>&1
 
 set EXITCODE=%ERRORLEVEL%
 echo [%date% %time%] JRDB AM 9:00 retry END exitcode=%EXITCODE% >> %LOGFILE%

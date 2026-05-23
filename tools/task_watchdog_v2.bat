@@ -14,10 +14,11 @@ for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -For
 set LOGFILE=logs\watchdog_v2_%TODAY%.log
 set PYTHONIOENCODING=utf-8
 set PYTHONUNBUFFERED=1
+set PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 
 echo [%date% %time%] task_watchdog_v2 --once Start >> %LOGFILE%
 
-python -u tools\process_watchdog_v2.py --once >> %LOGFILE% 2>&1
+%PYTHON_EXE% -u tools\process_watchdog_v2.py --once >> %LOGFILE% 2>&1
 
 echo [%date% %time%] task_watchdog_v2 --once End >> %LOGFILE%
 endlocal

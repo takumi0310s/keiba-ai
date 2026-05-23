@@ -7,6 +7,7 @@ chcp 65001 >nul
 cd /d C:\Users\takum\keiba-ai
 
 set PYTHONIOENCODING=utf-8
+set PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 
 for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"`) do set TODAY=%%I
 
@@ -24,7 +25,7 @@ if "%~1"=="" (
 set LOGFILE=logs\tyb_publish_monitor_%TODAY%.log
 
 echo [%date% %time%] TYB monitor TARGET=%TARGET% >> %LOGFILE%
-python tools\tyb_publish_monitor.py --date %TARGET% >> %LOGFILE% 2>&1
+%PYTHON_EXE% tools\tyb_publish_monitor.py --date %TARGET% >> %LOGFILE% 2>&1
 echo [%date% %time%] TYB monitor end >> %LOGFILE%
 
 exit /b 0
