@@ -95,6 +95,14 @@ def _get_webhook_url(channel="updates"):
         url = env.get('DISCORD_WEBHOOK_UPDATES', '')
         if url.startswith('https://'):
             return url
+    if channel == "v21_paper":
+        url = env.get('DISCORD_WEBHOOK_V21_PAPER', '')
+        if url.startswith('https://'):
+            return url
+        # fallback to updates
+        url = env.get('DISCORD_WEBHOOK_UPDATES', '')
+        if url.startswith('https://'):
+            return url
     # Fallback
     url = env.get('DISCORD_WEBHOOK_URL', '')
     return url if url.startswith('https://') else None
@@ -185,7 +193,8 @@ def send_discord(title, message, color="green", fields=None, channel="updates",
 def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
                            bets, odds_dict=None, horses=None, date_str=None,
                            upset_data=None, newspaper_data=None,
-                           pp_stars=0, pp_matched=None):
+                           pp_stars=0, pp_matched=None,
+                           par_df=None):
     """リッチな買い目通知メッセージを構築。全通知元で共通フォーマット。
 
     Args:
@@ -272,6 +281,15 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     # TOP3
     for i in range(min(3, len(df))):
         row = df.iloc[i]
+        if par_df is not None:
+            try:
+                from tools.popularity_rank import format_par_horse_line
+                par_rows = par_df[par_df['馬番'].astype(int) == int(row['馬番'])]
+                par_row = par_rows.iloc[0] if len(par_rows) > 0 else row
+                lines.append(format_par_horse_line(par_row, i + 1))
+                continue
+            except Exception:
+                pass
         num = int(row['馬番'])
         name = row.get('馬名', '?')
         score = row.get('スコア', 0)

@@ -443,6 +443,17 @@ def predict_and_notify(race_info, date_str):
             print(f"    [KELLY] fallback ¥700: {_kelly_err}")
         # === Kelly criterion hook ここまで ===
 
+        # === 人気除外順位計算 (表示のみ、V15 production 不変) ===
+        _par_df = None
+        try:
+            from tools.popularity_rank import calc_popularity_adjusted_rank
+            _par_df = calc_popularity_adjusted_rank(
+                df.copy(), model_data, odds_available=odds_available, race_info=rinfo)
+            print(f"    [PAR] 人気除外順位計算完了 (JRDB有効={_par_df['PAR_valid'].any()})")
+        except Exception as _par_err:
+            print(f"    [PAR] skip: {_par_err}")
+        # === 人気除外順位計算 ここまで ===
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）
@@ -453,7 +464,8 @@ def predict_and_notify(race_info, date_str):
             df, race_name, rinfo, cond_key, cond_profile,
             bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
             upset_data=_upset_data, newspaper_data=_newspaper_data,
-            pp_stars=_pp_stars, pp_matched=_pp_matched)
+            pp_stars=_pp_stars, pp_matched=_pp_matched,
+            par_df=_par_df)
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
         _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
