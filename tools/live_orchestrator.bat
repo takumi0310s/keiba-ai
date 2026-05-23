@@ -5,7 +5,7 @@
 setlocal
 
 cd /d C:\Users\takum\keiba-ai
-SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 
 :: log dir 確保 (初回 fire 時の stdout.log 書き込み対策)
 if not exist data\live_orchestrator_log mkdir data\live_orchestrator_log

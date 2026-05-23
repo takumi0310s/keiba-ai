@@ -9,7 +9,7 @@
 ::       実 module は features_integrity_monitor.py
 :: ============================================================
 cd /d C:\Users\takum\keiba-ai
-SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 set PYTHONIOENCODING=utf-8
 if not exist logs mkdir logs
 %PYTHON_EXE% -u tools\features_integrity_monitor.py >> logs\keiba_features_integrity_%date:~0,4%%date:~5,2%%date:~8,2%.log 2>&1

@@ -10,7 +10,7 @@
 ::       --date を渡さない (default = 当日)。 完成-1 では --date 明示
 :: ============================================================
 cd /d C:\Users\takum\keiba-ai
-SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 set PYTHONIOENCODING=utf-8
 if not exist logs mkdir logs
 

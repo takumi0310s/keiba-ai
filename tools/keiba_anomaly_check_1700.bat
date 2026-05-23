@@ -8,7 +8,7 @@
 ::       実 module = anomaly_auto_detector.py、 --time arg なし
 :: ============================================================
 cd /d C:\Users\takum\keiba-ai
-SET PYTHON_EXE=C:\Users\takum\AppData\Local\Microsoft\WindowsApps\python.exe
+SET PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
 set PYTHONIOENCODING=utf-8
 if not exist logs mkdir logs
 %PYTHON_EXE% -u tools\anomaly_auto_detector.py >> logs\keiba_anomaly_check_1700_%date:~0,4%%date:~5,2%%date:~8,2%.log 2>&1
