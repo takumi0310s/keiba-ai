@@ -1,0 +1,58 @@
+{
+  "v16_wf_results": [
+    {
+      "year": 2021,
+      "auc_lgb": 0.862770838052566,
+      "auc_xgb": 0.8639602963608743,
+      "auc_ensemble": 0.8643264183155406,
+      "n_train": 291440,
+      "n_test": 47476
+    },
+    {
+      "year": 2022,
+      "auc_lgb": 0.865598659158449,
+      "auc_xgb": 0.866617997200296,
+      "auc_ensemble": 0.8669659282270926,
+      "n_train": 338916,
+      "n_test": 46841
+    },
+    {
+      "year": 2023,
+      "auc_lgb": 0.8669587575668078,
+      "auc_xgb": 0.868192635061427,
+      "auc_ensemble": 0.8683691189485544,
+      "n_train": 385757,
+      "n_test": 47274
+    },
+    {
+      "year": 2024,
+      "auc_lgb": 0.8690825533372658,
+      "auc_xgb": 0.8700155009701891,
+      "auc_ensemble": 0.8703650912966179,
+      "n_train": 433031,
+      "n_test": 46752
+    },
+    {
+      "year": 2025,
+      "auc_lgb": 0.8670984505919992,
+      "auc_xgb": 0.8681056565583092,
+      "auc_ensemble": 0.8683928588823602,
+      "n_train": 479783,
+      "n_test": 47497
+    }
+  ],
+  "removed_features": [
+    "paci_ninki_idx",
+    "odds_change_rate",
+    "odds_sharp_drop",
+    "oz_base_pop_rank",
+    "oz_fukusho_base_log",
+    "oz_tansho_base_log",
+    "pop_rank_change",
+    "prev_odds_log"
+  ],
+  "v16_features_count": 137,
+  "v15_features_count": 145,
+  "v15_baseline_wf_auc": 0.8678,
+  "trained_at": "2026-05-24T00:19:55.505913"
+}
