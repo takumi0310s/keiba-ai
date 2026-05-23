@@ -288,8 +288,9 @@ def fetch_tyb_shadow(
             # extract .lzh with 7z
             extract_dir = tmp_path / "extracted"
             extract_dir.mkdir()
+            _7Z_EXE = r"C:\Program Files\7-Zip\7z.exe"
             result_7z = subprocess.run(
-                ["7z", "e", str(lzh_path), f"-o{extract_dir}", "-y"],
+                [_7Z_EXE, "e", str(lzh_path), f"-o{extract_dir}", "-y"],
                 capture_output=True,
                 timeout=30,
             )

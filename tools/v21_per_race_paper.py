@@ -401,39 +401,37 @@ def predict_v21(race_id: str, v21_model: dict, tyb_data: Optional[dict]) -> Opti
 def _inject_tyb_features(df, tyb_data: dict) -> None:
     """
     Inject TYB observe data into the feature DataFrame.
-    tyb_data: dict keyed by umaban (int or str) → dict of TYB fields.
-    TYB feature cols used by V21: padock_idx, sogo_idx, odds_idx, idm, etc.
+    tyb_data: fetch_tyb_observe result dict (has 'raw_rows' list keyed by umaban).
+    V21 trained TYB features: tyb_tansho_odds(rank1), tyb_fukusho_odds(rank2),
+    tyb_padock_idx, tyb_sogo_idx, tyb_odds_idx, tyb_jockey_idx, tyb_info_idx,
+    tyb_padock_mark, tyb_bagu_change, tyb_ashimoto.
     """
-    import pandas as pd
+    # padock_mark string → numeric (◎=5, ○=4, ▲=3, △=2, ×=1, else=0)
+    _MARK_ENC = {"◎": 5, "○": 4, "▲": 3, "△": 2, "×": 1}
 
+    # V21 model feature name → TYB raw_row field name
     TYB_FEATURE_COLS = {
-        "tyb_padock_idx": "padock_idx",
-        "tyb_sogo_idx": "sogo_idx",
-        "tyb_odds_idx": "odds_idx",
-        "tyb_idm": "idm",
-        "tyb_jockey_idx": "jockey_idx",
-        "tyb_info_idx": "info_idx",
-        "tyb_bagu_change": "bagu_change",
-        "tyb_ashimoto": "ashimoto",
-        "tyb_cancel_flag": "cancel_flag",
-        "tyb_batai_code": "batai_code",
+        "tyb_tansho_odds":  "tansho_odds",   # rank 1 (23% gain)
+        "tyb_fukusho_odds": "fukusho_odds",  # rank 2 (21.5% gain)
+        "tyb_padock_idx":   "padock_idx",
+        "tyb_sogo_idx":     "sogo_idx",
+        "tyb_odds_idx":     "odds_idx",
+        "tyb_jockey_idx":   "jockey_idx",
+        "tyb_info_idx":     "info_idx",
+        "tyb_bagu_change":  "bagu_change",
+        "tyb_ashimoto":     "ashimoto",
     }
 
+    # Build umaban-keyed dict from raw_rows (fetch_tyb_shadow/observe result)
     horses_by_uma: dict[int, dict] = {}
-    if isinstance(tyb_data, dict):
-        # If keyed by umaban directly
-        for k, v in tyb_data.items():
-            try:
-                horses_by_uma[int(k)] = v
-            except (ValueError, TypeError):
-                pass
-        # If it's a nested dict with 'horses' key
-        if "horses" in tyb_data and isinstance(tyb_data["horses"], dict):
-            for k, v in tyb_data["horses"].items():
-                try:
-                    horses_by_uma[int(k)] = v
-                except (ValueError, TypeError):
-                    pass
+    raw_rows = tyb_data.get("raw_rows", []) if isinstance(tyb_data, dict) else []
+    for row in raw_rows:
+        try:
+            uma = int(row.get("umaban", -1))
+            if uma > 0:
+                horses_by_uma[uma] = row
+        except (ValueError, TypeError):
+            pass
 
     if not horses_by_uma:
         return
@@ -450,6 +448,15 @@ def _inject_tyb_features(df, tyb_data: dict) -> None:
                         df.at[idx, feat_col] = float(val)
                     except (ValueError, TypeError):
                         pass
+
+    # padock_mark: string → numeric (separate handling)
+    if "tyb_padock_mark" not in df.columns:
+        df["tyb_padock_mark"] = 0.0
+    for idx in df.index:
+        uma = int(df.at[idx, "馬番"]) if "馬番" in df.columns else -1
+        if uma in horses_by_uma:
+            mark = str(horses_by_uma[uma].get("padock_mark", "")).strip()
+            df.at[idx, "tyb_padock_mark"] = float(_MARK_ENC.get(mark, 0))
 
 
 # ---------------------------------------------------------------------------
