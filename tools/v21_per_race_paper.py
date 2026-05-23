@@ -58,7 +58,8 @@ PAPER_LOG_DIR = REPO / "data" / "v21_paper_log"
 NOTIFY_BEFORE_MIN = 17  # fire 17 min before race start (within 15-20 min window)
 
 DISCORD_WEBHOOK: str = (
-    os.environ.get("DISCORD_WEBHOOK_V21_PAPER")
+    os.environ.get("DISCORD_WEBHOOK_BETS")
+    or os.environ.get("DISCORD_WEBHOOK_V21_PAPER")
     or os.environ.get("DISCORD_WEBHOOK_UPDATES")
     or ""
 )
@@ -489,15 +490,19 @@ def build_discord_message(
     tyb_status = "TYB取得済 (直前データ反映)" if tyb_injected else "TYB未取得 (V15同等スコア)"
 
     msg = (
-        f"【V21 paper — 投票しないでください】\n"
+        f"🚫🚫🚫【V21 paper — 投票禁止】🚫🚫🚫\n"
+        f"⚠ V15 との比較用。絶対に投票しないでください。\n"
+        f"⚠ 実際の投票は V15 (上の買い目) のみ使用。\n"
+        f"─────────────────────────\n"
         f"{course}{race_num}R {race_name}\n"
         f"   {surface}{distance}m {condition} 条件{cond_key} ({num_horses}頭)\n"
         f"V21候補モデル WF AUC 0.8696 / V15+TYB10 features\n\n"
         f"{bet_section}\n"
         f"軸: {top1}({top1_name}) スコア{top1_score:.4f}\n"
         f"Top5: {' → '.join(str(x) for x in top5)}\n"
-        f"TYB: {tyb_status}\n\n"
-        f"⚠ これはpaper予測です。実 cash 投票は V15 買い目のみ使用してください。"
+        f"TYB: {tyb_status}\n"
+        f"─────────────────────────\n"
+        f"🚫 これはpaper予測。V15買い目のみで投票してください 🚫"
     )
     return msg
 
@@ -618,10 +623,11 @@ def fire_race_notify(race_info: dict, v21_model: dict) -> None:
         except Exception as e:
             print(f"    [Discord] message build error: {e}")
             msg = (
-                f"【V21 paper — 投票しないでください】\n"
+                f"🚫🚫🚫【V21 paper — 投票禁止】🚫🚫🚫\n"
+                f"⚠ 絶対に投票しないでください。実際の投票は V15 のみ。\n"
                 f"{course}{race_num}R ({race_id})\n"
                 f"[メッセージ生成エラー: {e}]\n"
-                f"⚠ これはpaper予測です。実 cash 投票は V15 買い目のみ使用してください。"
+                f"🚫 これはpaper予測。V15買い目のみで投票してください 🚫"
             )
 
         # 4. Send only if strategy passes
