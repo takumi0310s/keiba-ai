@@ -124,4 +124,4 @@ def format_par_horse_line(row, v15_rank):
     else:
         flag = ""
 
-    return f"{prefix}: {uma} {name} ({score:.2f}) [{par_str} / {pop_str}]{flag}"
+    return f"{prefix}: {uma} {name} (スコア{score:.2f}) [{par_str} / {pop_str}]{flag}"
