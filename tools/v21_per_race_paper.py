@@ -354,6 +354,18 @@ def predict_v21(race_id: str, v21_model: dict, tyb_data: Optional[dict]) -> Opti
         top1_name = top5_names[0] if top5_names else "?"
         top1_score = float(df.iloc[0].get("スコア", 0)) if len(df) > 0 else 0.0
 
+        all_horses = []
+        for i in range(len(df)):
+            row = df.iloc[i]
+            uma = int(row.get("馬番", 0))
+            all_horses.append({
+                "horse_rank": i + 1,
+                "umaban": uma,
+                "horse_name": str(row.get("馬名", "?")),
+                "score": float(row.get("スコア", 0)),
+                "odds": odds_dict.get(uma),
+            })
+
         passes, skip_reason = _passes_strategy_filter(
             race_name, rinfo.get("course", ""), cond_key, distance
         )
@@ -376,6 +388,7 @@ def predict_v21(race_id: str, v21_model: dict, tyb_data: Optional[dict]) -> Opti
             "strategy_skip_reason": skip_reason,
             "formation": bets,
             "tyb_injected": tyb_data is not None,
+            "all_horses": all_horses,
         }
     except Exception as e:
         print(f"    [V21] prediction error: {e}")
@@ -489,18 +502,33 @@ def build_discord_message(
 
     tyb_status = "TYB取得済 (直前データ反映)" if tyb_injected else "TYB未取得 (V15同等スコア)"
 
+    # All-horse score table (V15 format)
+    all_horses = pred.get("all_horses", [])
+    table_lines = ["| 順 | 馬番 | 馬名 | V21score | 単勝 |", "|----|-----|------|---------|------|"]
+    for h in all_horses:
+        rank = h["horse_rank"]
+        uma = h["umaban"]
+        name = str(h["horse_name"])[:8]
+        score = h["score"]
+        odds_val = h.get("odds")
+        try:
+            odds_str = f"{float(odds_val):.1f}" if odds_val not in (None, "") else "-"
+        except (TypeError, ValueError):
+            odds_str = "-"
+        table_lines.append(f"| {rank} | {uma} | {name} | {score:.3f} | {odds_str} |")
+    table_str = "\n".join(table_lines) if len(table_lines) > 2 else "(スコアデータなし)"
+
     msg = (
         f"🚫🚫🚫【V21 paper — 投票禁止】🚫🚫🚫\n"
         f"⚠ V15 との比較用。絶対に投票しないでください。\n"
         f"⚠ 実際の投票は V15 (上の買い目) のみ使用。\n"
         f"─────────────────────────\n"
         f"{course}{race_num}R {race_name}\n"
-        f"   {surface}{distance}m {condition} 条件{cond_key} ({num_horses}頭)\n"
-        f"V21候補モデル WF AUC 0.8696 / V15+TYB10 features\n\n"
+        f"出走: {num_horses}頭 / {surface}{distance}m / {condition} / 条件{cond_key}\n"
+        f"V21候補モデル WF AUC 0.8696 / V15+TYB10 / TYB: {tyb_status}\n\n"
+        f"### 全馬 V21 score 順\n"
+        f"{table_str}\n\n"
         f"{bet_section}\n"
-        f"軸: {top1}({top1_name}) スコア{top1_score:.4f}\n"
-        f"Top5: {' → '.join(str(x) for x in top5)}\n"
-        f"TYB: {tyb_status}\n"
         f"─────────────────────────\n"
         f"🚫 これはpaper予測。V15買い目のみで投票してください 🚫"
     )
