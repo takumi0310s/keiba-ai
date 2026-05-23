@@ -467,7 +467,7 @@ def build_discord_message(
     # Formation lines
     if not strategy_pass:
         skip_reason = pred.get("strategy_skip_reason", "filter")
-        bet_section = f"(戦略フィルタ除外: {skip_reason})\n"
+        bet_section = f"📋 戦略フィルタ除外 ({skip_reason})\n   → V15 も同じ理由で除外 (買い目なし)\n"
     elif bet_type == "umaren" and bets:
         bet_section = "馬連フォーメーション 2点 (V21 paper)\n"
         for b in bets:
@@ -630,16 +630,14 @@ def fire_race_notify(race_info: dict, v21_model: dict) -> None:
                 f"🚫 これはpaper予測。V15買い目のみで投票してください 🚫"
             )
 
-        # 4. Send only if strategy passes
-        if pred.get("strategy_pass"):
-            try:
-                ok = send_discord(msg)
-                print(f"    [Discord] V21 paper sent: {ok}")
-            except Exception as e:
-                print(f"    [Discord] send error (non-fatal): {e}")
-        else:
-            reason = pred.get("strategy_skip_reason", "filter")
-            print(f"    [V21] strategy filter → Discord skip (reason: {reason})")
+        # 4. Always send Discord (毎レース通知 mode)
+        # strategy_pass=False のレースも送信 (フィルタ除外理由を明示)
+        try:
+            ok = send_discord(msg)
+            status = "sent" if ok else "failed"
+            print(f"    [Discord] V21 paper {status} (strategy_pass={pred.get('strategy_pass')})")
+        except Exception as e:
+            print(f"    [Discord] send error (non-fatal): {e}")
 
         # 5. Always record paper log
         record_paper_log(race_id, date_str, pred, tyb_data)
