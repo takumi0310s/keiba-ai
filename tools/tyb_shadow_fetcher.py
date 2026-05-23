@@ -52,7 +52,7 @@ def _load_env() -> tuple[str, str]:
         load_dotenv(REPO / ".env", override=False)
     except ImportError:
         pass
-    user = os.environ.get("JRDB_USER", "")
+    user = os.environ.get("JRDB_USER", "") or os.environ.get("JRDB_ID", "")
     password = os.environ.get("JRDB_PASSWORD", "")
     return user, password
 

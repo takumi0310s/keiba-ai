@@ -198,14 +198,17 @@ def load_race_schedule(date_str: str) -> list[dict]:
 # ---------------------------------------------------------------------------
 def fetch_tyb_for_race(race_id: str, start_time_str: str) -> Optional[dict]:
     """
-    Fetch TYB via tyb_shadow_fetcher.fetch_tyb_shadow.
-    Returns None if disabled, not available, or any error.
+    Fetch TYB via fetch_tyb_observe (TYB_SHADOW_OBSERVE_MODE gate).
+    TYB_SHADOW_ENABLED=False でも fetch_tyb_observe は今日(>=20260523)動作する。
+    V21 paper 専用 — V15 inference に渡さない。
     """
     try:
-        from tyb_shadow_fetcher import fetch_tyb_shadow, TYB_SHADOW_ENABLED
-        if not TYB_SHADOW_ENABLED:
-            return None
-        result = fetch_tyb_shadow(race_id, start_time_str, enabled=True)
+        from tyb_shadow_fetcher import fetch_tyb_observe
+        result = fetch_tyb_observe(race_id, start_time_str)
+        if result:
+            print(f"    [TYB] fetched OK ({result.get('num_horses', '?')} horses)")
+        else:
+            print(f"    [TYB] fetch returned None (observe disabled or date guard)")
         return result
     except Exception as e:
         print(f"    [TYB] fetch error: {e}")
