@@ -190,11 +190,56 @@ def send_discord(title, message, color="green", fields=None, channel="updates",
     return False
 
 
+def _build_all_scores_table(df, v16_scores=None):
+    """全馬スコア表 (Discord 用 compact テキスト)。
+
+    v16_scores: {馬番(int): float} または None
+    df には horse_career_top3r 列 (過去複勝率) があれば表示する。
+    """
+    has_v16 = bool(v16_scores)
+    has_top3r = 'horse_career_top3r' in df.columns
+
+    rows = []
+    for i, (_, row) in enumerate(df.iterrows()):
+        uma = int(row.get('馬番', 0))
+        name = str(row.get('馬名', '?'))
+        # 馬名: 全角は2幅のため 5文字でも長い → 8文字で truncate
+        if len(name) > 8:
+            name = name[:7] + '…'
+        v15s = float(row.get('スコア', 0))
+        pop = int(row.get('pop_rank', 0) or 0)
+        top3r = float(row.get('horse_career_top3r', 0) or 0) if has_top3r else 0
+
+        marker = '▶' if i < 3 else '  '
+        pop_str = f"{pop}人" if pop > 0 else ' -'
+        top3r_str = f"{top3r * 100:.0f}%" if top3r > 0 else '-'
+        v16s_str = f"{v16_scores.get(uma, 0):.2f}" if has_v16 else ''
+
+        if has_v16:
+            line = f"{marker}{i+1:2}番{uma:2} {name} V15:{v15s:.2f} V16:{v16s_str} {pop_str} 複:{top3r_str}"
+        else:
+            line = f"{marker}{i+1:2}番{uma:2} {name} {v15s:.2f} {pop_str} 複:{top3r_str}"
+        rows.append(line)
+
+    sep_idx = 3  # TOP3 と残り馬の間に区切り
+    parts = []
+    if has_v16:
+        parts.append("📊 **全馬スコア** (V15 | V16 | 人気 | 過去複勝率)")
+    else:
+        parts.append("📊 **全馬スコア** (V15 | 人気 | 過去複勝率)")
+    parts.extend(rows[:sep_idx])
+    parts.append("─" * 28)
+    parts.extend(rows[sep_idx:])
+    if has_v16:
+        parts.append("_★V16=能力ベースpaper参考のみ・投票はV15_")
+    return "\n".join(parts)
+
+
 def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
                            bets, odds_dict=None, horses=None, date_str=None,
                            upset_data=None, newspaper_data=None,
                            pp_stars=0, pp_matched=None,
-                           par_df=None):
+                           par_df=None, v16_scores=None):
     """リッチな買い目通知メッセージを構築。全通知元で共通フォーマット。
 
     Args:
@@ -204,6 +249,7 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
                    start_time(optional), weather(optional), grade(optional)
         cond_key: 条件キー (A-E, X)
         cond_profile: CONDITION_PROFILESの値
+        v16_scores: {馬番(int): float} V16 ability-only スコア (optional、paper参考)
         bets: 買い目リスト
         odds_dict: {馬番: 単勝オッズ} (optional)
         horses: 出走馬リスト (premium data用, optional)
@@ -296,6 +342,13 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
         rank_label = ['軸', '2位', '3位'][i]
         lines.append(f"{rank_label}: {num} {name} (スコア{score:.2f})")
     lines.append("")
+
+    # 全馬スコアテーブル
+    try:
+        lines.append(_build_all_scores_table(df, v16_scores=v16_scores))
+        lines.append("")
+    except Exception:
+        pass
 
     # 配当レンジ
     try:

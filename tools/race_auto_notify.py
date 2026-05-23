@@ -32,6 +32,63 @@ MINUTES_BEFORE = 5
 JRDB_MINUTES_BEFORE = 20  # TYB取得タイミング（発走20分前）
 
 _cached_model_data = None
+_cached_v16_model = None
+
+
+def _load_v16_model():
+    """V16 ability-only candidate モデルをロード (lazy)。失敗時は None。"""
+    global _cached_v16_model
+    if _cached_v16_model is not None:
+        return _cached_v16_model
+    try:
+        import gzip
+        import pickle
+        v16_path = os.path.join(BASE_DIR, 'models', 'v16_ability_candidate.pkl.gz')
+        if not os.path.exists(v16_path):
+            return None
+        with gzip.open(v16_path, 'rb') as f:
+            _cached_v16_model = pickle.load(f)
+        print(f"  [V16] モデルロード完了: features={len(_cached_v16_model['features'])}")
+    except Exception as e:
+        print(f"  [V16] モデルロード失敗 (skip): {e}")
+        _cached_v16_model = {}  # empty dict = tried but failed
+    return _cached_v16_model
+
+
+def _get_v16_scores(df, v16_data):
+    """V16 スコアを計算して {馬番(int): score} dict を返す。
+
+    df: build_features + predict_race 後の DataFrame (全 feature 列含む)
+    v16_data: pkl.gz ロード済み dict
+    """
+    if not v16_data or 'features' not in v16_data or 'model' not in v16_data:
+        return {}
+    try:
+        import numpy as np
+        import xgboost as xgb
+        feat16 = v16_data['features']
+        m_lgb = v16_data['model']
+        m_xgb = v16_data.get('xgb_model')
+        w = v16_data.get('ensemble_weights', {'lgb': 0.5, 'xgb': 0.5})
+
+        # 欠損 feature は 0 で補完
+        import pandas as pd
+        df_copy = df.copy()
+        for f in feat16:
+            if f not in df_copy.columns:
+                df_copy[f] = 0.0
+            df_copy[f] = pd.to_numeric(df_copy[f], errors='coerce').fillna(0)
+
+        X = df_copy[feat16].values
+        p_lgb = m_lgb.predict(X)
+        p_xgb = m_xgb.predict(xgb.DMatrix(X)) if m_xgb is not None else p_lgb
+        scores = w.get('lgb', 0.5) * p_lgb + w.get('xgb', 0.5) * p_xgb
+
+        return {int(row['馬番']): float(scores[i])
+                for i, (_, row) in enumerate(df_copy.iterrows())}
+    except Exception as e:
+        print(f"    [V16] score 計算失敗: {e}")
+        return {}
 
 
 def get_todays_races(date_str):
@@ -454,6 +511,17 @@ def predict_and_notify(race_info, date_str):
             print(f"    [PAR] skip: {_par_err}")
         # === 人気除外順位計算 ここまで ===
 
+        # === V16 ability-only スコア (表示のみ、paper参考) ===
+        _v16_scores = {}
+        try:
+            _v16_data = _load_v16_model()
+            if _v16_data and 'features' in _v16_data:
+                _v16_scores = _get_v16_scores(df, _v16_data)
+                print(f"    [V16] スコア計算完了: {len(_v16_scores)} 頭")
+        except Exception as _v16_err:
+            print(f"    [V16] skip: {_v16_err}")
+        # === V16 スコアここまで ===
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）
@@ -465,7 +533,7 @@ def predict_and_notify(race_info, date_str):
             bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
             upset_data=_upset_data, newspaper_data=_newspaper_data,
             pp_stars=_pp_stars, pp_matched=_pp_matched,
-            par_df=_par_df)
+            par_df=_par_df, v16_scores=_v16_scores or None)
         send_discord(title, msg, color=color, channel="bets")
         print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
         _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
