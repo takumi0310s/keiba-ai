@@ -190,47 +190,101 @@ def send_discord(title, message, color="green", fields=None, channel="updates",
     return False
 
 
-def _build_all_scores_table(df, v16_scores=None):
+_V16_CALIB_CACHE = None
+
+
+def _load_v16_calib():
+    global _V16_CALIB_CACHE
+    if _V16_CALIB_CACHE is not None:
+        return _V16_CALIB_CACHE
+    path = os.path.join(BASE_DIR, 'data', 'v16_calibration.json')
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        _V16_CALIB_CACHE = data.get('buckets', [])
+    except Exception:
+        _V16_CALIB_CACHE = []
+    return _V16_CALIB_CACHE
+
+
+def _score_to_top3r(score: float, buckets: list) -> float:
+    """V16スコア → キャリブレーション済み馬券内率 (オッズ不使用)。"""
+    for b in buckets:
+        if b['lo'] <= score < b['hi']:
+            return b['top3r']
+    return buckets[-1]['top3r'] if buckets and score >= 1.0 else 0.0
+
+
+def _myomi_label(calib_prob: float, odds: float) -> str:
+    """妙味判定: 能力馬券内率 vs 単勝オッズの乖離。表示補助のみ — 投票判断には使わない。"""
+    if calib_prob >= 0.40 and odds >= 7.0:
+        return '★穴'
+    if calib_prob >= 0.40 and odds < 7.0:
+        return '〇順'
+    if calib_prob < 0.25 and odds <= 4.0:
+        return '△危'
+    return ''
+
+
+def _build_all_scores_table(df, v16_scores=None, odds_dict=None):
     """全馬スコア表 (Discord 用 compact テキスト)。
 
     v16_scores: {馬番(int): float} または None
-    df には horse_career_top3r 列 (過去複勝率) があれば表示する。
+    odds_dict: {馬番(int): float} 単勝オッズ または None
+    能力馬券内率 = V16スコアをキャリブレーション変換 (オッズは混入しない)。
     """
     has_v16 = bool(v16_scores)
+    has_odds = bool(odds_dict)
     has_top3r = 'horse_career_top3r' in df.columns
+
+    calib_buckets = _load_v16_calib() if has_v16 else []
+    has_calib = has_v16 and bool(calib_buckets)
 
     rows = []
     for i, (_, row) in enumerate(df.iterrows()):
         uma = int(row.get('馬番', 0))
         name = str(row.get('馬名', '?'))
-        # 馬名: 全角は2幅のため 5文字でも長い → 8文字で truncate
-        if len(name) > 8:
-            name = name[:7] + '…'
+        if len(name) > 7:
+            name = name[:6] + '…'
         v15s = float(row.get('スコア', 0))
         pop = int(row.get('pop_rank', 0) or 0)
         top3r = float(row.get('horse_career_top3r', 0) or 0) if has_top3r else 0
 
         marker = '▶' if i < 3 else '  '
-        pop_str = f"{pop}人" if pop > 0 else ' -'
-        top3r_str = f"{top3r * 100:.0f}%" if top3r > 0 else '-'
-        v16s_str = f"{v16_scores.get(uma, 0):.2f}" if has_v16 else ''
 
-        if has_v16:
-            line = f"{marker}{i+1:2}番{uma:2} {name} V15:{v15s:.2f} V16:{v16s_str} {pop_str} 複:{top3r_str}"
+        if has_calib and has_odds:
+            v16s = v16_scores.get(uma, 0)
+            calib_prob = _score_to_top3r(v16s, calib_buckets)
+            odds = float(odds_dict.get(uma, 0) or 0)
+            myomi = _myomi_label(calib_prob, odds) if odds > 0 else ''
+            odds_str = f"O{odds:.1f}" if odds > 0 else 'O--'
+            myomi_str = f" {myomi}" if myomi else ''
+            line = (f"{marker}{i+1:2}番{uma:2} {name} {v15s:.2f}"
+                    f" 能:{calib_prob*100:.0f}% {odds_str}{myomi_str}")
+        elif has_v16:
+            v16s = v16_scores.get(uma, 0)
+            pop_str = f"{pop}人" if pop > 0 else ' -'
+            line = f"{marker}{i+1:2}番{uma:2} {name} V15:{v15s:.2f} V16:{v16s:.2f} {pop_str}"
         else:
+            pop_str = f"{pop}人" if pop > 0 else ' -'
+            top3r_str = f"{top3r * 100:.0f}%" if top3r > 0 else '-'
             line = f"{marker}{i+1:2}番{uma:2} {name} {v15s:.2f} {pop_str} 複:{top3r_str}"
         rows.append(line)
 
-    sep_idx = 3  # TOP3 と残り馬の間に区切り
+    sep_idx = 3
     parts = []
-    if has_v16:
-        parts.append("📊 **全馬スコア** (V15 | V16 | 人気 | 過去複勝率)")
+    if has_calib and has_odds:
+        parts.append("📊 **全馬スコア** (V15 | 能力馬券内率 | オッズ | 妙味)")
+    elif has_v16:
+        parts.append("📊 **全馬スコア** (V15 | V16 | 人気)")
     else:
         parts.append("📊 **全馬スコア** (V15 | 人気 | 過去複勝率)")
     parts.extend(rows[:sep_idx])
-    parts.append("─" * 28)
+    parts.append("─" * 26)
     parts.extend(rows[sep_idx:])
-    if has_v16:
+    if has_calib and has_odds:
+        parts.append("_★能=V16キャリブ馬券内率(能力のみ)・オッズ参考・投票はV15_")
+    elif has_v16:
         parts.append("_★V16=能力ベースpaper参考のみ・投票はV15_")
     return "\n".join(parts)
 
@@ -345,7 +399,7 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
 
     # 全馬スコアテーブル
     try:
-        lines.append(_build_all_scores_table(df, v16_scores=v16_scores))
+        lines.append(_build_all_scores_table(df, v16_scores=v16_scores, odds_dict=odds_dict))
         lines.append("")
     except Exception:
         pass
