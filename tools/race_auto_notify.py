@@ -91,6 +91,53 @@ def _get_v16_scores(df, v16_data):
         return {}
 
 
+def _save_v16_paper_log(race_id, date_str, df, v16_scores, odds_dict):
+    """V16 予測を paper log に保存 (V15 並走比較用)。
+
+    出力: data/v16_paper_log/YYYYMMDD.json (append)
+    失敗時は silent skip (通知 logic に影響なし)。
+    """
+    try:
+        from pathlib import Path
+        import json as _json
+
+        log_dir = Path(BASE_DIR) / 'data' / 'v16_paper_log'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file = log_dir / f'{date_str}.json'
+
+        if log_file.exists():
+            try:
+                with open(log_file, 'r', encoding='utf-8') as f:
+                    logs = _json.load(f)
+                if not isinstance(logs, list):
+                    logs = []
+            except Exception:
+                logs = []
+        else:
+            logs = []
+
+        v15_top3 = [int(df.iloc[i]['馬番']) for i in range(min(3, len(df)))]
+        v16_ranked = sorted(v16_scores.items(), key=lambda kv: kv[1], reverse=True)
+        v16_top3 = [uma for uma, _ in v16_ranked[:3]]
+
+        logs.append({
+            'race_id': str(race_id),
+            'notified_at': datetime.now().isoformat(),
+            'v15_top3': v15_top3,
+            'v16_top3': v16_top3,
+            'v16_scores': {str(k): round(v, 4) for k, v in v16_scores.items()},
+            'v15_scores': {str(int(row['馬番'])): round(float(row.get('スコア', 0)), 4)
+                           for _, row in df.iterrows()},
+            'odds': {str(k): v for k, v in (odds_dict or {}).items()},
+        })
+
+        with open(log_file, 'w', encoding='utf-8') as f:
+            _json.dump(logs, f, indent=2, ensure_ascii=False)
+        print(f"    [V16 paper] log saved: {log_file.name} ({len(logs)} races)")
+    except Exception as e:
+        print(f"    [V16 paper] log fail (skip): {e}")
+
+
 def get_todays_races(date_str):
     """netkeibaから当日全レースの発走時刻を取得。
     Returns: [(race_id, race_name, course, race_num, start_time_str), ...]
@@ -520,6 +567,9 @@ def predict_and_notify(race_info, date_str):
                 print(f"    [V16] スコア計算完了: {len(_v16_scores)} 頭")
         except Exception as _v16_err:
             print(f"    [V16] skip: {_v16_err}")
+        # V16 paper log (並走記録)
+        if _v16_scores:
+            _save_v16_paper_log(race_id, date_str, df, _v16_scores, odds_dict)
         # === V16 スコアここまで ===
 
         # リッチ通知（共通フォーマット）

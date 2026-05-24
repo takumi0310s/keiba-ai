@@ -360,6 +360,10 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
         lines.append(f"  Best: ROI {_br:.0f}% 的中{_bh:.0f}% N={_bn}")
     lines.append("")
 
+    # ━ V15 本番・投票対象 ━ (V16 参考情報と区別、誤投票防止)
+    lines.append("**━【V15 本番・投票対象】━**")
+    lines.append("")
+
     # 買い目
     if bet_type == 'umaren':
         n1 = int(df.iloc[0]['馬番'])
@@ -397,14 +401,7 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
         lines.append(f"{rank_label}: {num} {name} (スコア{score:.2f})")
     lines.append("")
 
-    # 全馬スコアテーブル
-    try:
-        lines.append(_build_all_scores_table(df, v16_scores=v16_scores, odds_dict=odds_dict))
-        lines.append("")
-    except Exception:
-        pass
-
-    # 配当レンジ
+    # 配当レンジ (V15 section 内)
     try:
         ro = odds_dict or {}
         if ro and bet_type != 'umaren' and len(bets) > 0:
@@ -428,6 +425,19 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     except Exception:
         pass
     lines.append(f"投資額: {investment}円")
+
+    # ━ V16 能力ベース・参考のみ・投票しない ━
+    if v16_scores:
+        lines.append("")
+        lines.append("─" * 22)
+        lines.append("**【V16 能力ベース・参考のみ・投票しない】**")
+
+    # 全馬スコアテーブル
+    try:
+        lines.append(_build_all_scores_table(df, v16_scores=v16_scores, odds_dict=odds_dict))
+        lines.append("")
+    except Exception:
+        pass
 
     # Premium data
     premium_parts = []
