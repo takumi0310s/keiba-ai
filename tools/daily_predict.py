@@ -46,6 +46,12 @@ from predict_core import (
     fetch_jra_and_weather, set_horse_defaults, apply_horse_stats,
 )
 
+try:
+    from paper_shadow_v15_full import run_paper_shadow_comparison, log_paper_shadow
+    _PAPER_SHADOW_AVAILABLE = True
+except ImportError:
+    _PAPER_SHADOW_AVAILABLE = False
+
 
 # ===== 逐次CSV書き込み =====
 
@@ -448,6 +454,17 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                 print(f"    [JRDB] feature merge skipped: {e}")
 
             df = predict_race(df, model_data, odds_available, race_info=race_info)
+
+            # paper shadow (V22 candidate comparison)
+            if _PAPER_SHADOW_AVAILABLE:
+                try:
+                    v15_preds = df[['馬番', 'スコア']].rename(
+                        columns={'馬番': 'horse_num', 'スコア': 'score'}
+                    ).to_dict('records')
+                    shadow_result = run_paper_shadow_comparison(race_id, df, v15_preds)
+                    log_paper_shadow(shadow_result)
+                except Exception:
+                    pass
 
             # 条件分類
             cond_key, cond_profile = classify_race_condition(race_info, num_horses)
