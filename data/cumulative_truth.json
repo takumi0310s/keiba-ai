@@ -1,12 +1,12 @@
 {
-  "calculation_date": "2026-05-16T20:11:17",
+  "calculation_date": "2026-05-26T02:23:13.018381",
   "source": "data/cumulative_results.csv",
-  "n_settled": 597,
-  "n_top1_filled": 594,
-  "total_inv": 417900,
-  "total_pay": 453450,
-  "pnl": 35550,
-  "roi_pct": 108.50681981335248,
-  "hit3_rate": 0.5454545454545454,
-  "trio_hit_rate": 0.22445561139028475
+  "n_settled": 697,
+  "n_top1_filled": 188,
+  "total_inv": 487900.0,
+  "total_pay": 452620.0,
+  "pnl": -35280.0,
+  "roi_pct": 92.76901004304162,
+  "hit3_rate": 0.2611190817790531,
+  "trio_hit_rate": 0.22094691535150646
 }
