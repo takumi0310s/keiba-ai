@@ -1,0 +1,23 @@
+{
+  "v15": {
+    "auc": 0.8937120774074871,
+    "winner_top1": 0.4755426917510854,
+    "trio_rate": 0.7432706222865413
+  },
+  "v22": {
+    "auc": 0.8875570772462065,
+    "winner_top1": 0.4714905933429812,
+    "trio_rate": 0.7189580318379161
+  },
+  "delta_auc": -0.006155000161280677,
+  "delta_winner_top1": -0.0040520984081041656,
+  "delta_trio_rate": -0.024312590448625215,
+  "v22_missing_feats": [
+    "track_lap__pace_diff_race",
+    "track_lap__pace_second_half",
+    "jockey_trainer_combo_top3_exp",
+    "track_lap__lap_last_3f_race",
+    "sire_class_down_boost_exp"
+  ],
+  "v22_available": 95
+}

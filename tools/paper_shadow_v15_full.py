@@ -19,6 +19,7 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 CANDIDATE_MODELS = {
     'v15_full_optuna': BASE_DIR / 'models' / 'v15_full_optuna_candidate.pkl.gz',
     'v15_2': BASE_DIR / 'models' / 'v15_2_candidate.pkl.gz',
+    'v22_top100': BASE_DIR / 'keiba_model_v22_top100_central.pkl.gz',
 }
 
 
@@ -52,6 +53,20 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
         return None
 
     try:
+        # V22 top100: dict with lgb_model + xgb_model + features
+        if isinstance(model, dict) and 'lgb_model' in model and 'xgb_model' in model:
+            import numpy as np
+            import xgboost as xgb
+            v22_feats = model.get('features', [])
+            available = [f for f in v22_feats if f in features_df.columns]
+            missing = [f for f in v22_feats if f not in features_df.columns]
+            df_in = features_df.reindex(columns=v22_feats).fillna(0.0)
+            X = df_in.values.astype(np.float32)
+            p_lgb = model['lgb_model'].predict(X)
+            p_xgb = model['xgb_model'].predict(xgb.DMatrix(X))
+            scores = 0.5 * p_lgb + 0.5 * p_xgb
+            return {i: float(s) for i, s in enumerate(scores)}
+
         # Try common prediction interfaces
         if hasattr(model, 'predict_proba'):
             probs = model.predict_proba(features_df)
