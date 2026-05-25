@@ -23,7 +23,7 @@ if %HH_NUM% GEQ 17 (
 
 echo.
 echo [%time%] netkeiba 確認中...
-powershell -Command "$r=0; try { $resp=Invoke-WebRequest -Uri 'https://race.netkeiba.com/race/shutuba.html?race_id=202605021006' -TimeoutSec 10 -UserAgent 'Mozilla/5.0' -UseBasicParsing -ErrorAction Stop; $r=$resp.StatusCode } catch { $r=0 }; Write-Host $r" > %TEMP%\nk_status.txt 2>&1
+powershell -Command "$r=0; try { $resp=Invoke-WebRequest -Uri 'https://race.netkeiba.com/top/' -TimeoutSec 10 -UserAgent 'Mozilla/5.0' -UseBasicParsing -ErrorAction Stop; $r=$resp.StatusCode } catch { $r=0 }; Write-Host $r" > %TEMP%\nk_status.txt 2>&1
 set /p STATUS=<%TEMP%\nk_status.txt
 
 echo [%time%] Status: %STATUS%

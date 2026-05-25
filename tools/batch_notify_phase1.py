@@ -240,9 +240,12 @@ def main():
             skipped_why[rid] = reason7
             continue
 
-        # Skip 条件B (strategy7)
+        # Skip 条件B/E (strategy7)
         if cond == 'B':
             skipped_why[rid] = 'strategy7_condB'
+            continue
+        if cond == 'E':
+            skipped_why[rid] = 'strategy7_condE'
             continue
 
         # Skip already notified (bets channel)

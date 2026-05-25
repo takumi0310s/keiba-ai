@@ -323,18 +323,53 @@ class JVLinkParser:
         }
 
     def parse_se(self, raw: bytes) -> dict:
-        """SE: 馬毎レース情報. fields: horse_id, name, sex, age, jockey, weight."""
+        """SE: 馬毎レース情報 (553 bytes, SJIS).
+
+        Confirmed byte offsets (empirically verified on 2026-02-28 Nakayama data):
+          - finish_time: [297-300] 4-char, tenths of seconds (e.g. 1122 = 112.2s)
+          - agari3f:     [390-392] 3-char, tenths of seconds (999 = N/A)
+          - year:        [11-14] YYYY (race year, not make_date)
+          - month_day:   [15-18] MMDD (race month/day)
+        """
+
+        def _parse_ft(chunk: bytes) -> float | None:
+            """finish_time: valid range 600-2500 (60s-250s, covers 1000m-3600m)."""
+            try:
+                v = int(chunk.decode("ascii"))
+                return v / 10.0 if 600 <= v <= 2500 else None
+            except Exception:
+                return None
+
+        def _parse_ag(chunk: bytes) -> float | None:
+            """agari3f: valid range 290-500 (29s-50s). 999 = N/A."""
+            try:
+                v = int(chunk.decode("ascii"))
+                return v / 10.0 if 290 <= v <= 500 else None
+            except Exception:
+                return None
+
+        year = self._slice_ascii(raw, 11, 4)
+        mday = self._slice_ascii(raw, 15, 4)
+        ft_raw = self._slice_ascii(raw, 297, 4)
+        ag_raw = self._slice_ascii(raw, 390, 3)
+
         return {
-            "record_type": "SE",
-            "year":        self._slice_ascii(raw, 3, 4),
-            "month_day":   self._slice_ascii(raw, 7, 4),
-            "course_code": self._slice_ascii(raw, 19, 2),
-            "race_num":    self._slice_ascii(raw, 25, 2),
-            "wakuban":     self._slice_ascii(raw, 27, 1),
-            "umaban":      self._slice_ascii(raw, 28, 2),
-            "horse_id":    self._slice_ascii(raw, 30, 10),
-            "horse_name":  self._slice_sjis(raw, 40, 36),
-            "_event_date": self._slice_ascii(raw, 3, 8),
+            "record_type":  "SE",
+            "year":         year,
+            "month_day":    mday,
+            "course_code":  self._slice_ascii(raw, 19, 2),
+            "kai":          self._slice_ascii(raw, 21, 2),
+            "nichi":        self._slice_ascii(raw, 23, 2),
+            "race_num":     self._slice_ascii(raw, 25, 2),
+            "wakuban":      self._slice_ascii(raw, 27, 1),
+            "umaban":       self._slice_ascii(raw, 28, 2),
+            "horse_id":     self._slice_ascii(raw, 30, 10),
+            "horse_name":   self._slice_sjis(raw, 40, 36),
+            "finish_time":  _parse_ft(raw[297:301]),    # seconds (float), None if DNS/scratch
+            "agari3f":      _parse_ag(raw[390:393]),    # seconds (float), None=N/A
+            "_ft_raw":      ft_raw,
+            "_ag_raw":      ag_raw,
+            "_event_date":  year + mday,                 # YYYYMMDD race date
         }
 
     def parse_hr(self, raw: bytes) -> dict:
