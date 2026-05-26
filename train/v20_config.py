@@ -135,4 +135,6 @@ def get_v20_features(
         # sib expanding window from netkeiba_siblings_expanding.csv (100% fill)
         feats += ['sib_top3_rate_exp', 'sib_shinba_wr_exp',
                   'sib_total_races_exp', 'sib_total_offspring_exp']
+    # Always include netkeiba race-level features (100% fill for 2020-2025)
+    feats += ['track_index_nk']
     return feats

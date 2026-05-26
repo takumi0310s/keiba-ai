@@ -31,6 +31,7 @@ CACHE_PKL  = os.path.join(BASE, "data", "_v15_train_df_cache.pkl")
 LAP_PARQ   = os.path.join(BASE, "data", "v20", "lap_features_v15cache.parquet")
 BLOD_PARQ  = os.path.join(BASE, "data", "v20", "blod_features_v15cache.parquet")
 SIB_PARQ   = os.path.join(BASE, "data", "v20", "sib_features_v15cache.parquet")
+NK_PARQ    = os.path.join(BASE, "data", "v20", "netkeiba_race_features_v15cache.parquet")
 OUT_DIR    = os.path.join(BASE, "data", "v20")
 MODEL_PATH = os.path.join(BASE, "keiba_model_v20_base_central.pkl.gz")
 
@@ -109,6 +110,18 @@ def load_data() -> tuple[pd.DataFrame, list[str]]:
         print(f"  sib fill rate: {fill_rate:.1%}")
     else:
         print(f"  [WARN] sib parquet not found: {SIB_PARQ}")
+
+    # ===== Merge netkeiba race features (track_bias) =====
+    if os.path.exists(NK_PARQ):
+        print("Merging netkeiba race features ...")
+        nk = pd.read_parquet(NK_PARQ)
+        for col in ["track_index_nk"]:
+            if col in nk.columns:
+                df[col] = nk[col].reindex(df.index)
+        fill_rate = (df["track_index_nk"].notna()).mean()
+        print(f"  netkeiba race features fill rate: {fill_rate:.1%}")
+    else:
+        print(f"  [WARN] netkeiba race features parquet not found: {NK_PARQ}")
 
     # ===== Year column =====
     df["_y"] = df["year"].apply(lambda y: 2000 + int(y) if int(y) <= 30 else 1900 + int(y))
@@ -232,6 +245,7 @@ def save_model(df: pd.DataFrame, feats: list[str], wf_auc: float) -> None:
         "lap_features_included": True,
         "blod_features_included": True,
         "sib_features_included": True,
+        "netkeiba_race_features_included": True,
         "v15_baseline_auc": 0.8678,
     }
     with gzip.open(MODEL_PATH, "wb") as f:
