@@ -19,7 +19,10 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 CANDIDATE_MODELS = {
     'v15_full_optuna': BASE_DIR / 'models' / 'v15_full_optuna_candidate.pkl.gz',
     'v15_2': BASE_DIR / 'models' / 'v15_2_candidate.pkl.gz',
-    'v22_top100': BASE_DIR / 'keiba_model_v22_top100_central.pkl.gz',
+    # v22_top100 DISABLED 2026-05-26: track_lap POST-RACE leak confirmed (pace_diff_race/
+    # pace_second_half/lap_last_3f_race are current-race lap joined by race_id → post-race).
+    # Retro 2025: V22 (95 feats, missing leaks) AUC delta = -0.0062 vs V15 → worse.
+    # DO NOT re-enable without clean rebuild (prev_race lap shift required).
     'v20_base': BASE_DIR / 'keiba_model_v20_base_central.pkl.gz',
 }
 
