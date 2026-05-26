@@ -113,16 +113,26 @@ V20_BASE_136 = [
 assert len(V20_BASE_136) == 136, f"Expected 136, got {len(V20_BASE_136)}"
 
 
-def get_v20_features(include_o1_fixed: bool = False, include_blod_fixed: bool = False) -> list[str]:
+def get_v20_features(
+    include_o1_fixed: bool = False,
+    include_blod_fixed: bool = False,
+    include_sib: bool = False,
+) -> list[str]:
     """Return V20 feature list depending on which data sources are available.
 
     Args:
-        include_o1_fixed: True after JV-Link O1 bulk fetch completes (STEP 2).
-        include_blod_fixed: True after JV-Link BLOD fix completes (STEP 4).
+        include_o1_fixed: True after lap features built (STEP 2, netkeiba_race_lap.csv).
+        include_blod_fixed: True after BLOD expanding window built (STEP 4).
+        include_sib: True after sib expanding features built (STEP 5).
     """
     feats = list(V20_BASE_136)
     if include_o1_fixed:
-        feats += ['prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff']
+        feats += ['prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff', 'has_lap_data']
     if include_blod_fixed:
-        feats += ['sire_shinba_top3r']
+        # sire_shinba_top3r_exp: expanding window, built by build_blod_features.py
+        feats += ['sire_shinba_top3r_exp']
+    if include_sib:
+        # sib expanding window from netkeiba_siblings_expanding.csv (100% fill)
+        feats += ['sib_top3_rate_exp', 'sib_shinba_wr_exp',
+                  'sib_total_races_exp', 'sib_total_offspring_exp']
     return feats
