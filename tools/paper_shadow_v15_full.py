@@ -24,6 +24,9 @@ CANDIDATE_MODELS = {
     # Retro 2025: V22 (95 feats, missing leaks) AUC delta = -0.0062 vs V15 → worse.
     # DO NOT re-enable without clean rebuild (prev_race lap shift required).
     'v20_base': BASE_DIR / 'keiba_model_v20_base_central.pkl.gz',
+    # V16: オッズ系8件除外 ability model (WF 0.8677 ≈ V15 0.8678), T4 PASS
+    # paper shadow のみ、本番投票なし。採用基準: N≥30後 人気乖離ROI > V15 かつ TOP1連対率≥40%
+    'v16_ability': BASE_DIR / 'models' / 'v16_ability_candidate.pkl.gz',
 }
 
 # V20-specific feature fill values (global means from training data)
@@ -72,10 +75,25 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
         return None
 
     try:
+        import numpy as np
+        import xgboost as xgb
+
+        # V16 style: dict with 'model' (LGB Booster) + optional 'xgb_model' + 'features'
+        if isinstance(model, dict) and 'model' in model and 'features' in model:
+            model_feats = model['features']
+            df_in = features_df.reindex(columns=model_feats).fillna(0.0)
+            X = df_in.values.astype(np.float32)
+            p_lgb = model['model'].predict(X)
+            w = model.get('ensemble_weights', {'lgb': 0.5, 'xgb': 0.5})
+            if 'xgb_model' in model:
+                p_xgb = model['xgb_model'].predict(xgb.DMatrix(X, feature_names=model_feats))
+                scores = w.get('lgb', 0.5) * p_lgb + w.get('xgb', 0.5) * p_xgb
+            else:
+                scores = p_lgb
+            return {i: float(s) for i, s in enumerate(scores)}
+
         # V20/V22: dict with lgb_model + xgb_model + features
         if isinstance(model, dict) and 'lgb_model' in model and 'xgb_model' in model:
-            import numpy as np
-            import xgboost as xgb
             model_feats = model.get('features', [])
             # Augment features_df with V20-specific fills for missing columns
             df_aug = features_df.copy()
