@@ -137,4 +137,6 @@ def get_v20_features(
                   'sib_total_races_exp', 'sib_total_offspring_exp']
     # Always include netkeiba race-level features (100% fill for 2020-2025)
     feats += ['track_index_nk']
+    # PRE-RACE JRDB unused columns (+0.0004 on 2025 fold, 99%+ fill)
+    feats += ['jrdb_prev_ten_idx', 'jrdb_prev_agari_idx']
     return feats

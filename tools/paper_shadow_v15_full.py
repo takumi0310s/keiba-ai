@@ -34,6 +34,8 @@ _V20_FEATURE_FILLS = {
     'sib_total_races_exp': 28.8,       # global mean
     'sib_total_offspring_exp': 3.1,    # global mean
     'track_index_nk': -7.7,           # global mean (neutral track)
+    'jrdb_prev_ten_idx': -5.21,      # global mean
+    'jrdb_prev_agari_idx': -5.32,    # global mean
 }
 
 
