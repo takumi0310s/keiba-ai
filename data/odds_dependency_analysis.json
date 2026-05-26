@@ -1,0 +1,113 @@
+{
+  "jockey_odds_corr": {
+    "paci_jockey_exp_wr_x_paci_ninki_idx": {
+      "r": 0.9602,
+      "p": 0.0
+    },
+    "paci_jockey_exp_wr_x_oz_tansho_base_log": {
+      "r": -0.6232,
+      "p": 0.0
+    },
+    "paci_jockey_exp_wr_x_oz_base_pop_rank": {
+      "r": -0.6084,
+      "p": 0.0
+    },
+    "paci_jockey_exp_wr_x_oz_fukusho_base_log": {
+      "r": -0.5085,
+      "p": 0.0
+    },
+    "paci_jockey_exp_3rd_x_paci_ninki_idx": {
+      "r": 0.9498,
+      "p": 0.0
+    },
+    "paci_jockey_exp_3rd_x_oz_tansho_base_log": {
+      "r": -0.6444,
+      "p": 0.0
+    },
+    "paci_jockey_exp_3rd_x_oz_base_pop_rank": {
+      "r": -0.6394,
+      "p": 0.0
+    },
+    "paci_jockey_exp_3rd_x_oz_fukusho_base_log": {
+      "r": -0.5321,
+      "p": 0.0
+    }
+  },
+  "residual_analysis": {
+    "paci_jockey_exp_wr": {
+      "r2_explained_by_odds": 0.938,
+      "popularity_proxy_pct": 93.8,
+      "ability_independent_pct": 6.2,
+      "original_target_corr": 0.456,
+      "residual_target_corr": 0.0722,
+      "residual_retention_pct": 15.8
+    },
+    "paci_jockey_exp_3rd": {
+      "r2_explained_by_odds": 0.9269,
+      "popularity_proxy_pct": 92.7,
+      "ability_independent_pct": 7.3,
+      "original_target_corr": 0.4583,
+      "residual_target_corr": 0.0835,
+      "residual_retention_pct": 18.2
+    }
+  },
+  "suspect_horses": {
+    "n": 305435,
+    "hit_rate": 0.1484,
+    "avg_career_top3r": 0.1719,
+    "top15_z_contrib": {
+      "best_finish_3r": 0.4331,
+      "paci_goal_diff": 0.3266,
+      "avg_finish_3r": 0.3013,
+      "paci_goal_rank": 0.2631,
+      "prev_finish": 0.2541,
+      "odds_change_rate": 0.2537,
+      "oz_base_pop_rank": 0.2292,
+      "prev_pass4": 0.2235,
+      "oz_tansho_base_log": 0.2217,
+      "prev2_finish": 0.211,
+      "prev3_finish": 0.1792,
+      "oz_fukusho_base_log": 0.1677,
+      "jrdb_heavy_apt": 0.1571,
+      "jrdb_class_code": 0.1488,
+      "jrdb_stable_rank": 0.1483
+    },
+    "bottom10_z_contrib": {
+      "paci_jockey_exp_3rd": -0.345,
+      "jrdb_ze_agari_avg": -0.3619,
+      "jockey_horse_top3r": -0.408,
+      "jrdb_ze_idm_avg": -0.4294,
+      "horse_career_wr": -0.4458,
+      "sire_shinba_top3r": -0.5,
+      "top3_count_3r": -0.5514,
+      "horse_dist_top3r": -0.5791,
+      "horse_surface_top3r": -0.6655,
+      "horse_career_top3r": -0.7004
+    }
+  },
+  "good_horses": {
+    "n": 103958,
+    "hit_rate": 0.3504,
+    "top10_z_contrib": {
+      "horse_career_top3r": 1.6097,
+      "horse_surface_top3r": 1.5437,
+      "horse_dist_top3r": 1.3299,
+      "top3_count_3r": 1.2028,
+      "horse_career_wr": 1.0036,
+      "jockey_horse_top3r": 0.8842,
+      "jrdb_ze_idm_avg": 0.8128,
+      "jrdb_prev_idm": 0.6946,
+      "paci_ninki_idx": 0.6862,
+      "paci_jockey_exp_3rd": 0.6804
+    }
+  },
+  "odds_dependency_summary": {
+    "direct_odds_gain_pct": 0.0,
+    "jockey_total_gain_pct": 0.0,
+    "jockey_r2_by_odds": 0.9325,
+    "jockey_odds_proxy_gain_pct": 0.0,
+    "total_odds_dependency_pct": 0.0,
+    "v16_removes_odds_pct": NaN,
+    "remaining_odds_via_jockey_pct": NaN
+  }
+}
