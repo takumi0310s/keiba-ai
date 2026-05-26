@@ -190,6 +190,38 @@ def send_discord(title, message, color="green", fields=None, channel="updates",
     return False
 
 
+def send_discord_file(title: str, message: str, filepath: str,
+                      color: str = "green", channel: str = "updates") -> bool:
+    """Discord Webhook にファイルを添付して送信 (multipart/form-data)。
+    embed は通常通り、ファイルは "file" フィールドで添付。
+    """
+    import time as _time
+    url = _get_webhook_url(channel)
+    if not url:
+        return False
+
+    embed = {
+        "title": title[:256],
+        "description": message[:2000],
+        "color": COLORS.get(color, COLORS["blue"]),
+    }
+    payload_json = json.dumps({"embeds": [embed]})
+
+    try:
+        with open(filepath, "rb") as fp:
+            fname = os.path.basename(filepath)
+            resp = requests.post(
+                url,
+                data={"payload_json": payload_json},
+                files={"file": (fname, fp, "text/plain; charset=utf-8")},
+                timeout=30,
+            )
+        return resp.status_code in (200, 204)
+    except Exception as e:
+        _log_failure(title, message, channel, f"file_exc:{type(e).__name__}")
+        return False
+
+
 _V16_CALIB_CACHE = None
 
 

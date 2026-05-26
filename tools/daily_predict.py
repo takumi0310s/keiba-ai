@@ -52,6 +52,54 @@ try:
 except ImportError:
     _PAPER_SHADOW_AVAILABLE = False
 
+try:
+    from build_allscores_txt import save_race_allscores, build_allscores_txt
+    _ALLSCORES_AVAILABLE = True
+except ImportError:
+    _ALLSCORES_AVAILABLE = False
+
+# V16 ability model (lazy load)
+_v16_model_cache = None
+
+def _load_v16_model_daily():
+    global _v16_model_cache
+    if _v16_model_cache is not None:
+        return _v16_model_cache
+    import gzip, pickle
+    mp = os.path.join(BASE_DIR, 'models', 'v16_ability_candidate.pkl.gz')
+    if not os.path.exists(mp):
+        return None
+    try:
+        with gzip.open(mp, 'rb') as f:
+            _v16_model_cache = pickle.load(f)
+        print(f"  [V16] model loaded ({len(_v16_model_cache.get('features',[]))} feats)")
+    except Exception as e:
+        print(f"  [V16] load failed: {e}")
+        _v16_model_cache = {}
+    return _v16_model_cache
+
+def _get_v16_scores_daily(df, v16_data):
+    """全馬の V16 スコアを {馬番str: score} で返す。"""
+    if not v16_data or 'features' not in v16_data:
+        return {}
+    try:
+        import xgboost as xgb
+        feats = v16_data['features']
+        df_in = df.reindex(columns=feats).fillna(0.0)
+        X = df_in.values.astype('float32')
+        p_lgb = v16_data['model'].predict(X)
+        w = v16_data.get('ensemble_weights', {'lgb': 0.5, 'xgb': 0.5})
+        if 'xgb_model' in v16_data:
+            p_xgb = v16_data['xgb_model'].predict(xgb.DMatrix(X, feature_names=feats))
+            scores = w.get('lgb', 0.5) * p_lgb + w.get('xgb', 0.5) * p_xgb
+        else:
+            scores = p_lgb
+        return {str(int(df.iloc[i].get('馬番', i))): float(scores[i])
+                for i in range(len(scores))}
+    except Exception as e:
+        print(f"  [V16] score error: {e}")
+        return {}
+
 
 # ===== 逐次CSV書き込み =====
 
@@ -529,6 +577,34 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
             except Exception:
                 pass
 
+            # 全馬スコア保存 (V15 全馬 + V16 全馬)
+            if _ALLSCORES_AVAILABLE:
+                try:
+                    _v16_data = _load_v16_model_daily()
+                    _v16_sc = _get_v16_scores_daily(df, _v16_data) if _v16_data else {}
+                    _v15_sc = {str(int(r['馬番'])): float(r['スコア'])
+                               for _, r in df.iterrows()
+                               if pd.notna(r.get('馬番')) and pd.notna(r.get('スコア'))}
+                    _horses_list = [{'馬番': int(r['馬番']), '馬名': str(r.get('馬名',''))}
+                                    for _, r in df.iterrows() if pd.notna(r.get('馬番'))]
+                    save_race_allscores(
+                        date_str=date_str,
+                        race_id=race_id,
+                        race_name=race_name,
+                        course=course_name,
+                        race_num=race_num_int,
+                        distance=race_info.get('distance', 0),
+                        surface=race_info.get('surface', ''),
+                        condition=race_info.get('condition', ''),
+                        cond_key=cond_key,
+                        num_horses=num_horses,
+                        horses=_horses_list,
+                        v15_scores=_v15_sc,
+                        v16_scores=_v16_sc,
+                    )
+                except Exception as _e:
+                    print(f"  [allscores] save failed: {_e}")
+
             # コンソール出力
             print(f"  条件: {cond_key} ({cond_profile['desc']})")
             if not cond_profile.get('recommended', True):
@@ -685,3 +761,32 @@ if __name__ == "__main__":
         print(f"[daily_predict] 整形済み買い目通知送信: {sent} messages")
     except Exception as e:
         print(f"[WARN] 整形済み買い目通知失敗: {e}")
+
+    # 全馬スコア .txt 生成 → Discord 添付 (bets チャンネル)
+    try:
+        from notify import send_discord_file, send_discord
+        from build_allscores_txt import build_allscores_txt
+        txt_path = build_allscores_txt(date_str)
+        if txt_path and os.path.exists(txt_path):
+            csv_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
+            n_races = 0
+            if os.path.exists(csv_path):
+                import pandas as _pd2
+                n_races = len(_pd2.read_csv(csv_path, encoding='utf-8-sig'))
+            summary = (
+                f"**{date_str}** {n_races}R 全馬スコア\n"
+                f"V15=本番スコア順 / V16=参考(投票しない)\n"
+                f"添付 .txt で全レース全馬を確認できます"
+            )
+            ok = send_discord_file(
+                f"全馬スコア {date_str} ({n_races}R)",
+                summary,
+                filepath=txt_path,
+                color="blue",
+                channel="bets",
+            )
+            print(f"[daily_predict] 全馬スコア.txt送信: {'OK' if ok else 'FAILED'}")
+        else:
+            print("[daily_predict] allscores .txt 生成スキップ (データなし)")
+    except Exception as e:
+        print(f"[WARN] 全馬スコア.txt送信失敗: {e}")
