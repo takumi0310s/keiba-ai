@@ -35,6 +35,15 @@ import unicodedata
 import glob
 from datetime import datetime
 
+try:
+    _tools_dir = os.path.dirname(os.path.abspath(__file__))
+    if _tools_dir not in sys.path:
+        sys.path.insert(0, _tools_dir)
+    from build_allscores_html import update_allscores_result, build_allscores_html
+    _ALLSCORES_HTML_AVAILABLE = True
+except ImportError:
+    _ALLSCORES_HTML_AVAILABLE = False
+
 
 def _norm(text):
     """NFKC正規化 — 全角数字・全角英字を半角に統一し、文字化け耐性を持たせる"""
@@ -621,6 +630,13 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
         }
         results.append(result_row)
 
+        # allscores HTML: 着順を JSON に追記
+        if _ALLSCORES_HTML_AVAILABLE and finish_order:
+            try:
+                update_allscores_result(date_str, race_id, finish_order)
+            except Exception as _ae:
+                print(f"  [allscores] update failed: {_ae}")
+
         hit_mark = "HIT!" if (trio_hit or umaren_hit) else "miss"
         payout_disp = f"払戻 {actual_payout:,}円" if actual_payout > 0 else ""
         # HITなのにpayout=0はpayoutテーブル解析失敗の可能性 → 警告 + Discord通知
@@ -703,6 +719,34 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
             c_roi = (s['pay'] / s['inv'] * 100) if s['inv'] > 0 else 0
             print(f"    {c}: {s['hit']}/{s['count']}的中 ROI {c_roi:.1f}%")
         print(f"{'=' * 60}")
+
+    # 全馬スコア HTML を結果反映版で再生成 → Discord 添付
+    if _ALLSCORES_HTML_AVAILABLE and settled:
+        try:
+            html_path = build_allscores_html(date_str)
+            if html_path:
+                n_hit = sum(1 for r in settled if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1)
+                total_inv = sum(r['investment'] for r in settled)
+                total_pay = sum(r.get('trio_payout', 0) + r.get('umaren_payout', 0) for r in settled)
+                roi_val = (total_pay / total_inv * 100) if total_inv > 0 else 0
+                profit_val = total_pay - total_inv
+                p_sign = '+' if profit_val >= 0 else ''
+                summary = (
+                    f"**{date_str}** 結果反映 {len(settled)}R / 的中 {n_hit}R\n"
+                    f"ROI {roi_val:.1f}% / 収支 {p_sign}{profit_val:,}円\n"
+                    f"添付 HTML で全馬の予測順位 vs 実着順を確認できます"
+                )
+                from notify import send_discord_file
+                ok = send_discord_file(
+                    f"全馬照合 {date_str} ({n_hit}/{len(settled)} 的中)",
+                    summary,
+                    filepath=html_path,
+                    color="green" if n_hit > 0 else "gray",
+                    channel="bets",
+                )
+                print(f"[daily_results] 全馬照合 HTML 送信: {'OK' if ok else 'FAILED'}")
+        except Exception as _he:
+            print(f"[WARN] 全馬照合 HTML 送信失敗: {_he}")
 
     return len(settled)
 

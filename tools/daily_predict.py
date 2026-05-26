@@ -54,6 +54,7 @@ except ImportError:
 
 try:
     from build_allscores_txt import save_race_allscores, build_allscores_txt
+    from build_allscores_html import build_allscores_html
     _ALLSCORES_AVAILABLE = True
 except ImportError:
     _ALLSCORES_AVAILABLE = False
@@ -762,31 +763,30 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[WARN] 整形済み買い目通知失敗: {e}")
 
-    # 全馬スコア .txt 生成 → Discord 添付 (bets チャンネル)
+    # 全馬スコア HTML 生成 → Discord 添付 (bets チャンネル)
     try:
         from notify import send_discord_file, send_discord
-        from build_allscores_txt import build_allscores_txt
-        txt_path = build_allscores_txt(date_str)
-        if txt_path and os.path.exists(txt_path):
+        html_path = build_allscores_html(date_str) if _ALLSCORES_AVAILABLE else None
+        if html_path and os.path.exists(html_path):
             csv_path = os.path.join(BASE_DIR, "data", "daily_predictions", f"{date_str}.csv")
             n_races = 0
             if os.path.exists(csv_path):
                 import pandas as _pd2
                 n_races = len(_pd2.read_csv(csv_path, encoding='utf-8-sig'))
             summary = (
-                f"**{date_str}** {n_races}R 全馬スコア\n"
+                f"**{date_str}** {n_races}R 全馬スコア (朝時点)\n"
                 f"V15=本番スコア順 / V16=参考(投票しない)\n"
-                f"添付 .txt で全レース全馬を確認できます"
+                f"添付 HTML で全レース全馬を確認。結果反映後に再送します。"
             )
             ok = send_discord_file(
                 f"全馬スコア {date_str} ({n_races}R)",
                 summary,
-                filepath=txt_path,
+                filepath=html_path,
                 color="blue",
                 channel="bets",
             )
-            print(f"[daily_predict] 全馬スコア.txt送信: {'OK' if ok else 'FAILED'}")
+            print(f"[daily_predict] 全馬スコア HTML 送信: {'OK' if ok else 'FAILED'}")
         else:
-            print("[daily_predict] allscores .txt 生成スキップ (データなし)")
+            print("[daily_predict] allscores HTML 生成スキップ (データなし)")
     except Exception as e:
-        print(f"[WARN] 全馬スコア.txt送信失敗: {e}")
+        print(f"[WARN] 全馬スコア HTML 送信失敗: {e}")
