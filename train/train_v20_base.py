@@ -27,13 +27,14 @@ sys.path.insert(0, os.path.join(BASE, "train"))
 
 from v20_config import V20_BASE_136, V20_DELETE_NOW, V20_LEAK_FEATURES, get_v20_features
 
-CACHE_PKL  = os.path.join(BASE, "data", "_v15_train_df_cache.pkl")
-LAP_PARQ   = os.path.join(BASE, "data", "v20", "lap_features_v15cache.parquet")
-BLOD_PARQ  = os.path.join(BASE, "data", "v20", "blod_features_v15cache.parquet")
-SIB_PARQ   = os.path.join(BASE, "data", "v20", "sib_features_v15cache.parquet")
-NK_PARQ    = os.path.join(BASE, "data", "v20", "netkeiba_race_features_v15cache.parquet")
-OUT_DIR    = os.path.join(BASE, "data", "v20")
-MODEL_PATH = os.path.join(BASE, "keiba_model_v20_base_central.pkl.gz")
+CACHE_PKL      = os.path.join(BASE, "data", "_v15_train_df_cache.pkl")
+LAP_PARQ       = os.path.join(BASE, "data", "v20", "lap_features_v15cache.parquet")
+BLOD_PARQ      = os.path.join(BASE, "data", "v20", "blod_features_v15cache.parquet")
+SIB_PARQ       = os.path.join(BASE, "data", "v20", "sib_features_v15cache.parquet")
+NK_PARQ        = os.path.join(BASE, "data", "v20", "netkeiba_race_features_v15cache.parquet")
+BLOD_FULL_PARQ = os.path.join(BASE, "data", "v20", "blod_full_features_v15cache.parquet")
+OUT_DIR        = os.path.join(BASE, "data", "v20")
+MODEL_PATH     = os.path.join(BASE, "keiba_model_v20_base_central.pkl.gz")
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -123,12 +124,26 @@ def load_data() -> tuple[pd.DataFrame, list[str]]:
     else:
         print(f"  [WARN] netkeiba race features parquet not found: {NK_PARQ}")
 
+    # ===== Merge BLOD full (JV-Link HN/SK 3代血統 × 距離/コース expanding) =====
+    include_blod_full = False
+    if os.path.exists(BLOD_FULL_PARQ):
+        print("Merging BLOD full features ...")
+        blod_full = pd.read_parquet(BLOD_FULL_PARQ)
+        blod_full_cols = [c for c in blod_full.columns if c in blod_full.columns]
+        for col in blod_full_cols:
+            df[col] = blod_full[col].reindex(df.index)
+        fill_rate = df[blod_full_cols[0]].notna().mean() if blod_full_cols else 0
+        print(f"  blod_full fill rate: {fill_rate:.1%}")
+        include_blod_full = True
+    else:
+        print(f"  [INFO] blod_full parquet not found (optional): {BLOD_FULL_PARQ}")
+
     # ===== Year column =====
     df["_y"] = df["year"].apply(lambda y: 2000 + int(y) if int(y) <= 30 else 1900 + int(y))
 
     # ===== Feature list =====
-    # V20 base 136 + lap (O1 fixed) + BLOD (sire_shinba_top3r_exp) + sib = 144 features
-    feats = get_v20_features(include_o1_fixed=True, include_blod_fixed=True, include_sib=True)
+    feats = get_v20_features(include_o1_fixed=True, include_blod_fixed=True, include_sib=True,
+                             include_blod_full=include_blod_full)
     # Filter to available columns
     feats_avail = [f for f in feats if f in df.columns]
     feats_miss  = [f for f in feats if f not in df.columns]

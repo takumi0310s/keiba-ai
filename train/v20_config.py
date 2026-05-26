@@ -117,26 +117,34 @@ def get_v20_features(
     include_o1_fixed: bool = False,
     include_blod_fixed: bool = False,
     include_sib: bool = False,
+    include_blod_full: bool = False,
 ) -> list[str]:
     """Return V20 feature list depending on which data sources are available.
 
     Args:
-        include_o1_fixed: True after lap features built (STEP 2, netkeiba_race_lap.csv).
-        include_blod_fixed: True after BLOD expanding window built (STEP 4).
-        include_sib: True after sib expanding features built (STEP 5).
+        include_o1_fixed:   True after lap features built (netkeiba_race_lap.csv).
+        include_blod_fixed: True after sire_shinba_top3r_exp built (build_blod_features.py).
+        include_sib:        True after sib expanding features built (build_sib_features.py).
+        include_blod_full:  True after JV-Link BLOD HN/SK built (build_blod_full_features.py).
     """
     feats = list(V20_BASE_136)
     if include_o1_fixed:
         feats += ['prev_race_first3f', 'prev_race_last3f', 'prev_race_pace_diff', 'has_lap_data']
     if include_blod_fixed:
-        # sire_shinba_top3r_exp: expanding window, built by build_blod_features.py
         feats += ['sire_shinba_top3r_exp']
     if include_sib:
-        # sib expanding window from netkeiba_siblings_expanding.csv (100% fill)
         feats += ['sib_top3_rate_exp', 'sib_shinba_wr_exp',
                   'sib_total_races_exp', 'sib_total_offspring_exp']
-    # Always include netkeiba race-level features (100% fill for 2020-2025)
+    # Always include netkeiba race-level features
     feats += ['track_index_nk']
-    # PRE-RACE JRDB unused columns (+0.0004 on 2025 fold, 99%+ fill)
+    # PRE-RACE JRDB columns (+0.0004 on 2025 fold)
     feats += ['jrdb_prev_ten_idx', 'jrdb_prev_agari_idx']
+    if include_blod_full:
+        # JV-Link BLOD full: 3代血統 × 距離/コース expanding (build_blod_full_features.py)
+        feats += [
+            'sire_blod_top3r_exp', 'sire_blod_turf_wr_exp', 'sire_blod_dirt_wr_exp',
+            'sire_blod_sprint_wr_exp', 'sire_blod_middle_wr_exp', 'sire_blod_long_wr_exp',
+            'bms_blod_top3r_exp', 'bms_blod_turf_wr_exp', 'bms_blod_dirt_wr_exp',
+            'bms_blod_sprint_wr_exp', 'bms_blod_middle_wr_exp', 'bms_blod_long_wr_exp',
+        ]
     return feats
