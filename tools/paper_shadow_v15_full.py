@@ -20,6 +20,20 @@ CANDIDATE_MODELS = {
     'v15_full_optuna': BASE_DIR / 'models' / 'v15_full_optuna_candidate.pkl.gz',
     'v15_2': BASE_DIR / 'models' / 'v15_2_candidate.pkl.gz',
     'v22_top100': BASE_DIR / 'keiba_model_v22_top100_central.pkl.gz',
+    'v20_base': BASE_DIR / 'keiba_model_v20_base_central.pkl.gz',
+}
+
+# V20-specific feature fill values (global means from training data)
+# Used when features_df does not contain V20-only columns.
+_V20_FEATURE_FILLS = {
+    'has_lap_data': 0.457,             # 45.7% fill rate overall
+    'sire_shinba_top3r_exp': 0.242,    # global mean
+    'sire_shinba_runs_exp': 20.0,      # approximate mean prior shinba runs
+    'sib_top3_rate_exp': 0.274,        # global mean
+    'sib_shinba_wr_exp': 0.100,        # global mean
+    'sib_total_races_exp': 28.8,       # global mean
+    'sib_total_offspring_exp': 3.1,    # global mean
+    'track_index_nk': -7.7,           # global mean (neutral track)
 }
 
 
@@ -53,14 +67,17 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
         return None
 
     try:
-        # V22 top100: dict with lgb_model + xgb_model + features
+        # V20/V22: dict with lgb_model + xgb_model + features
         if isinstance(model, dict) and 'lgb_model' in model and 'xgb_model' in model:
             import numpy as np
             import xgboost as xgb
-            v22_feats = model.get('features', [])
-            available = [f for f in v22_feats if f in features_df.columns]
-            missing = [f for f in v22_feats if f not in features_df.columns]
-            df_in = features_df.reindex(columns=v22_feats).fillna(0.0)
+            model_feats = model.get('features', [])
+            # Augment features_df with V20-specific fills for missing columns
+            df_aug = features_df.copy()
+            for col, fill_val in _V20_FEATURE_FILLS.items():
+                if col not in df_aug.columns:
+                    df_aug[col] = fill_val
+            df_in = df_aug.reindex(columns=model_feats).fillna(0.0)
             X = df_in.values.astype(np.float32)
             p_lgb = model['lgb_model'].predict(X)
             p_xgb = model['xgb_model'].predict(xgb.DMatrix(X))
