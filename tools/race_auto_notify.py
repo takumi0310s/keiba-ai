@@ -521,6 +521,15 @@ def predict_and_notify(race_info, date_str):
             _c3v_status = 'HIGH_ROI_POCKET' if _c3v_match else 'standard'
             print(f"    [STRATEGY_C3_VENUE][PAPER] venue={course_str} cond={cond_key} → {_c3v_status}")
 
+        # === STRATEGY_TOKYO_SKIP: 東京 全除外 (paper eval only) ===
+        # backtest 2026-05-26: 東京 ROI=51.5% (N=120) → 戦略⑦+C4+東京除外 ROI=120.6% N=348
+        # 最有望候補。paper eval で N>=30 後 GO/NO-GO 判定。
+        STRATEGY_TOKYO_PAPER_ONLY = True
+        _tokyo_skip = '東京' in course_str
+        if STRATEGY_TOKYO_PAPER_ONLY and _tokyo_skip:
+            print(f"    [STRATEGY_TOKYO][PAPER] would skip: Tokyo venue → {race_name_str}"
+                  f" (backtest ROI=51.5%, target 120.6% w/ ⑦+C4)")
+
         # 収益パターンマッチ
         _pp_stars, _pp_matched = 0, []
         try:
