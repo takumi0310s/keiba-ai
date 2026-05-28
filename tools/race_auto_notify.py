@@ -581,6 +581,21 @@ def predict_and_notify(race_info, date_str):
             _save_v16_paper_log(race_id, date_str, df, _v16_scores, odds_dict)
         # === V16 スコアここまで ===
 
+        # === V16a / 全 candidate paper shadow (log only) ===
+        try:
+            from paper_shadow_v15_full import run_paper_shadow_comparison, log_paper_shadow
+            _v15_preds_ps = [
+                {'horse_num': int(row['馬番']), 'score': float(row.get('スコア', 0))}
+                for _, row in df.iterrows()
+            ]
+            _shadow_res = run_paper_shadow_comparison(race_id, df, _v15_preds_ps, race_info=rinfo)
+            log_paper_shadow(_shadow_res)
+            _v16a_top3 = (_shadow_res.get('paper_shadows', {}).get('v16a_ability', {}).get('top3') or [])
+            print(f"    [V16a paper] logged. top3={_v16a_top3}")
+        except Exception as _ps_err:
+            print(f"    [V16a paper] skip: {_ps_err}")
+        # === V16a paper shadow ここまで ===
+
         # リッチ通知（共通フォーマット）
         from notify import build_rich_bet_message
         # race_infoにstart_timeを追加（race listから取得した情報をマージ）

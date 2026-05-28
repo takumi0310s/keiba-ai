@@ -790,3 +790,20 @@ if __name__ == "__main__":
             print("[daily_predict] allscores HTML 生成スキップ (データなし)")
     except Exception as e:
         print(f"[WARN] 全馬スコア HTML 送信失敗: {e}")
+
+    # paper shadow stats 通知 (updates チャンネル)
+    try:
+        from paper_shadow_v15_full import get_paper_shadow_stats
+        from notify import send_discord
+        stats = get_paper_shadow_stats(days=1)
+        if stats:
+            lines = [f"**{date_str} paper shadow**"]
+            for mkey, s in sorted(stats.items()):
+                n = s['n_total']
+                agree = s['n_agree']
+                rate = agree / n * 100 if n > 0 else 0.0
+                lines.append(f"  {mkey}: {agree}/{n}R 一致 ({rate:.0f}%)")
+            send_discord("paper shadow 本日集計", "\n".join(lines), color="blue", channel="updates")
+            print(f"[daily_predict] paper shadow stats 通知送信")
+    except Exception as e:
+        print(f"[WARN] paper shadow stats 通知失敗: {e}")
