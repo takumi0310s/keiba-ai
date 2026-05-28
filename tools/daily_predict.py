@@ -510,7 +510,7 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                     v15_preds = df[['馬番', 'スコア']].rename(
                         columns={'馬番': 'horse_num', 'スコア': 'score'}
                     ).to_dict('records')
-                    shadow_result = run_paper_shadow_comparison(race_id, df, v15_preds)
+                    shadow_result = run_paper_shadow_comparison(race_id, df, v15_preds, race_info=race_info)
                     log_paper_shadow(shadow_result)
                 except Exception:
                     pass

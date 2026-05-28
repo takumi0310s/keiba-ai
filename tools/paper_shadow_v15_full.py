@@ -27,6 +27,9 @@ CANDIDATE_MODELS = {
     # V16: オッズ系8件除外 ability model (WF 0.8677 ≈ V15 0.8678), T4 PASS
     # paper shadow のみ、本番投票なし。採用基準: N≥30後 人気乖離ROI > V15 かつ TOP1連対率≥40%
     'v16_ability': BASE_DIR / 'models' / 'v16_ability_candidate.pkl.gz',
+    # V16a: V16 + jockey×trainer/weight_slope/perf_score/gate_bias (4 new ability features)
+    # paper shadow only. 採用基準: WF AUC >= V16 0.8677 かつ N≥30後 人気乖離ROI改善
+    'v16a_ability': BASE_DIR / 'models' / 'v16a_candidate.pkl.gz',
 }
 
 # V20-specific feature fill values (global means from training data)
@@ -59,13 +62,34 @@ def load_candidate_model(model_key: str):
         return None
 
 
-def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
+def _augment_v16a(features_df, race_info: dict):
+    """V16a 推論用特徴量を features_df に付加。lookup がなければ default で埋める。"""
+    try:
+        _tools_dir = str(BASE_DIR / 'tools')
+        import sys
+        if _tools_dir not in sys.path:
+            sys.path.insert(0, _tools_dir)
+        from features_v16a_lookup import augment_features_v16a
+        return augment_features_v16a(features_df.copy(), race_info)
+    except Exception as e:
+        print(f"[paper_shadow] v16a augment warn: {e}")
+        from features_v16a_lookup import V16A_DEFAULTS
+        df = features_df.copy()
+        for feat, val in V16A_DEFAULTS.items():
+            if feat not in df.columns:
+                df[feat] = val
+        return df
+
+
+def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna',
+                         race_info: dict | None = None):
     """
     Generate paper shadow prediction using candidate model.
 
     Args:
         features_df: pandas DataFrame with same features as V15
         model_key: which candidate model to use
+        race_info: race metadata dict (course, distance, surface) for V16a lookup
 
     Returns:
         dict {index: score} or None if model unavailable / prediction fails
@@ -78,10 +102,15 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
         import numpy as np
         import xgboost as xgb
 
-        # V16 style: dict with 'model' (LGB Booster) + optional 'xgb_model' + 'features'
+        # V16 / V16a style: dict with 'model' (LGB Booster) + optional 'xgb_model' + 'features'
         if isinstance(model, dict) and 'model' in model and 'features' in model:
             model_feats = model['features']
-            df_in = features_df.reindex(columns=model_feats).fillna(0.0)
+            # V16a: augment with new ability features from lookup tables
+            if model_key == 'v16a_ability':
+                df_aug = _augment_v16a(features_df, race_info or {})
+            else:
+                df_aug = features_df
+            df_in = df_aug.reindex(columns=model_feats).fillna(0.0)
             X = df_in.values.astype(np.float32)
             p_lgb = model['model'].predict(X)
             w = model.get('ensemble_weights', {'lgb': 0.5, 'xgb': 0.5})
@@ -122,7 +151,8 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna'):
         return None
 
 
-def run_paper_shadow_comparison(race_id, features_df, v15_predictions: list) -> dict:
+def run_paper_shadow_comparison(race_id, features_df, v15_predictions: list,
+                                race_info: dict | None = None) -> dict:
     """
     Compare V15 production predictions with candidate model predictions.
 
@@ -130,6 +160,7 @@ def run_paper_shadow_comparison(race_id, features_df, v15_predictions: list) -> 
         race_id: race identifier (str)
         features_df: feature DataFrame used for V15 prediction
         v15_predictions: V15 predictions list of dicts with horse_num / score
+        race_info: race metadata dict (course, distance, surface) for V16a lookup
 
     Returns:
         dict with comparison results
@@ -146,7 +177,7 @@ def run_paper_shadow_comparison(race_id, features_df, v15_predictions: list) -> 
     }
 
     for model_key in CANDIDATE_MODELS:
-        shadow = predict_paper_shadow(features_df, model_key)
+        shadow = predict_paper_shadow(features_df, model_key, race_info=race_info)
         if shadow is None:
             continue
         top3 = sorted(shadow.items(), key=lambda x: x[1], reverse=True)[:3]

@@ -1,0 +1,61 @@
+{
+  "model": "v16a_candidate",
+  "wf_mean": 0.8673966001688911,
+  "wf_results": [
+    {
+      "year": 2021,
+      "auc_lgb": 0.8622942873560591,
+      "auc_xgb": 0.8637162267476053,
+      "auc_ensemble": 0.863822378306147,
+      "n_train": 291440,
+      "n_test": 47476
+    },
+    {
+      "year": 2022,
+      "auc_lgb": 0.8653736934276285,
+      "auc_xgb": 0.8661793929507986,
+      "auc_ensemble": 0.8666286422414005,
+      "n_train": 338916,
+      "n_test": 46841
+    },
+    {
+      "year": 2023,
+      "auc_lgb": 0.8667976281108859,
+      "auc_xgb": 0.8677853580227607,
+      "auc_ensemble": 0.86807410543467,
+      "n_train": 385757,
+      "n_test": 47274
+    },
+    {
+      "year": 2024,
+      "auc_lgb": 0.8690147253452267,
+      "auc_xgb": 0.8700087995370118,
+      "auc_ensemble": 0.8702866883714652,
+      "n_train": 433031,
+      "n_test": 46752
+    },
+    {
+      "year": 2025,
+      "auc_lgb": 0.8670972381324721,
+      "auc_xgb": 0.8678145455451413,
+      "auc_ensemble": 0.8681711864907727,
+      "n_train": 479783,
+      "n_test": 47497
+    }
+  ],
+  "v15_baseline": 0.8678,
+  "v16_baseline": 0.8677,
+  "delta_vs_v15": -0.0004,
+  "delta_vs_v16": -0.0003,
+  "new_features": [
+    "jockey_trainer_top3_rate_exp",
+    "jockey_trainer_n_exp",
+    "horse_weight_slope_5",
+    "horse_weight_std_5",
+    "horse_perf_score_exp",
+    "gate_bias_top3_exp",
+    "gate_bias_n_exp"
+  ],
+  "verdict": "NO-GO",
+  "run_at": "2026-05-28T11:55:43.866100"
+}
