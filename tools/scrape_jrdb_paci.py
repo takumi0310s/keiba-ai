@@ -42,7 +42,10 @@ from pathlib import Path
 import requests
 from requests.auth import HTTPBasicAuth
 
-if sys.platform == "win32":
+# ★ import時は stdout を再ラップしない (daily_paci_refresh 等から import されると
+#   二重ラップで silent_runner のログリダイレクト下に "I/O operation on closed file"
+#   を起こすため)。 単体実行(__main__)時のみ utf-8 ラップする。
+if sys.platform == "win32" and __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
@@ -104,10 +107,27 @@ def get_paci_index(session: requests.Session, auth: HTTPBasicAuth,
 
 
 def download_zip(session: requests.Session, auth: HTTPBasicAuth,
-                 url: str, dest: Path) -> tuple[bool, str]:
-    """Download a single ZIP file."""
-    if dest.exists() and dest.stat().st_size > 100:
-        return True, "skip"
+                 url: str, dest: Path, force: bool = False) -> tuple[bool, str]:
+    """Download a single ZIP file.
+
+    force=True のとき、 既存ファイルがあっても再ダウンロードする
+    (★ 当日/直近の PACI は部分版がキャッシュされていることがあるため強制取得 ★)。
+    force=False でも、 サーバの content-length が既存サイズより大きければ再取得
+    (部分版→完全版 への自動更新)。
+    """
+    if dest.exists() and dest.stat().st_size > 100 and not force:
+        # 既存があっても、 サーバ側が大きい(=完全版に更新された)なら再DL
+        try:
+            h = session.head(url, auth=auth, timeout=30, verify=True,
+                             allow_redirects=True)
+            srv = int(h.headers.get("content-length", 0))
+            loc = dest.stat().st_size
+            if srv > 0 and srv > loc * 1.05:  # サーバが5%超大きい=完全版に更新
+                print(f"  [update] {dest.name}: local {loc:,}B < server {srv:,}B → 再DL")
+            else:
+                return True, "skip"
+        except Exception:
+            return True, "skip"  # HEAD失敗時は従来通りskip(安全側)
 
     for attempt in range(3):
         try:
@@ -210,10 +230,14 @@ def step_download(years: list[int], since: str | None,
         return {"status": "dry-run", "found": len(items), "new": len(to_dl)}
 
     stats = {"downloaded": 0, "skipped": 0, "failed": 0, "extracted": 0}
+    # ★ 直近(今日〜3日前)の PACI は部分版キャッシュを信用せず強制再DL ★
+    recent_cut = (datetime.now() - timedelta(days=3)).strftime("%Y%m%d")
     for i, (filename, href) in enumerate(items, 1):
         url = f"{JRDB_BASE}/datazip/Paci/{href}"
         dest = RAW_DIR / filename
-        ok, msg = download_zip(session, auth, url, dest)
+        fdate = filename_to_date(filename)
+        force = bool(fdate and fdate >= recent_cut)  # 直近=強制再DL
+        ok, msg = download_zip(session, auth, url, dest, force=force)
         if ok:
             if msg == "skip":
                 stats["skipped"] += 1
