@@ -301,69 +301,74 @@ def test_odds_base_perday_csv():
     assert 'odds_base_20260412.csv' in p, f"unexpected path: {p}"
 
 
+# 注: 戦略⑦ 案C フィルタは週末リファクタで race_auto_notify.py の inline から
+# strategy_filters.evaluate_bet_decision() へ抽出された (behavior 不変・2026-05-30 ライブ稼働済)。
+# 以下のテストは「実装場所の文字列 grep」ではなく、移動先関数の「挙動」を直接検証する
+# (位置非依存・より強い回帰防止)。順序: distance≤1000→06特別→京都→C4→E→B→X。
+
+
 def test_strategy_7_planC_kyoto_filter_present():
-    """戦略⑦ 案 C: race_auto_notify.py に 京都 除外 filter が実装されていること (P0-2 5/17 適用)."""
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # 京都 filter (案 C) が存在し、 重賞除外条件付き
-    assert "course_str == '京都'" in content, "race_auto_notify.py に 京都 除外 filter (case C) がない"
-    assert 'P0-2' in content, "P0-2 案 C コメントが race_auto_notify.py にない"
-    # Graded race を保護 (Victoria Mile 等 G1 day 影響回避)
-    assert 'is_graded' in content, "is_graded 判定 (G1/G2/G3) がない"
+    """戦略⑦ 案 C: 京都 除外 filter が evaluate_bet_decision に実装されていること (P0-2 5/17 適用)."""
+    from tools.strategy_filters import evaluate_bet_decision
+    # 京都 + 非重賞 → 見送り、 理由=strategy_7_kyoto_p0_2_5_17
+    should_bet, reason = evaluate_bet_decision(
+        race_name='3歳未勝利', course='京都', distance=1800, cond_key='C')
+    assert should_bet is False, "京都 非重賞が見送りにならない (案 C filter 欠落)"
+    assert reason == 'strategy_7_kyoto_p0_2_5_17', f"京都 skip 理由が想定外: {reason}"
 
 
 def test_strategy_7_planC_condition_X_filter_present():
-    """戦略⑦ 案 C: race_auto_notify.py に 条件 X 除外 filter が実装されていること (P0-2 5/17 適用)."""
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    assert "cond_key == 'X'" in content, "race_auto_notify.py に 条件 X 除外 filter (case C) がない"
+    """戦略⑦ 案 C: 条件 X 除外 filter が evaluate_bet_decision に実装されていること (P0-2 5/17 適用)."""
+    from tools.strategy_filters import evaluate_bet_decision
+    # 条件X + 非重賞 (非京都) → 見送り、 理由=strategy_7_cond_X_p0_2_5_17
+    should_bet, reason = evaluate_bet_decision(
+        race_name='4歳以上1勝クラス', course='東京', distance=1800, cond_key='X')
+    assert should_bet is False, "条件X 非重賞が見送りにならない (案 C filter 欠落)"
+    assert reason == 'strategy_7_cond_X_p0_2_5_17', f"条件X skip 理由が想定外: {reason}"
 
 
 def test_strategy_7_planC_excludes_kyoto_normal_race():
-    """戦略⑦ 案 C: 京都 + 非重賞 で skip されること."""
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # 京都 + 非重賞 → skip
-    # 条件: course_str == '京都' AND NOT (is_graded OR is_listed)
-    # 検証: filter block 内に skip メッセージあり
-    assert 'Skip 京都' in content, "京都 skip ログメッセージがない"
+    """戦略⑦ 案 C: 京都 + 非重賞 で skip (should_bet=False) されること."""
+    from tools.strategy_filters import evaluate_bet_decision
+    should_bet, _ = evaluate_bet_decision(
+        race_name='4歳以上2勝クラス', course='京都', distance=2000, cond_key='C')
+    assert should_bet is False, "京都 平場レースが skip されていない"
 
 
 def test_strategy_7_planC_excludes_condition_X():
-    """戦略⑦ 案 C: 条件 X + 非重賞 で skip されること."""
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    assert 'Skip 条件X' in content, "条件 X skip ログメッセージがない"
+    """戦略⑦ 案 C: 条件 X + 非重賞 で skip (should_bet=False) されること."""
+    from tools.strategy_filters import evaluate_bet_decision
+    should_bet, _ = evaluate_bet_decision(
+        race_name='4歳以上1勝クラス', course='中京', distance=1600, cond_key='X')
+    assert should_bet is False, "条件X 平場レースが skip されていない"
 
 
 def test_strategy_7_planC_preserves_other_courses():
-    """戦略⑦ 案 C: 中京/東京/阪神/新潟 等は filter で skip されないこと.
+    """戦略⑦ 案 C: 中京/東京/阪神/新潟/福島 の非重賞・通常条件は skip されないこと.
     docs/P0_2_EXTENSION_DESIGN_2026_05_16.md §1.2: 中京 ROI 107.05% (positive) は除外しない.
     """
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # 中京/東京/阪神/新潟/福島 が hardcoded skip されていないこと
+    from tools.strategy_filters import evaluate_bet_decision
     for course in ['中京', '東京', '阪神', '新潟', '福島']:
-        # filter 内に 'course_str == 中京' 等の skip ロジックがないこと
-        assert f"course_str == '{course}'" not in content, \
-            f"{course} が race_auto_notify.py で hardcoded 除外されている (案 C は 京都 のみ)"
+        # cond_key='C'・1900m (≤1000/特別/京都/C4(condA)/E/B/X いずれにも該当しない) → 買い
+        should_bet, reason = evaluate_bet_decision(
+            race_name='3歳1勝クラス', course=course, distance=1900, cond_key='C')
+        assert should_bet is True, \
+            f"{course} の通常レースが誤って skip された (reason={reason}、 案 C は 京都 のみ除外)"
 
 
 def test_strategy_7_planC_graded_race_protected():
-    """戦略⑦ 案 C: G1/G2/G3 + L (重賞) は 京都/条件 X でも skip されないこと.
-    5/17 ヴィクトリアマイル (東京 11R G1) は案 C 影響 0、 万一京都で重賞があっても G1 は通す.
+    """戦略⑦ 案 C: G1/G2/G3 (重賞) は 京都/条件 X でも skip されないこと.
+    5/17 ヴィクトリアマイル (G1) は案 C 影響 0、 京都/条件X に重賞があっても G1 は通す.
     """
-    fpath = os.path.join(BASE_DIR, 'tools', 'race_auto_notify.py')
-    with open(fpath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # 京都 filter に 'not (is_graded or is_listed)' があるか
-    assert 'not (is_graded or is_listed)' in content, \
-        "京都/条件X filter で Graded race を保護していない"
+    from tools.strategy_filters import evaluate_bet_decision
+    # 京都 + G1 → 買い (Graded 保護)
+    should_bet_kyoto, _ = evaluate_bet_decision(
+        race_name='天皇賞(G1)', course='京都', distance=2000, cond_key='C')
+    assert should_bet_kyoto is True, "京都 filter で Graded race を保護していない"
+    # 条件X + G1 → 買い (Graded 保護)
+    should_bet_x, _ = evaluate_bet_decision(
+        race_name='ヴィクトリアマイル(G1)', course='東京', distance=1600, cond_key='X')
+    assert should_bet_x is True, "条件X filter で Graded race を保護していない"
 
 
 def test_payout_integrity_suite():
