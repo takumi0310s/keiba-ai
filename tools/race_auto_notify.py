@@ -278,36 +278,18 @@ def predict_and_notify(race_info, date_str):
         num_horses = len(horses)
         distance = rinfo.get('distance', 0)
 
-        # Skip 1000m or less
-        if distance <= 1000:
-            print("    Skipping <=1000m")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=False, strategy_7c_reason='distance_le_1000')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=False, strategy_7c_reason='distance_le_1000')
-            return
-
-        # ===== 戦略⑦ フィルタ (race_name + course) =====
+        # ===== 平地全レース通知 (2026-05-29) =====
+        # 障害のみ完全除外 (上で return 済み)。 それ以外の平地は全会場・全レース
+        # を予測 + 通知する。 戦略⑦ フィルタは「投票するか (🟢買い / ⚪見送り)」 の
+        # 判定にのみ使用し、 通知自体は止めない (見送りも参考として通知)。
+        # ★ 投票判断ロジックは従来完全不変 (strategy_filters.evaluate_bet_decision) ★
+        # 買い/見送りの最終判定は cond_key 確定後 (予測後) に行う。
         race_name_str = str(race_name)
         course_str = str(rinfo.get('course', ''))
-
-        # 1. 06_特別 (G/L/OPEN特別 ではない平場特別) を除外
         is_graded = any(g in race_name_str for g in ['G1', 'G2', 'G3', 'GⅠ', 'GⅡ', 'GⅢ'])
         is_listed = any(s in race_name_str for s in ['L)', '(L)', 'OP)', '(OP)'])
         is_open_tokubetsu = any(s in race_name_str for s in ['杯', '賞', 'ステークス', 'カップ', 'ハンデ'])
-        if '特別' in race_name_str and not (is_graded or is_listed or is_open_tokubetsu):
-            print(f"    [STRATEGY7] Skip 06_特別: {race_name_str}")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_06_tokubetsu')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_06_tokubetsu')
-            return
-
-        # 2. 京都 filter (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
-        #    Kyoto×A (N=27、 p<0.001) + Kyoto×D (N=25、 p=0.021) 統計的に baseline 下回る
-        #    G/L/OPEN特別 + Graded 重賞は除外しない (Victoria Mile 等 5/17 G1 day 影響回避)
-        if course_str == '京都' and not (is_graded or is_listed):
-            print(f"    [STRATEGY7] Skip 京都 (P0-2 案 C、 5/17 適用): {race_name_str}")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, None, None, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_kyoto_p0_2_5_17')
-            return
-        # ===== 戦略⑦ フィルタ ここまで =====
+        # ===== 平地全レース通知 ここまで =====
 
         # Fetch odds (full = odds + pop_rank, save base cache for change features)
         odds_full = fetch_realtime_odds_full(race_id)
@@ -389,36 +371,20 @@ def predict_and_notify(race_info, date_str):
         # Condition
         cond_key, cond_profile = classify_race_condition(rinfo, num_horses)
 
-        # ===== 戦略⑦ フィルタ続き (条件判定後) =====
-
-        # === STRATEGY_C4: Cond-A 1600-1800m drag 除外 (production active、重-2 +8.62pt confirmed) ===
-        STRATEGY_C4_ENABLED = True
-        STRATEGY_C4_ENABLED = STRATEGY_C4_ENABLED and _c4_effective  # E-1 rollback hook
-        if STRATEGY_C4_ENABLED and cond_key == 'A' and 1600 <= distance <= 1800:
-            print(f"    [STRATEGY_C4] Skip Cond-A 1600-1800m: {race_name_str} dist={distance}")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_c4_condA_1600_1800')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_c4_condA_1600_1800')
-            return
-
-        if cond_key == 'E':
-            print(f"    [STRATEGY7] Skip 条件E (頭数<=7)")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_E')
-            return
-        if cond_key == 'B':
-            print(f"    [STRATEGY7] Skip 条件B (重~不馬場)")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_B')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_B')
-            return
-        # 条件 X (P0-2 案 C、 5/17 適用、 docs/P0_2_EXTENSION_DESIGN_2026_05_16.md)
-        # 単一次元 N=19 ROI 8.72% 95% CI [0.00, 26.17] 統計的に baseline 下回る
-        # Graded race 重賞は除外しない (G1/G2/G3 + L = 期待値高)
-        if cond_key == 'X' and not (is_graded or is_listed):
-            print(f"    [STRATEGY7] Skip 条件X (P0-2 案 C、 5/17 適用)")
-            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_X_p0_2_5_17')
-            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, None, channel='skip', strategy_7c_skip=True, strategy_7c_reason='strategy_7_cond_X_p0_2_5_17')
-            return
-        # ===== 戦略⑦ フィルタ続き ここまで =====
+        # ===== 戦略⑦ 投票判定 (🟢買い / ⚪見送り) — 通知は止めない =====
+        # ★ 従来の投票判断ロジックは完全不変。 見送りレースは記録のみで賭けない ★
+        # 早期 return せず should_bet フラグで分岐し、 平地は全レース通知する。
+        from strategy_filters import evaluate_bet_decision, SKIP_REASON_LABELS
+        should_bet, skip_reason = evaluate_bet_decision(
+            race_name_str, course_str, distance, cond_key,
+            is_graded=is_graded, is_listed=is_listed,
+            is_open_tokubetsu=is_open_tokubetsu, c4_effective=_c4_effective)
+        skip_label = SKIP_REASON_LABELS.get(skip_reason, skip_reason) if skip_reason else None
+        if should_bet:
+            print(f"    [BET DECISION] 🟢 買い (投票対象): {race_name_str} [{cond_key}]")
+        else:
+            print(f"    [BET DECISION] ⚪ 見送り ({skip_reason}): {race_name_str} [{cond_key}]")
+        # ===== 戦略⑦ 投票判定 ここまで =====
 
         bet_type = cond_profile['bet_type']
 
@@ -602,16 +568,7 @@ def predict_and_notify(race_info, date_str):
         rinfo['start_time'] = race_info.get('start_time', rinfo.get('start_time', ''))
         rinfo['course'] = rinfo.get('course', '') or race_info.get('course', '')
 
-        title, msg, color = build_rich_bet_message(
-            df, race_name, rinfo, cond_key, cond_profile,
-            bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
-            upset_data=_upset_data, newspaper_data=_newspaper_data,
-            pp_stars=_pp_stars, pp_matched=_pp_matched,
-            par_df=_par_df, v16_scores=_v16_scores or None)
-        send_discord(title, msg, color=color, channel="bets")
-        print(f"    Notified: {race_name} [{cond_key}] {bet_type} {len(bets)}点")
-        _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
-        # race_notify_log v2: 8 strategy paper 蓄積用 predictions list 構築
+        # race_notify_log v2: 8 strategy paper 蓄積用 predictions list 構築 (買い/見送り共通)
         _preds_for_v2 = []
         try:
             for _, _row in df.iterrows():
@@ -623,7 +580,44 @@ def predict_and_notify(race_info, date_str):
                 })
         except Exception:
             _preds_for_v2 = None
-        _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None, predictions=_preds_for_v2)
+
+        if should_bet:
+            # 🟢 買い (投票対象): 従来通り 買い目フォーメーション付きリッチ通知
+            title, msg, color = build_rich_bet_message(
+                df, race_name, rinfo, cond_key, cond_profile,
+                bets, odds_dict=odds_dict, horses=horses, date_str=date_str,
+                upset_data=_upset_data, newspaper_data=_newspaper_data,
+                pp_stars=_pp_stars, pp_matched=_pp_matched,
+                par_df=_par_df, v16_scores=_v16_scores or None)
+            title = f"🟢買い {title}"
+            msg = "🟢 **買い (投票対象)**\n" + msg
+            send_discord(title, msg, color=color, channel="bets")
+            print(f"    Notified: 🟢買い {race_name} [{cond_key}] {bet_type} {len(bets)}点")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
+            _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None, predictions=_preds_for_v2)
+        else:
+            # ⚪ 見送り (投票対象外・参考): 予測のみ・買い目なし。 ★ 投票しない ★
+            _start = race_info.get('start_time', rinfo.get('start_time', '') or '')
+            _top_lines = []
+            for _i in range(min(5, len(df))):
+                _r = df.iloc[_i]
+                _top_lines.append(
+                    f"{_i+1}. {int(_r.get('馬番', 0))} {_r.get('馬名', '')} "
+                    f"(スコア {float(_r.get('スコア', 0)):.3f})")
+            title = f"⚪見送り {course_str}{rinfo.get('race_num', '')}R {race_name_str}"
+            msg = (
+                "⚪ **見送り (投票対象外・参考)**\n"
+                f"{rinfo.get('surface', '')}{distance}m {rinfo.get('condition', '')} "
+                f"条件{cond_key} {num_horses}頭"
+                + (f" 発走{_start}" if _start else "") + "\n"
+                f"除外理由: {skip_label}\n"
+                "**※このレースは投票しません**\n\n"
+                "予測上位 (参考):\n" + "\n".join(_top_lines)
+            )
+            send_discord(title, msg, color="gray", channel="bets")
+            print(f"    Notified: ⚪見送り {race_name} [{cond_key}] reason={skip_reason}")
+            _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason=skip_reason)
+            _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, bet_type, channel='skip', strategy_7c_skip=True, strategy_7c_reason=skip_reason, predictions=_preds_for_v2)
 
     except Exception as e:
         print(f"    ERROR: {e}")
@@ -726,17 +720,33 @@ def main():
     print("=" * 60)
 
     # Get today's races
+    # ★ 2026-05-31 障害修正: netkeiba 0件を即「レースなし」と誤判定するフェイルサイレントを解消。
+    #   JRDB(出走表)が当日にあれば「開催日」と判定し、netkeiba 0件=取得失敗としてリトライ＋警告。★
     print("\n  Fetching race list...")
-    races = get_todays_races(date_str)
+    from race_day_check import fetch_race_list_robust
+
+    def _notify_fetch_failed(message):
+        from notify import send_discord
+        send_discord(
+            f"🚨 開催日なのに netkeiba一覧0件 ({date_str}) [auto-notify]",
+            message + "\n(per-race通知が未起動。netkeiba回復後に race_auto_notify を再起動してください)",
+            color="red", channel="updates",
+        )
+
+    rd = fetch_race_list_robust(
+        lambda: get_todays_races(date_str),
+        date_str, BASE_DIR,
+        log=print, notify_fn=_notify_fetch_failed,
+    )
+    races = rd['races']
     print(f"  Found: {len(races)} races")
 
     if not races:
-        print("  No races today.")
-        try:
-            from notify import send_discord
-            send_discord("Auto-Notify", f"{date_str}: レースなし", color="yellow")
-        except Exception:
-            pass
+        if rd['fetch_failed']:
+            print(f"  [ERROR] {date_str} は開催日(JRDB {rd['n_races_jrdb']}R)だが "
+                  f"netkeiba一覧取得に失敗。per-race通知 未起動で終了（Discord警告済）。")
+        else:
+            print("  No races today. (JRDB出走表なし = 非開催日)")
         return
 
     # Schedule all races

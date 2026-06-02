@@ -113,6 +113,9 @@ _CSV_COLUMNS = [
     'top1_num', 'top1_name', 'top1_score',
     'top2_num', 'top2_name', 'top3_num', 'top3_name',
     'trio_bets', 'bet_type', 'investment',
+    # 2026-05-29: 買い/見送り判定 (戦略⑦、 結果照合の3区分集計用)。
+    # ★ investment は不変 (加算方式)。 should_bet=False は記録のみ・賭けない ★
+    'should_bet', 'skip_reason',
 ]
 
 
@@ -388,11 +391,31 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
         print("[ERROR] モデルが見つかりません。終了します。")
         return
 
-    # レース一覧取得（リトライ付き）
+    # レース一覧取得（開催日クロスチェック + リトライ + フェイルラウド警告）
+    # ★ 2026-05-31 障害修正: netkeiba 0件を即「非開催日」と誤判定するフェイルサイレントを解消。
+    #   JRDB(出走表)が当日にあれば「開催日」と判定し、netkeiba 0件=取得失敗としてリトライ＋警告。★
     print(f"\n[STEP 1] レース一覧取得中...")
-    races = retry_call(fetch_race_list, "fetch_race_list", date_str)
+    from race_day_check import fetch_race_list_robust
+
+    def _notify_fetch_failed(message):
+        from notify import send_discord
+        send_discord(
+            f"🚨 開催日なのに netkeiba一覧0件 ({date_str})",
+            message, color="red", channel="updates",
+        )
+
+    rd = fetch_race_list_robust(
+        lambda: fetch_race_list(date_str),
+        date_str, BASE_DIR,
+        log=print, notify_fn=_notify_fetch_failed,
+    )
+    races = rd['races']
     if not races:
-        print(f"[INFO] {date_str} のレースが見つかりません（非開催日の可能性）")
+        if rd['fetch_failed']:
+            print(f"[ERROR] {date_str} は開催日(JRDB {rd['n_races_jrdb']}R)だが "
+                  f"netkeiba一覧取得に失敗。予測未実行で終了（Discord警告済）。")
+        else:
+            print(f"[INFO] {date_str} のレースが見つかりません（非開催日）")
         return
 
     print(f"  -> {len(races)}レース検出")
@@ -518,6 +541,26 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
             # 条件分類
             cond_key, cond_profile = classify_race_condition(race_info, num_horses)
 
+            # ===== 買い/見送り判定 (戦略⑦、 2026-05-29) =====
+            # ★ 従来の投票判断ロジック不変。 investment も不変 (加算方式) ★
+            # should_bet=True → 🟢買い (投票対象)、 False → ⚪見送り (記録のみ・賭けない)。
+            # 結果照合の3区分 (実投票/見送りシャドー/全部買い) 集計に使用。
+            _should_bet, _skip_reason = True, None
+            try:
+                from strategy_filters import evaluate_bet_decision as _eval_bet
+                try:
+                    from tools.strategy_rollback import get_effective_flags as _get_eff
+                    _c4_eff, _ = _get_eff()
+                except Exception:
+                    _c4_eff = True
+                _should_bet, _skip_reason = _eval_bet(
+                    race_name, course_name, race_info.get('distance', 0), cond_key,
+                    c4_effective=_c4_eff)
+            except Exception as _bd_err:
+                print(f"  [WARN] 買い/見送り判定 skip (買い扱い): {_bd_err}")
+            print(f"  投票判定: {'🟢買い' if _should_bet else '⚪見送り (' + str(_skip_reason) + ')'}")
+            # ===== 買い/見送り判定 ここまで =====
+
             # 買い目生成
             sorted_df = df.sort_values('スコア', ascending=False).reset_index(drop=True)
             bet_type = cond_profile['bet_type']
@@ -561,6 +604,8 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                 'trio_bets': bets_str,
                 'bet_type': cond_profile['bet_type'],
                 'investment': cond_profile['investment'],
+                'should_bet': bool(_should_bet),
+                'skip_reason': _skip_reason or '',
             }
             results.append(row)
 
@@ -602,6 +647,8 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                         horses=_horses_list,
                         v15_scores=_v15_sc,
                         v16_scores=_v16_sc,
+                        should_bet=bool(_should_bet),
+                        skip_reason=_skip_reason or '',
                     )
                 except Exception as _e:
                     print(f"  [allscores] save failed: {_e}")
