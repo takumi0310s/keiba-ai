@@ -221,3 +221,4 @@ data/v15_feat_dump/
 data/_v15_optuna_df_cache_leakfree_v2.pkl.gz
 models/v16_anaba_s3_revive_candidate.pkl.gz
 data/v16_anaba_s3_revive.json
+data/v16_anaba_s4_optuna.json
