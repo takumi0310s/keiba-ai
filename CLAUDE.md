@@ -346,6 +346,15 @@ V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
 | **dam_top3rリーク** | 全年データで母産駒成績を計算→WF AUC+0.023の大半がリーク | 外部CSVの集計値は必ずexpanding windowで。静的CSVをそのまま使うな |
 | **SKB POST-RACE LEAK** (Session #38, 5/7) | skb_kishi_code_3 単独 +480bp、 corr_target 0.137、 1着馬 0-rate 15% / 敗者 49%、 finish と monotonic | JRDB SKB ファイル = "成績拡張" = post-race。 **V20 で全 10 features 完全除外**、 LEAK_FEATURES の追加 list 化 |
 | **sib_top3_rate hybrid** (Session #38) | 旧 sib_top3_rate corr_target 0.2939 → 新 sib_top3_rate_exp 0.1689 (-0.125 リーク除去後の真の信号 0.169 残存) | 静的 CSV の集計値は必ず date 順 cumsum-current で expanding 化。 dam_top3r 教訓と同根の再発 |
+| **jrdb_ze_* リーク** (2026-06-02 発見) | `jrdb_features.py:788` が ZED(過去走成績=結果) を blood_num で **日付カットオフ無し全期間平均** → 当該/未来の成績混入。 4特徴(ze_idm_avg/ze_ten_avg/ze_agari_avg/ze_furi_count)。 override test で「市場本命を覆した馬が44%勝つ」=結果を見ていた。 dam_top3r/SKB と同型 | **当該race日付より前のZEDのみで expanding 平均**。 leak-free cache `data/_v15_optuna_df_cache_leakfree.pkl.gz` で除去。 ★本番liveは過去ZEDのみで元々leak-free・リークはbacktest/cacheのみ・実運用98%は本物★ |
+
+### 🧪 leak-free 監査 + 評価基準 (2026-06-02/03, 検証専用・本番不変)
+- **ze リーク発見→除去**: 上表参照。 leak-free cache = `data/_v15_optuna_df_cache_leakfree.pkl.gz`(元cache不変・ze4特徴のみ当該日付前でexpanding再計算)。 検証scripts = `tools/v16_anaba_*.py` / `v16_make_leakfree_cache.py` / `v16_leakfree_roi_grid.py` / `v16_pastmodels_leakfree.py`。
+- **V15 真値(leak-free)**: WF AUC **~0.842**・単勝ROI **108%**(実運用98%と整合)。★リーク版の AUC 0.8696 / 単勝ROI 156% は無効。CLAUDE.md 旧記載の「genuine WF 0.8678」もzeリークで嵩上げの疑い★。
+- ★**評価は AUC でなく leak-free ROI で行う**★: 穴特化 **s2b** は AUC を犠牲(0.829)にして ROI を獲得 — leak-free 全券種で V15 超(単勝 **111.6%** / 三連複top4box **194.3%** [95%CI 179-212, V15は146-166でCI非重複=有意] / 馬連top3box 146%)。 自信度top10%に絞ると三連複top4box **211%**(N=1034)。 市場(人気)は全券種70-84%。 過去モデル V24/V24b は V15 とほぼ同一(ROIで s2b 未満)。 ★当時のAUC基準NO-GO判定では穴特化の価値が見えなかった★。
+- **s2b 定義**: V16能力137 − 人気代理"族"13(`paci_jockey_exp_wr/_3rd` + 印4(`paci_jockey_mark/sogo_mark/train_mark/idm_mark`) + `jrdb_cid_idx/ls_idx/training_idx/stable_idx` + `paci_goal_rank/goal_diff/dochu_rank`) + レース相対特徴(脚質構成 n_front/`front_advantage`、距離適性合致、脚質×バイアス×枠)。 `tools/v16_anaba_s2_eval.py`。 候補=`models/v16_anaba_s2b_candidate.pkl.gz`(検証専用・投票未使用)。
+- **騎手指数の正体**: `paci_jockey_exp` = JRDB「騎手期待率」= **93%が人気代理**(残差6-7%、odds_dependency_analysis.json)。 ルメール反証: 騎手内 corr(値,人気)≈−0.83・ルメールでもJEがレース内最高は41%のみ。 脚質/距離適性は **per-horse単一コードでは死(gain≈0)、レース相対化で蘇生**(front_advantage 0.1→0.86%)。
+- **未完(次段階)**: 前向き paper trading(唯一リーク不可能な確証)、 horse_name→blood_num 100%カバレッジ化での leak-free 忠実度UP。 本番 `jrdb_features.py` の ze集計への日付フィルタ追加は防御的別件(live は既に安全・要承認)。
 
 ### リークフリー設計原則
 1. 全統計特徴量は**expanding window**（cumsum - current、当該レース除外）
