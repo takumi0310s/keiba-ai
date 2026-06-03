@@ -527,6 +527,22 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
 
             df = predict_race(df, model_data, odds_available, race_info=race_info)
 
+            # ===== s2b paper用 特徴量ダンプ (I/Oのみ・予測/スコア/投票/通知 不変・netkeiba新規アクセスなし) =====
+            # build_features が既に作った df を書き出すだけ(df.copy()で本体は不変)。
+            # ★失敗してもV15予測は通常通り続行(try/exceptで完全保護)。 本番の生命線を守る★
+            try:
+                _dd = os.path.join(BASE_DIR, 'data', 'v15_feat_dump', date_str)
+                os.makedirs(_dd, exist_ok=True)
+                _fd = df.copy()
+                _fd['race_id'] = race_id
+                _fd['course'] = race_info.get('course', '')
+                _fd['race_num'] = race_info.get('race_num', 0)
+                _fd['race_name'] = race_info.get('race_name', '')
+                _fd['start_time'] = race_info.get('start_time', '')
+                _fd.to_parquet(os.path.join(_dd, f'{race_id}.parquet'))
+            except Exception as _dump_e:
+                print(f"    [s2b dump] skip (V15予測は通常続行): {_dump_e}")
+
             # paper shadow (V22 candidate comparison)
             if _PAPER_SHADOW_AVAILABLE:
                 try:
