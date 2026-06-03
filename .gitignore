@@ -200,3 +200,13 @@ data/_scrape_status_snapshot.json
 data/drift_detection_log.json
 data/discord_dedup_state.json
 data/discord_send_cache.json
+
+# V16 anaba leak-audit: 候補モデル・eval成果物 (検証専用・コミットしない / 2026-06)
+models/v16_anaba_*.pkl.gz
+data/_v15_optuna_df_cache_leakfree.pkl.gz
+data/v16_anaba_*.json
+data/v16_anaba_*.parquet
+data/v16_leakfree_*.json
+data/v16_pastmodels_*.json
+data/v16_clean_eval_*.json
+data/odds_dependency_analysis.json
