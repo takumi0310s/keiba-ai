@@ -210,3 +210,8 @@ data/v16_leakfree_*.json
 data/v16_pastmodels_*.json
 data/v16_clean_eval_*.json
 data/odds_dependency_analysis.json
+
+# paper trading s2b ログ (検証専用・コミットしない)
+data/paper_s2b/
+data/v16_leakfree_*.parquet
+data/v16_anaba_*.parquet
