@@ -218,3 +218,4 @@ data/v16_anaba_*.parquet
 
 # s2b paper: V15特徴ダンプ(検証用・コミットしない)
 data/v15_feat_dump/
+data/_v15_optuna_df_cache_leakfree_v2.pkl.gz
