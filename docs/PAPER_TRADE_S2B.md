@@ -46,3 +46,40 @@ python tools\paper_trade_s2b.py report
 - `score_s2b` を leak-free cache の実レース(阪神16頭)で動作確認 → top6算出OK。
 - `from-oof`(leak-free OOF)→`results`→`report` が leak-free バックテストROIを**完全再現**(単勝111.6%/複勝top1 102.3%/馬連top3box146.0%/三連複top4box194.3%/三連単1-2-5 229.0%、N=10350)= ROI計算・照合配線の正しさを実データ+実払戻で確認。
 - `predict`(live)は daily_predict の発走前構築を mirror。 次の開催日(土)に実地検証。
+
+---
+
+## 2026-06-03 追記: s2b買い目 TEST1通知 + IP BAN回避(V15特徴の使い回し)
+
+### IP BANリスク評価(調査結果)
+- ★V15のDailyPredict(8:00)は**特徴量行列(145列)を永続化していない**★。 `daily_predictions/{date}.csv`=スコア/オッズ/出馬表identityのみ、 `allscores`=v15/v16スコア+馬番馬名のみ。
+- `predict_core.get_horse_stats` は **db.netkeiba.com/horse/result/{horse_id} に馬毎アクセス**。 s2bが `build_features` を呼ぶと ~360リクエストの**フル再スクレイプ=IP BAN高リスク**(9時ずらしでも同IP同日二重取得で危険)。
+- → **安全策は「V15が構築した特徴量df をダンプし、s2bは読むだけ」**(netkeibaに二度アクセスしない=れんはす合意の方式)。
+
+### ★推奨: V15特徴ダンプ(要承認・daily_predict に追加)★
+DailyPredict の per-race 予測直後(`predict_race` の後)に、特徴量df を1行=1馬で parquet ダンプ:
+```python
+# daily_predict.py の per-race ループ内、df 確定後に追加(予測ロジック不変・I/Oのみ・try/exceptで保護)
+try:
+    import os as _os
+    _dd = _os.path.join(BASE_DIR, 'data', 'v15_feat_dump', date_str); _os.makedirs(_dd, exist_ok=True)
+    _df = df.copy()
+    for _c, _v in [('race_id', race_id), ('course', race_info.get('course','')),
+                   ('race_num', race_info.get('race_num',0)), ('race_name', race_info.get('race_name','')),
+                   ('start_time', race_info.get('start_time',''))]:
+        _df[_c] = _v
+    _df.to_parquet(_os.path.join(_dd, f'{race_id}.parquet'))
+except Exception:
+    pass
+```
+→ `data/v15_feat_dump/{date}/{race_id}.parquet`(.gitignore対象)。 これだけで s2b は **新規アクセスゼロ**で再スコア可能=IP BANリスクゼロ・当日高精度。
+
+### s2b 買い目 → TEST1 通知(完全分離・実装済)
+```
+python tools/paper_trade_s2b.py predict --date YYYYMMDD       # V15特徴ダンプを読みs2b予測(新規アクセスなし)
+python tools/paper_trade_s2b.py notify-test1 --date YYYYMMDD  # s2b買い目を DISCORD_WEBHOOK_TEST1 へ
+```
+- 買い目: 単勝top1 / 三連複top4box(4点) / 三連単form1-2-5(8点)。
+- 送信先=★TEST1のみ★(ヘッダに「🧪 s2bテスト・検証用/実投票ではない」明記)。 **BETS/UPDATES・本番投票には一切出さない**。
+- 特徴ダンプが無い場合は predict は**新規スクレイプせず中止**(IP BAN回避)。 `--allow-scrape` で9時以降の独自フェッチも可(要承認・IP BANリスク明示)。
+- 運用: PaperS2BPredict は DailyPredict(+特徴ダンプ)完了後 8:30。 notify-test1 はその直後。

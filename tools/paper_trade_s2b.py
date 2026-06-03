@@ -119,44 +119,132 @@ def bt_tierce125(o,pm):
 BETS = [('単勝',bt_tan),('複勝top1',bt_fuku1),('馬連top3box',bt_umaren_t3box),('三連複top4box',bt_trio4),('三連単form1-2-5',bt_tierce125)]
 
 
+def make_bets(top6: list) -> dict:
+    """s2b top6(馬番) から buy targets を生成(leak-free ROIで良かった順)。"""
+    o = [int(x) for x in top6]
+    import itertools
+    trio4 = [tuple(sorted(c)) for c in itertools.combinations(o[:4], 3)] if len(o) >= 4 else []
+    # 三連単 1-2-5: 1着=top1 / 2着∈top2-3 / 3着∈top2-6
+    t125 = []
+    for b in o[1:3]:
+        for c in o[1:6]:
+            if len({o[0], b, c}) == 3:
+                t125.append((o[0], b, c))
+    return {'tansho': o[0] if o else None, 'trio4box': trio4, 'tierce125': t125}
+
+
+def format_test_message(rec: dict) -> tuple:
+    """TEST1 用の人間が読める整形(検証用ヘッダ明記)。"""
+    o = rec.get('s2b_top6', [])
+    b = make_bets(o)
+    course = rec.get('course', ''); rn = rec.get('race_num', '')
+    name = rec.get('race_name', ''); st = rec.get('start_time', '')
+    title = f"🧪【s2bテスト・検証用/実投票ではない】{course}{rn}R {name} {st}".strip()
+    lines = [
+        "⚠️ これは穴特化候補 s2b の観察用通知です。**実際の投票(#買い目/146%の買い方)とは無関係**。",
+        f"s2b top6(馬番): {' - '.join(map(str, o[:6]))}",
+        "",
+        f"◆ 単勝: {b['tansho']}",
+        f"◆ 三連複 top4 BOX (4点): " + " / ".join('-'.join(map(str, c)) for c in b['trio4box']),
+        f"◆ 三連単 form 1-2-5 ({len(b['tierce125'])}点): "
+        f"1着 {o[0] if o else '?'} / 2着 {','.join(map(str, o[1:3]))} / 3着 {','.join(map(str, o[1:6]))}",
+    ]
+    return title, "\n".join(lines)
+
+
+def notify_test1_date(date):
+    """当日の paper pred-log を読み、s2b買い目を TEST1 へ送信(検証用)。BETS/UPDATESには絶対出さない。"""
+    from dotenv import dotenv_values
+    import requests
+    url = dotenv_values(os.path.join(BASE, '.env')).get('DISCORD_WEBHOOK_TEST1')
+    if not url:
+        print("[test1] DISCORD_WEBHOOK_TEST1 未設定"); return
+    pp = _pred_path(date)
+    if not os.path.exists(pp):
+        print(f"[test1] {pp} なし(先に predict を実行)"); return
+    n = 0
+    for line in open(pp, encoding='utf-8'):
+        rec = json.loads(line)
+        if len(rec.get('s2b_top6', [])) < 5: continue
+        title, msg = format_test_message(rec)
+        try:
+            resp = requests.post(url, json={'content': f"**{title}**\n{msg}"}, timeout=15)
+            if resp.status_code in (200, 204): n += 1
+            else: print(f"[test1] {rec.get('rk')} HTTP {resp.status_code}")
+        except Exception as e:
+            print(f"[test1] 送信例外 {e}")
+    print(f"[test1] {date}: {n}R を TEST1 に送信(検証用・BETS非混入)")
+
+
 def _pred_path(date): return os.path.join(LOG_DIR, f'{date}_pred.jsonl')
 def _res_path(date):  return os.path.join(LOG_DIR, f'{date}_results.jsonl')
 
 
-# ============ predict (live・発走前) ============
-def predict_date(date):
+# ============ predict (★IP BAN回避: V15特徴ダンプを読むだけ・新規スクレイプしない★) ============
+# V15(DailyPredict 8:00)が build_features した特徴量df を race毎に parquet ダンプする前提:
+#   data/v15_feat_dump/{date}/{race_id}.parquet  (各馬1行・V15の145特徴 + race_id/horse_num/course/race_num)
+# このダンプを s2b が読んで再スコア → netkeiba/JRDBへ二度アクセスしない = IP BANリスクゼロ・当日高精度。
+# ★ get_horse_stats は db.netkeiba.com に馬毎アクセスするため、s2bが build_features を呼ぶと
+#   ~360リクエストのフル再スクレイプ=IP BAN高リスク。 よって本モードは新規スクレイプを一切しない。★
+FEAT_DUMP_DIR = os.path.join(DATA, 'v15_feat_dump')
+
+def predict_date(date, allow_scrape=False):
     os.makedirs(LOG_DIR, exist_ok=True)
-    from predict_core import (load_models, parse_shutuba, build_features, get_horse_stats,
-                              apply_horse_stats, set_horse_defaults, classify_race_condition)
+    import glob as _glob
+    dump_dir = os.path.join(FEAT_DUMP_DIR, date)
+    parquets = sorted(_glob.glob(os.path.join(dump_dir, '*.parquet')))
+    if not parquets:
+        print(f"[paper_s2b] V15特徴ダンプ無し ({dump_dir})。")
+        print("  ★IP BAN回避のため新規スクレイプはしません★。 次のいずれか:")
+        print("   (A推奨) DailyPredict に特徴ダンプ追加 → s2bが読むだけ=二度アクセスなし。")
+        print("   (B) --allow-scrape で9時以降に独自フェッチ(get_horse_stats~360req=IP BANリスク・要承認)。")
+        if not allow_scrape:
+            return
+        print("  [allow_scrape] 独自フェッチを許可。 V15(8:00)と十分離れた時刻で実行してください。")
+        return _predict_via_scrape(date)
+    out = open(_pred_path(date), 'w', encoding='utf-8'); n_ok = 0
+    for pq in parquets:
+        try:
+            df = pd.read_parquet(pq)
+            scores = score_s2b(df)
+            order = [h for h, _ in sorted(scores.items(), key=lambda x: -x[1])]
+            r0 = df.iloc[0]
+            rec = {'date': date, 'race_id': str(r0.get('race_id', '')),
+                   'course': str(r0.get('course', '')), 'race_num': int(r0.get('race_num', 0) or 0),
+                   'race_name': str(r0.get('race_name', '')), 'start_time': str(r0.get('start_time', '')),
+                   'rk': f"{date}_{r0.get('course','')}_{int(r0.get('race_num',0) or 0)}",
+                   's2b_top6': order[:6], 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}
+            out.write(json.dumps(rec, ensure_ascii=False) + '\n'); n_ok += 1
+            print(f"  {rec['course']}{rec['race_num']}R s2b top6={order[:6]} (V15特徴ダンプ再利用)")
+        except Exception as e:
+            print(f"  [skip] {pq}: {e}")
+    out.close()
+    print(f"[paper_s2b] {date}: {n_ok}R 記録(V15特徴ダンプ再利用=新規アクセスなし) → {_pred_path(date)}")
+
+
+def _predict_via_scrape(date):
+    """(要承認・IP BANリスク) V15特徴ダンプが無い場合の独自フェッチ。default無効。"""
+    from predict_core import load_models, parse_shutuba, build_features
     from jrdb_features import merge_jrdb_predict_features
     import daily_predict as dp
-    model_data = load_models()
-    races = dp.fetch_race_list(date)
-    if not races:
-        print(f"[paper_s2b] {date} レースなし(発走前に再実行 or 非開催)"); return
-    out = open(_pred_path(date), 'w', encoding='utf-8')
-    n_ok = 0
+    model_data = load_models(); races = dp.fetch_race_list(date)
+    if not races: print(f"[paper_s2b] {date} レースなし"); return
+    out = open(_pred_path(date), 'w', encoding='utf-8'); n_ok = 0
     for r in races:
         rid = r['race_id']
         try:
             horses = parse_shutuba(rid)
             if not horses: continue
-            race_info = horses[0].get('race_info') if isinstance(horses[0], dict) and 'race_info' in horses[0] else r
-            # daily_predict と同じ発走前構築(get_horse_stats → build_features → JRDBマージ)
             df = build_features(horses, r, model_data, race_id=rid)
             try: df = merge_jrdb_predict_features(df, rid)
             except Exception: pass
-            scores = score_s2b(df)
-            order = [h for h,_ in sorted(scores.items(), key=lambda x:-x[1])]
-            rec = {'date':date, 'race_id':rid, 'course':r.get('course',''), 'race_num':r.get('race_num',0),
-                   'rk':f"{date}_{r.get('course','')}_{r.get('race_num',0)}",
-                   's2b_top6':order[:6], 'ts':time.strftime('%Y-%m-%dT%H:%M:%S')}
-            out.write(json.dumps(rec, ensure_ascii=False)+'\n'); n_ok += 1
-            print(f"  {r.get('course','')}{r.get('race_num','')}R s2b top6={order[:6]}")
+            scores = score_s2b(df); order = [h for h, _ in sorted(scores.items(), key=lambda x: -x[1])]
+            rec = {'date': date, 'race_id': rid, 'course': r.get('course', ''), 'race_num': r.get('race_num', 0),
+                   'rk': f"{date}_{r.get('course','')}_{r.get('race_num',0)}", 's2b_top6': order[:6]}
+            out.write(json.dumps(rec, ensure_ascii=False) + '\n'); n_ok += 1
         except Exception as e:
             print(f"  [skip] {rid}: {e}")
-    out.close()
-    print(f"[paper_s2b] {date}: {n_ok}R 記録 → {_pred_path(date)} (投票・通知なし)")
+    out.close(); print(f"[paper_s2b] {date}: {n_ok}R (独自フェッチ)")
 
 
 # ============ results 照合 ============
@@ -220,13 +308,15 @@ def from_oof(date):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('mode', choices=['predict','results','report','from-oof'])
+    ap.add_argument('mode', choices=['predict','results','report','from-oof','notify-test1'])
     ap.add_argument('--date', default='')
+    ap.add_argument('--allow-scrape', action='store_true', help='V15特徴ダンプ無時に独自フェッチ(IP BANリスク・要承認)')
     a = ap.parse_args()
-    if a.mode=='predict': predict_date(a.date or time.strftime('%Y%m%d'))
+    if a.mode=='predict': predict_date(a.date or time.strftime('%Y%m%d'), allow_scrape=a.allow_scrape)
     elif a.mode=='results': results_date(a.date or time.strftime('%Y%m%d'))
     elif a.mode=='report': report()
     elif a.mode=='from-oof': from_oof(a.date or 'ALL')
+    elif a.mode=='notify-test1': notify_test1_date(a.date or time.strftime('%Y%m%d'))
 
 if __name__=='__main__':
     main()

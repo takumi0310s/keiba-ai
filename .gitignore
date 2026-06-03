@@ -215,3 +215,6 @@ data/odds_dependency_analysis.json
 data/paper_s2b/
 data/v16_leakfree_*.parquet
 data/v16_anaba_*.parquet
+
+# s2b paper: V15特徴ダンプ(検証用・コミットしない)
+data/v15_feat_dump/
