@@ -27,6 +27,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
+# per-race 通知 完走サマリ用カウンタ (途中死に気づける化。 既存logicは不変・記録のみ)
+_NOTIFIED_RACES = set()
+
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 MINUTES_BEFORE = 5
 JRDB_MINUTES_BEFORE = 20  # TYB取得タイミング（発走20分前）
@@ -592,6 +595,7 @@ def predict_and_notify(race_info, date_str):
             title = f"🟢買い {title}"
             msg = "🟢 **買い (投票対象)**\n" + msg
             send_discord(title, msg, color=color, channel="bets")
+            _NOTIFIED_RACES.add(str(race_id))
             print(f"    Notified: 🟢買い {race_name} [{cond_key}] {bet_type} {len(bets)}点")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='bets', strategy_7c_skip=False, strategy_7c_reason=None)
             _v2_log_phase2_safe(race_id, race_name, rinfo, bets, odds_dict, cond_key, bet_type, channel='bets', strategy_7c_skip=False, strategy_7c_reason=None, predictions=_preds_for_v2)
@@ -615,6 +619,7 @@ def predict_and_notify(race_info, date_str):
                 "予測上位 (参考):\n" + "\n".join(_top_lines)
             )
             send_discord(title, msg, color="gray", channel="bets")
+            _NOTIFIED_RACES.add(str(race_id))
             print(f"    Notified: ⚪見送り {race_name} [{cond_key}] reason={skip_reason}")
             _p0_5_notify_log(race_id, race_name, datetime.now().isoformat(), channel='skip', strategy_7c_skip=True, strategy_7c_reason=skip_reason)
             _v2_log_phase2_safe(race_id, race_name, rinfo, None, odds_dict, cond_key, bet_type, channel='skip', strategy_7c_skip=True, strategy_7c_reason=skip_reason, predictions=_preds_for_v2)
@@ -811,10 +816,18 @@ def main():
 
     print("\n  All races processed. Exiting.")
 
-    # End-of-day notification
+    # End-of-day 完走サマリ (X/Y件 → 途中死/取りこぼしに件数で気づける)
     try:
         from notify import send_discord
-        send_discord("Auto-Notify終了", f"{date_str}: 全レース完了", color="blue")
+        _x = len(_NOTIFIED_RACES); _y = len(races)
+        if _x >= _y:
+            send_discord("✅ Auto-Notify完了",
+                         f"{date_str}: per-race通知 {_x}/{_y}件 完了 (全レース通知済)", color="green")
+        else:
+            send_discord("⚠️ Auto-Notify 取りこぼし",
+                         f"{date_str}: per-race通知 {_x}/{_y}件 のみ完了。{_y-_x}件 未通知の可能性。"
+                         f"\n(プロセス途中死/例外でskipした可能性。dailyResults夜間突合でも確認されます)",
+                         color="red", channel="updates")
     except Exception:
         pass
 
