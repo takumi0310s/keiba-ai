@@ -348,13 +348,18 @@ V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
 | **sib_top3_rate hybrid** (Session #38) | 旧 sib_top3_rate corr_target 0.2939 → 新 sib_top3_rate_exp 0.1689 (-0.125 リーク除去後の真の信号 0.169 残存) | 静的 CSV の集計値は必ず date 順 cumsum-current で expanding 化。 dam_top3r 教訓と同根の再発 |
 | **jrdb_ze_* リーク** (2026-06-02 発見) | `jrdb_features.py:788` が ZED(過去走成績=結果) を blood_num で **日付カットオフ無し全期間平均** → 当該/未来の成績混入。 4特徴(ze_idm_avg/ze_ten_avg/ze_agari_avg/ze_furi_count)。 override test で「市場本命を覆した馬が44%勝つ」=結果を見ていた。 dam_top3r/SKB と同型 | **当該race日付より前のZEDのみで expanding 平均**。 leak-free cache `data/_v15_optuna_df_cache_leakfree.pkl.gz` で除去。 ★本番liveは過去ZEDのみで元々leak-free・リークはbacktest/cacheのみ・実運用98%は本物★ |
 
-### 🧪 leak-free 監査 + 評価基準 (2026-06-02/03, 検証専用・本番不変)
-- **ze リーク発見→除去**: 上表参照。 leak-free cache = `data/_v15_optuna_df_cache_leakfree.pkl.gz`(元cache不変・ze4特徴のみ当該日付前でexpanding再計算)。 検証scripts = `tools/v16_anaba_*.py` / `v16_make_leakfree_cache.py` / `v16_leakfree_roi_grid.py` / `v16_pastmodels_leakfree.py`。
-- **V15 真値(leak-free)**: WF AUC **~0.842**・単勝ROI **108%**(実運用98%と整合)。★リーク版の AUC 0.8696 / 単勝ROI 156% は無効。CLAUDE.md 旧記載の「genuine WF 0.8678」もzeリークで嵩上げの疑い★。
-- ★**評価は AUC でなく leak-free ROI で行う**★: 穴特化 **s2b** は AUC を犠牲(0.829)にして ROI を獲得 — leak-free 全券種で V15 超(単勝 **111.6%** / 三連複top4box **194.3%** [95%CI 179-212, V15は146-166でCI非重複=有意] / 馬連top3box 146%)。 自信度top10%に絞ると三連複top4box **211%**(N=1034)。 市場(人気)は全券種70-84%。 過去モデル V24/V24b は V15 とほぼ同一(ROIで s2b 未満)。 ★当時のAUC基準NO-GO判定では穴特化の価値が見えなかった★。
+### 🧪 leak-free 監査 + 評価基準 (2026-06-02〜04, 検証専用・本番不変。 ★集約=docs/SESSION_LEAK_AUDIT_S2B.md★)
+- **ze リーク発見→除去**: 上表参照。 ★**評価は必ず leak-free v2 cache `data/_v15_optuna_df_cache_leakfree_v2.pkl.gz`(89.9%cov、NFKC正規化+NaN-aware累積平均)を使う**★(v1=`_leakfree.pkl.gz` 85.8%は旧・元cacheリーク版は禁止)。 検証scripts = `tools/v16_anaba_*.py` / `v16_make_leakfree_cache_v2.py` / `v16_leakfree_roi_grid.py` / `v16_pastmodels_leakfree_v2.py` / `v16_s2b_ci_montecarlo_v2.py`。
+- **V15 真値(leak-free v2, WF2023-25, N=10,350)**: WF AUC **~0.842**・単勝ROI **105.0%**(実運用98%と整合)・三連複t4box 154.4%・馬連box 126.6%。★リーク版の AUC 0.8678 / 単勝156% は無効。「genuine WF 0.8678」もzeリークで嵩上げの疑い★。
+- ★**評価は AUC でなく leak-free ROI で行う**★: **s2b** は AUC を犠牲(0.829<0.842)にして ROI を獲得 — leak-free v2 で **単勝 111.3%・三連複top4box 207.3%・馬連box 141.3%** が V15 超。 ★bootstrap CI(race-level, n=5000): 単勝はペア差 **+6.2pt CI[+2.8,+9.8]=有意**(周辺CIは僅かに重複)、 三連複t4は s2b[177,252] vs V15[145,164] **CI非重複・ペア差+52.9pt[+22.9,+97.4]=有意**(ただしCI幅広)★。 過去モデル V24/V24b は V15 とほぼ同一(ROIで s2b 未満・AUCのみ僅差上)。
+- ★**s2bは「穴特化」ではない=「配当効率寄りの全体ランキングモデル」**★: **反市場好走率 16.8% < base ~22%** = 市場本命を覆して当てる力は**無い**。 ★当初観測の「反市場29%」はリーク版(zeが結果を見ていた)の幻・leak-free v2で16.8%に落ちた★。 ROI優位は穴当てでなく全体ランキングの配当効率由来。
+- **三連複t4box 207%の頑健性**: 年別 s2b 2023=227%/2024=207%/2025=188%(的中率~29%安定)= **特定年の偶然でない**。 ただし2023の227%は単一728,220円配当が総払戻の23%(ファットテール依存)、 ジャックポット除外でも174%・2025は依存なし188%。
+- **モンテカルロ(資金管理, ★backtestエッジが本物である前提下の値★)**: 全レース賭けで s2b単勝=年stake34.5万/平均+3.9万/最大DD中央¥4,980・95%¥8,340、 s2b三連複t4=年stake138万/平均+148万/最大DD95%¥25,820。 **破産確率(撤退-5万到達)=両者0.0%・最大DDは撤退余力¥43,080内**。 ★ただしこれはエッジ持続を仮定したi.i.d.bootstrap・前向きpaperで未確証。実運用frictionなし★。
+- **効かなかったこと(再挑戦防止)**: ①脚質/距離適性one-hot=per-horse死(gain≈0)・レース相対化で多少蘇生も反市場改善せず。 ②蘇生特徴(馬具変更/足元/バイアス×枠×脚質)=全gain<0.02%・反市場16.8→16.3%。 ③Optuna(ROI目的)=held-out2025で頑健改善なし(三連複むしろ悪化・train複合ROI398%=過学習)。 理由=市場が織り込み済(見えやすい情報で穴は当たらない)。
 - **s2b 定義**: V16能力137 − 人気代理"族"13(`paci_jockey_exp_wr/_3rd` + 印4(`paci_jockey_mark/sogo_mark/train_mark/idm_mark`) + `jrdb_cid_idx/ls_idx/training_idx/stable_idx` + `paci_goal_rank/goal_diff/dochu_rank`) + レース相対特徴(脚質構成 n_front/`front_advantage`、距離適性合致、脚質×バイアス×枠)。 `tools/v16_anaba_s2_eval.py`。 候補=`models/v16_anaba_s2b_candidate.pkl.gz`(検証専用・投票未使用)。
-- **騎手指数の正体**: `paci_jockey_exp` = JRDB「騎手期待率」= **93%が人気代理**(残差6-7%、odds_dependency_analysis.json)。 ルメール反証: 騎手内 corr(値,人気)≈−0.83・ルメールでもJEがレース内最高は41%のみ。 脚質/距離適性は **per-horse単一コードでは死(gain≈0)、レース相対化で蘇生**(front_advantage 0.1→0.86%)。
-- **未完(次段階)**: 前向き paper trading(唯一リーク不可能な確証)、 horse_name→blood_num 100%カバレッジ化での leak-free 忠実度UP。 本番 `jrdb_features.py` の ze集計への日付フィルタ追加は防御的別件(live は既に安全・要承認)。
+- **騎手指数の正体**: `paci_jockey_exp` = JRDB「騎手期待率」= **93%が人気代理**(残差6-7%、odds_dependency_analysis.json)。 ルメール反証: 騎手内 corr(値,人気)≈−0.83・ルメールでもJEがレース内最高は41%のみ。
+- **診断(現在地)**: s2bのROI優位は leak-free v2 で統計的有意(ペア差CIが0を跨がない)・年別頑健・DD撤退ライン内。 ★だが backtestエッジは過去にリークで幻だった前科 → 本番昇格は前向きpaper確証が必須(時期尚早)★。
+- **未完(次段階)**: 前向き paper trading(唯一リーク不可能な確証・単勝~300R/三連複~1000R目安)、 horse_name→blood_num カバレッジは89.9%が実上限(残9.6%=真の初出走で100%不可)。 本番 `jrdb_features.py` の ze集計への日付フィルタ追加は防御的別件(live は既に安全・要承認)。
 
 ### リークフリー設計原則
 1. 全統計特徴量は**expanding window**（cumsum - current、当該レース除外）
