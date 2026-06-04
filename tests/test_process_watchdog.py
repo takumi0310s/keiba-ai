@@ -159,7 +159,9 @@ def test_restart_executes_in_active_hours(monkeypatch, tmp_path):
         captured['env'] = kwargs.get('env', {})
         captured['cwd'] = kwargs.get('cwd')
         return _FakeProc()
-    r = wd.restart_target(target, dry_run=False, now=NOW_ACTIVE, popen=fake_popen)
+    # 再起動cap の台帳をテスト用に隔離(実台帳を汚さない・他テストと干渉しない)
+    r = wd.restart_target(target, dry_run=False, now=NOW_ACTIVE, popen=fake_popen,
+                          ledger_path=str(tmp_path / 'led.json'))
     assert r['restarted'] is True
     assert r['pid'] == 12345
     assert captured['cmd'] == target.restart_cmd
@@ -173,7 +175,9 @@ def test_restart_exception_caught(monkeypatch, tmp_path):
     monkeypatch.setattr(wd, 'LOG_DIR', str(tmp_path))
     def bad_popen(*a, **k):
         raise RuntimeError("boom")
-    r = wd.restart_target(target, dry_run=False, now=NOW_ACTIVE, popen=bad_popen)
+    # 台帳隔離(cap guard を通過させ、popen 例外パスを検証する)
+    r = wd.restart_target(target, dry_run=False, now=NOW_ACTIVE, popen=bad_popen,
+                          ledger_path=str(tmp_path / 'led.json'))
     assert r['restarted'] is False
     assert r['skipped_reason'].startswith('exception')
 
@@ -187,6 +191,8 @@ def test_targets_defined():
 
 
 def test_targets_stale_sec_values():
+    # Session #31 で誤発火防止のため stale_sec を引き上げ済(daily 30→60min / race 10→30min)。
+    # テスト側が旧値のままだったので実コード値に追従(本番ロジックは不変)。
     by_name = {t.name: t for t in wd.TARGETS}
-    assert by_name['daily_predict'].stale_sec == 30 * 60
-    assert by_name['race_auto_notify'].stale_sec == 10 * 60
+    assert by_name['daily_predict'].stale_sec == 60 * 60
+    assert by_name['race_auto_notify'].stale_sec == 30 * 60

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import json
 import os
 import subprocess
 import sys
@@ -38,6 +39,71 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 CHECK_INTERVAL = 300  # 5分
+
+# --- 再起動 cap (5/9 の再起動ループ=Discord spam 再発防止の前提) ---
+# watchdog 自身がプロセス再起動で in-memory カウンタを失っても効くよう、
+# 台帳をファイル永続化する。安全な再登録の前提(再登録自体は別途承認・ここでは未登録)。
+MAX_RESTARTS_PER_DAY = 3       # 同一対象を1日に再起動する上限
+MIN_RESTART_INTERVAL_SEC = 600  # 連続再起動の最小間隔(10分)。短時間の反復restartを阻止
+RESTART_LEDGER = os.path.join(BASE_DIR, 'data', 'v18', 'watchdog_restart_ledger.json')
+
+
+def _load_ledger(path: str) -> dict:
+    try:
+        with open(path, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_ledger(path: str, ledger: dict) -> None:
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(ledger, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass  # 台帳保存失敗で本処理は止めない
+
+
+def restart_guard(target_name: str, now: datetime, ledger_path: str = RESTART_LEDGER,
+                  max_per_day: int = MAX_RESTARTS_PER_DAY,
+                  min_interval_sec: int = MIN_RESTART_INTERVAL_SEC) -> dict:
+    """再起動してよいかを台帳で判定。{'allowed':bool,'reason':str|None,'count':int}。
+    - daily_cap_reached: 当日 max_per_day 回に到達
+    - interval_guard:    前回再起動から min_interval_sec 未満
+    """
+    day = now.strftime('%Y%m%d')
+    led = _load_ledger(ledger_path)
+    rec = (led.get(day, {}) or {}).get(target_name, {}) or {}
+    count = int(rec.get('count', 0))
+    last_ts = rec.get('last_ts')
+    if count >= max_per_day:
+        return {'allowed': False, 'reason': 'daily_cap_reached', 'count': count}
+    if last_ts:
+        try:
+            elapsed = (now - datetime.fromisoformat(last_ts)).total_seconds()
+            if 0 <= elapsed < min_interval_sec:
+                return {'allowed': False, 'reason': 'interval_guard', 'count': count}
+        except Exception:
+            pass
+    return {'allowed': True, 'reason': None, 'count': count}
+
+
+def record_restart(target_name: str, now: datetime, ledger_path: str = RESTART_LEDGER) -> int:
+    """再起動成功を台帳に記録し、当日のカウントを返す。"""
+    day = now.strftime('%Y%m%d')
+    led = _load_ledger(ledger_path)
+    led.setdefault(day, {})
+    rec = led[day].get(target_name, {}) or {}
+    rec['count'] = int(rec.get('count', 0)) + 1
+    rec['last_ts'] = now.isoformat()
+    led[day][target_name] = rec
+    # 古い日付は掃除(直近7日だけ保持)
+    if len(led) > 7:
+        for k in sorted(led)[:-7]:
+            led.pop(k, None)
+    _save_ledger(ledger_path, led)
+    return rec['count']
 
 # 本番時間帯: [07:00, 18:00)
 ACTIVE_START = dtime(7, 0)
@@ -156,9 +222,13 @@ def restart_target(target: WatchTarget,
                    dry_run: bool = False,
                    now: Optional[datetime] = None,
                    popen: Callable = subprocess.Popen,
-                   active_checker: Callable[[Optional[datetime]], bool] = is_active_hours) -> dict:
+                   active_checker: Callable[[Optional[datetime]], bool] = is_active_hours,
+                   ledger_path: str = RESTART_LEDGER,
+                   max_per_day: int = MAX_RESTARTS_PER_DAY,
+                   min_interval_sec: int = MIN_RESTART_INTERVAL_SEC) -> dict:
     """対象を再起動し、結果 dict を返す。
     {'restarted': bool, 'skipped_reason': str|None, 'pid': int|None}
+    ★再起動 cap: 当日 max_per_day 回上限 + 連続 min_interval_sec 間隔ガード(5/9 spam再発防止)★
     """
     result: dict = {'restarted': False, 'skipped_reason': None, 'pid': None}
     now = now or datetime.now()
@@ -167,6 +237,10 @@ def restart_target(target: WatchTarget,
         return result
     if dry_run:
         result['skipped_reason'] = 'dry_run'
+        return result
+    guard = restart_guard(target.name, now, ledger_path, max_per_day, min_interval_sec)
+    if not guard['allowed']:
+        result['skipped_reason'] = guard['reason']  # daily_cap_reached / interval_guard
         return result
     env = os.environ.copy()
     env['PYTHONUNBUFFERED'] = '1'
@@ -193,6 +267,7 @@ def restart_target(target: WatchTarget,
                      env=env, start_new_session=True)
         result['restarted'] = True
         result['pid'] = getattr(proc, 'pid', None)
+        result['day_count'] = record_restart(target.name, now, ledger_path)
     except Exception as e:
         result['skipped_reason'] = f'exception:{e}'
     return result
