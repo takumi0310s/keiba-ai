@@ -133,27 +133,91 @@ def make_bets(top6: list) -> dict:
     return {'tansho': o[0] if o else None, 'trio4box': trio4, 'tierce125': t125}
 
 
-def format_test_message(rec: dict) -> tuple:
-    """TEST1 用の人間が読める整形(検証用ヘッダ明記)。"""
-    o = rec.get('s2b_top6', [])
+def _name_map(df: pd.DataFrame) -> dict:
+    """ダンプdfから {馬番: 馬名}。馬名列が無ければ空(=馬番のみ表示)。netkeiba非アクセス。"""
+    try:
+        col = '馬名' if '馬名' in df.columns else next((c for c in df.columns if c in ('horse_name', 'name')), None)
+        if col is None: return {}
+        hn = pd.to_numeric(df['horse_num'], errors='coerce')
+        return {int(n): str(v) for n, v in zip(hn, df[col]) if pd.notna(n)}
+    except Exception:
+        return {}
+
+
+_GAIN_FEATS = None
+def _top_gain_feats(n: int = 6) -> list:
+    """s2bモデルの gain上位特徴(LGB)を取得。失敗しても通知は続行。"""
+    global _GAIN_FEATS
+    if _GAIN_FEATS is None:
+        try:
+            m = _load_s2b(); feats = m['features']
+            g = m['model'].feature_importance(importance_type='gain')
+            _GAIN_FEATS = [feats[i] for i in np.argsort(g)[::-1]]
+        except Exception:
+            _GAIN_FEATS = []
+    return _GAIN_FEATS[:n]
+
+
+def _confidence(scores: dict, o: list):
+    """確信度: top1スコア・2位との差・★段階を返す。"""
+    if not scores or not o: return 0.0, 0.0, '★'
+    s1 = float(scores.get(o[0], 0.0))
+    s2 = float(scores.get(o[1], 0.0)) if len(o) > 1 else 0.0
+    gap = s1 - s2
+    stars = '★★★' if gap >= 0.10 else ('★★' if gap >= 0.05 else '★')
+    return s1, gap, stars
+
+
+def format_test_embed(rec: dict, resend: bool = False) -> dict:
+    """TEST1 用 Discord Embed(色帯+構造化)。検証用と明記・実投票とは無関係。"""
+    o = [int(x) for x in rec.get('s2b_top6', [])]
     b = make_bets(o)
+    scores = {int(k): float(v) for k, v in (rec.get('s2b_scores') or {}).items()}
+    names = {int(k): v for k, v in (rec.get('s2b_names') or {}).items()}
     course = rec.get('course', ''); rn = rec.get('race_num', '')
-    name = rec.get('race_name', ''); st = rec.get('start_time', '')
-    title = f"🧪【s2bテスト・検証用/実投票ではない】{course}{rn}R {name} {st}".strip()
-    lines = [
-        "⚠️ これは穴特化候補 s2b の観察用通知です。**実際の投票(#買い目/146%の買い方)とは無関係**。",
-        f"s2b top6(馬番): {' - '.join(map(str, o[:6]))}",
-        "",
-        f"◆ 単勝: {b['tansho']}",
-        f"◆ 三連複 top4 BOX (4点): " + " / ".join('-'.join(map(str, c)) for c in b['trio4box']),
-        f"◆ 三連単 form 1-2-5 ({len(b['tierce125'])}点): "
-        f"1着 {o[0] if o else '?'} / 2着 {','.join(map(str, o[1:3]))} / 3着 {','.join(map(str, o[1:6]))}",
-    ]
-    return title, "\n".join(lines)
+    rname = rec.get('race_name', ''); st = rec.get('start_time', '')
+    s1, gap, stars = _confidence(scores, o)
+    # 色: 検証用(紫基調) を確信度で変える。★★★=緑 / ★★=青 / ★=灰紫
+    color = {'★★★': 0x2ECC71, '★★': 0x3498DB, '★': 0x9B59B6}[stars]
+
+    medals = ['①', '②', '③', '④', '⑤', '⑥']
+    rows = []
+    for i, h in enumerate(o[:6]):
+        nm = names.get(h, '')
+        sc = scores.get(h, None)
+        sc_s = f"{sc:.3f}" if sc is not None else '-'
+        rows.append(f"{medals[i]} `{h:>2}` {nm[:10]:　<10} `{sc_s}`")
+    top_block = "\n".join(rows) if rows else "(データなし)"
+
+    trio = " / ".join('-'.join(map(str, c)) for c in b['trio4box']) or '-'
+    t125 = (f"1着 **{o[0]}** → 2着 {','.join(map(str, o[1:3]))} → 3着 {','.join(map(str, o[1:6]))} "
+            f"({len(b['tierce125'])}点)") if o else '-'
+    gfeats = _top_gain_feats(6)
+    gain_s = " / ".join(gfeats) if gfeats else "(取得不可)"
+
+    title = f"🧪 s2bテスト {course}{rn}R {rname}".strip()
+    if resend: title = "🔁 " + title
+
+    embed = {
+        "title": title,
+        "description": (f"発走 **{st}**　確信度 {stars}（top1 `{s1:.3f}` / 2位差 `+{gap:.3f}`）\n"
+                        f"⚠️ 穴特化候補の**観察用**。実際の投票(#買い目)とは**無関係**・実投票ではない。"),
+        "color": color,
+        "fields": [
+            {"name": "🏇 s2b 上位6頭（馬番 / 馬名 / score）", "value": top_block, "inline": False},
+            {"name": "◆ 単勝", "value": f"**{b['tansho']}**" if b['tansho'] else '-', "inline": True},
+            {"name": "◆ 三連複 top4 BOX (4点)", "value": trio, "inline": True},
+            {"name": "◆ 三連単 form 1-2-5", "value": t125, "inline": False},
+            {"name": "📈 効いた特徴（gain上位）", "value": gain_s, "inline": False},
+        ],
+        "footer": {"text": (f"特徴量144・人気代理族除去の穴特化候補(leak-free v2) ｜ 検証用・実投票ではない")},
+    }
+    return embed
 
 
-def notify_test1_date(date):
-    """当日の paper pred-log を読み、s2b買い目を TEST1 へ送信(検証用)。BETS/UPDATESには絶対出さない。"""
+def notify_test1_date(date, resend: bool = False, limit: int = 0):
+    """当日の paper pred-log を読み、s2b買い目を TEST1 へ Embed送信(検証用)。BETS/UPDATESには絶対出さない。
+    limit>0 のときは先頭limit件のみ送信(デザイン確認用)。"""
     from dotenv import dotenv_values
     import requests
     url = dotenv_values(os.path.join(BASE, '.env')).get('DISCORD_WEBHOOK_TEST1')
@@ -166,14 +230,16 @@ def notify_test1_date(date):
     for line in open(pp, encoding='utf-8'):
         rec = json.loads(line)
         if len(rec.get('s2b_top6', [])) < 5: continue
-        title, msg = format_test_message(rec)
+        if limit and n >= limit: break
+        embed = format_test_embed(rec, resend=resend)
         try:
-            resp = requests.post(url, json={'content': f"**{title}**\n{msg}"}, timeout=15)
+            resp = requests.post(url, json={'embeds': [embed]}, timeout=15)
             if resp.status_code in (200, 204): n += 1
-            else: print(f"[test1] {rec.get('rk')} HTTP {resp.status_code}")
+            else: print(f"[test1] {rec.get('rk')} HTTP {resp.status_code} {resp.text[:120]}")
+            time.sleep(0.5)  # Discord rate-limit回避
         except Exception as e:
             print(f"[test1] 送信例外 {e}")
-    print(f"[test1] {date}: {n}R を TEST1 に送信(検証用・BETS非混入)")
+    print(f"[test1] {date}: {n}R を TEST1 に Embed送信(検証用・BETS非混入)")
 
 
 def _pred_path(date): return os.path.join(LOG_DIR, f'{date}_pred.jsonl')
@@ -217,13 +283,17 @@ def predict_date(date, allow_scrape=False):
             df = pd.read_parquet(pq)
             scores = score_s2b(df)
             order = [h for h, _ in sorted(scores.items(), key=lambda x: -x[1])]
+            names = _name_map(df)  # {馬番: 馬名} (ダンプ内のみ・netkeiba非アクセス)
             r0 = df.iloc[0]
             rn = _parse_race_num(r0.get('race_num', 0))  # ダンプは '2R' 等の文字列のことがある → 数値抽出
             rec = {'date': date, 'race_id': str(r0.get('race_id', '')),
                    'course': str(r0.get('course', '')), 'race_num': rn,
                    'race_name': str(r0.get('race_name', '')), 'start_time': str(r0.get('start_time', '')),
                    'rk': f"{date}_{r0.get('course','')}_{rn}",
-                   's2b_top6': order[:6], 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}
+                   's2b_top6': order[:6],
+                   's2b_scores': {int(h): round(float(s), 4) for h, s in scores.items()},
+                   's2b_names': names,
+                   'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}
             out.write(json.dumps(rec, ensure_ascii=False) + '\n'); n_ok += 1
             print(f"  {rec['course']}{rec['race_num']}R s2b top6={order[:6]} (V15特徴ダンプ再利用)")
         except Exception as e:
@@ -321,12 +391,14 @@ def main():
     ap.add_argument('mode', choices=['predict','results','report','from-oof','notify-test1'])
     ap.add_argument('--date', default='')
     ap.add_argument('--allow-scrape', action='store_true', help='V15特徴ダンプ無時に独自フェッチ(IP BANリスク・要承認)')
+    ap.add_argument('--resend', action='store_true', help='再送(タイトルに🔁を付け重複と区別)')
+    ap.add_argument('--limit', type=int, default=0, help='送信レース数の上限(デザイン確認用・0=全件)')
     a = ap.parse_args()
     if a.mode=='predict': predict_date(a.date or time.strftime('%Y%m%d'), allow_scrape=a.allow_scrape)
     elif a.mode=='results': results_date(a.date or time.strftime('%Y%m%d'))
     elif a.mode=='report': report()
     elif a.mode=='from-oof': from_oof(a.date or 'ALL')
-    elif a.mode=='notify-test1': notify_test1_date(a.date or time.strftime('%Y%m%d'))
+    elif a.mode=='notify-test1': notify_test1_date(a.date or time.strftime('%Y%m%d'), resend=a.resend, limit=a.limit)
 
 if __name__=='__main__':
     main()
