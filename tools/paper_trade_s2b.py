@@ -144,6 +144,15 @@ def _name_map(df: pd.DataFrame) -> dict:
         return {}
 
 
+def _n_features() -> int:
+    """s2bモデルの実特徴数を動的取得(ハードコード回避・モデル差し替え時も嘘にならない)。失敗時0。"""
+    try:
+        m = _load_s2b()
+        return int(m.get('n_features') or len(m['features']))
+    except Exception:
+        return 0
+
+
 _GAIN_FEATS = None
 def _top_gain_feats(n: int = 6) -> list:
     """s2bモデルの gain上位特徴(LGB)を取得。失敗しても通知は続行。"""
@@ -210,7 +219,7 @@ def format_test_embed(rec: dict, resend: bool = False) -> dict:
             {"name": "◆ 三連単 form 1-2-5", "value": t125, "inline": False},
             {"name": "📈 効いた特徴（gain上位）", "value": gain_s, "inline": False},
         ],
-        "footer": {"text": (f"特徴量144・人気代理族除去の穴特化候補(leak-free v2) ｜ 検証用・実投票ではない")},
+        "footer": {"text": (f"特徴量{_n_features()}・人気代理族除去の穴特化候補(leak-free v2) ｜ 検証用・実投票ではない")},
     }
     return embed
 
