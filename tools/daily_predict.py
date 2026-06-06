@@ -539,6 +539,8 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                 _fd['race_num'] = race_info.get('race_num', 0)
                 _fd['race_name'] = race_info.get('race_name', '')
                 _fd['start_time'] = race_info.get('start_time', '')
+                # s2b未使用の dict/struct列を除去 (空structで to_parquet が失敗→0バイト化するのを根絶。s2bは144 V15特徴のみ使用)
+                _fd = _fd.drop(columns=[c for c in ('jockey_results', 'weight_history', 'prev_jockey') if c in _fd.columns])
                 _fd.to_parquet(os.path.join(_dd, f'{race_id}.parquet'))
             except Exception as _dump_e:
                 print(f"    [s2b dump] skip (V15予測は通常続行): {_dump_e}")
