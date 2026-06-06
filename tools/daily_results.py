@@ -337,6 +337,96 @@ def _try_load_from_db(db_path, race_date):
         return None
 
 
+def _parse_should_bet(val) -> bool:
+    """CSV 由来の should_bet を bool に頑健変換。 旧CSV(欠損/NaN)は買い扱い(True)。
+
+    pandas read_csv は bool 列を文字列 'True'/'False' で読むことがあるため両対応。
+    """
+    if isinstance(val, bool):
+        return val
+    if val is None:
+        return True
+    try:
+        # NaN 判定 (float('nan') != 自身)
+        if isinstance(val, float) and val != val:
+            return True
+    except Exception:
+        pass
+    s = str(val).strip().lower()
+    if s in ('false', '0', '0.0', 'no', 'n', ''):
+        return False
+    return True
+
+
+def _compute_bet_buckets(settled):
+    """settled 結果を 3区分に集計 (2026-05-29)。
+
+    (A) 実投票     = should_bet=True  (戦略⑦通過、 実際に賭けるレース)
+    (B) 見送りｼｬﾄﾞｰ = should_bet=False (フィルタ除外を「もし買っていたら」)
+    (C) 全部買い   = 全 settled       (全平地を「全部買っていたら」)
+    ★ should_bet で分割するだけ。 実投票額・既存集計は不変 (A+B=C) ★
+    """
+    def _agg(rows):
+        n = len(rows)
+        inv = sum(r.get('investment', 0) for r in rows)
+        pay = sum(r.get('trio_payout', 0) + r.get('umaren_payout', 0) for r in rows)
+        hits = sum(1 for r in rows if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1)
+        return {
+            'n': n, 'hits': hits, 'inv': inv, 'payout': pay,
+            'profit': pay - inv,
+            'hit_rate': (hits / n * 100) if n > 0 else 0.0,
+            'roi': (pay / inv * 100) if inv > 0 else 0.0,
+        }
+    buy = [r for r in settled if r.get('should_bet', True)]
+    skip = [r for r in settled if not r.get('should_bet', True)]
+    return {'actual': _agg(buy), 'shadow': _agg(skip), 'all': _agg(settled)}
+
+
+def _format_buckets_text(b):
+    """3区分を Discord/console 用テキストに整形。"""
+    def _line(label, s):
+        sign = '+' if s['profit'] >= 0 else ''
+        return (f"{label}: {s['hits']}/{s['n']}的中 ({s['hit_rate']:.0f}%) "
+                f"ROI {s['roi']:.0f}% 収支{sign}{s['profit']:,.0f}円")
+    return "\n".join([
+        "📊 買っていたら的中率 (3区分)",
+        _line("(A)実投票", b['actual']),
+        _line("(B)見送りｼｬﾄﾞｰ", b['shadow']),
+        _line("(C)全部買い", b['all']),
+    ])
+
+
+def _format_buckets_html(b):
+    """3区分を全馬HTML 先頭の summary block (HTML) に整形。"""
+    def _row(label, s):
+        sign = '+' if s['profit'] >= 0 else ''
+        col = '#90ee90' if s['profit'] >= 0 else '#ee9090'
+        return (f"<tr><td style='text-align:left;padding:2px 10px'>{label}</td>"
+                f"<td style='padding:2px 10px'>{s['hits']}/{s['n']}</td>"
+                f"<td style='padding:2px 10px'>{s['hit_rate']:.0f}%</td>"
+                f"<td style='padding:2px 10px'>{s['roi']:.0f}%</td>"
+                f"<td style='padding:2px 10px;color:{col}'>{sign}{s['profit']:,.0f}円</td></tr>")
+    return (
+        "<div style='margin:8px 0 16px;font-size:12px;background:#1a1a1a;"
+        "padding:8px 10px;border-left:3px solid #555'>"
+        "<div style='color:#bbb;font-weight:bold;margin-bottom:4px'>"
+        "買っていたら的中率 (3区分)</div>"
+        "<table style='border-collapse:collapse'>"
+        "<thead><tr style='color:#888'>"
+        "<th style='text-align:left;padding:2px 10px'>区分</th>"
+        "<th style='padding:2px 10px'>的中</th><th style='padding:2px 10px'>的中率</th>"
+        "<th style='padding:2px 10px'>ROI</th><th style='padding:2px 10px'>収支</th></tr></thead>"
+        "<tbody>"
+        + _row("🟢(A) 実投票 (買いのみ)", b['actual'])
+        + _row("⚪(B) 見送りｼｬﾄﾞｰ", b['shadow'])
+        + _row("(C) 全部買い (全平地)", b['all'])
+        + "</tbody></table>"
+        "<div style='color:#666;font-size:10px;margin-top:3px'>"
+        "(A)実投票=戦略⑦通過の実際の買い目 / (B)見送り=フィルタ除外を仮に買った場合 / "
+        "(C)=全平地全部買い。 ※1000m以下・障害は集計対象外。 (A)vs(C)でフィルタ妥当性を検証</div></div>"
+    )
+
+
 def load_predictions_from_csv(date_str):
     """daily_predict CSVから予測データを読み込む"""
     pred_path = os.path.join(PREDICTIONS_DIR, f"{date_str}.csv")
@@ -374,6 +464,10 @@ def load_predictions_from_csv(date_str):
             'top3_score': float(row.get('top3_score', 0.0) or 0.0),
             'distance': distance,
             'surface': surface,
+            # 買い/見送り判定 (戦略⑦、 2026-05-29)。 旧CSV(列なし)は買い扱い(True)。
+            'should_bet': _parse_should_bet(row.get('should_bet', True)),
+            'skip_reason': ('' if pd.isna(row.get('skip_reason'))
+                            else str(row.get('skip_reason') or '')),
         })
     return predictions
 
@@ -530,6 +624,7 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
         return 0
 
     results = []
+    full_payout_dump = []  # s2b paper用 全払戻ダンプ(I/Oのみ・本番集計に無影響)
     for idx, row in enumerate(to_process):
         race_id = row['race_id']
         course = row['course']
@@ -539,6 +634,9 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
         bets_str = row['trio_bets']
         bet_type = row['bet_type']
         investment = row['investment']
+        # 買い/見送り判定 (戦略⑦、 3区分集計用)。 旧予測(列なし)は買い扱い。
+        should_bet = bool(row.get('should_bet', True))
+        skip_reason = str(row.get('skip_reason', '') or '')
 
         print(f"\n[{idx+1}/{len(to_process)}] {course} {race_num}R {race_name} (ID={race_id})")
 
@@ -557,6 +655,7 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
                 'trio_bets_str': bets_str,
                 'distance': row.get('distance', 0),
                 'surface': row.get('surface', ''),
+                'should_bet': should_bet, 'skip_reason': skip_reason,
             })
             continue
 
@@ -564,6 +663,20 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
         payouts = race_result['payouts']
         trio_nums = race_result['trio_nums']
         umaren_nums = race_result['umaren_nums']
+
+        # ===== s2b paper用 全払戻ダンプ (I/Oのみ・本番の集計/CSV/累積に一切影響しない) =====
+        # 本番が既に netkeiba から取得した結果(着順+払戻)を保存するだけ。 s2bが新規アクセス無しで照合できる。
+        # ★失敗しても本番結果集計は通常続行(末尾でtry/except)★
+        try:
+            full_payout_dump.append({
+                'race_id': str(race_id), 'course': str(course), 'race_num': int(race_num),
+                'finish_order': {int(k): int(v) for k, v in finish_order.items()},
+                'payouts': {k: int(v) for k, v in payouts.items()},
+                'trio_nums': [int(n) for n in trio_nums] if trio_nums else [],
+                'umaren_nums': [int(n) for n in umaren_nums] if umaren_nums else [],
+            })
+        except Exception:
+            pass
 
         trio_hit = False
         trio_payout = 0
@@ -612,6 +725,8 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
             'investment': investment,
             'profit': profit,
             'status': 'settled',
+            'should_bet': should_bet,
+            'skip_reason': skip_reason,
             'top1_num': row.get('top1_num', 0),
             'top1_name': row.get('top1_name', ''),
             'top1_score': row.get('top1_score', 0.0),
@@ -673,6 +788,27 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
     df_results.to_csv(out_path, index=False, encoding='utf-8-sig')
     print(f"\n保存先: {out_path}")
 
+    # s2b paper用 全払戻JSON (I/Oのみ・本番に無影響・netkeiba新規アクセスなし)
+    try:
+        if full_payout_dump:
+            fp_dir = os.path.join(BASE_DIR, "data", "daily_results_full")
+            os.makedirs(fp_dir, exist_ok=True)
+            fp_path = os.path.join(fp_dir, f"{date_str}.json")
+            existing = {}
+            if os.path.exists(fp_path):
+                try:
+                    for r in json.load(open(fp_path, encoding='utf-8')):
+                        existing[(r.get('race_id'))] = r
+                except Exception:
+                    existing = {}
+            for r in full_payout_dump:
+                existing[r['race_id']] = r  # 再照合時は最新で上書き
+            with open(fp_path, 'w', encoding='utf-8') as f:
+                json.dump(list(existing.values()), f, ensure_ascii=False)
+            print(f"s2b払戻ダンプ: {fp_path} ({len(existing)}R)")
+    except Exception as _fpe:
+        print(f"[s2b払戻ダンプ] skip (本番集計は通常続行): {_fpe}")
+
     # 累積CSV（upsert + dedup）
     _upsert_cumulative(results, date_str)
     print(f"累積結果更新: {CUMUL_CSV}")
@@ -718,12 +854,28 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
             s = cond_stats[c]
             c_roi = (s['pay'] / s['inv'] * 100) if s['inv'] > 0 else 0
             print(f"    {c}: {s['hit']}/{s['count']}的中 ROI {c_roi:.1f}%")
+
+        # 3区分集計 (実投票 / 見送りシャドー / 全部買い) — 2026-05-29
+        _buckets = _compute_bet_buckets(settled)
+        print(f"\n  買っていたら的中率 (3区分):")
+        for _k, _lab in (('actual', '(A)実投票  '), ('shadow', '(B)見送りｼｬﾄﾞｰ'), ('all', '(C)全部買い')):
+            _s = _buckets[_k]
+            _sg = '+' if _s['profit'] >= 0 else ''
+            print(f"    {_lab}: {_s['hits']}/{_s['n']}的中 ({_s['hit_rate']:.0f}%) "
+                  f"ROI {_s['roi']:.0f}% 収支{_sg}{_s['profit']:,.0f}円")
+        print(f"  → (A)実投票 vs (C)全部買い でフィルタ妥当性を検証")
         print(f"{'=' * 60}")
 
     # 全馬スコア HTML を結果反映版で再生成 → Discord 添付
     if _ALLSCORES_HTML_AVAILABLE and settled:
         try:
-            html_path = build_allscores_html(date_str)
+            # 3区分サマリーを HTML 先頭に埋め込む (2026-05-29)
+            _buckets_html = ""
+            try:
+                _buckets_html = _format_buckets_html(_compute_bet_buckets(settled))
+            except Exception as _bh_err:
+                print(f"[WARN] 3区分HTML生成skip: {_bh_err}")
+            html_path = build_allscores_html(date_str, summary_block=_buckets_html)
             if html_path:
                 n_hit = sum(1 for r in settled if r.get('trio_hit') == 1 or r.get('umaren_hit') == 1)
                 total_inv = sum(r['investment'] for r in settled)
@@ -731,10 +883,17 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
                 roi_val = (total_pay / total_inv * 100) if total_inv > 0 else 0
                 profit_val = total_pay - total_inv
                 p_sign = '+' if profit_val >= 0 else ''
+                # 3区分テキストを caption にも付与
+                _buckets_txt = ""
+                try:
+                    _buckets_txt = "\n\n" + _format_buckets_text(_compute_bet_buckets(settled))
+                except Exception:
+                    pass
                 summary = (
                     f"**{date_str}** 結果反映 {len(settled)}R / 的中 {n_hit}R\n"
                     f"ROI {roi_val:.1f}% / 収支 {p_sign}{profit_val:,}円\n"
                     f"添付 HTML で全馬の予測順位 vs 実着順を確認できます"
+                    f"{_buckets_txt}"
                 )
                 from notify import send_discord_file
                 ok = send_discord_file(
@@ -1072,11 +1231,22 @@ if __name__ == "__main__":
                         c_profit = c_pay - c_inv
                         cumul_msg = f"\n累計: ROI {c_roi:.0f}% / {'+' if c_profit>=0 else ''}{c_profit:,.0f}円 ({len(cs)}R)"
 
+                # 3区分集計 (実投票/見送りシャドー/全部買い) — 2026-05-29
+                buckets_msg = ''
+                try:
+                    _recs = settled.to_dict('records')
+                    for _r in _recs:
+                        _r['should_bet'] = _parse_should_bet(_r.get('should_bet', True))
+                    buckets_msg = "\n\n" + _format_buckets_text(_compute_bet_buckets(_recs))
+                except Exception as _bk_err:
+                    print(f"[WARN] 3区分集計skip: {_bk_err}")
+
                 color = "green" if profit >= 0 else "red"
                 msg = (f"**{date_str}** {hits}/{n}的中 ROI **{roi:.0f}%**\n"
                        f"収支: **{sign}{profit:,.0f}円** ({inv:,.0f}円→{pay:,.0f}円)\n"
                        + ("\n".join(hit_lines) + "\n" if hit_lines else "")
-                       + cumul_msg)
+                       + cumul_msg
+                       + buckets_msg)
                 send_discord(f"結果 {date_str} ({hits}/{n}的中)", msg, color=color)
             else:
                 send_discord("結果照合", f"{date_str} 確定レース0件", color="yellow")

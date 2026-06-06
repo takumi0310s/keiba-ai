@@ -71,7 +71,36 @@ def _to_i(x):
     try: return int(float(x))
     except Exception: return None
 
+def _payout_index_daily_full(date):
+    """本番 daily_results が保存した全払戻JSON(data/daily_results_full/{date}.json)から payout index を構築。
+    ★go-forward の正規ソース★: 本番が既に netkeiba から取得済みの結果を読むだけ=新規アクセス無し。
+    複勝/三連単は本番未取得 → None(=その券種はスキップ)。 単勝/馬連/三連複は実払戻で照合可。"""
+    p = os.path.join(DATA, 'daily_results_full', f'{date}.json')
+    if not os.path.exists(p): return {}
+    try:
+        recs = json.load(open(p, encoding='utf-8'))
+    except Exception:
+        return {}
+    idx = {}
+    for r in recs:
+        key = f"{date}_{r.get('course','')}_{int(r.get('race_num',0))}"
+        fo = {int(k): int(v) for k, v in (r.get('finish_order') or {}).items()}
+        winner = next((h for h, pos in fo.items() if pos == 1), None)
+        pay = r.get('payouts') or {}
+        tn = [int(x) for x in (r.get('trio_nums') or [])]
+        un = [int(x) for x in (r.get('umaren_nums') or [])]
+        idx[key] = {
+            'tan': (winner, int(pay.get('tansho', 0) or 0)),
+            'fuk': None,  # 本番 daily_results は複勝未取得 → 複勝top1はスキップ
+            'umaren': (frozenset(un), int(pay.get('umaren', 0) or 0)) if len(un) == 2 else None,
+            'trio': (frozenset(tn), int(pay.get('trio', 0) or 0)) if len(tn) == 3 else None,
+            'tierce': None,  # 本番 daily_results は三連単未取得 → 三連単はスキップ
+        }
+    return idx
+
+
 def load_payout_index():
+    """★fallback(historical)★: jra_payouts.csv(現在5/17で停止)から全券種の payout index。"""
     p = pd.read_csv(os.path.join(DATA,'jra_payouts.csv'), low_memory=False)
     idx = {}
     for _, r in p.iterrows():
@@ -102,7 +131,9 @@ def load_payout_index():
 # ============ 券種(top6順位 o から (return, points)) ============
 import itertools
 def bt_tan(o,pm): return (pm['tan'][1] if pm['tan'][0]==o[0] else 0, 1)
-def bt_fuku1(o,pm): return (pm['fuk'].get(o[0],0), 1)
+def bt_fuku1(o,pm):
+    if pm.get('fuk') is None: return (0,0)   # 払戻源に複勝なし → スキップ(pts=0)
+    return (pm['fuk'].get(o[0],0), 1)
 def bt_umaren_t3box(o,pm):
     r=sum(pm['umaren'][1] for a,b in itertools.combinations(o[:3],2) if pm['umaren'] and pm['umaren'][0]==frozenset((a,b))); return (r,3)
 def bt_trio4(o,pm):
@@ -340,7 +371,13 @@ def _predict_via_scrape(date):
 def results_date(date):
     pp = _pred_path(date)
     if not os.path.exists(pp): print(f"[paper_s2b] {pp} なし"); return
-    pay = load_payout_index()
+    # ★払戻源: 本番 daily_results が保存した全払戻JSONを最優先(go-forward・netkeiba非アクセス)。
+    #   無ければ jra_payouts.csv(historical・5/17で停止)へfallback★
+    pay = _payout_index_daily_full(date)
+    src = 'daily_results_full'
+    if not pay:
+        pay = load_payout_index(); src = 'jra_payouts.csv(fallback)'
+    print(f"[paper_s2b] payout source = {src} ({len(pay)} races indexed)")
     out = open(_res_path(date),'w',encoding='utf-8'); n=0
     for line in open(pp,encoding='utf-8'):
         rec = json.loads(line); key = rec['rk']
