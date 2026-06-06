@@ -188,6 +188,15 @@ def _res_path(date):  return os.path.join(LOG_DIR, f'{date}_results.jsonl')
 #   ~360リクエストのフル再スクレイプ=IP BAN高リスク。 よって本モードは新規スクレイプを一切しない。★
 FEAT_DUMP_DIR = os.path.join(DATA, 'v15_feat_dump')
 
+import re as _re
+def _parse_race_num(v):
+    """ダンプの race_num は int(2) でも文字列('2R'/'2R '/'02') でもあり得る → 数字だけ抽出。"""
+    try:
+        m = _re.search(r'\d+', str(v))
+        return int(m.group()) if m else 0
+    except Exception:
+        return 0
+
 def predict_date(date, allow_scrape=False):
     os.makedirs(LOG_DIR, exist_ok=True)
     import glob as _glob
@@ -209,10 +218,11 @@ def predict_date(date, allow_scrape=False):
             scores = score_s2b(df)
             order = [h for h, _ in sorted(scores.items(), key=lambda x: -x[1])]
             r0 = df.iloc[0]
+            rn = _parse_race_num(r0.get('race_num', 0))  # ダンプは '2R' 等の文字列のことがある → 数値抽出
             rec = {'date': date, 'race_id': str(r0.get('race_id', '')),
-                   'course': str(r0.get('course', '')), 'race_num': int(r0.get('race_num', 0) or 0),
+                   'course': str(r0.get('course', '')), 'race_num': rn,
                    'race_name': str(r0.get('race_name', '')), 'start_time': str(r0.get('start_time', '')),
-                   'rk': f"{date}_{r0.get('course','')}_{int(r0.get('race_num',0) or 0)}",
+                   'rk': f"{date}_{r0.get('course','')}_{rn}",
                    's2b_top6': order[:6], 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}
             out.write(json.dumps(rec, ensure_ascii=False) + '\n'); n_ok += 1
             print(f"  {rec['course']}{rec['race_num']}R s2b top6={order[:6]} (V15特徴ダンプ再利用)")
