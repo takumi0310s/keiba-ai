@@ -192,6 +192,31 @@ def _n_features() -> int:
         return 0
 
 
+def _ref_v2_roi() -> str:
+    """leak-free v2 のバックテスト参照ROIを v16_s2b_ci_montecarlo_v2.json から動的取得。
+    ★旧ベタ書き(単勝111.6%/三連複194.3%/三連単229%/馬連146%=v1リーク版)を排除★。
+    json は cp932 保存。 単勝・三連複top4box のみ CI 分析あり。 馬連box(141.3%)は docs 由来。"""
+    try:
+        p = os.path.join(DATA, 'v16_s2b_ci_montecarlo_v2.json')
+        d = None
+        for enc in ('cp932', 'utf-8', 'shift_jis'):
+            try:
+                d = json.load(open(p, encoding=enc)); break
+            except Exception:
+                continue
+        if not d:
+            return "参照値: v2 json 読込不可"
+        ci = d.get('ci', {})
+        tan = ci.get('単勝', {}); tri = ci.get('三連複top4box', {})
+        ts = tan.get('s2b', [None])[0]; tv = tan.get('v15', [None])[0]
+        rs = tri.get('s2b', [None])[0]; rv = tri.get('v15', [None])[0]
+        def pc(x): return f"{x*100:.1f}%" if isinstance(x, (int, float)) else "?"
+        return (f"leak-free v2参照(s2b/V15): 単勝 {pc(ts)}/{pc(tv)} ・ "
+                f"三連複top4box {pc(rs)}/{pc(rv)} ・ 馬連box ~141.3%(docs) ｜三連単はv2基準値なし")
+    except Exception:
+        return "参照値: 取得不可"
+
+
 _GAIN_FEATS = None
 def _top_gain_feats(n: int = 6) -> list:
     """s2bモデルの gain上位特徴(LGB)を取得。失敗しても通知は続行。"""
@@ -412,7 +437,7 @@ def report():
                 if not b or b['pts']==0: continue
                 a = agg[name]; a['ret']+=b['ret']; a['stake']+=100*b['pts']; a['hit']+=(b['ret']>0); a['n']+=1
     print(f"=== paper s2b 累積ROI (照合日数={len(files)}) ===")
-    print(f"  leak-freeバックテスト参照: 単勝111.6% / 三連複top4box194.3% / 三連単1-2-5 229% / 馬連top3box146%")
+    print(f"  {_ref_v2_roi()}")
     print(f"  {'券種':16s}{'ROI':>8s}{'的中率':>8s}{'N':>7s}{'収支':>12s}")
     for name,_ in BETS:
         a = agg[name]

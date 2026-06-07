@@ -132,7 +132,10 @@ def predict_paper_shadow(features_df, model_key: str = 'v15_full_optuna',
             df_in = df_aug.reindex(columns=model_feats).fillna(0.0)
             X = df_in.values.astype(np.float32)
             p_lgb = model['lgb_model'].predict(X)
-            p_xgb = model['xgb_model'].predict(xgb.DMatrix(X))
+            # ★feature_names を渡す(V16経路と同様)。 未指定だと特徴名付きboosterが
+            #   「data did not contain feature names...」で毎R失敗→ログ汚染+V20/V22 shadow欠測★
+            p_xgb = model['xgb_model'].predict(xgb.DMatrix(X, feature_names=model_feats) if model_feats
+                                               else xgb.DMatrix(X))
             scores = 0.5 * p_lgb + 0.5 * p_xgb
             return {i: float(s) for i, s in enumerate(scores)}
 
