@@ -24,10 +24,33 @@ from datetime import datetime, timedelta
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 os.chdir(BASE_DIR)
 
-MIN_RACES_OK = 30                    # これ未満なら中断扱い
+MIN_RACES_FALLBACK = 30              # JRDB開催R数が取れない時のフォールバック floor
+RACE_COMPLETION_RATIO = 0.9          # 開催R数のこの割合以上 予測できれば正常(取消/障害/parse失敗を許容)
 CHECK_INTERVAL_SEC = 300             # 5分ごと監視
 MAX_RESTARTS = 3                     # 最大再起動回数
 PROCESS_HARD_TIMEOUT_SEC = 3600      # 1h でハード停止 (cycle あたり)
+
+
+def expected_race_count(date_str):
+    """その日の実開催R数(JRDB出走表 KYI 由来・netkeiba非アクセス)。取得不可なら0。"""
+    try:
+        sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
+        from race_day_check import jrdb_race_day_info
+        info = jrdb_race_day_info(date_str, BASE_DIR)
+        if info.get('is_race_day') and info.get('n_races', 0) > 0:
+            return int(info['n_races'])
+    except Exception as e:
+        print(f"[WARN] 開催R数取得失敗(fallback使用): {e}", flush=True)
+    return 0
+
+
+def compute_min_races_ok(date_str):
+    """誤FATAL根絶: 固定30でなく その日の実開催R数 × 割合 を閾値に。
+    2場(24R)→22 / 3場(36R)→33。 JRDB不可時は固定30へfallback。"""
+    n = expected_race_count(date_str)
+    if n > 0:
+        return max(1, round(n * RACE_COMPLETION_RATIO)), n
+    return MIN_RACES_FALLBACK, 0
 
 
 def count_races(date_str):
@@ -101,9 +124,12 @@ def watchdog(date_str):
     sub_log_path = os.path.join(log_dir, f'daily_predict_watchdog_{date_str}_subproc.log')
     main_log_path = os.path.join(log_dir, f'daily_predict_watchdog_{date_str}.log')
 
+    min_races_ok, expected_n = compute_min_races_ok(date_str)
+    exp_disp = expected_n if expected_n > 0 else f"{MIN_RACES_FALLBACK}(fallback)"
+
     print(f"=== daily_predict_watchdog START ===", flush=True)
     print(f"  Date: {date_str}", flush=True)
-    print(f"  Min races OK: {MIN_RACES_OK}", flush=True)
+    print(f"  開催R数(JRDB): {exp_disp}  Min races OK(連動): {min_races_ok}", flush=True)
     print(f"  Check interval: {CHECK_INTERVAL_SEC}s", flush=True)
     print(f"  Max restarts: {MAX_RESTARTS}", flush=True)
     print(f"  Subprocess log: {sub_log_path}", flush=True)
@@ -113,6 +139,7 @@ def watchdog(date_str):
 
     restarts = 0
     last_race_count = initial_races
+    prev_finish_races = -1   # 直前の subprocess 終了時の race数(無進捗 resume の検知用)
     stale_check_count = 0
     cycle_start = datetime.now()
 
@@ -143,28 +170,33 @@ def watchdog(date_str):
             if log_f: log_f.close()
 
             # Cookie切れ検知
-            if detect_cookie_failure(sub_log_path) and races < MIN_RACES_OK:
+            if detect_cookie_failure(sub_log_path) and races < min_races_ok:
                 print("[DETECT] Cookie切れ → refresh試行", flush=True)
                 if refresh_cookie() and restarts < MAX_RESTARTS:
                     restarts += 1
                     send_discord_alert(
                         f"[Watchdog] Cookie切れ → 自動再起動 #{restarts}",
-                        f"{date_str} races={races}/36 - Cookie復活、--resume で再起動",
+                        f"{date_str} races={races}/{min_races_ok} - Cookie復活、--resume で再起動",
                         color="yellow",
                     )
                     proc, log_f = run_daily_predict(date_str, resume=True, log_path=sub_log_path)
                     cycle_start = datetime.now()
                     stale_check_count = 0
+                    prev_finish_races = races
                     continue
 
-            # 中断検知
-            if races < MIN_RACES_OK:
-                if restarts < MAX_RESTARTS:
+            # 中断検知 (閾値=開催R数連動)
+            if races < min_races_ok:
+                # 無進捗 resume の検知: 直前終了時から1レースも増えていない=これ以上 resume しても無駄
+                #   (daily_predict は rc=0 で「自分は完了」と判断している)。 無駄な再起動を避け即判定。
+                no_progress = (races <= prev_finish_races)
+                if restarts < MAX_RESTARTS and not no_progress:
                     restarts += 1
-                    print(f"[RESTART {restarts}/{MAX_RESTARTS}] race数不足 ({races} < {MIN_RACES_OK})", flush=True)
+                    prev_finish_races = races
+                    print(f"[RESTART {restarts}/{MAX_RESTARTS}] race数不足 ({races} < {min_races_ok})", flush=True)
                     send_discord_alert(
                         f"[Watchdog] daily_predict 中断検知 → 再起動 #{restarts}",
-                        f"{date_str} races={races}/36 (rc={rc})\n--resume で再起動",
+                        f"{date_str} races={races}/{min_races_ok} (rc={rc})\n--resume で再起動",
                         color="yellow",
                     )
                     proc, log_f = run_daily_predict(date_str, resume=True, log_path=sub_log_path)
@@ -172,7 +204,8 @@ def watchdog(date_str):
                     stale_check_count = 0
                     continue
                 else:
-                    msg = f"{date_str} {restarts}回再起動後も {races}/{MIN_RACES_OK} レースのみ完了。手動対応必要。"
+                    reason = "再起動しても無進捗(resume不能)" if no_progress else f"{restarts}回再起動後も改善せず"
+                    msg = f"{date_str} {reason}。 {races}/{min_races_ok} レースのみ完了(開催{exp_disp}R)。手動対応必要。"
                     print(f"[FATAL] {msg}", flush=True)
                     send_discord_alert(
                         f"❌ [Watchdog FATAL] daily_predict 修復失敗",

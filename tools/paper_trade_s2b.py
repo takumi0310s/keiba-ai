@@ -89,12 +89,20 @@ def _payout_index_daily_full(date):
         pay = r.get('payouts') or {}
         tn = [int(x) for x in (r.get('trio_nums') or [])]
         un = [int(x) for x in (r.get('umaren_nums') or [])]
+        # 複勝: {馬番: 払戻}(本番 daily_results が複勝parse追加後に格納)。 無ければ None でスキップ。
+        fk = pay.get('fukusho')
+        fuk = {int(a): int(b) for a, b in fk.items()} if isinstance(fk, dict) and fk else None
+        # 三連単: 着順(tierce_nums優先 / 無ければ finish_order から1-2-3着) + 払戻。 払戻0/着順不明なら None。
+        ten = [int(x) for x in (r.get('tierce_nums') or [])]
+        if len(ten) < 3:
+            ten = [h for h, _ in sorted(fo.items(), key=lambda kv: kv[1])][:3] if len(fo) >= 3 else []
+        tierce_pay = int(pay.get('tierce', 0) or 0)
         idx[key] = {
             'tan': (winner, int(pay.get('tansho', 0) or 0)),
-            'fuk': None,  # 本番 daily_results は複勝未取得 → 複勝top1はスキップ
+            'fuk': fuk,
             'umaren': (frozenset(un), int(pay.get('umaren', 0) or 0)) if len(un) == 2 else None,
             'trio': (frozenset(tn), int(pay.get('trio', 0) or 0)) if len(tn) == 3 else None,
-            'tierce': None,  # 本番 daily_results は三連単未取得 → 三連単はスキップ
+            'tierce': (tuple(ten), tierce_pay) if (len(ten) == 3 and tierce_pay > 0) else None,
         }
     return idx
 

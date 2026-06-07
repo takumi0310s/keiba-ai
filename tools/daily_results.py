@@ -75,9 +75,10 @@ def fetch_race_result(race_id):
     """netkeibaからレース結果を取得"""
     result = {
         'finish_order': {},
-        'payouts': {'trio': 0, 'umaren': 0, 'wide': 0, 'tansho': 0},
+        'payouts': {'trio': 0, 'umaren': 0, 'wide': 0, 'tansho': 0, 'fukusho': {}, 'tierce': 0},
         'trio_nums': None,
         'umaren_nums': None,
+        'tierce_nums': None,
     }
     url = f"https://race.netkeiba.com/race/result.html?race_id={race_id}"
     try:
@@ -180,13 +181,25 @@ def fetch_race_result(race_id):
 
             # NFKC正規化済みテキストで判定（三連複/3連複/３連複の全バリエーション対応）
             is_tansho = ('単勝' in th_text) and ('連' not in th_text)
+            is_fukusho= ('複勝' in th_text) and ('連' not in th_text)   # 複勝(三連複/連複は'連'で除外)
             is_trio   = ('三連複' in th_text) or ('3連複' in th_text) or (BET_TYPE_HEX['trio_g'] in th_hex)
             is_tierce = ('三連単' in th_text) or ('3連単' in th_text)
             is_umaren = ('馬連' in th_text) and ('三' not in th_text) and ('単' not in th_text) and ('3' not in th_text)
             is_wide   = ('ワイド' in th_text) or (BET_TYPE_HEX['wide'] in th_hex)
 
+            # 結果列(クラス Result)から馬番を抽出するヘルパ(Ninki列の人気数字混入を回避)
+            def _result_umaban():
+                res_td = next((td for td in tds if 'Result' in ' '.join(td.get('class', []))), None)
+                if res_td is None:
+                    return []
+                return [int(t) for t in re.findall(r'\d+', res_td.get_text('\n', strip=True)) if 1 <= int(t) <= 18]
+
             if is_tansho:
                 result['payouts']['tansho'] = payout_val
+            elif is_fukusho:
+                # 複勝: 複数馬 → {馬番: 払戻}。 Result列の馬番と payout_vals を index 対応で zip。
+                for nb, pv in zip(_result_umaban(), payout_vals):
+                    result['payouts']['fukusho'][nb] = pv
             elif is_trio:
                 result['payouts']['trio'] = payout_val
             elif is_umaren:
@@ -195,7 +208,10 @@ def fetch_race_result(race_id):
                 if result['payouts']['wide'] == 0:
                     result['payouts']['wide'] = payout_val
             elif is_tierce:
-                pass  # 三連単は使わない
+                result['payouts']['tierce'] = payout_val   # 三連単 払戻(着順は finish_order から)
+                onums = _result_umaban()
+                if len(onums) >= 3:
+                    result['tierce_nums'] = onums[:3]       # 1着→2着→3着 の順
 
     return result
 
@@ -671,9 +687,11 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
             full_payout_dump.append({
                 'race_id': str(race_id), 'course': str(course), 'race_num': int(race_num),
                 'finish_order': {int(k): int(v) for k, v in finish_order.items()},
-                'payouts': {k: int(v) for k, v in payouts.items()},
+                'payouts': {k: ({int(a): int(b) for a, b in v.items()} if isinstance(v, dict) else int(v))
+                            for k, v in payouts.items()},
                 'trio_nums': [int(n) for n in trio_nums] if trio_nums else [],
                 'umaren_nums': [int(n) for n in umaren_nums] if umaren_nums else [],
+                'tierce_nums': [int(n) for n in race_result.get('tierce_nums')] if race_result.get('tierce_nums') else [],
             })
         except Exception:
             pass
