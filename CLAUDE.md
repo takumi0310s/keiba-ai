@@ -359,7 +359,8 @@ V20 学習時は `merge_v15_1_features(skip_skb=True)` で完全除外。
 - **s2b 定義**: V16能力137 − 人気代理"族"13(`paci_jockey_exp_wr/_3rd` + 印4(`paci_jockey_mark/sogo_mark/train_mark/idm_mark`) + `jrdb_cid_idx/ls_idx/training_idx/stable_idx` + `paci_goal_rank/goal_diff/dochu_rank`) + レース相対特徴(脚質構成 n_front/`front_advantage`、距離適性合致、脚質×バイアス×枠)。 `tools/v16_anaba_s2_eval.py`。 候補=`models/v16_anaba_s2b_candidate.pkl.gz`(検証専用・投票未使用)。
 - **騎手指数の正体**: `paci_jockey_exp` = JRDB「騎手期待率」= **93%が人気代理**(残差6-7%、odds_dependency_analysis.json)。 ルメール反証: 騎手内 corr(値,人気)≈−0.83・ルメールでもJEがレース内最高は41%のみ。
 - **診断(現在地)**: s2bのROI優位は leak-free v2 で統計的有意(ペア差CIが0を跨がない)・年別頑健・DD撤退ライン内。 ★だが backtestエッジは過去にリークで幻だった前科 → 本番昇格は前向きpaper確証が必須(時期尚早)★。
-- **未完(次段階)**: 前向き paper trading(唯一リーク不可能な確証・単勝~300R/三連複~1000R目安)、 horse_name→blood_num カバレッジは89.9%が実上限(残9.6%=真の初出走で100%不可)。 本番 `jrdb_features.py` の ze集計への日付フィルタ追加は防御的別件(live は既に安全・要承認)。
+- ★**Fable監査採択 (6/11, 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7)**★: ①§2.2bの有意性は**selection後推論**だった(グリッド総当たり後の最良セルにCI・i.i.d.は同日相関無視) → 3段補正(winsorize99%cap + 日付クラスタbootstrap n=100k + Bonferroni m=102)後: **三連複t4ペア差は生存**(+20.1pt、99.951%CI[+3.2,+36.8]、ただしROIは207%→168〜190%に縮小)・**単勝ペア差(+6.2pt)は最厳格で有意性消失**([-0.7,+9.6]=0跨ぐ) → 単勝を昇格根拠にしない。 ②表現訂正:「V15は本物」→「**予測はリークなし・市場平均超は有意(単勝105.0% CI[102.0,108.1])。長期利益性は未証明**(実運用CI[66.3,138.05]が100%含む・12週再チェック継続)」。 MC破産0%=**エッジ持続前提込み**。 ③**6/17基準更新**: ペア差確証に必要なpaper N≈ **三連複t4 3,500R/単勝7,600R**(旧目安~1000Rはペア差検出に不足) → 6/17は「方向確認のみ」・昇格判定はN到達後。 ④**ワールズ型戦略NO-GO**: 地力(ze)×近走好調×人気薄の複勝率edgeは実在(同人気帯+5.4pt CI[+4.0,+6.7]・3年安定)だが最終オッズが織り込み(同人気帯で的中時配当25-40%低)→絶対ROI 62-84%・CI上限<100%。安田記念=小edgeの単発顕在化(生存者バイアス)。ze系はs2bに内包済・独立戦略化なし。 ⑤初B単独見送り: 2026年562頭 複勝21.1%≒全馬21.8%・人気薄初B7.5%≒ベース7.7%(「1-3人気×初B」+6.2pt n74と「逃げ先行×初B」のみ低優先保留)。 ⑥paper定義整合: 券種組成/賭額/的中判定/見送り=一致、払戻ソース/母集団/スナップショット=解釈注意、**KYI族24特徴のダンプデフォルト化を検証側修正**(`_restore_collided_columns`、6/6-6/7の47Rは劣化特徴記録=6/17評価で分離)。 残TODO=②全特徴override総当たり(次セッション・重い)。
+- **未完(次段階)**: 前向き paper trading(唯一リーク不可能な確証・★6/11更新: ペア差確証は t4≈3,500R/単勝≈7,600R★)、 horse_name→blood_num カバレッジは89.9%が実上限(残9.6%=真の初出走で100%不可)。 本番 `jrdb_features.py` の ze集計への日付フィルタ追加は防御的別件(live は既に安全・要承認)。
 
 ### リークフリー設計原則
 1. 全統計特徴量は**expanding window**（cumsum - current、当該レース除外）
@@ -764,6 +765,7 @@ python tools/predict_one_race.py 202605020211
 - **本番切替**: 5月末
 
 ### 🔍 既知のバグ
+- ★**daily_predict の JRDB 二重マージ (6/11 Fable監査③で発見・本番未修正・要承認)**★: predict_core.build_features 内(predict_core.py:2008)でマージ済みの df に daily_predict.py:524(4/4 commit c079d900 起源)が再マージ → 衝突で実値が `jrdb_*_x` に退避・素列がデフォルト再充填(idm=50/脚質=0、KYI族24列) → **朝8:00のV15スコアは4/4以降KYI族をデフォルト値で採点していた疑い**。 predict_one_race(_v3) も同型。 race_auto_notify(実投票根拠)は単一マージで健全。 paper側は `_restore_collided_columns()` で修正済(検証側のみ)。 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7.6
 - jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復) → **JV-Link O1 で代替経路 (Session #39 B)**
 - predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
 - cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)

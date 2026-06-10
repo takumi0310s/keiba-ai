@@ -40,11 +40,30 @@ def _load_s2b():
     return _S2B
 
 
+def _restore_collided_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """★Fable監査③(2026-06-11) 検証側修正★: daily_predict の JRDB 二重マージ
+    (predict_core.build_features 内 merge#1 + daily_predict.py:524 merge#2) の衝突で、
+    実値が `jrdb_*_x` に退避し素列がデフォルト再充填(idm=50/脚質=0等)される。
+    ダンプに `{col}_x`(=merge#1 の実値) が残っているので素列へ復元する。
+    paper(検証側)のみの修正。本番 daily_predict/predict_core は不変(別件・要承認)。"""
+    restored = []
+    for c in list(df.columns):
+        if c.endswith('_x'):
+            base = c[:-2]
+            if base in df.columns:
+                df[base] = df[c]
+                restored.append(base)
+    if restored:
+        print(f"  [s2b] 二重マージ衝突 {len(restored)}列を _x(実値) から復元 (例: {restored[:4]})")
+    return df
+
+
 def build_s2b_features(race_df: pd.DataFrame) -> pd.DataFrame:
     """1レース分の V15特徴df(全馬) から s2b 特徴(one-hot脚質/距離適性 + レース相対 + 交互)を構築。
     v16_anaba_s2_eval.build_features を流用(race_id_unique を定数化=1レース内で集計)。"""
     from v16_anaba_s2_eval import build_features as _bf
     df = race_df.copy()
+    df = _restore_collided_columns(df)
     if 'race_id_unique' not in df.columns: df['race_id_unique'] = 'PAPER_RACE'
     # 必須列の存在保証(無ければ0)
     for c in ['jrdb_running_style','jrdb_dist_apt','distance','num_horses_val','horse_num','jrdb_tb_homestr_inner']:
