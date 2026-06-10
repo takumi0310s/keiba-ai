@@ -276,11 +276,14 @@
 | 9 | モデル: WF fold再学習 / candidate固定(≤2025学習) | 設計差(go-forwardとして正当) |
 | 10 | ★不一致→修正★ KYI族24特徴がダンプでデフォルト化(idm=50/脚質=0) → s2bレース相対特徴(NEW)が全死 | **検証側修正済**: `_restore_collided_columns()` で `jrdb_*_x`(実値)から復元。**6/6-6/7の2日分pred(47R)は劣化特徴での記録 → 6/17評価では分離扱い(混ぜない)** |
 
-### 7.6 ★別件(本番・要承認・本タスクでは未修正)★: daily_predict の JRDB 二重マージ
-- **発見**: `predict_core.build_features` 内(predict_core.py:2008)で JRDB マージ済みの df に、`daily_predict.py:524`(2026-04-04 commit c079d900 起源)が **同じ merge_jrdb_predict_features を再適用** → pandas merge 衝突で実値が `jrdb_*_x`/`_y` に退避し、素列がデフォルト再充填(idm=50・脚質=0 等、KYI族24列)。
-- **影響**: 朝8:00 daily_predict の V15スコアは **4/4以降 KYI族特徴をデフォルト値で採点していた疑い**(dump実測: `jrdb_idm`全馬50.0・`jrdb_idm_x`=実値31.1等)。`predict_one_race.py`/`predict_one_race_v3.py` も同型。
-- **健全な経路**: `race_auto_notify`(レース5分前・実投票の根拠)は単一マージ=衝突なし。T1 features audit は学習cache側の監査で live 未検知(idm=50はゼロでないため「ゼロ特徴量警告」も非発火)。
-- **対処**: 本番改変は本タスクのNEVER対象 → **報告のみ**。修正案=daily_predict.py:524 の二重マージ削除(merge#1で十分) or merge前に既存jrdb_列をdrop。**要承認の別件**。修正時は cumulative_results の 4/4以降の朝予測成績の解釈(劣化特徴下の成績)も再注記すること。
+### 7.6 JRDB 二重マージ (6/11発見 → 同日 daily_predict 修正済・★race_auto_notify 等は未修正・要承認★)
+- **発見**: `predict_core.build_features` 内(predict_core.py:2008、3/31 381522a2 で追加)で JRDB マージ済みの df に **同じ merge_jrdb_predict_features を再適用** → pandas merge 衝突で実値が `jrdb_*_x`/`_y` に退避し、素列がデフォルト再充填(idm=50・脚質=0 等、KYI族24列)。
+- **採点位置の確定 (6/11)**: daily_predict は build_features → merge#2 → `predict_race`(df直採点) の順 → **朝スコアは劣化dfで採点**。判別テスト(`tools/fable_dpfix_discriminate.py`)で実証: 6/6-7 ダンプの当日実スコアは **(a)劣化df再採点と一致 41/43R・(b)復元df一致 0R**。
+- **★訂正(6/11)★: 「race_auto_notify は健全」は誤りだった**(初回調査の grep 表示25件制限による見落とし)。`race_auto_notify.py:344(build_features)→353(再マージ)` も**同型の二重マージ**(4/2 commit 8aa5c68a 起源)。→ ★**お金は劣化スコアに乗っていた = YES**(4/2以降、レース直前の実投票通知も KYI族デフォルトで採点)★。`predict_one_race.py:103` / `predict_one_race_v3.py:102` も同型。
+- **影響量 (6/6-7 の43Rで劣化→復元の変化)**: top1変化 **3R** / top3変化 **14R** / 三連複formation変化 **23R**。朝仮想ROI(cumulative)は 〜4/3 76.5%(n=173) vs 4/4〜 94.8%(n=582) = **ROI上の劣化は識別不能**(ノイズに埋没。最近30日69.1%⚠の主因とも断定できない。糊塗せず記録)。
+- **修正 (6/11・承認済・daily_predict のみ)**: `daily_predict.py` に `merge_jrdb_once()` ガード追加(jrdb_列が既にあれば再マージしない=「本来のmerge#1入力に戻す」のみ・予測ロジック不変)。**検証**: 6/6-7相当シミュレーションで ①ガードno-op 43/43 ②KYI族デフォルト率 **100%→15.3%**(残15.3%=真の欠損) ③スコア=predict_core直採点と完全一致 43/43。**回帰**: `tests/test_no_double_jrdb_merge.py` 追加(ガード動作+ソース検査+6/13以降ダンプの再発検知)全PASS。
+- **★未修正(要承認・最優先=6/13土曜前)★**: `race_auto_notify.py:353`(**実投票経路**)と `predict_one_race(_v3).py` に同じ1行ガード適用が必要。本タスクの承認範囲は daily_predict のみのため未着手。
+- **6/13実地確認の仕込み**: `tools/kyi_health_check.py`(ダンプの`_x`列有無+KYI族デフォルト率→ `data/paper_s2b/kyi_check_{date}.json`、NG時警告表示)。paper_trade_s2b predict(土曜朝スケジュール済)から自動実行。6/7データでNG_DEGRADED検知を確認済=検知器は機能する。
 
 ### 7.7 Fable監査TODO
 - [x] ① 補正後再CI(jackpot/クラスタ/Bonferroni 3段) — 本セッション(§7.2)

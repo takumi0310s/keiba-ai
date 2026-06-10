@@ -765,7 +765,7 @@ python tools/predict_one_race.py 202605020211
 - **本番切替**: 5月末
 
 ### 🔍 既知のバグ
-- ★**daily_predict の JRDB 二重マージ (6/11 Fable監査③で発見・本番未修正・要承認)**★: predict_core.build_features 内(predict_core.py:2008)でマージ済みの df に daily_predict.py:524(4/4 commit c079d900 起源)が再マージ → 衝突で実値が `jrdb_*_x` に退避・素列がデフォルト再充填(idm=50/脚質=0、KYI族24列) → **朝8:00のV15スコアは4/4以降KYI族をデフォルト値で採点していた疑い**。 predict_one_race(_v3) も同型。 race_auto_notify(実投票根拠)は単一マージで健全。 paper側は `_restore_collided_columns()` で修正済(検証側のみ)。 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7.6
+- ★**JRDB 二重マージ (6/11発見、daily_predict は同日修正済)**★: predict_core.build_features 内マージ(3/31〜)の後に再マージすると衝突で実値が `jrdb_*_x` に退避・素列デフォルト化(idm=50/脚質=0、KYI族24列)。 **判別テストで「朝スコアは劣化dfで採点」を実証**(当日実スコア=劣化df一致41/43R)。 daily_predict.py は `merge_jrdb_once()` ガードで修正済(6/11、検証=デフォルト率100%→15.3%・スコアpredict_core直一致43/43、再発防止 tests/test_no_double_jrdb_merge.py + tools/kyi_health_check.py 土曜朝自動)。 ★**未修正・要承認・6/13前最優先: race_auto_notify.py:353(実投票経路!4/2起源=お金は劣化スコアに乗っていた) + predict_one_race(_v3)**★。 影響量=6/6-7の43Rで top1変化3R/top3変化14R/formation変化23R。 朝仮想ROIでは劣化識別不能(〜4/3 76.5% vs 4/4〜 94.8%)。 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7.6
 - jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復) → **JV-Link O1 で代替経路 (Session #39 B)**
 - predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
 - cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)

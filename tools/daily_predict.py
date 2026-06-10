@@ -33,6 +33,17 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'tools'))
 
 # === predict_core から全共通関数をインポート ===
 from jrdb_features import merge_jrdb_predict_features
+
+
+def merge_jrdb_once(df, race_id):
+    """JRDBマージの二重適用ガード (2026-06-11 Fable監査③修正)。
+    predict_core.build_features 内(predict_core.py:2008)で既に merge_jrdb_predict_features 済み。
+    ここで再マージすると pandas merge 衝突で実値が jrdb_*_x に退避し、素列がデフォルト
+    再充填(idm=50/脚質=0、KYI族24列)される — 4/4以降の朝予測スコア劣化の原因(実測確定)。
+    jrdb_ 列が既にあればスキップ=「本来の merge#1 入力に戻す」のみで予測ロジック不変。"""
+    if any(str(c).startswith('jrdb_') for c in df.columns):
+        return df
+    return merge_jrdb_predict_features(df, race_id)
 from predict_core import (
     HEADERS, INVESTMENT_PER_RACE, COURSE_MAP, SURFACE_MAP, COND_MAP, SEX_MAP,
     CONDITION_PROFILES, MODERN_JOCKEY_WR, SIRE_APT,
@@ -520,8 +531,9 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
                                 odds_dict=odds_dict, jra_track_info=jra_info, weather_info=weather_info)
 
             # JRDB特徴量マージ（KYI前日データ + TYB直前データ）
+            # ★二重マージ禁止: build_features 内で適用済みのため merge_jrdb_once でガード (6/11修正)★
             try:
-                df = merge_jrdb_predict_features(df, race_id)
+                df = merge_jrdb_once(df, race_id)
             except Exception as e:
                 print(f"    [JRDB] feature merge skipped: {e}")
 

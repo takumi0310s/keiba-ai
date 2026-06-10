@@ -357,6 +357,12 @@ def _parse_race_num(v):
 
 def predict_date(date, allow_scrape=False):
     os.makedirs(LOG_DIR, exist_ok=True)
+    # KYI族健全性チェック(6/11仕込み・二重マージ劣化の再発検知、失敗しても続行)
+    try:
+        from kyi_health_check import run as _kyi_check
+        _kyi_check(date)
+    except Exception as _e:
+        print(f"[kyi_health] skip: {_e}")
     import glob as _glob
     dump_dir = os.path.join(FEAT_DUMP_DIR, date)
     parquets = sorted(_glob.glob(os.path.join(dump_dir, '*.parquet')))
