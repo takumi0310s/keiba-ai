@@ -774,6 +774,26 @@ def run_daily_results(date_str, source='csv', skip_settled=False):
         }
         results.append(result_row)
 
+        # race_notify_log v2 phase3 (結果回収後 log)。設計 (race_notify_log_v2.log_phase3
+        # docstring「20:00 daily_results」5/18 Sub-task C) どおりの配線が
+        # 未実装のまま 8戦略paper の結果が恒久ゼロだった → 6/12 Fable統合で配線。
+        # 失敗しても結果照合は止めない (safe wrapper)。
+        try:
+            from race_notify_log_v2 import log_phase3 as _v2_log_phase3
+            _real_top3 = [n for _, n in sorted(
+                ((f, u) for u, f in finish_order.items()
+                 if isinstance(f, int) and f in (1, 2, 3)))][:3]
+            _v2_log_phase3(
+                race_id,
+                real_top3=_real_top3,
+                real_payouts={k: (v if not isinstance(v, dict) else 0)
+                              for k, v in payouts.items()},
+                hit_miss={'trio_hit': bool(trio_hit), 'umaren_hit': bool(umaren_hit)},
+                date_str=date_str,
+            )
+        except Exception as _p3e:
+            print(f"  [race_notify_log_v2 phase3 wrapper fail] {_p3e}")
+
         # allscores HTML: 着順を JSON に追記
         if _ALLSCORES_HTML_AVAILABLE and finish_order:
             try:

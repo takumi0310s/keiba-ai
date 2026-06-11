@@ -1934,6 +1934,17 @@ def _model_version_key(fname):
     return n * 10 + (ord(suffix) - ord('a') + 1 if suffix else 0)
 
 
+# 検証専用モデル (本番昇格していない candidate)。discovery が誤って Pattern A スロットに
+# 掴むのを防ぐ (6/12 Fable統合: v22=LEAK INVALID が CENTRAL バッジに出ていた表示障害の修正。
+# 本番昇格時はこのリストから外すこと)
+_NON_PRODUCTION_MODELS = {
+    'keiba_model_v20_base_central.pkl.gz',
+    'keiba_model_v21_central.pkl.gz',
+    'keiba_model_v22_central.pkl.gz',
+    'keiba_model_v22_top100_central.pkl.gz',
+}
+
+
 def _discover_latest_model(suffix=''):
     """keiba_model_v*_central{suffix}.pkl(.gz) を全列挙して最新を返す。"""
     import os, glob
@@ -1942,6 +1953,8 @@ def _discover_latest_model(suffix=''):
     pat2 = os.path.join(base, f'keiba_model_v*_central{suffix}.pkl')
     cands = glob.glob(pat1) + glob.glob(pat2)
     cands = [c for c in cands if '_central_live' not in os.path.basename(c) or suffix == '_live']
+    cands = [c for c in cands if os.path.basename(c) not in _NON_PRODUCTION_MODELS
+             and '.bak' not in os.path.basename(c)]
     cands.sort(key=lambda p: (_model_version_key(os.path.basename(p)),
                               0 if p.endswith('.gz') else -1), reverse=True)
     return cands
@@ -4995,7 +5008,15 @@ if v9_avail:
     _v9c_ver_raw = _v9_models['central'].get('version', 'v9')
     # Display-friendly version: v135b_leakfree → v13.5b
     _v9c_ver_display = _v9c_ver_raw.replace('v135b_leakfree', 'v13.5b').replace('v135b_live', 'v13.5b').replace('v135_leakfree', 'v13.5').replace('v134_leakfree', 'v13.4').upper()
-    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver_display} WF AUC {_v9c_wf_auc:.4f}</span> <span class="model-badge badge-v9">4-MODEL ENSEMBLE</span> <span class="model-badge" style="background:linear-gradient(135deg,#121E1A,#0E1117);border:1px solid #0D9488;color:#14B8A6 !important;">LEAK-FREE verified</span></div>', unsafe_allow_html=True)
+    # 6/12 Fable統合: 「4-MODEL ENSEMBLE」「LEAK-FREE verified」の固定文言は v13.5b 時代の遺物
+    # (V15 実体は LGB+XGB 2-model、V15-audit-1)。pkl 実体から動的に表示する
+    _v9c = _v9_models['central']
+    _ens_parts = ['LGB'] + [n for n, k in [('XGB', 'xgb_model'), ('FT', 'ft_model_state'),
+                                           ('IR', 'ir_model_state'), ('MLP', 'mlp_model')]
+                            if _v9c.get(k) is not None]
+    _ens_text = '+'.join(_ens_parts) + f' {len(_ens_parts)}-MODEL'
+    _auc_label = f'WF AUC {_v9c_wf_auc:.4f}' if _v9c.get('wf_auc') else f'AUC(train self-eval) {_v9c_wf_auc:.4f}'
+    model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge badge-central">CENTRAL {_v9c_ver_display} {_auc_label}</span> <span class="model-badge badge-v9">{_ens_text}</span></div>', unsafe_allow_html=True)
 else:
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px"><span class="model-badge {badge_css}">MODEL {model_version.upper()}{auc_text}{leak_text}</span></div>', unsafe_allow_html=True)
 
@@ -5439,7 +5460,9 @@ if st.session_state.get('prediction_done') and 'pred_df' in st.session_state:
     p_is_live = st.session_state.get('pred_is_live_model', False)
     p_pattern_a_auc = st.session_state.get('pred_pattern_a_auc', p_model_auc)
     if p_is_live:
-        p_race_badge = f'<span class="model-badge badge-central">LIVE {p_model_ver.upper()} (Pattern B) 評価AUC {p_pattern_a_auc:.4f}</span>'
+        # 6/12 Fable統合: stored .auc は LGB train self-eval (in-sample、V15-audit-2) のため
+        # 「評価AUC」と呼ばない (真の leak-free WF は ~0.842)
+        p_race_badge = f'<span class="model-badge badge-central">LIVE {p_model_ver.upper()} (Pattern B) AUC(train self-eval) {p_pattern_a_auc:.4f}</span>'
     else:
         p_race_badge = f'<span class="model-badge badge-central">CENTRAL {p_model_ver.upper()} AUC {p_model_auc:.4f}</span>'
     model_badge_placeholder.markdown(f'<div style="text-align:center;margin-top:-12px;margin-bottom:12px">{p_race_badge}</div>', unsafe_allow_html=True)
