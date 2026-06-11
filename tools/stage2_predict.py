@@ -559,6 +559,12 @@ def cmd_check_next_1h(args):
         print(f"[kill-switch] {KILL_SWITCH} → no-op exit")
         return
 
+    # 6/11 Fable sweep: 朝予測 CSV 不在日 (平日/daily_predict 失敗日) は Stage 2 自体が成立しない。
+    # 従来は per-race で FileNotFoundError を 140 件/日 吐いていた (5/11-6/5 実測) → 1 行 no-op に。
+    if not DAILY_PRED.exists():
+        print(f"[skip] {DAILY_PRED.name} 不在 (朝予測なし) → Stage 2 no-op exit")
+        return
+
     rids = races_in_next_window(window_min=60)
     print(f"[check_next_1h] window=60min, candidates={len(rids)}: {rids}")
 

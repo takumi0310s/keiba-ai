@@ -16,6 +16,15 @@ import pickle
 import gzip
 from datetime import datetime, timedelta
 
+# 6/11 Fable sweep: タスクスケジューラ実行(cp932コンソール)で ⚠ 等の print が
+# UnicodeEncodeError → レポート途中死(6/8 実測) を防ぐ
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 # === パス設定 ===
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
@@ -94,7 +103,8 @@ def check_backtest_divergence(cumul_df):
             'live_roi': round(live_roi, 1),
             'bt_roi': expected_roi,
             'z_score': round(z, 2),
-            'significant': abs(z) > 2.0,
+            # bool() 必須: np.bool_ のままだと json.dump が TypeError (6/8 実測)
+            'significant': bool(abs(z) > 2.0),
             'direction': 'above' if z > 0 else 'below',
             'msg': f'z={z:.2f} {"⚠ SIGNIFICANT" if abs(z) > 2.0 else "within 2σ"}',
         }
@@ -206,18 +216,26 @@ def _calc_stats(df):
         return {'count': 0, 'hit': 0, 'hit_rate': 0, 'investment': 0,
                 'payout': 0, 'profit': 0, 'roi': 0}
 
+    # 6/11 Fable sweep: 文字列混入(列ズレ行等)で TypeError 全停止しないよう数値強制
+    # (6/8 WeeklyReport が umaren_hit='3-8-10' 1行で丸ごと落ちた実測の対策)
+    def _num(col, default=0):
+        return pd.to_numeric(df[col], errors='coerce').fillna(default)
+
     hit = 0
     if 'trio_hit' in df.columns and 'umaren_hit' in df.columns:
-        hit = int(((df['trio_hit'].fillna(0) > 0) | (df['umaren_hit'].fillna(0) > 0)).sum())
+        hit = int(((_num('trio_hit') > 0) | (_num('umaren_hit') > 0)).sum())
     elif 'trio_hit' in df.columns:
-        hit = int(df['trio_hit'].fillna(0).sum())
+        hit = int(_num('trio_hit').sum())
 
-    inv = int(df.get('investment', pd.Series([INVESTMENT_PER_RACE] * total)).sum())
+    if 'investment' in df.columns:
+        inv = int(_num('investment', INVESTMENT_PER_RACE).sum())
+    else:
+        inv = INVESTMENT_PER_RACE * total
     payout = 0
     if 'trio_payout' in df.columns:
-        payout += int(df['trio_payout'].fillna(0).sum())
+        payout += int(_num('trio_payout').sum())
     if 'umaren_payout' in df.columns:
-        payout += int(df['umaren_payout'].fillna(0).sum())
+        payout += int(_num('umaren_payout').sum())
 
     roi = (payout / inv * 100) if inv > 0 else 0
     return {
@@ -669,7 +687,8 @@ def build_drift_section():
     # 過去 7 日 audit log tail
     if os.path.exists(log_path):
         try:
-            with open(log_path, "r", encoding="utf-8") as f:
+            # errors="replace": audit log に cp932 バイト混入があっても tail 表示は落とさない (6/8 実測)
+            with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                 log_lines = f.readlines()
             recent = log_lines[-30:]  # 直近 30 行 tail
             lines.append("### Recent audit log (tail 30)")
