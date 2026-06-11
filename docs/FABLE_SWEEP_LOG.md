@@ -205,6 +205,57 @@
 2. 6/13 は Morning_Sat (6:30 JRDB+V17ダイジェスト) と JrdbRetryAm9 (9:00) が**作成以来初めて実走**する — Discord に新しい通知が来るのは正常
 3. 🟡要承認の判断: app.py v22 discovery 除外 / track_record.csv 再構築 / race_notify_log_v2 phase3 配線 / 142.6%基準の更新 / DEADデータ6源 (kta/kka/sr/srb/skb/tyb) の fetcher 修理
 
+# 統合タスク (6/12 user承認: 8源fetcher修理 + app.py + リハ + 精度測定)
+
+## 源別表 (Phase A/B 完了 — 8/8 修理・降格ゼロ)
+| 源 | 根因 (証拠) | 処置 | バックフィル | 土曜から有効 |
+|----|------------|------|-------------|-------------|
+| KTA (P1: kta_idm/ten/agari 3特徴) | 年度アーカイブindex依存で日次lzh不参照 (batch2:850-912、"Downloaded 0 new"実測) | jrdb_daily_fix_fetch 新設+daily_premium_scrape配線 | DL18ファイル→再構築 (latest 6/7) | ✅ (3:00 jobが直接フェッチ) |
+| KKA (P1: dam/bms_rensho 2特徴) | 「extracted非空なら何もしない」スキップ (extra:738-745) | 同上 | DL10→再構築 (latest 6/7) | ✅ |
+| SED (P1: 前走族6特徴) | ※前日修理済 (552,733行) | 当日fetchはjrdb_retry_am9(CRLF修正済)が担当 | — | ✅ |
+| TYB (P2: V21/paper/UI) | jrdb_retry bat LF壊れ+publish_monitor bat LF (5/17以降取得ゼロ) | 単独再構築ツール fable_rebuild_type | DL6→552,588行 (latest 6/7) | ✅ (土9:00 retry+16:30 monitor復活) |
+| SKB (P3: V15不使用) | 同上系 (5/3停止) | 同上 | DL10→551,036行 | ✅ |
+| SRB (P3: 学習側) | SEDアーカイブ同梱依存 (3/29停止) | ローカルSED lzhから展開 (ネット不要) | 651txt→21,142行 2020-26全年 | ✅ |
+| SR (P3: tb_homestr=corr-0.002) | SRB txt が Sed dir に来なくなった | SRB txt補完→parse_jrdb_extended --types srb | 2026=1,482R (latest 6/7) | ✅ |
+| CYB (P3: consumerゼロ) | 日次parse(scrape_jrdb)とbulkスキーマ混在で4/19から列ズレゴミ350行 | bulkスキーマで全量再構築 | 553,054行 (2026=21,435) | ✅ |
+| netkeiba training_eval (P2: V16学習) | converter が cache 実スキーマと不一致 (wood_best_4f等の不存在キー読み→全列空ゾンビ) | premium_cache_to_csv のキーマップ修正+ゾンビ1,594行除去+全cache再変換 | 2026=5,854行 (payload 98-100%) | ✅ (3:00 cache→CSV 経路復活) |
+- 全JRDB 13源 content-fresh (latest 6/7、ze=5/31 正常ラグ) を CONTENT_WATCH で確認。cyb/training_eval を監視に追加
+- TYB当日カバレッジの正直評価: TYB は発走-15min 公開 → 朝9:00 retry では当日分は部分的 (16:30 publish_monitor が当日内回収、完全な当日カバレッジはレース後)。リアルタイム利用 (V21直前予測) は tyokuzen path の実装が将来課題=仕様の宿題
+
+## Phase C (app.py 承認済・表示の正直さのみ)
+- discovery: _NON_PRODUCTION_MODELS 導入 (v20_base/v21/v22/v22_top100/.bak 除外) → Pattern A スロット=v15 復元 (本番liveロードは元からV15で不変)
+- バッジ: 4-MODEL/LEAK-FREE固定文言→pkl実体から動的 (V15=LGB+XGB 2-MODEL)、「評価AUC」→「AUC(train self-eval)」
+- track_record.csv 再構築: 766R / Σ-29,450 (台帳と完全一致。旧 587行/126重複/+68,790符号逆)
+- phase3 配線: log_phase3 docstring の設計どおり daily_results 結果照合ループに safe wrapper (write/read smoke PASS)
+- Streamlit 起動 smoke: HTTP 200
+
+## Phase D リハーサル — ★PASS (出荷条件クリア・revertゼロ)★
+- 全経路リプレイ (データ修理後再実行): merge_jrdb_once no-op 43/43・**スコア=predict_core直一致 43/43**・VERDICT PASS
+- 回帰: 584 tests / 8 failed = 全て既存stale (新規failゼロ)。Streamlit smoke HTTP 200
+- kyi_health: source_guard_scan 二重マージ疑いゼロ。content監視: 全15源 OK
+- anomaly_detector: 非開催判定 ✅ / strategy検知 roi_pct 復元済 (9 tests passed)
+- ★6/11 は PC が 5:00-15:00 オフで 8:00 台タスク群が丸ごとスキップ (StartWhenAvailable=true でも復帰後未実行を実測) → **6/13 朝は PC を 6:00 までに起動すること (user必須)**★
+
+## 統合タスク 進捗 (6/12)
+- [x] Phase A: 8源診断 (根因全特定・証拠つき)
+- [x] Phase B: 8/8源 修理+バックフィル (降格ゼロ・時間ボックス内)
+- [x] Phase C: app.py 表示修理 (v22排除/バッジ/track_record/phase3) + smoke
+- [x] Phase D: リハーサル PASS
+- [x] Phase E: 精度測定 (V15/s2b/市場ベンチ)
+- [x] Phase F: docs/CLAUDE.md/commit
+
+## Phase E — 全馬評価の精度測定 (leak-free v2, 2023-25 WF, N=10,364R)
+| model | AUC | top1勝率 | top1馬券内 | top4収納 | top6収納 | top8収納 | Spearman |
+|-------|-----|---------|-----------|---------|---------|---------|----------|
+| V15 | 0.8418 | 38.2% | 71.7% | 29.7% | 60.0% | 79.2% | 0.659 |
+| s2b | 0.8295 | 37.6% | 71.2% | 29.0% | 58.3% | 78.1% | 0.655 |
+| ★市場(前日人気)★ | 0.7894 | 31.8% | 63.9% | 21.0% | 47.0% | 68.8% | 0.514 |
+- **市場対比: V15 = top1勝率+6.4pt / 馬券内+7.7pt / top6収納+13.0pt / AUC+0.052。s2b = +5.8/+7.3/+11.4pt/+0.040**
+- s2bの「オッズを捨てた精度低下」は正直に僅少 (top1馬券内 -0.5pt、AUC -0.012) — 順位精度はほぼ温存しつつ配当効率を獲得という従来理解と整合
+- 頭数別 top1馬券内 (V15): ≤8頭 83.3% / 9-12頭 75.2% / 13-15頭 71.0% / 16+頭 67.8% (市場対比は全帯 +6〜8pt で一様)
+- 整合性: top6収納 60.0% ≒ §7.8 の 59.8%、top1馬券内 71.7% ≒ 71.6% → 測定再現 ✓
+- 統合ブレンド (nk+JRDB 50:50): cache から定義を再現できる実装が特定できず**未測定** (該当は notify 表示用 V16 ブレンドの可能性、ROI/投票に未使用)
+
 ## Phase 進捗
 - [x] Phase 0: per-race二重マージ修正 (PASS 判別テスト・commit cab8c396)
 - [x] Phase 1: 全経路スコア健全性マトリクス (12経路・特徴族デフォルト率)
