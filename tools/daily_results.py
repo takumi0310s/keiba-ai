@@ -519,8 +519,8 @@ def save_track_record_csv(results, date_str):
     if os.path.exists(TRACK_RECORD_CSV):
         df_existing = pd.read_csv(TRACK_RECORD_CSV, encoding='utf-8-sig')
         # 同日分は上書き（date + race_id）
-        df_existing['date'] = df_existing['date'].astype(str)
-        df_existing['race_id'] = df_existing['race_id'].astype(str)
+        df_existing['date'] = df_existing['date'].map(_norm_key)
+        df_existing['race_id'] = df_existing['race_id'].map(_norm_key)
         keep_mask = ~df_existing.set_index(['date','race_id']).index.isin(
             df_new.set_index(['date','race_id']).index
         )
@@ -533,6 +533,17 @@ def save_track_record_csv(results, date_str):
     print(f"TRACK RECORD CSV更新: {TRACK_RECORD_CSV}")
 
 
+def _norm_key(v):
+    """(date, race_id) キーの正規化 (6/11 Fable sweep)。
+    pandas が date を float 読みすると astype(str) で '20260607.0' になり、
+    新規行の '20260607' と別キー扱い → dedup/settled スキップが両方すり抜けて
+    同日2回実行で全レース二重計上 (6/7 の23R×2、過去には5/24 でも発生・実測)。"""
+    s = str(v).strip()
+    if s.endswith('.0'):
+        s = s[:-2]
+    return s
+
+
 def _upsert_cumulative(results, date_str):
     """cumulative_results.csv を (date, race_id) キーでupsert。
 
@@ -542,13 +553,13 @@ def _upsert_cumulative(results, date_str):
     """
     df_new = pd.DataFrame(results)
     df_new['date'] = date_str
-    df_new['date'] = df_new['date'].astype(str)
-    df_new['race_id'] = df_new['race_id'].astype(str)
+    df_new['date'] = df_new['date'].map(_norm_key)
+    df_new['race_id'] = df_new['race_id'].map(_norm_key)
 
     if os.path.exists(CUMUL_CSV):
         df_cumul = pd.read_csv(CUMUL_CSV, encoding='utf-8-sig')
-        df_cumul['date'] = df_cumul['date'].astype(str)
-        df_cumul['race_id'] = df_cumul['race_id'].astype(str)
+        df_cumul['date'] = df_cumul['date'].map(_norm_key)
+        df_cumul['race_id'] = df_cumul['race_id'].map(_norm_key)
 
         # 全体の重複排除（settled優先）
         df_cumul['_settled_rank'] = (df_cumul['status'] == 'settled').astype(int)
@@ -583,8 +594,8 @@ def _load_settled_keys():
     if 'status' not in df.columns:
         return set()
     s = df[df['status'] == 'settled'].copy()
-    s['date'] = s['date'].astype(str)
-    s['race_id'] = s['race_id'].astype(str)
+    s['date'] = s['date'].map(_norm_key)
+    s['race_id'] = s['race_id'].map(_norm_key)
     return set(zip(s['date'], s['race_id']))
 
 
@@ -976,8 +987,8 @@ def recalc_roi():
         return None
 
     settled = df[df['status'] == 'settled'].copy()
-    settled['date'] = settled['date'].astype(str)
-    settled['race_id'] = settled['race_id'].astype(str)
+    settled['date'] = settled['date'].map(_norm_key)
+    settled['race_id'] = settled['race_id'].map(_norm_key)
     # settled もdedup
     settled = settled.drop_duplicates(subset=['date','race_id'], keep='first')
 

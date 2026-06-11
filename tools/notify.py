@@ -376,7 +376,9 @@ def build_rich_bet_message(df, race_name, race_info, cond_key, cond_profile,
     # Line 1: レース名 surface+distance condition 頭数
     lines = [f"**{race_name}** {surface}{distance}m {condition} {num_horses}頭"]
     # Line 2: 条件 + stars + ROI
-    lines.append(f"条件{cond_key} {stars} ROI {roi:.1f}% (的中{hit_rate:.1f}%)")
+    # 6/11 Fable sweep: 値の実体は v12 backtest (predict_core.CONDITION_PROFILES)。
+    # 実運用ROI (~94%) と毎レース乖離表示になっていたため世代を明記 (値の変更はしない=🟡別件)
+    lines.append(f"条件{cond_key} {stars} BT(v12)ROI {roi:.1f}% (的中{hit_rate:.1f}%)")
     # 収益パターンマッチ
     if pp_stars >= 3:
         lines.append("⭐⭐⭐ 収益パターン: 強く推奨")

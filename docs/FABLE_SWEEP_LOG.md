@@ -113,9 +113,60 @@
 | SED前走 | 15.3% | 健全 |
 | netkeiba (wood/comment) | 44.3% | 許容 (コメント無し馬=0 が支配的。speed_index はモデル外=UI用) |
 
-## ★経営的重大事実 (6/11 判明)★
-- **累計 PnL = -49,240円 / 756R / ROI 90.7%** (weekly_report 6/8 週次より)
-- **撤退ライン -50,000円 まで残り ¥760** — 6/13 の運用判断は user 必須
+## Phase 2 本体 — 台帳・データ配管 (6/11 agent監査 + 修理)
+
+### 🟢 修正済 8: 台帳 (cumulative_results.csv) 4系統の重大不整合 ★お金★
+- **根本原因**: daily_results.py の (date, race_id) キーが float化date (`'20260607.0'`) で別キー扱い → dedup/settledスキップ両すり抜け → 同日2回実行 (土日18:00+20:00タスク) で全R二重計上
+- **A. 6/7 全23R二重** (-6,570円の二重計上) → dedup で除去。※過去には 5/24 でも発生 (公式 commit 3c3c5412 の「n=697 / -35,280」も二重込み、当時真値 n=664 / -27,330)
+- **B. 5/23 丸一日欠落** (33R, -10,040円) → daily_results/20260523.csv から復元
+- **C. 3/14・3/15 的中17件が miss 記録** (+23,260円 過小計上、jra_payouts.csv と金額一致検証済) → 修正
+- **D. 202606030509 の date 誤記** 20260405→20260411 → 訂正
+- **修理後の真値: n=766 / PnL ★-29,450円★ / ROI 94.51%** (行内整合違反0・重複0。backup=cumulative_results.csv.bak_20260611_ledger)
+- 再発防止: daily_results.py に _norm_key 正規化 (4箇所) + tests/test_cumulative_dedup.py (3 passed)
+
+### 🟢 修正済 9: anomaly_auto_detector 3バグ
+- 非開催日に「predictions不在=critical」誤警報 (5/11-6/10 で68日分、rollback提案文付き) → daily_predict の非開催記録参照で ok 化 (watchdogログ対応・utf-8/cp932両対応)
+- strategy anomaly 検知が `roi` キー誤り (実キー roi_pct) + 閾値 -50 (スケール誤り) の二重バグで**永久不発** → roi_pct + 単日ROI<50% (設計意図=撤退3段階) に復元、n=0日ガード追加
+- Discord に未解決プレースホルダ `git revert <Sub-task 8 commit hash>` を送信 → 手順参照に変更
+
+### 🔴 DEAD データソース (agent監査・内容ベース確定)
+| ソース | 停止日 | 影響特徴 |
+|--------|--------|----------|
+| jrdb_sed.csv | 5/9 | SED前走族6特徴 (5/10以降に前走がある馬で欠損) → ★6/11 復旧 (下記)★ |
+| jrdb_kta.csv | 4/5 (67日) | jrdb_kta_idm/ten_pred/agari_pred 3特徴デフォルト化 |
+| jrdb_kka.csv | 5/3 | jrdb_dam_rensho_avg/bms_rensho_avg |
+| jrdb_sr.csv / srb.csv | 5/9 / 3/29 | tb/バイアス族 (V20学習側) |
+| jrdb_skb.csv | 5/3 | jrdb_anshin/heavy_apt_skb (V20では除外予定族) |
+| jrdb_tyb.csv | 5/17 | V15本番未使用 (V21候補/paper) |
+| jrdb_cyb.csv | 4/19 | パーサ破損 (列ズレ蓄積)。本番未参照 |
+| netkeiba_training_eval 2026年分 | 全行空ペイロード (ゾンビ) | V16学習側 |
+- **検知ギャップ根治**: data_freshness_monitor に内容ベース停止検知 (KAB kaisai_key→開催日マップで各CSVの「中身の最新開催日」を判定) を追加。KTA 67日/SED 33日/SRB 74日等を即検知することを実測確認。非開催日も鮮度チェック継続に変更
+- **SED 復旧**: バックフィル時に scrape_jrdb.save_csv の dedup キー不一致 (jra_race_id vs 旧 race_id) で旧548,780行が1行に潰れる事故が発生 → data/jrdb/extracted/Sed 全txt + jrdb_raw/sed lzh から完全再構築 (5/10-6/7 の欠落分も含めて回収)。save_csv に「両スキーマ実在時のみdedup + 行数半減拒否ガード」を恒久追加
+- 🟡 KTA/KKA/SR/SRB/SKB/TYB のバックフィルは各fetcherの根本原因調査が必要 (次セッション最優先。監視は上記で稼働開始済)
+
+### 通知の正直さ (Phase 3 agent監査 42件 → 主要対応)
+- 🟢 stage2_predict: 「累計+13,530円死守」(drift値・真値は負) + 5/9固定投票指示 (新潟12R) を毎開催日 #買い目 に送信していた → 撤去
+- 🟢 notify.py #買い目: ROI 205-330% 表示の正体は v12 backtest 値 → 「BT(v12)ROI」と世代明記 (値の変更はせず)
+- 🟡 提案 (修正禁止領域): H4=142.6%基準の恒常誤DANGER (roi_monitor/weekly_report/roi_analysis、V15基準への差替は閾値変更=要承認) / H5=★app.py discovery が v22 (LEAK INVALID) を Pattern A スロットに掴む+「4-MODEL/LEAK-FREE」虚偽バッジ (app.py=不可侵、要承認で修正すべき)★ / H7=クラス別「ROI 455%」出典不明 / M15=kelly bankroll=50,000 出典不明 / 他 docs 参照
+- 🟡 weekly_report のモデル健全性チェックが v12/v9 のみ (V15 を見ていない)・z検定 payout に umaren 不加算 (条件E過小)
+- 🟢 daily_cumulative_audit.bat: >>redirect と内部 append_log の同一ファイル自己ロック (毎晩 PermissionError) → runner.log 分離
+
+### Phase 4 — リーク監査 (統計+コード 両面完了)
+- **統計 (tools/fable_override_audit.py)**: leak-free v2 / 2023-25 / 141,523行・10,365R で全145特徴に AUC・finish相関・非対称・反市場テスト → ★ze型 (反市場) 署名ゼロ★ (最大0.201 < 閾値0.233)。56フラグは全て合法的予測力 (オッズ/人気代理/過去成績)
+- **コード (agent全145マップ、UNKNOWN 0件)**: SAFE 140 / SUSPECT 5
+  - ★S1 (新発見・高): `odds_change_rate`/`pop_rank_change`/`odds_sharp_drop` が学習時に**確定オッズ・確定人気**使用 (train_v134_odds_change.py:165-199)。odds_log (LEAK_FEATURES_A筆頭) の派生が Pattern A に残存 = 自家ルール不整合 + train/serve不一致 (本番は base比のリアルタイム差・朝は0)。corr_target -0.323★ → 検証側 v3 評価 (3特徴を朝予測実態=0 に中和して V15 真値再計算) が必要
+  - S2: jrdb_tb_homestr_inner = 当該レース事後SRを直マージ (race-level定数で corr -0.002 = 実害≈0) → V20で前走shift
+  - S3: jockey_change_to_top の top20 集合が全期間定義 (軽微) → V20で expanding 化
+  - 既知ze 4特徴 = v2 cache で merge_asof backward により中和済を確認
+- 捨て列棚卸し (agent): 🟢候補2 = ①JOA馬場コードの参照先誤り (jrdb_joa.csv に列なし・実体は jrdb_kab.csv → 恒常0の死特徴、ただし学習も0なので train/serve skew なし・修正は再学習とセット=🟡扱い) ②blinker が kyi_key_cols から欠落 (consumer=検証側 build_competitor_gap_features が skeleton 止まり) → 🟡 V20データ再生成とセット
+- 🟡 活用候補: SED朝10時オッズ・TYB odds_time・OT個別三連複オッズ・調教laps (docsに記録)
+
+## ★経営的重大事実 (6/11 確定・台帳修理後)★
+- **真の累計 PnL = -29,450円 / 766R / ROI 94.51%** (修理前の表示 -49,240 は二重計上+欠落+miss誤記の合成)
+- 撤退ライン -50,000円 まで余裕 **¥20,550** (修理前の見かけ ¥760 から訂正)
+- 公式記録の過去値も汚染: 5/26 commit「n=697/-35,280」は5/24二重込み (当時真値 -27,330)
+- Streamlit TRACK RECORD (track_record.csv) は**+68,790円と符号逆の虚偽表示** (126重複) → 🟡 再構築要承認
+- 8戦略paper (race_notify_log_v2) の phase3 が**未配線で恒久ゼロ** (formation喪失対策 5/18 Sub-task C が機能していない) → 🟡 配線要承認 (実投票経路への追記のため)
 
 ## 発見一覧 (随時追記)
 | # | 発見 | 重大度 | 処置 |

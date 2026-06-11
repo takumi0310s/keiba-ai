@@ -834,8 +834,16 @@ def save_csv(df, file_type, append=True):
         df_str = df.astype(str)
         combined = pd.concat([existing, df_str], ignore_index=True)
         key_cols = ['jra_race_id', '馬番']
-        if all(c in combined.columns for c in key_cols):
+        # ★6/11 Fable sweep: dedup キーは「既存・新規の両方に実在」する場合のみ使う。
+        # 旧実装は combined 基準で判定 → 既存がスキーマ違い (例: bulk版 SED は race_id 列)
+        # だと既存全行が NaN キー同士の重複扱いで 1 行に潰れる (jrdb_sed 548,780行→1行 実発生)★
+        if all(c in existing.columns and c in df_str.columns for c in key_cols):
             combined = combined.drop_duplicates(subset=key_cols, keep='last')
+        # 全滅ガード: 追記なのに行数が既存の半分未満になる保存は異常 → 拒否
+        if len(combined) < len(existing) * 0.5:
+            raise RuntimeError(
+                f"save_csv 全滅ガード: {path} 追記結果 {len(combined)} 行 < 既存 {len(existing)} 行の50% "
+                f"(スキーマ不一致の疑い。書き込み中止)")
         combined.to_csv(path, index=False, encoding='utf-8-sig')
         print(f"  保存: {path} ({len(combined)} rows, 追記)")
     else:

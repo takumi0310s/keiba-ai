@@ -373,9 +373,9 @@ def build_message(race_id: str, morning_row, stage2: dict) -> tuple[str, str, st
             f"※ Stage 2 取得不可のため、 朝予測 (Stage 1) を本 R の最終予測として扱う。\n"
             f"※ retry: 次 fire (30 分後) で自動再試行 (cache に書込み無し)\n\n"
             f"★ V15 投票方針 (絶対遵守) ★\n"
-            f"- 新潟 12R 4歳以上1勝 ¥700 のみ (案B改 strict)\n"
-            f"- 11R 重賞 投票しない / Stage 2 は学習用、 投票推奨ではない\n"
+            f"- 投票は朝予測 (Stage 1) の通知に従う / Stage 2 は学習用、 投票推奨ではない\n"
         )
+        # 6/11 Fable sweep: 5/9 当日限りの固定投票指示 (新潟12R/累計+13,530円=drift値) を撤去
         return title, body, "yellow"
 
     s2 = stage2["top3"]
@@ -411,11 +411,10 @@ def build_message(race_id: str, morning_row, stage2: dict) -> tuple[str, str, st
     lines.append(f"- 当日体重: predict_core build_features 経由 (取得可不可は log 参照)")
     lines.append(f"- オッズ: predict_one_race 内 fetch_realtime_odds_full (失敗時 朝オッズ)")
     lines.append("")
+    # 6/11 Fable sweep: 5/9 固定投票指示 + 「累計 +13,530円」(drift値、真値は負) を撤去
     lines.append("★ V15 投票方針 (絶対遵守) ★")
-    lines.append("- 新潟 12R 4歳以上1勝 ¥700 のみ (案B改 strict)")
-    lines.append("- 11R 重賞 投票しない (verdict 用)")
+    lines.append("- 投票は朝予測 (Stage 1) の通知に従う")
     lines.append("- Stage 2 は学習用、 投票推奨ではない")
-    lines.append("- 累計 +13,530 円 死守")
 
     color = "yellow" if top1_changed else "blue"
     return title, "\n".join(lines), color

@@ -62,10 +62,40 @@ def _result(severity: str, msg: str, **extra) -> dict:
 
 
 # ---------- trigger 1: 予測ゼロ ----------
+def _is_no_race_day(date_str: str, repo: Path = REPO) -> bool:
+    """daily_predict.py が記録した「レースが見つかりません(非開催日)」の有無で非開催判定。
+    6/11 Fable sweep: 平日(非開催)に predictions 不在を critical 誤警報していた対策
+    (5/11-6/10 で critical=1 を 68 日分 Discord 送信、rollback 提案文まで付いていた)。"""
+    # watchdog 化 (6/9) 以降は dated subproc ログが1次。旧 daily_predict.log は 5/4 で停止済
+    candidates = [repo / 'logs' / f'daily_predict_watchdog_{date_str}_subproc.log',
+                  repo / 'logs' / 'daily_predict.log']
+    for log in candidates:
+        if not log.exists():
+            continue
+        try:
+            raw = log.read_bytes()
+        except Exception:
+            continue
+        # ログは utf-8/cp932 混在 (実測) のためバイトで両対応検索
+        for enc in ('utf-8', 'cp932'):
+            if log.name == 'daily_predict.log':
+                sec = raw.rfind(f'日次予測 - {date_str}'.encode(enc))
+                if sec < 0:
+                    continue
+                chunk = raw[sec:sec + 8000]
+            else:
+                chunk = raw
+            if 'レースが見つかりません'.encode(enc) in chunk:
+                return True
+    return False
+
+
 def check_predictions(date_str: str, repo: Path = REPO) -> dict:
     """daily_predictions/{date}.csv の存在 + 行数 check"""
     path = repo / 'data' / 'daily_predictions' / f'{date_str}.csv'
     if not path.exists():
+        if _is_no_race_day(date_str, repo):
+            return _result('ok', f'非開催日 (daily_predict が「レースなし」を記録済) → predictions 不在は正常')
         return _result('critical', f'predictions file 不在: data/daily_predictions/{date_str}.csv')
     try:
         import pandas as pd
@@ -217,10 +247,12 @@ def check_strategy7c(date_str: str, repo: Path = REPO) -> dict:
 
 # === Strategy-level anomaly detection (D-6 2026-05-19) ===
 
+# 6/11 Fable sweep: 旧実装は ss.get('roi') (実キーは roi_pct) + 閾値 -50 (roi_pct は 0-100+ スケール)
+# の二重バグで全チェック永久不発だった。設計意図 (撤退3段階の「単日 ROI<50%」) に復元。
 STRATEGY_ANOMALY_THRESHOLDS = {
-    'single_day_roi_drop': -50.0,     # 単日 ROI < -50pt
+    'single_day_roi_pct_floor': 50.0,  # 単日 ROI < 50% (n>0 の日のみ)
     'hit_rate_zero_min_n': 5,          # N >= 5 で hit = 0
-    'consecutive_negative_days': 3,    # 連続 negative ROI (< 100%)
+    'consecutive_negative_days': 3,    # 連続 negative ROI (< 100%、n>0 の日のみ)
 }
 
 
@@ -242,23 +274,24 @@ def check_strategy_anomaly(strategy_key: str, strategy_stats_history: list) -> d
     anomalies = []
     latest = strategy_stats_history[-1]
 
-    # Check 1: 単日 ROI < -50pt
+    # Check 1: 単日 ROI < 50% (賭けがあった日のみ。n=0 日の roi_pct=0 は対象外)
     roi = latest.get('roi')
-    if roi is not None and roi < STRATEGY_ANOMALY_THRESHOLDS['single_day_roi_drop']:
-        anomalies.append(f"単日 ROI {roi:.1f}pt < -50pt")
+    n = latest.get('n', 0)
+    if roi is not None and n > 0 and roi < STRATEGY_ANOMALY_THRESHOLDS['single_day_roi_pct_floor']:
+        anomalies.append(f"単日 ROI {roi:.1f}% < 50%")
 
     # Check 2: hit = 0 かつ N >= threshold
-    n = latest.get('n', 0)
     hits = latest.get('hits', 1)
     if n >= STRATEGY_ANOMALY_THRESHOLDS['hit_rate_zero_min_n'] and hits == 0:
         anomalies.append(f"hit = 0/{n} races")
 
-    # Check 3: 連続 consecutive_negative_days 日 ROI < 100%
+    # Check 3: 連続 consecutive_negative_days 日 ROI < 100% (n>0 の日のみ連続カウント)
     req = STRATEGY_ANOMALY_THRESHOLDS['consecutive_negative_days']
-    recent = strategy_stats_history[-req:]
+    bet_days = [d for d in strategy_stats_history if d.get('n', 0) > 0]
+    recent = bet_days[-req:]
     if (len(recent) >= req and
             all(d.get('roi') is not None and d['roi'] < 100.0 for d in recent)):
-        anomalies.append(f"連続 {len(recent)} 日 ROI < 100%")
+        anomalies.append(f"直近賭け日 {len(recent)} 日連続 ROI < 100%")
 
     if anomalies:
         return {
@@ -295,7 +328,8 @@ def run_strategy_anomaly_scan(log_dir: str | None = None) -> list:
                     if ss:
                         strategy_history[s].append({
                             'date': date_str,
-                            'roi': ss.get('roi'),
+                            # 実キーは roi_pct (旧 'roi' は常に None → 検知不発の原因)
+                            'roi': ss.get('roi_pct', ss.get('roi')),
                             'n': ss.get('n', 0),
                             'hits': ss.get('hits', 0),
                         })
@@ -399,8 +433,8 @@ def main(argv=None):
             if args.severity == 'critical' and r['severity'] != 'critical':
                 continue
             lines.append(f"{SEVERITY_ICON[r['severity']]} {name}: {r['msg']}")
-        rollback = ("git revert <Sub-task 8 commit hash> --no-edit  "
-                    "# 戦略⑦案 C rollback (docs/5_17_G1_DAY_CHECKLIST.md 参照)")
+        # 6/11 Fable sweep: 未解決プレースホルダ「<Sub-task 8 commit hash>」を Discord 送信していた → 手順参照に変更
+        rollback = "rollback 手順: python tools/strategy_rollback.py --check (docs/5_17_G1_DAY_CHECKLIST.md 参照)"
         send_discord('critical' if critical else 'warning', '\n'.join(lines), rollback)
 
     # strategy-level anomaly scan (D-6)
