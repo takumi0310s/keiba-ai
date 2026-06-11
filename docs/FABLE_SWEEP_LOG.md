@@ -84,6 +84,35 @@
 - 外科修復 (該当1行のみバイト置換、他行不変)。修復後: trio_hit=1/payout=1010/investment=700/profit=+310/date=20260505
 - ★PnL影響: この行は従来 investment=310・profit=NaN として集計から漏れていた → 修復で正値が乗る★
 
+## Phase 1 — 全経路スコア健全性マトリクス (6/11)
+
+### 予測エントリポイント全列挙 (総数12) と判定
+| 経路 | predict_core直一致 | _x/_y衝突 | 判定 |
+|------|-------------------|-----------|------|
+| tools/daily_predict.py (8:00本番) | ✅ 43/43 (7c1e86fb) | なし | 健全 (6/11修正済) |
+| tools/race_auto_notify.py (★実投票) | ✅ ガード後=同一経路 (Phase0判別テスト43/43) | なし | 健全 (6/11修正) |
+| tools/predict_one_race.py / _v3 (CLI) | ✅ 同上 | なし | 健全 (6/11修正。_v3 は gitignore=ローカルのみ) |
+| predict_one_race_v2 / _test | 再マージ無し=merge#1のみ | なし | 元から健全 |
+| app.py:5295 (UI単レース) | build_features のみ | なし | 元から健全 (静的確認) |
+| app.py:6300 (UI一括予測) | race_id 渡さず → JRDB 全デフォルト | なし | 🟡 提案 (app.py=🔴不可侵) |
+| tools/paper_trade_s2b.py (TEST1/2) | 主経路=ダンプ再利用 / fallback 修正済 | なし | 健全 (6/11修正) |
+| tools/paper_shadow_v15_full.py | ダンプ読みのみ | なし | 健全 (上流=daily_predict 修正済) |
+| tools/v21_per_race_paper.py / v21_paper_predict.py | ✅ ガード後 | なし | 健全 (6/11修正) |
+| tools/save_all_horse_scores.py (9:30) | ✅ ガード後 | なし | 健全 (6/11修正) |
+| predict_and_log.py (旧CLI) | ★predict_core 不使用の独自旧パイプライン★ | — | 🟡 deprecation 提案 (V8/V9時代の残骸、スコア体系が本番と別物) |
+| tools/stage2_predict.py (1h前) | predict_one_race 経由 → ガード済 | なし | 健全 (6/11修正) |
+
+### 特徴族デフォルト率 (6/6-7 復元ダンプ 43R = 修正後経路ベースライン)
+| 特徴族 | デフォルト率 | 判定 |
+|--------|------------|------|
+| KYI | 14.7% | 健全 (修正前 100%) |
+| PACI | 0.2% | 健全 |
+| ZE | 7.8% | 健全 |
+| OZ (odds_change) | 100% | 仕様 (8:00=base snapshot 自体。変動は per-race 時点で発生) |
+| TYB | 100% | 仕様 (TYB は -15min 公開、8:00 ダンプに無いのは設計どおり。per-race は merge#1 で取得) |
+| SED前走 | 15.3% | 健全 |
+| netkeiba (wood/comment) | 44.3% | 許容 (コメント無し馬=0 が支配的。speed_index はモデル外=UI用) |
+
 ## ★経営的重大事実 (6/11 判明)★
 - **累計 PnL = -49,240円 / 756R / ROI 90.7%** (weekly_report 6/8 週次より)
 - **撤退ライン -50,000円 まで残り ¥760** — 6/13 の運用判断は user 必須
