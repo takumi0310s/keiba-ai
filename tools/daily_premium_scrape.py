@@ -143,8 +143,15 @@ def fetch_jrdb_pre_race(date_str, dry_run=False):
     # Extended JRDB data (CHA/JO/KTA/KKA)
     try:
         import subprocess
-        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_batch2.py'), '--types', 'cha', 'kta'], timeout=120)
-        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_extra.py'), '--types', 'jo', 'kka'], timeout=120)
+        # ★6/12 Fable統合: KTA/KKA の日次直接フェッチを先行実行 (直近8日)。
+        # 旧経路はアーカイブindex依存(KTA)・extracted非空スキップ(KKA)で新規DLゼロになり
+        # KTA 4/5・KKA 5/3 の内容停止を起こした (FABLE_SWEEP_LOG.md Phase A/B)★
+        from datetime import datetime as _dt, timedelta as _td
+        _start = (_dt.now() - _td(days=8)).strftime('%Y%m%d')
+        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'jrdb_daily_fix_fetch.py'),
+                        '--types', 'kta', 'kka', '--start', _start], timeout=300)
+        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_batch2.py'), '--types', 'cha', 'kta'], timeout=180)
+        subprocess.run([sys.executable, os.path.join(BASE_DIR, 'tools', 'download_parse_jrdb_extra.py'), '--types', 'jo', 'kka'], timeout=180)
         print(f"  [JRDB] Extended data (CHA/JO/KTA/KKA) updated")
     except Exception as e:
         print(f"  [WARN] Extended JRDB fetch failed: {e}")
