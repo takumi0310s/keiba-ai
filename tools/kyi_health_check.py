@@ -44,6 +44,47 @@ def check_date(date: str) -> dict:
     return res
 
 
+GUARD_WHITELIST = {
+    'jrdb_features.py',          # 定義元
+    'predict_core.py',           # merge#1 正規(build_features内)
+    'predict_core_v18.py',       # v18クローン内正規
+    'fable_dpfix_verify.py',     # 意図的に旧経路を再現する検証ツール
+    'fable_sweep_phase0_verify.py',
+    'kyi_health_check.py',
+    'feature_coverage_check.py', # build_features を経ない直マージ(診断)
+    'predict_dryrun_compare.py', # 同上
+}
+
+
+def source_guard_scan(verbose: bool = True) -> list:
+    """コードレベル全経路検査 (2026-06-11 Fable sweep Phase 0)。
+    build_features(merge#1内包) と merge_jrdb_predict_features(df 直呼び の両方を含む
+    .py = 二重マージ再発の疑い。新規経路が増えても検出できるよう毎回全走査する。"""
+    import re
+    bad = []
+    for root, dirs, files in os.walk(BASE):
+        dirs[:] = [d for d in dirs if d not in ('.git', '.claude', 'archive', '__pycache__', 'node_modules')]
+        for fn in files:
+            if not fn.endswith('.py') or fn in GUARD_WHITELIST:
+                continue
+            p = os.path.join(root, fn)
+            try:
+                src = open(p, encoding='utf-8', errors='replace').read()
+            except Exception:
+                continue
+            # 代入形 `df = merge_jrdb_predict_features(df, ...)` のみ二重マージ疑い
+            # (ガード関数内の `return merge_jrdb_predict_features(...)` は除外)
+            if 'build_features(' in src and re.search(r'=\s*merge_jrdb_predict_features\(\s*(df|horses_df)', src):
+                bad.append(os.path.relpath(p, BASE))
+    if verbose:
+        if bad:
+            print(f"[kyi_health] ★二重マージ疑い {len(bad)} 件★: " + ', '.join(bad))
+            print("  → merge_jrdb_once (jrdb_features) ガードに置換のこと (docs/SESSION_LEAK_AUDIT_S2B.md §7.6)")
+        else:
+            print("[kyi_health] コード全走査: 二重マージ疑いゼロ (build_features後の直マージなし)")
+    return bad
+
+
 def run(date: str | None = None, save: bool = True) -> dict:
     if not date:
         dirs = sorted(glob.glob(os.path.join(DUMP, '*')))
@@ -69,3 +110,4 @@ if __name__ == '__main__':
     ap.add_argument('--date', default='', help='YYYYMMDD (省略時=最新ダンプ)')
     a = ap.parse_args()
     run(a.date or None)
+    source_guard_scan()

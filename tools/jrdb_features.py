@@ -462,6 +462,17 @@ def _merge_sed_as_prev(df, sed_feats, sed_raw):
 # 予測用マージ関数（predict_core.py統合用）
 # =====================================================
 
+def merge_jrdb_once(df, race_id_nk):
+    """JRDBマージの二重適用ガード (2026-06-11 Fable sweep Phase 0)。
+    predict_core.build_features 内(predict_core.py:2008)で既に merge_jrdb_predict_features 済み。
+    再マージすると pandas merge 衝突で実値が jrdb_*_x に退避し、素列がデフォルト再充填
+    (idm=50/脚質=0、KYI族24列)される — daily_predict と同型の劣化(7c1e86fb 参照)。
+    jrdb_ 列が既にあればスキップ。 build_features を経由しない直マージ用途には影響しない。"""
+    if any(str(c).startswith('jrdb_') for c in df.columns):
+        return df
+    return merge_jrdb_predict_features(df, race_id_nk)
+
+
 def merge_jrdb_predict_features(horses_df, race_id_nk):
     """予測時にJRDB特徴量をマージ
 

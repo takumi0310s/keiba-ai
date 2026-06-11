@@ -44,6 +44,44 @@ class TestNoDoubleJrdbMerge(unittest.TestCase):
         self.assertIn('merge_jrdb_once(df, race_id)', src)
         self.assertNotIn('df = merge_jrdb_predict_features(df, race_id)', src)
 
+    # ===== 2026-06-11 Fable sweep Phase 0: per-race系 全経路ガード =====
+
+    FIXED_FILES = [
+        os.path.join('tools', 'race_auto_notify.py'),      # 実投票経路(最重要)
+        os.path.join('tools', 'predict_one_race.py'),
+        'predict_one_race_v3.py',
+        os.path.join('tools', 'paper_trade_s2b.py'),
+        os.path.join('tools', 'v21_per_race_paper.py'),
+        os.path.join('tools', 'v21_paper_predict.py'),
+        os.path.join('tools', 'save_all_horse_scores.py'),
+        os.path.join('tools', 'reprep_compare_20260530.py'),
+        os.path.join('tools', 'bulk_predict_20260531.py'),
+        os.path.join('tools', 'feat_fill_20260530.py'),
+    ]
+
+    def test_all_per_race_paths_use_guard(self):
+        """build_features 後の直接再マージが全経路で根絶されている。"""
+        import re
+        for rel in self.FIXED_FILES:
+            src = open(os.path.join(BASE, rel), encoding='utf-8').read()
+            self.assertIn('merge_jrdb_once', src, f'{rel}: ガード未適用')
+            self.assertIsNone(re.search(r'=\s*merge_jrdb_predict_features\(\s*df', src),
+                              f'{rel}: 直接再マージが復活')
+
+    def test_shared_guard_in_jrdb_features(self):
+        """共通ガード jrdb_features.merge_jrdb_once の挙動(スキップ/実行)。"""
+        from jrdb_features import merge_jrdb_once
+        df = pd.DataFrame({'horse_num': [1, 2], 'jrdb_idm': [31.1, 23.0]})
+        out = merge_jrdb_once(df.copy(), '202605030201')
+        self.assertEqual(list(out.columns), list(df.columns))
+        self.assertEqual(out['jrdb_idm'].tolist(), [31.1, 23.0])
+
+    def test_source_guard_scan_clean(self):
+        """kyi_health_check.source_guard_scan: リポジトリ全走査で二重マージ疑いゼロ。"""
+        from kyi_health_check import source_guard_scan
+        bad = source_guard_scan(verbose=False)
+        self.assertEqual(bad, [], f'二重マージ疑いの新規経路: {bad}')
+
     def test_dump_kyi_default_rate_after_fix(self):
         """修正後(6/13+)のダンプ再発検知: _x衝突列が無い + KYI族デフォルト率<90%。"""
         dirs = sorted(glob.glob(os.path.join(BASE, 'data', 'v15_feat_dump', '*')))

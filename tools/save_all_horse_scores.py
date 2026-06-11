@@ -46,7 +46,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, "tools"))
 
-from jrdb_features import merge_jrdb_predict_features
+from jrdb_features import merge_jrdb_once
 from predict_core import (
     apply_horse_stats,
     build_features,
@@ -175,8 +175,9 @@ def predict_one_race_full(race_id: str, model_data: dict,
         horses, race_info, model_data, race_id=race_id,
         odds_dict=odds_dict, jra_track_info=jra_info, weather_info=weather_info,
     )
+    # ★二重マージ禁止: build_features 内で適用済みのため merge_jrdb_once でガード (6/11 Fable sweep)★
     try:
-        df = merge_jrdb_predict_features(df, race_id)
+        df = merge_jrdb_once(df, race_id)
     except Exception as e:
         print(f"  [JRDB] merge skip: {e}")
 

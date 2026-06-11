@@ -348,9 +348,10 @@ def predict_and_notify(race_info, date_str):
             return
 
         # JRDB特徴量マージ（KYI前日データ + TYB直前データ）
+        # ★二重マージ禁止: build_features 内で適用済みのため merge_jrdb_once でガード (6/11 Fable sweep)★
         try:
-            from jrdb_features import merge_jrdb_predict_features
-            df = merge_jrdb_predict_features(df, race_id)
+            from jrdb_features import merge_jrdb_once
+            df = merge_jrdb_once(df, race_id)
         except Exception as e:
             print(f"    [JRDB] feature merge skipped: {e}")
 

@@ -403,7 +403,7 @@ def predict_date(date, allow_scrape=False):
 def _predict_via_scrape(date):
     """(要承認・IP BANリスク) V15特徴ダンプが無い場合の独自フェッチ。default無効。"""
     from predict_core import load_models, parse_shutuba, build_features
-    from jrdb_features import merge_jrdb_predict_features
+    from jrdb_features import merge_jrdb_once
     import daily_predict as dp
     model_data = load_models(); races = dp.fetch_race_list(date)
     if not races: print(f"[paper_s2b] {date} レースなし"); return
@@ -414,7 +414,8 @@ def _predict_via_scrape(date):
             horses = parse_shutuba(rid)
             if not horses: continue
             df = build_features(horses, r, model_data, race_id=rid)
-            try: df = merge_jrdb_predict_features(df, rid)
+            # ★二重マージ禁止: build_features 内で適用済みのため merge_jrdb_once でガード (6/11 Fable sweep)★
+            try: df = merge_jrdb_once(df, rid)
             except Exception: pass
             scores = score_s2b(df); order = [h for h, _ in sorted(scores.items(), key=lambda x: -x[1])]
             rec = {'date': date, 'race_id': rid, 'course': r.get('course', ''), 'race_num': r.get('race_num', 0),
