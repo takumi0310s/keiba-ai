@@ -766,13 +766,15 @@ python tools/predict_one_race.py 202605020211
 - **本番切替**: 5月末
 
 ### 🔍 既知のバグ
-- ★**JRDB 二重マージ (6/11発見、daily_predict は同日修正済)**★: predict_core.build_features 内マージ(3/31〜)の後に再マージすると衝突で実値が `jrdb_*_x` に退避・素列デフォルト化(idm=50/脚質=0、KYI族24列)。 **判別テストで「朝スコアは劣化dfで採点」を実証**(当日実スコア=劣化df一致41/43R)。 daily_predict.py は `merge_jrdb_once()` ガードで修正済(6/11、検証=デフォルト率100%→15.3%・スコアpredict_core直一致43/43、再発防止 tests/test_no_double_jrdb_merge.py + tools/kyi_health_check.py 土曜朝自動)。 ★**未修正・要承認・6/13前最優先: race_auto_notify.py:353(実投票経路!4/2起源=お金は劣化スコアに乗っていた) + predict_one_race(_v3)**★。 影響量=6/6-7の43Rで top1変化3R/top3変化14R/formation変化23R。 朝仮想ROIでは劣化識別不能(〜4/3 76.5% vs 4/4〜 94.8%)。 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7.6
-- jrdb_paci.csv が4/4から更新停止 (取得経路不明、要修復) → **JV-Link O1 で代替経路 (Session #39 B)**
+- ✅**JRDB 二重マージ = 全経路根絶済 (6/11 Fable sweep)**: daily_predict(7c1e86fb) に続き **race_auto_notify.py:353(実投票経路)+predict_one_race(_v3)+paper系+one-off 計10ファイル**を共通ガード `jrdb_features.merge_jrdb_once` で修正(cab8c396)。 判別テスト=劣化再現41/43・no-op43/43・スコアpredict_core直一致43/43。 再発防止=kyi_health_check.source_guard_scan(全.py走査)+回帰テスト。 影響量=6/6-7の43Rで top1変化3R/top3変化14R/formation変化23R。 詳細=docs/SESSION_LEAK_AUDIT_S2B.md §7.6 + **docs/FABLE_SWEEP_LOG.md**
+- ★**6/11 Fable 全系統sweep 主要修理 (詳細=docs/FABLE_SWEEP_LOG.md)**★: ①台帳dateキーfloat化バグ→6/7二重23R/5/23欠落33R/3/14-15的中17件missを修復 → **真の累計 PnL=-29,450円/766R/ROI 94.51%・撤退余裕¥20,550** (旧表示-49,240は集計バグの合成) ②bat LF改行27件修正→Morning/JrdbRetry/MultiStage系タスクが作成以来 exit255 全滅だったのを復旧 ③Stage2タスク反復期限切れ(6/7 silent stop)を土日9-17時で再登録 ④jrdb_sed 5/9停止→raw全量から552,733行で完全復旧(5/10-6/7回収) ⑤weekly_report 4連鎖バグ根治 ⑥anomaly検知の永久不発2系統(roi_pctキー/非開催critical誤報)復元 ⑦data_freshness_monitor に内容ベース停止検知(ゾンビ更新対策)
+- ★**S1リーク発見 (6/11 Phase4監査)**: `odds_change_rate`/`pop_rank_change`/`odds_sharp_drop` が**学習時に確定オッズ・確定人気**使用(train_v134_odds_change.py:165-199、odds_log派生のPattern A混入)。 定量化=AUC +0.0037嵩上げ・**ROIはむしろ-3〜4pt抑制側**(V15_noS1: 単勝108.4%/t4 158.4% > v2公表105.0/154.4)。 **s2bはODDS_REMOVEで元々非汚染**。 V20でLEAK_FEATURES_Aに3特徴追加を推奨。 他=S2 jrdb_tb_homestr_inner(corr-0.002実害無)/S3 jockey_change_to_top(軽微)。 ★145特徴 override統計監査=ze型反市場署名ゼロ★
+- 🔴**未修理 DEAD データ (6/11 content検知で監視開始済)**: jrdb_kta(4/5停止)・kka(5/3)・sr(5/9)・srb(3/29)・skb(5/3)・tyb(5/17)・cyb(4/19パーサ破損)・netkeiba_training_eval 2026年分ゾンビ → fetcher根本原因調査が次セッション最優先
+- 🟡**要承認の残件**: app.py discovery が v22(LEAK INVALID)を Pattern A スロットに掴む+虚偽バッジ / track_record.csv 崩壊(+68,790円と符号逆=Streamlit虚偽表示) / race_notify_log_v2 phase3 未配線(formation記録不能のまま) / 142.6%(v12)基準の恒常誤DANGER 3ファイル / schtask 7件未登録(register bat 3本を管理者実行要)
 - predict_core.py に FutureWarning が15箇所以上 (4/27 主要箇所修正済)
-- cumulative_results.csv に top1_num/score 書き込まれていない (95%欠損)
 - nightly_sanity の SCRAPER-GUARD 認識バグ (誤検知)
-- jra_payouts.csv が4/6で更新停止 → **JV-Link HR で代替経路 (Session #39 B)**
-- JRDB データの2026年分が未取得 (race_id 列なしの可能性)
+- jra_payouts.csv 5/17で再停止 (4/6停止は5/19 JV-Link HRバックフィルで一度解消済) → daily_results(_full)が代替稼働
+- ※旧記述の訂正(6/11実査): 「jrdb_paci 4/4停止」=解消済PASS・「JRDB 2026年分 race_id列なし」=誤り(全CSVに12桁あり)・「top1_num/score 95%欠損」=69.4%(5/9以降は記録あり)
 
 ---
 

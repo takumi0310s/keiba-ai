@@ -59,10 +59,20 @@ class TestStrategyAnomalyDetection(unittest.TestCase):
 
     def test_hit_zero_below_threshold_n(self):
         # N = 4 (< threshold 5) → hit=0 でも anomaly にならない
-        history = [{'roi': 0.0, 'n': 4, 'hits': 0, 'date': '20260520'}]
+        # 6/11 Fable sweep: roi semantics 修正 (roi_pct<50 が正) に伴い、
+        # roi 起因の anomaly を出さない fixture (roi=60>=50) に変更。テスト意図は hit=0 の N 閾値のみ。
+        history = [{'roi': 60.0, 'n': 4, 'hits': 0, 'date': '20260520'}]
         result = check_strategy_anomaly('c4', history)
-        # roi=0 < -50? No. hit check: n=4 < 5? No anomaly from hit check.
-        # roi=0 is not < -50, so no single_day anomaly either.
+        self.assertIsNone(result)
+
+    def test_single_day_roi_pct_scale(self):
+        """6/11 修正の本丸: roi_pct スケール (0-100+) で 単日 ROI<50% が発火する。
+        旧実装は閾値 -50 (別スケール) + 'roi'キー誤りで永久不発だった。"""
+        result = check_strategy_anomaly('c4', [{'roi': 30.0, 'n': 6, 'hits': 1, 'date': '20260607'}])
+        self.assertIsNotNone(result)
+        self.assertIn('< 50%', result['details'])
+        # 賭けゼロの日 (n=0, roi_pct=0) は対象外
+        result = check_strategy_anomaly('c4', [{'roi': 0.0, 'n': 0, 'hits': 0, 'date': '20260609'}])
         self.assertIsNone(result)
 
 

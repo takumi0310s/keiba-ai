@@ -182,10 +182,33 @@
 | 9 | daily_predict 平日 exit 1 (非開催日) → タスク Last Result=1 | 低(cosmetic) | 記録のみ |
 | 10 | RaceAutoNotify_Sat 6/6 = 0x40010004 (外部終了)・WeeklyScrapeResume 6/8 = 0xC000013A (console閉) | 低(単発) | 記録のみ。再発すれば調査 |
 
+## Phase 4 S1 定量化 (tools/fable_v15_noS1_eval.py、leak-free v2 同一WFパイプライン)
+| model | feat | AUC | 単勝 | 三連複t4 | 馬連box |
+|-------|------|-----|------|---------|--------|
+| V15 (S1込み=v2公表再現) | 145 | 0.8418 | 105.0% | 154.4% | 126.6% |
+| V15_noS1 (S1除外) | 142 | 0.8381 | **108.4%** | **158.4%** | **128.7%** |
+- **結論: S1 は AUC を +0.0037 嵩上げしていたが、ROI 評価はむしろ -3〜4pt 抑制側** → v2 公表の V15 ROI 105.0% は過大でなく保守側だった (糊塗不要)。**s2b は ODDS_REMOVE で S1 を元々除外 = s2b 真値・CI・GO/NO-GO 判定はすべて非汚染**
+- V20 への提案 (🟡): odds_change_rate/pop_rank_change/odds_sharp_drop を LEAK_FEATURES_A に追加 (odds_log 派生の整合)
+
+## Phase 5 — 回帰・リハーサル (6/11)
+### 回帰: 584 tests / 8 failed / 0 errors
+- 8 failed は**全て既存** (70ffe1ec 時点のソースで同条件確認済): test_features×3 (V8/V9時代のstaleテスト)・race_auto_notify_integration×3 + race_notify_log_v2×2 (v2配線不足の証跡=🟡発見6と同根)
+- sweep で追加/修正したテスト (二重マージ5+台帳dedup3+anomaly9) は全 pass
+
+### 6/13 リハーサル結果
+- kyi_health_check: source_guard_scan=二重マージ疑いゼロ。dumpチェックは 6/7(修正前データ)が NG 表示=正しい挙動、6/13 の新 dump から OK 化見込み
+- schtasks: DailyPredict 6/12 8:00 / Morning_Sat 6/13 6:30 (★CRLF修正後の初実走★) / RaceAutoNotify_Sat 8:45 / Stage2 9:00 (再арm済) / JrdbRetryAm9 9:00 (初実走) / SaveAllHorseScores 9:00 / PaperS2B 9:00 — 全て Next Run 確認済
+- admin_verify_v2: bat/py 全 OK。schtask 7件 (AnomalyCheck×5・DailyCumulativeAudit・RaceNotifyLogV2-Aggregator) は**未登録のまま** (登録bat 3本がLF壊れで作成以来未登録だった。schtasks /Create が要管理者 → ★user action: 管理者で register bat 3本実行★)
+
+## user 宛 action items
+1. ★管理者 PowerShell で実行★: `tools\register_anomaly_detector_schtask.bat` / `tools\register_daily_cumulative_audit_schtask.bat` / `tools\register_race_notify_log_v2_aggregator_schtask.bat` (6/11 CRLF修正済・以前は壊れていて一度も登録されていない)
+2. 6/13 は Morning_Sat (6:30 JRDB+V17ダイジェスト) と JrdbRetryAm9 (9:00) が**作成以来初めて実走**する — Discord に新しい通知が来るのは正常
+3. 🟡要承認の判断: app.py v22 discovery 除外 / track_record.csv 再構築 / race_notify_log_v2 phase3 配線 / 142.6%基準の更新 / DEADデータ6源 (kta/kka/sr/srb/skb/tyb) の fetcher 修理
+
 ## Phase 進捗
-- [ ] Phase 0: per-race二重マージ修正
-- [ ] Phase 1: 全経路スコア健全性マトリクス
-- [ ] Phase 2: データ配管全数点検
-- [ ] Phase 3: 表示・通知の正直さ
-- [ ] Phase 4: 145特徴 override総当たりリーク監査
-- [ ] Phase 5: 総仕上げ・6/13リハーサル
+- [x] Phase 0: per-race二重マージ修正 (PASS 判別テスト・commit cab8c396)
+- [x] Phase 1: 全経路スコア健全性マトリクス (12経路・特徴族デフォルト率)
+- [x] Phase 2: データ配管全数点検 (台帳修理・SED復旧・内容鮮度監視)
+- [x] Phase 3: 表示・通知の正直さ (42所見→🟢7件修正/🟡記録)
+- [x] Phase 4: 145特徴 override監査 (統計=ze型署名ゼロ / コード=S1発見+定量化)
+- [x] Phase 5: 回帰・リハーサル・記録
