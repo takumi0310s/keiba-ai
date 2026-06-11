@@ -81,6 +81,8 @@ CONTENT_WATCH = {
     "jrdb_srb.csv": ("race_id", 16),
     "jrdb_skb.csv": ("race_id", 16),
     "jrdb_tyb.csv": ("race_id", 16),
+    "jrdb_cyb.csv": ("race_id", 16),
+    "netkeiba_training_eval.csv": ("race_id", 9),  # 6/12 復旧 (2026ゾンビ行事故の再発検知)
 }
 
 

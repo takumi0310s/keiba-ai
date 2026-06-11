@@ -129,7 +129,9 @@ def process_cache_dir(date_str: str, dry_run: bool = False) -> dict:
                 "", "",  # odds/popularity 未保存
             ])
 
-        # training (cache では training は dict, key=umaban, value={wood_best_4f, sakaro_best_4f, etc})
+        # training (cache 実スキーマ: course/time_4f/time_3f/time_1f/intensity/rank/
+        # evaluation/review/date/is_sakaro/is_wood/laps — 6/12 Fable統合で実態に合わせ修正。
+        # 旧実装は wood_best_4f 等の存在しないキーを読み、2026年分が全列空のゾンビ行になっていた)
         tr = race_data.get("training", {}) or {}
         for umaban, val in tr.items():
             if not isinstance(val, dict):
@@ -138,15 +140,25 @@ def process_cache_dir(date_str: str, dry_run: bool = False) -> dict:
             if key in tr_existing:
                 continue
             tr_existing.add(key)
+            laps = val.get("laps") or []
+            if isinstance(laps, list) and laps:
+                time_raw = "".join(str(x) for x in laps)
+            else:
+                t4, t3, t1 = val.get("time_4f", ""), val.get("time_3f", ""), val.get("time_1f", "")
+                time_raw = f"{t4}({t3})({t1})" if str(t4).strip() else ""
             tr_rows.append([
                 race_id, umaban,
                 val.get("horse_name", ""),
-                val.get("wood_best_4f", ""), val.get("wood_best_3f", ""),
-                val.get("wood_count_2w", ""),
-                val.get("sakaro_best_4f", ""), val.get("sakaro_best_3f", ""),
-                val.get("sakaro_count_2w", ""),
-                val.get("time_1f_last", ""),
-                val.get("training_intensity", ""),
+                val.get("review", ""),          # prev_review
+                val.get("date", ""),            # training_date
+                val.get("course", ""),          # training_course
+                val.get("condition", ""),       # training_condition (cache 未収集なら空)
+                val.get("rider", ""),           # training_rider (同上)
+                time_raw,                       # training_time_raw
+                val.get("position", ""),        # training_position (同上)
+                val.get("intensity", ""),       # training_intensity
+                val.get("evaluation", ""),      # training_move
+                val.get("rank", ""),            # training_rank
             ])
 
         # stable_comments
