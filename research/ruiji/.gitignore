@@ -2,6 +2,7 @@
 raw/
 merged/
 raw_results/
+snapshots/
 
 # 調査時に取得したサンプル/補助データも除外（コードと README のみ追跡）
 *.json
