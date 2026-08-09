@@ -57,10 +57,13 @@ def main():
             num = str(h.get("num"))
             if not num.isdigit(): continue
             ub = int(num)
+            def _g(dct):  # int/str キー両対応
+                d0 = rr.get(dct) or {}
+                return d0.get(str(ub), d0.get(ub))
             pred = ag3.get(num)
-            act = (rr.get("agari") or {}).get(str(ub))
-            fin = (rr.get("finish_order") or {}).get(str(ub)) or (rr.get("finish_order") or {}).get(ub)
-            pop = (rr.get("popularity") or {}).get(str(ub))
+            act = _g("agari")
+            fin = _g("finish_order")
+            pop = _g("popularity")
             pa = [r[R_AG3] for r in h.get("runs", [])
                   if len(r) >= 15 and str(r[R_DR]).isdigit() and int(r[R_DR]) < 20260809 and r[R_AG3] is not None]
             rows.append(dict(place=place, rno=rno, ub=ub, pred=pred, actual=act,
