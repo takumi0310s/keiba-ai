@@ -1,0 +1,6 @@
+backup_pre_heal_*/
+*.parquet
+*.pkl
+*.pkl.gz
+*.csv
+!.gitignore
