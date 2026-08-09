@@ -24,9 +24,16 @@ import pandas as pd
 EXTRACT = os.path.join(BASE, "data", "jrdb", "extracted")
 DATA = os.path.join(BASE, "data")
 
-from parse_jrdb import parse_sed_line, _field, _build_race_id, _safe_int  # noqa: E402
+# batch2/extra は module-level で sys.stdout を新 TextIOWrapper に差し替える。
+# 旧ラッパが GC されると underlying buffer ごと close され以後の print が全滅する
+# (fable_rebuild SRB クラッシュと同根)。旧 stdout への強参照を保持して防ぐ。
+_stdout_keep = [sys.stdout]
+from parse_jrdb import parse_sed_line, parse_kyi_line, _field, _build_race_id, _safe_int  # noqa: E402
+_stdout_keep.append(sys.stdout)
 from download_parse_jrdb_batch2 import parse_kta_line  # noqa: E402
+_stdout_keep.append(sys.stdout)
 from download_parse_jrdb_extra import parse_kka_line  # noqa: E402
+_stdout_keep.append(sys.stdout)
 
 # parse_jrdb.py main の CYB インライン仕様を忠実複製 (830-890行)
 CYB_COLUMNS = [
@@ -109,6 +116,10 @@ SPECS = {
                 min_len=340, dedup=['race_id', 'blood_num'], out='jrdb_kta.csv', floor=1.0),
     'kka': dict(pattern=os.path.join(EXTRACT, 'Kka', 'KKA*.txt'), func=parse_kka_line,
                 min_len=280, dedup=['race_id', 'umaban'], out='jrdb_kka.csv', floor=1.0),
+    # jrdb_paci.csv の源 = Paciバンドル内 KYI (前日版)。extracted/Kyi の同日KYIと
+    # byte-identical を確認済 (2026-08-10) → Kyi ディレクトリからフル再構築。
+    'paci': dict(pattern=os.path.join(EXTRACT, 'Kyi', 'KYI*.txt'), func=parse_kyi_line,
+                 min_len=400, dedup=['race_id', 'umaban'], out='jrdb_paci.csv', floor=1.0),
 }
 
 
@@ -134,7 +145,7 @@ def align_and_write(df, out_csv, floor_ratio):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--types', nargs='+', required=True,
-                    choices=['kyi', 'sed', 'cyb', 'kta', 'kka'])
+                    choices=['kyi', 'sed', 'cyb', 'kta', 'kka', 'paci'])
     args = ap.parse_args()
     t0 = time.time()
     ok = True
