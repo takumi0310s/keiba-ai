@@ -1,0 +1,8 @@
+# 派生データ・モデルは非コミット(コードとREADMEのみ)
+*.parquet
+*.pkl
+*.pkl.gz
+*.csv
+oof/
+models/
+!.gitignore
