@@ -46,3 +46,20 @@ JRDB・JRA-VAN 再契約済み。6/27-8/9 の欠損を JRDB バックナンバ�
 - ダウンロード実行は**本報告後の承認が前提**（未実行）。jrdb.com への index アクセスも承認まで行っていない（本調査はローカル生データ+スクリプト解析のみ）。
 - バックフィルで **640R Pattern A の健全化（先行実験の全12日化）** と **V15本番の劣化解消**の両方に効く。ただし autopsy の通り、ROI低下の一次要因はエッジ減衰でありデータ修復だけでは黒字化しない見込み。
 - OZ（確定オッズ系）を特徴に使う場合は leak 注意（Pattern A は base/prev オッズのみ許容）。
+
+---
+
+## 6. 実行結果（2026-08-09 承認後・研究側で取得）
+| 種別 | 経路 | 結果 |
+|------|------|------|
+| KYI/CYB/SKB/TYB/KKA/SED | download_jrdb.py --years 2026 | ✓ 6/22-8/9 完全取得（data/jrdb/extracted/、164DL/216展開） |
+| KTA | jrdb_daily_fix_fetch.py --start 20260615 --end 20260809 | ✓ 取得（8/9まで） |
+| OZ | Oz/index.html 日次zip | △ 6/13-6/21のみ既存・6/22+は取得失敗（命名/認証差、要follow-up）。★c-onlyはオッズ除外のため不要★ |
+
+→ **c-only に必要な JRDB源は 6/22-8/9 まで取得完了**（data/jrdb/extracted）。
+
+## 7. feat_dump 健全化の残工程（★production パイプライン・別途承認推奨★）
+- jrdb_features.py は **構築済CSV**（data/jrdb_kyi.csv 等, nk_race_id+馬番）を読む。extracted→CSV再構築が必要。
+- 再構築は複数スクリプト（parse_jrdb / build_jrdb_v2_csv / rebuild_jrdb_kyi …）が絡み、**生 jrdb_*.csv を上書き**＝production データ操作。手作業一括再構築は corruption リスクありと判断し**未実施**。
+- 推奨: production の JRDB build を正規手順で走らせCSV再構築 → `daily_predict.py --date 20260627..20260809` で feat_dump 再生成（JRDB健全化）。これは運用系操作のため別途承認で。
+- ★ただし item2 の答えは 186R 確定オッズ判定で既に **NO-GO** が明確（研究側 §5）。全640Rは方向確認の確認作業。★
