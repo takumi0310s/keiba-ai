@@ -385,6 +385,22 @@ def run_daily_predict(date_str, dry_run=False, resume=False):
     print(f"KEIBA AI 日次予測 - {date_str} (resume={resume})")
     print(f"=" * 60)
 
+    # T1v2 CRITICAL ブロック (2026-08-10, research/v15_autopsy/T1v2_DESIGN.md):
+    # 前回特徴量監査が CRITICAL (ゾンビ/JRDB全滅等) の間は実予測を見送る。
+    # dry_run は検証用のため通す。解除 = t1v2_feature_audit の OK 判定で自動クリア /
+    # 緊急時は環境変数 T1V2_OVERRIDE=1。
+    _t1v2_flag = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                              "data", "T1v2_audit", "BLOCK_NEXT.flag")
+    if (not dry_run) and os.path.exists(_t1v2_flag) and os.environ.get("T1V2_OVERRIDE") != "1":
+        try:
+            with open(_t1v2_flag, encoding="utf-8") as _f:
+                _reason = _f.read()[:500]
+        except Exception:
+            _reason = "(flag読込失敗)"
+        print(f"[T1v2 BLOCK] 前回特徴量監査が CRITICAL のため予測を見送ります: {_reason}")
+        print("[T1v2 BLOCK] 解除 = 監査OKで自動クリア / 緊急時 T1V2_OVERRIDE=1")
+        return
+
     # resume時: 既存CSVから済みrace_id収集
     done_race_ids = set()
     if resume and not dry_run:
