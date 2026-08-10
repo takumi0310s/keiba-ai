@@ -526,7 +526,10 @@ def fetch_oikiri_ranks(race_id):
     try:
         url = f"https://race.netkeiba.com/race/oikiri.html?race_id={race_id}"
         resp = requests.get(url, headers=HEADERS, timeout=8)
-        resp.encoding = "EUC-JP"
+        # 2026-08-11: race.netkeiba は charset 変更 (utf-8)。meta 検出 + EUC-JP fallback
+        _m = re.search(r'charset=["\']?([\w\-]+)',
+                       resp.content[:4096].decode("ascii", errors="ignore").lower())
+        resp.encoding = (_m.group(1) if _m else None) or resp.apparent_encoding or "EUC-JP"
         soup = BeautifulSoup(resp.text, "html.parser")
         wrapper = soup.find("div", class_="OikiriAllWrapper")
         if not wrapper:
@@ -570,7 +573,15 @@ def parse_shutuba(race_id):
     """出馬表を解析。馬名・馬番・斤量・馬齢・オッズ等を取得"""
     url = f"https://race.netkeiba.com/race/shutuba.html?race_id={race_id}"
     resp = requests.get(url, headers=HEADERS, timeout=15)
-    resp.encoding = "EUC-JP"
+    # 2026-08-11 供給復旧 item5: netkeiba が ~6/20 に charset を変更し、固定 EUC-JP 指定が
+    # 全馬名を mojibake 化していた (台帳の馬名化け開始 6/20 と一致・U+FFFD で不可逆)。
+    # daily_results.fetch_race_result と同じ meta charset 検出方式に統一。
+    _cs = None
+    _head = resp.content[:4096].decode("ascii", errors="ignore").lower()
+    _m = re.search(r'charset=["\']?([\w\-]+)', _head)
+    if _m:
+        _cs = _m.group(1)
+    resp.encoding = _cs or resp.apparent_encoding or "EUC-JP"
     soup = BeautifulSoup(resp.text, "html.parser")
 
     race_name = "レース"

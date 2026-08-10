@@ -108,11 +108,57 @@ def notify(title, msg, color=None):
         pass  # 通知失敗で監査自体は止めない
 
 
+def source_check(date_str):
+    """供給レベル監査 (平日/非開催日用。2026-08-11 供給復旧 item3)。
+    daily_jrdb_supply の supply_health JSON + KYI 内容鮮度 + 馬名解決率≥99% を検査し、
+    PASS なら BLOCK flag をクリアする (dump ベースの完全確認は次の開催日の通常監査)。"""
+    reasons = []
+    hp = os.path.join(AUDIT_DIR, f"supply_health_{date_str}.json")
+    if not os.path.exists(hp):
+        cands = sorted(glob.glob(os.path.join(AUDIT_DIR, "supply_health_*.json")))
+        hp = cands[-1] if cands else None
+    if not hp:
+        print("[T1v2 source] supply_health なし → 供給ジョブ未稼働")
+        return 2
+    h = json.load(open(hp, encoding="utf-8"))
+    # 直近開催日 (直前の土日) まで KYI 内容があるか
+    d = datetime.strptime(date_str, "%Y%m%d")
+    back = d
+    while back.weekday() < 5:  # 直前の日曜まで戻る
+        back = back - __import__("datetime").timedelta(days=1)
+    need = back.strftime("%Y%m%d")
+    ok = True
+    if (h.get("kyi_latest_file") or "0") < need:
+        ok = False; reasons.append(f"KYI内容 {h.get('kyi_latest_file')} < 直近開催日 {need}")
+    nr = h.get("name_resolution_2026")
+    if nr is None or nr < 0.99:
+        ok = False; reasons.append(f"馬名解決率 {nr} < 0.99")
+    if not h.get("sed_latest") or h["sed_latest"] < need:
+        ok = False; reasons.append(f"SED内容 {h.get('sed_latest')} < {need}")
+    if ok:
+        print(f"[T1v2 source] PASS  KYI={h.get('kyi_latest_file')} SED={h.get('sed_latest')} "
+              f"馬名解決={nr:.2%} (基準日 {need})")
+        if os.path.exists(BLOCK_FLAG):
+            os.remove(BLOCK_FLAG)
+            notify("T1v2 供給復旧", f"{date_str}: source-check PASS (KYI/SED={h.get('kyi_latest_file')}, "
+                   f"馬名解決{nr:.0%}) → 予測ブロック解除。次開催日の dump 監査で最終確認")
+            print("[T1v2 source] BLOCK flag クリア")
+        return 0
+    print(f"[T1v2 source] FAIL: {'; '.join(reasons)}")
+    notify("T1v2 供給NG", f"{date_str}: " + "; ".join(reasons), color="red")
+    return 2
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
+    ap.add_argument("--source-check", action="store_true",
+                    help="供給レベル監査 (平日用)。PASS で BLOCK flag をクリア")
     args = ap.parse_args()
     date_str = args.date
+    if args.source_check:
+        os.makedirs(AUDIT_DIR, exist_ok=True)
+        return source_check(date_str)
     os.makedirs(AUDIT_DIR, exist_ok=True)
     feats = load_feature_list()
     jrdb_feats = [f for f in feats if f.startswith("jrdb_")]

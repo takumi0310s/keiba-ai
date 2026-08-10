@@ -1,21 +1,6 @@
 @echo off
-REM æ¯é€±é‡‘æ›œ AM 10:00 - é€±æœ«é™å®šãƒ‡ãƒ¼ã‚¿å–å¾—ï¼ˆæ³¢ä¹±åº¦ãƒ»AIäºˆæ¸¬ãƒ»ãƒ‡ãƒ¼ã‚¿åˆ†æï¼‰
-REM â€» daily_premium_scrape.pyã‹ã‚‰è‡ªå‹•å‘¼å‡ºã—ã•ã‚Œã‚‹ãŒã€å˜ä½“å®Ÿè¡Œã‚‚å¯èƒ½
-
-cd /d C:\Users\takum\keiba-ai
-
-REM Log file
-set LOGFILE=logs\weekend_thisweek_%date:~0,4%%date:~5,2%%date:~8,2%.log
-
-set PYTHONIOENCODING=utf-8
-set PYTHONUNBUFFERED=1
-set PYTHON_EXE=C:\Users\takum\AppData\Local\Python\pythoncore-3.14-64\python.exe
-
-echo [%date% %time%] Weekend Thisweek Scrape Start >> %LOGFILE%
-
-%PYTHON_EXE% tools\scrape_weekend_thisweek.py >> %LOGFILE% 2>&1
-
-REM PACI (å‰æ—¥ãƒ‡ãƒ¼ã‚¿) - é€±æ¬¡å–å¾— (~2min) - 5/23 è¿½åŠ 
-%PYTHON_EXE% tools\scrape_jrdb_paci.py >> %LOGFILE% 2>&1
-
-echo [%date% %time%] Weekend Thisweek Scrape End >> %LOGFILE%
+rem [2026-08-11 ‹Ÿ‹‹•œ‹Œ] netkeiba‰ğ–ñ‚É”º‚¢–³Œø‰» (T––premium+‹ŒPaciTŸ)B
+rem Paci‹Ÿ‹‹‚Í keiba-ai\JrdbSupplyDaily (tools/daily_jrdb_supply.bat) ‚ª“úŸ‚Å‘ã‘ÖB
+rem Œ´–{= friday_weekend_scrape.bat.bak_20260811Bƒ^ƒXƒN disable ‚Í—vŠÇ—Ò:
+rem   schtasks /change /tn "Keiba-FridayWeekendScrape" /disable
+exit /b 0

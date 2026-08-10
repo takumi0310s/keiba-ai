@@ -1,16 +1,5 @@
 @echo off
-REM Daily AM 03:00 - Premium data pre-fetch (500 races/source/day)
-
-cd /d C:\Users\takum\keiba-ai
-
-REM Log file
-set LOGFILE=logs\premium_scrape_%date:~0,4%%date:~5,2%%date:~8,2%.log
-
-set PYTHONIOENCODING=utf-8
-set PYTHONUNBUFFERED=1
-
-echo [%date% %time%] Daily Premium Scrape Start >> %LOGFILE%
-
-python tools\daily_premium_scrape.py >> %LOGFILE% 2>&1
-
-echo [%date% %time%] Daily Premium Scrape End >> %LOGFILE%
+rem [2026-08-11 供給復旧] netkeiba解約に伴い無効化 (premium一括スクレイプ)。
+rem 原本= daily_premium_scrape.bat.bak_20260811。タスク本体の disable は要管理者:
+rem   schtasks /change /tn "keiba-ai\DailyPremiumScrape" /disable
+exit /b 0
