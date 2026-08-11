@@ -179,6 +179,8 @@ def main():
     ap.add_argument("--test", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="T1v2ゲートを迂回 (テスト/デバッグ専用。通知に BYPASS 明記)")
+    ap.add_argument("--with-health", action="store_true",
+                    help="サマリーに特徴量健全性を圧縮同梱 (Phase2 通知統合。差分行=変化検知は必ず含む)")
     a = ap.parse_args()
     date = a.date
     channel = "test" if a.test else "bets"
@@ -244,6 +246,34 @@ def main():
     buys = [r for r in races if r["should"]]
     skips = [r for r in races if not r["should"]]
 
+    # 健全性の圧縮ブロック (--with-health, Phase2 統合。詳細版は feature_health --save-only が毎日JSON保存)
+    health_block = ""
+    if a.with_health:
+        try:
+            jr_g = [c for c in feats if c.startswith(("jrdb_", "paci_", "oz_"))]
+            pr_g = [c for c in feats if c in PREMIUM_FEATS]
+            ba_g = [c for c in feats if c not in jr_g and c not in pr_g]
+            def _rate(g):
+                d = sum(1 for c in g if c in day_dead)
+                return f"{len(g)-d}/{len(g)}"
+            prevs = sorted(p2 for p2 in glob.glob(os.path.join(AUDIT, "2*.json"))
+                           if os.path.basename(p2)[:8] < date)
+            diff_line = "差分: 前回監査なし"
+            if prevs:
+                pj = json.load(open(prevs[-1], encoding="utf-8"))
+                pf = pj.get("features", {})
+                if pf:
+                    prev_dead = {f2 for f2, v in pf.items() if v.get("nunique", 99) <= 2}
+                    nd = sorted(set(day_dead) - prev_dead)
+                    rv = sorted(prev_dead - set(day_dead))
+                    diff_line = (f"差分(vs {pj['date']}): 新規死亡{len(nd)}"
+                                 f" [{', '.join(nd[:5])}{'…' if len(nd) > 5 else ''}]"
+                                 f" / 復活{len(rv)} [{', '.join(rv[:5])}{'…' if len(rv) > 5 else ''}]")
+            health_block = (f"【特徴量健全性】BASE {_rate(ba_g)} / JRDB系 {_rate(jr_g)} / "
+                            f"premium {_rate(pr_g)}\n{diff_line}\n")
+        except Exception as _e:
+            health_block = f"【特徴量健全性】取得失敗: {_e}\n"
+
     # 冒頭サマリー
     skip_lines = "\n".join(f"  ⚪ {r['course']}{r['rno']}R {r['st']} — {r['reason']}" for r in skips)
     send(f"🏇 {date} 朝一括通知 (09:30)",
@@ -251,6 +281,7 @@ def main():
          f"総レース {len(races)}R = 🟢買い対象 {len(buys)} / ⚪見送り {len(skips)}\n"
          f"T1v2: {t1v2}\n供給鮮度: KYI={kyi_d} / SED={sed_d}\n"
          f"特徴量生存 {day_alive_n}/145 (日レベル定数検知)\n"
+         f"{health_block}"
          f"\n--- 見送り一覧 ---\n{skip_lines or '  なし'}",
          color="blue")
 

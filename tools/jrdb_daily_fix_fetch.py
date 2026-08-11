@@ -31,6 +31,7 @@ JRDB_BASE = 'http://www.jrdb.com/member'
 # type → (URLディレクトリ, ファイル接頭辞, raw/extract サブディレクトリ)
 TYPES = {
     'kta': ('Kta', 'KTA', 'Kta'),
+    'kab': ('Kab', 'KAB', 'Kab'),   # 2026-08-12 KAB日次復活 (当日朝の馬場差/含水系)
     'kka': ('Kka', 'KKA', 'Kka'),
     'srb': ('Sed', 'SRB', 'Srb'),   # SRB は SED アーカイブ同梱 (SED lzh 内に SRByymmdd.txt)
     'skb': ('Skb', 'SKB', 'Skb'),

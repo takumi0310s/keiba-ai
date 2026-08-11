@@ -6,7 +6,8 @@
 # Run: C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile -File tools\jv_daily_fetch.ps1
 param(
     [string]$specs = "RACE,SLOP,WOOD,DIFF",
-    [string]$seedFrom = "20260806"   # checkpoint 無し時の初期起点
+    [string]$seedFrom = "20260806",  # checkpoint 無し時の初期起点
+    [int]$openOption = 1             # 1=差分 / 2=今週系(TCOV,RCOV用)
 )
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $base   = "C:\Users\takum\keiba-ai"
@@ -34,7 +35,7 @@ foreach ($sp in $specs.Split(",")) {
     $from = $ck[$sp]
     if (-not $from) { $from = $seedFrom + "000000" }
     $nData=[ref]([int]0); $nFiles=[ref]([int]0); $lastTime=[ref]("")
-    $rcOpen = $jv.JVOpen($sp, $from, 1, $nData, $nFiles, $lastTime)
+    $rcOpen = $jv.JVOpen($sp, $from, $openOption, $nData, $nFiles, $lastTime)
     Write-Host "[jv_daily] $sp from=$from JVOpen rc=$rcOpen nFiles=$($nFiles.Value) lastTime=$($lastTime.Value)"
     if ($rcOpen -eq -1) { $jv.JVClose() | Out-Null; continue }   # 差分なし = 正常
     if ($rcOpen -lt 0)  { $fail++; $jv.JVClose() | Out-Null; continue }

@@ -90,7 +90,7 @@ def main():
                   ["tools/download_jrdb.py", "--types", "Kyi", "Cyb", "Skb", "Tyb", "Kka", "Sed",
                    "--years", "2026"])
         ok &= run("2. KTA/KKA 日次lzh (直近10日)",
-                  ["tools/jrdb_daily_fix_fetch.py", "--types", "kta", "kka", "--start", start10])
+                  ["tools/jrdb_daily_fix_fetch.py", "--types", "kta", "kka", "kab", "--start", start10])
         ok &= run("3. JOA 日次 + jo 再構築",
                   ["tools/download_parse_jrdb_extra.py", "--types", "jo"])
     ok &= run("4a. rebuild tyb/skb", ["tools/fable_rebuild_type_20260612.py", "--types", "tyb", "skb"])
@@ -98,7 +98,7 @@ def main():
     ok &= run("4b. rebuild srb/cha/oz",
               ["tools/download_parse_jrdb_batch2.py", "--types", "srb", "cha", "oz", "--skip-download"])
     ok &= run("4c. rebuild sed/cyb/kta/kka/paci",
-              ["tools/jrdb_rebuild_driver.py", "--types", "sed", "cyb", "kta", "kka", "paci"])
+              ["tools/jrdb_rebuild_driver.py", "--types", "sed", "cyb", "kta", "kka", "paci", "kab"])
     ok &= run("4d. rebuild kyi", ["tools/jrdb_rebuild_kyi.py"])
     supply_health()
     print(f"\nDone in {(datetime.now()-t0).total_seconds():.0f}s  ({'ALL OK' if ok else 'SOME FAILED'})")

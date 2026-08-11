@@ -59,6 +59,33 @@ def parse_cyb_line(line_bytes):
     return row
 
 
+
+
+# KAB 開催データ (parse_jrdb.py インライン仕様の忠実複製・2026-08-12 KAB復活)
+KAB_COLUMNS=[('basho_code',1,2),('year',3,2),('kai',5,1),('nichi',6,1),('yyyymmdd',7,8),
+ ('kaisai_ku',15,1),('youbi',16,2),('course_name',18,4),('weather_code',22,1),
+ ('turf_baba_code',23,2),('turf_baba_inner',25,1),('turf_baba_mid',26,1),('turf_baba_outer',27,1),
+ ('turf_baba_sa',28,3),('straight_sa_most',31,2),('straight_sa_inner',33,2),('straight_sa_mid',35,2),
+ ('straight_sa_outer',37,2),('straight_sa_far',39,2),('dirt_baba_code',41,2),('dirt_baba_inner',43,1),
+ ('dirt_baba_mid',44,1),('dirt_baba_outer',45,1),('dirt_baba_sa',46,3),('data_ku',49,1),
+ ('renzoku_day',50,2),('turf_type',52,1),('grass_height',53,4),('tennatsu',57,1),
+ ('touketsu',58,1),('rain_mid',59,5)]
+
+def parse_kab_line(line_bytes):
+    from parse_jrdb import _safe_float
+    row={}
+    for name,s,l in KAB_COLUMNS: row[name]=_field(line_bytes,s,l)
+    row['kaisai_key']=_build_race_id(row['basho_code'],row['year'],row['kai'],row['nichi'],'00')[:10]
+    for c in ['course_name','youbi','yyyymmdd','turf_type','weather_code','data_ku','tennatsu','touketsu']:
+        row[c]=row[c].strip()
+    for c in ['turf_baba_inner','turf_baba_mid','turf_baba_outer','dirt_baba_inner','dirt_baba_mid','dirt_baba_outer','renzoku_day','kaisai_ku']:
+        row[c]=_safe_int(row[c])
+    for c in ['turf_baba_sa','dirt_baba_sa','straight_sa_most','straight_sa_inner','straight_sa_mid','straight_sa_outer','straight_sa_far','rain_mid','grass_height']:
+        row[c]=_safe_float(row[c])
+    for c in ['basho_code','year','kai','nichi']: del row[c]
+    return row
+
+
 def parse_line_files(pattern, parse_func, min_len, label):
     rows, errors = [], 0
     files = sorted(glob.glob(pattern))
@@ -120,6 +147,8 @@ SPECS = {
     # byte-identical を確認済 (2026-08-10) → Kyi ディレクトリからフル再構築。
     'paci': dict(pattern=os.path.join(EXTRACT, 'Kyi', 'KYI*.txt'), func=parse_kyi_line,
                  min_len=400, dedup=['race_id', 'umaban'], out='jrdb_paci.csv', floor=1.0),
+    'kab': dict(pattern=os.path.join(EXTRACT, 'Kab', 'KAB*.txt'), func=parse_kab_line,
+                min_len=60, dedup=['kaisai_key', 'yyyymmdd'], out='jrdb_kab.csv', floor=1.0),
 }
 
 
@@ -145,7 +174,7 @@ def align_and_write(df, out_csv, floor_ratio):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--types', nargs='+', required=True,
-                    choices=['kyi', 'sed', 'cyb', 'kta', 'kka', 'paci'])
+                    choices=['kyi', 'sed', 'cyb', 'kta', 'kka', 'paci', 'kab'])
     args = ap.parse_args()
     t0 = time.time()
     ok = True

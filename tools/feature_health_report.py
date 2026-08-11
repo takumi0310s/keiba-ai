@@ -37,6 +37,8 @@ def main():
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--test", action="store_true")
+    ap.add_argument("--save-only", action="store_true",
+                    help="Discord送信せず JSON+ログ保存のみ (Phase2: 通知は09:30サマリーに同梱)")
     a = ap.parse_args()
     with gzip.open(os.path.join(BASE, "keiba_model_v15_central.pkl.gz"), "rb") as f:
         feats = pickle.load(f)["features"]
@@ -83,7 +85,17 @@ def main():
            f"  premium系({len(dead_prem)}): {', '.join(dead_prem[:16]) or 'なし'}\n"
            f"  BASE({len(dead_base)}): {', '.join(dead_base[:10]) or 'なし'}"
            f"{prev_lines}")
+    # 詳細JSONを毎日保存 (遡り可能性の維持 — 通知圧縮の条件)
+    import json as _json
+    os.makedirs(os.path.join(BASE, "data", "T1v2_audit"), exist_ok=True)
+    _json.dump({"date": a.date, "dead": dead, "dead_jrdb": dead_jrdb, "dead_prem": dead_prem,
+                "dead_base": dead_base, "msg": msg},
+               open(os.path.join(BASE, "data", "T1v2_audit", f"feature_health_{a.date}.json"),
+                    "w", encoding="utf-8"), ensure_ascii=False)
     title = f"🩺 {a.date} 特徴量健全性レポート"
+    if a.save_only:
+        print("save-only: JSON保存済\n" + msg)
+        return 0
     if a.dry_run:
         print(f"----- {title} -----\n{msg}")
     else:

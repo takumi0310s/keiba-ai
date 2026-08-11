@@ -145,6 +145,16 @@ def source_check(date_str):
             v = jh.get(k)
             if not v or str(v) < need:
                 ok = False; reasons.append(f"{lab}内容 {v} < {need}")
+    # ジョブ発火確認 (2026-08-12 統合再設計: FireCheck系を吸収)。当日/前日の供給ログに ALL OK
+    import datetime as _dt
+    _found_ok = False
+    for _d in [date_str, (_dt.datetime.strptime(date_str, "%Y%m%d") - _dt.timedelta(days=1)).strftime("%Y%m%d")]:
+        for _pat in [f"daily_jrdb_supply_{_d}.log", f"weekly_main_pass_{_d}.log", f"raceday_morning_{_d}.log"]:
+            _lp = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs", _pat)
+            if os.path.exists(_lp) and "ALL OK" in open(_lp, encoding="utf-8", errors="replace").read():
+                _found_ok = True
+    if not _found_ok:
+        ok = False; reasons.append("供給ジョブ発火なし (当日/前日の supply ログに ALL OK が無い)")
     if ok:
         print(f"[T1v2 source] PASS  KYI={h.get('kyi_latest_file')} SED={h.get('sed_latest')} "
               f"馬名解決={nr:.2%} (基準日 {need})")
