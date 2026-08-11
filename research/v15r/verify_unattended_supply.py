@@ -27,8 +27,8 @@ def task_result(tn):
         return None, f'query失敗:{e}'
 
 # 1. タスク実行結果
-for tn, jsttime in [('keiba-ai\JrdbSupplyDaily','03:20'), ('keiba-ai\JvlinkSupplyDaily','03:40'),
-                    ('keiba-ai\T1v2Audit','08:50')]:
+for tn, jsttime in [(r'keiba-ai\JrdbSupplyDaily','03:20'), (r'keiba-ai\JvlinkSupplyDaily','03:40'),
+                    (r'keiba-ai\T1v2Audit','08:50')]:
     lr, rc = task_result(tn)
     ok = (lr is not None) and (today[:4] in str(lr) or str(datetime.now().day) in str(lr)) and str(rc) in ('0','267009')
     add(f'task {tn.split(chr(92))[-1]} ({jsttime})', ok, f'last={lr} rc={rc}')
