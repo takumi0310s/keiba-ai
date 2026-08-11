@@ -94,7 +94,9 @@ def main():
         ok &= run("3. JOA 日次 + jo 再構築",
                   ["tools/download_parse_jrdb_extra.py", "--types", "jo"])
     ok &= run("4a. rebuild tyb/skb", ["tools/fable_rebuild_type_20260612.py", "--types", "tyb", "skb"])
-    ok &= run("4b. rebuild srb", ["tools/download_parse_jrdb_batch2.py", "--types", "srb", "--skip-download"])
+    # 2026-08-12 供給残バグ修正: CHA/OZ はファイル取得済みなのに CSV 再構築が未配線だった
+    ok &= run("4b. rebuild srb/cha/oz",
+              ["tools/download_parse_jrdb_batch2.py", "--types", "srb", "cha", "oz", "--skip-download"])
     ok &= run("4c. rebuild sed/cyb/kta/kka/paci",
               ["tools/jrdb_rebuild_driver.py", "--types", "sed", "cyb", "kta", "kka", "paci"])
     ok &= run("4d. rebuild kyi", ["tools/jrdb_rebuild_kyi.py"])

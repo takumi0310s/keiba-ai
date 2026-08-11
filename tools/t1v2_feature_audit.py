@@ -135,6 +135,16 @@ def source_check(date_str):
         ok = False; reasons.append(f"馬名解決率 {nr} < 0.99")
     if not h.get("sed_latest") or h["sed_latest"] < need:
         ok = False; reasons.append(f"SED内容 {h.get('sed_latest')} < {need}")
+    # JV-Link 供給 (2026-08-12 第1弾-2 で常設化。jv_health の SE/HR 鮮度も必須化)
+    jh_files = sorted(glob.glob(os.path.join(AUDIT_DIR, "jv_health_*.json")))
+    if not jh_files:
+        ok = False; reasons.append("JV-Link jv_health なし (JvlinkSupplyDaily 未稼働)")
+    else:
+        jh = json.load(open(jh_files[-1], encoding="utf-8"))
+        for k, lab in [("se_latest", "JV-SE"), ("hr_latest", "JV-HR")]:
+            v = jh.get(k)
+            if not v or str(v) < need:
+                ok = False; reasons.append(f"{lab}内容 {v} < {need}")
     if ok:
         print(f"[T1v2 source] PASS  KYI={h.get('kyi_latest_file')} SED={h.get('sed_latest')} "
               f"馬名解決={nr:.2%} (基準日 {need})")
