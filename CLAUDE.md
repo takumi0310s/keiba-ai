@@ -586,6 +586,16 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 注: v13.5b の「実配当ROI 428.4%」 は backtest 計算値、 V15 の cumulative 98.34% (実運用 settled) と直接比較不能 (期間 / 投票戦略 / オッズ取得タイミング 全く異なる)。
 
+## 再開手順書 (2026-08-11 再建フェーズ完結)
+
+★ 本番再開の可否は **docs/RESUMPTION_PLAYBOOK_2026.md** と事前登録ゲート
+**docs/PRE_REGISTRATION_RESUMPTION_GATE.md** (変更禁止) に従う。判定は
+`python tools/resumption_gate_report.py --start <開始日>` の機械出力のみ。★
+
+- 8/15〜夏残り = paper参考記録 / 9月開催〜 = 本判定 (中央4場・V15現行固定・n≥120R・点>100%・CI下限>85%・月次判定会・前倒しGO禁止)
+- 再建の背景: 供給復旧 (research/v15r/SUPPLY_RESTORE.md)・死因解剖 (research/v15_autopsy/)・V15健全データ再判定=「市場適応」実証 (research/v15r/REJUDGE_RESULTS.md)
+- s2b は別トラック 8/15 再スタート。GO後の kill = 既存 -3/-4/-5万円 + T1v2 自動ブロック
+
 ## 重要ルール
 
 1. **学習はPattern A、予測はPattern B**: バックテスト評価は常にPattern A。実運用予測はPattern B
