@@ -103,6 +103,11 @@ def _get_webhook_url(channel="updates"):
         url = env.get('DISCORD_WEBHOOK_UPDATES', '')
         if url.startswith('https://'):
             return url
+    if channel == "test":
+        # 2026-08-11 通知再整備: テスト送信専用チャンネル (本番を汚さない)
+        url = env.get('DISCORD_WEBHOOK_TEST', '')
+        if url.startswith('https://'):
+            return url
     # Fallback
     url = env.get('DISCORD_WEBHOOK_URL', '')
     return url if url.startswith('https://') else None
