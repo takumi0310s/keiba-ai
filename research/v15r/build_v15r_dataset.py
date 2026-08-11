@@ -178,9 +178,15 @@ def main():
         df["race_num"].astype(str).str.zfill(2)
     print(f"cache {len(df):,}行  date {df['date8'].min()}-{df['date8'].max()}")
 
-    print("JV hist parse...")
-    hc = parse_hc_hist(os.path.join(HERE, "jv_hist", "SLOP.dat"))
-    wc = parse_wc_hist(os.path.join(HERE, "jv_hist", "WOOD.dat"))
+    print("JV hist parse (setup全量 + 直近diff の合算)...")
+    hc_parts = [parse_hc_hist(os.path.join(HERE, "jv_hist", f))
+                for f in ["SLOP_setup.dat", "SLOP.dat"]
+                if os.path.exists(os.path.join(HERE, "jv_hist", f))]
+    wc_parts = [parse_wc_hist(os.path.join(HERE, "jv_hist", f))
+                for f in ["WOOD_setup.dat", "WOOD.dat"]
+                if os.path.exists(os.path.join(HERE, "jv_hist", f))]
+    hc = pd.concat(hc_parts, ignore_index=True).drop_duplicates()
+    wc = pd.concat(wc_parts, ignore_index=True).drop_duplicates()
     print(f"  坂路 {len(hc):,}本 ({hc['tdate'].min()}-{hc['tdate'].max()}) / ウッド {len(wc):,}本")
     print("window feats (数分)...")
     jv = window_feats(df, hc, wc)
