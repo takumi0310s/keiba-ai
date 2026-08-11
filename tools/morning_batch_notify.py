@@ -102,8 +102,9 @@ def class_label(race_name):
     return "—"
 
 
-def fmt_race(df, feats, gain_top6):
-    """1レース分の dump df → 表示要素 dict。"""
+def fmt_race(df, feats, gain_top6, day_dead, day_alive_n):
+    """1レース分の dump df → 表示要素 dict。
+    day_dead = 日レベル定数検知 (T1v2 と同じ nunique≤2 基準) の死亡特徴集合。"""
     rid = str(df["race_id"].iloc[0])
     course = str(df.get("course", pd.Series([np.nan])).iloc[0])
     if course in ("nan", "", "None") or pd.isna(course):
@@ -138,13 +139,26 @@ def fmt_race(df, feats, gain_top6):
         else:
             bets = build_trio_bets(*nums[:6], apply_c3=False)
             bets_str = "三連複 " + "; ".join("-".join(map(str, b)) for b in bets) + " (7点)"
-    # 特徴量詳細 (d)
-    X = df[feats].apply(pd.to_numeric, errors="coerce")
-    nonzero = int((X.fillna(0) != 0).any(axis=0).sum())
+    # 特徴量詳細 (d) — 生存判定は日レベル定数検知 (T1v2 と同基準)。非ゼロ率は健全性指標として無効。
+    # KYI結合(特徴join: jrdb_idm≠default) と 馬名解決(表示名の健全性) は別物 → 分離表示。
     kyi_join = float((pd.to_numeric(df["jrdb_idm"], errors="coerce") != 50).mean()) if "jrdb_idm" in df.columns else np.nan
-    prem_dead = int(sum(1 for f in PREMIUM_FEATS if f in X.columns and X[f].nunique() <= 1))
-    g6 = "\n".join(f"  {f} = {pd.to_numeric(top[f].iloc[0], errors='coerce'):.2f}"
-                   if f in top.columns else f"  {f} = n/a" for f in gain_top6)
+    prem_dead = int(sum(1 for f in PREMIUM_FEATS if f in day_dead))
+    _res = []
+    for _, r in df.iterrows():
+        ub = pd.to_numeric(r.get("馬番"), errors="coerce")
+        if pd.isna(ub):
+            continue
+        _res.append(_name_ok(r.get("馬名", "")) or (kyi_name(rid, int(ub)) is not None))
+    name_res = float(np.mean(_res)) if _res else np.nan
+    g6_lines = []
+    for f in gain_top6:
+        if f in day_dead:
+            g6_lines.append(f"  {f} = default(死亡中)")  # default値を馬の値として出さない
+        elif f in top.columns:
+            g6_lines.append(f"  {f} = {pd.to_numeric(top[f].iloc[0], errors='coerce'):.2f}")
+        else:
+            g6_lines.append(f"  {f} = n/a")
+    g6 = "\n".join(g6_lines)
     def _disp_name(r):
         nm = str(r.get("馬名", ""))
         if not _name_ok(nm):
@@ -154,8 +168,8 @@ def fmt_race(df, feats, gain_top6):
                          for _, r in top.iterrows())
     return dict(rid=rid, course=course, rno=rno, rn=rn, st=st, dist=dist, nh=nh,
                 cond=cond, should=should, reason=reason, cls=class_label(rn),
-                top6=top6_str, bets=bets_str, nonzero=nonzero, kyi_join=kyi_join,
-                prem_dead=prem_dead, gain6=g6)
+                top6=top6_str, bets=bets_str, alive_n=day_alive_n, kyi_join=kyi_join,
+                name_res=name_res, prem_dead=prem_dead, gain6=g6)
 
 
 def main():
@@ -163,6 +177,8 @@ def main():
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--test", action="store_true")
+    ap.add_argument("--force", action="store_true",
+                    help="T1v2ゲートを迂回 (テスト/デバッグ専用。通知に BYPASS 明記)")
     a = ap.parse_args()
     date = a.date
     channel = "test" if a.test else "bets"
@@ -182,11 +198,17 @@ def main():
         send(f"⛔ {date} 本日は監査NGのため予測停止", f"T1v2 CRITICAL:\n{reason}", color="red")
         print("BLOCK flag → 停止通知のみ送信")
         return 0
+    # T1v2 fail-closed ゲート: verdict==OK 以外 (WARN/未実施含む) は買い目を送らない
     audit_p = os.path.join(AUDIT, f"{date}.json")
     t1v2 = "未実施"
+    verdict = None
     if os.path.exists(audit_p):
         aj = json.load(open(audit_p, encoding="utf-8"))
-        t1v2 = f"{aj.get('verdict')} (jrdb定数 {aj.get('jrdb_const_n')}/40)"
+        verdict = aj.get("verdict")
+        t1v2 = f"{verdict} (jrdb定数 {aj.get('jrdb_const_n')}/40)"
+    gate_open = (verdict == "OK") or a.force
+    gate_note = "" if verdict == "OK" else (
+        f"⚠️ GATE BYPASS(--force/テスト): T1v2={t1v2}\n" if a.force else "")
     sh = sorted(glob.glob(os.path.join(AUDIT, "supply_health_*.json")))
     kyi_d = sed_d = "?"
     if sh:
@@ -199,18 +221,25 @@ def main():
         send(f"{date} 朝通知", "本日の feat_dump なし (非開催 or 予測未実行)", color="yellow")
         return 0
     feats, gain_top6 = load_model_meta()
-    races = []
+    dfs = []
     for fp in files:
         try:
-            df = pd.read_parquet(fp)
+            d = pd.read_parquet(fp)
         except Exception:
             continue
-        if len(df) < 2 or "スコア" not in df.columns:
-            continue
+        if len(d) >= 2 and "スコア" in d.columns:
+            dfs.append(d)
+    # 日レベル定数検知 (T1v2 と同じ nunique≤2 基準) — 「生存/145」と gain6 の death 判定に使用
+    day_all = pd.concat(dfs, ignore_index=True)
+    Xd = day_all[feats].apply(pd.to_numeric, errors="coerce")
+    day_dead = {c for c in feats if Xd[c].nunique() <= 2}
+    day_alive_n = len(feats) - len(day_dead)
+    races = []
+    for df in dfs:
         try:
-            races.append(fmt_race(df, feats, gain_top6))
+            races.append(fmt_race(df, feats, gain_top6, day_dead, day_alive_n))
         except Exception as e:
-            print(f"[WARN] fmt失敗 {os.path.basename(fp)}: {e}")
+            print(f"[WARN] fmt失敗 {str(df['race_id'].iloc[0])}: {e}")
     races.sort(key=lambda r: r["st"])
     buys = [r for r in races if r["should"]]
     skips = [r for r in races if not r["should"]]
@@ -218,20 +247,32 @@ def main():
     # 冒頭サマリー
     skip_lines = "\n".join(f"  ⚪ {r['course']}{r['rno']}R {r['st']} — {r['reason']}" for r in skips)
     send(f"🏇 {date} 朝一括通知 (09:30)",
-         f"{PAPER_BADGE}\n"
+         f"{PAPER_BADGE}\n{gate_note}"
          f"総レース {len(races)}R = 🟢買い対象 {len(buys)} / ⚪見送り {len(skips)}\n"
          f"T1v2: {t1v2}\n供給鮮度: KYI={kyi_d} / SED={sed_d}\n"
+         f"特徴量生存 {day_alive_n}/145 (日レベル定数検知)\n"
          f"\n--- 見送り一覧 ---\n{skip_lines or '  なし'}",
          color="blue")
 
+    # fail-closed: T1v2 OK 以外は買い目 embed を送らない
+    if not gate_open:
+        send(f"⚠️ {date} 買い目送信見送り",
+             f"T1v2 監査が PASS (OK) ではないため買い目を送信しません: {t1v2}\n"
+             f"(fail-closed 設計。監査実行後に再送 = python tools/morning_batch_notify.py)",
+             color="yellow")
+        print(f"fail-closed: T1v2={t1v2} → 買い目送信せず (サマリーのみ)")
+        return 0
+
     for r in buys:
         kyi_pct = f"{r['kyi_join']*100:.0f}%" if not np.isnan(r["kyi_join"]) else "n/a"
+        name_pct = f"{r['name_res']*100:.0f}%" if not np.isnan(r["name_res"]) else "n/a"
         msg = (f"{r['rn']} {r['dist']}m {r['nh']}頭 条件{r['cond']} [{r['cls']}]\n"
-               f"{PAPER_BADGE}\n"
+               f"{PAPER_BADGE}\n{gate_note}"
                f"\n【V15上位6頭】\n{r['top6']}\n"
                f"\n【買い目(paper)】\n{r['bets']}\n"
-               f"\n【特徴量】非ゼロ {r['nonzero']}/145・KYI結合 {kyi_pct}・premium欠損 {r['prem_dead']}\n"
-               f"gain上位6 (top1馬の値):\n{r['gain6']}")
+               f"\n【特徴量】生存 {r['alive_n']}/145・KYI結合(特徴join) {kyi_pct}・"
+               f"馬名解決 {name_pct}・premium欠損 {r['prem_dead']}\n"
+               f"gain上位6 (生存=top1馬の値 / 死亡=default):\n{r['gain6']}")
         send(f"🟢 {r['course']}{r['rno']}R 発走{r['st']}", msg, color="green")
     print(f"送信完了: サマリー1 + 買い{len(buys)}embed (見送り{len(skips)}はサマリー内)")
     return 0
