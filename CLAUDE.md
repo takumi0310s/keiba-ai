@@ -588,6 +588,8 @@ python tools/validation_13_conservative_roi.py      # 保守的ROI
 
 ## 再開手順書 (2026-08-11 再建フェーズ完結)
 
+★ モデルの現在地 (AUC系譜の正・特徴量145台帳) = **docs/MODEL_STATE_2026_08.md** + docs/feature_ledger_145.csv (2026-08-12)。9月判定の正は (e)ライブ実態 0.8154 (真値0.812-0.815)。旧 0.8858 は非本番構成×リークキャッシュの歴史値。★
+
 ★ 本番再開の可否は **docs/RESUMPTION_PLAYBOOK_2026.md** と事前登録ゲート
 **docs/PRE_REGISTRATION_RESUMPTION_GATE.md** (変更禁止) に従う。判定は
 `python tools/resumption_gate_report.py --start <開始日>` の機械出力のみ。★
