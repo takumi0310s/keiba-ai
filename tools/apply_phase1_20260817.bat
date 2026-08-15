@@ -1,16 +1,15 @@
 @echo off
-rem Phase1 “K—p (2026-08-17): Œn“C“‡ + ŠÄ¸Œn–³Œø‰»Bdenied ‚Í bat ƒXƒ^ƒu‚Å‘Îˆ
+rem Phase1 ï¿½Kï¿½p (2026-08-17): ï¿½nï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ + ï¿½Äï¿½ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Bdenied ï¿½ï¿½ bat ï¿½Xï¿½^ï¿½uï¿½Å‘Îï¿½
 cd /d C:\Users\takum\keiba-ai
 set LOG=logs\phase1_apply.log
 echo [%date% %time%] phase1 apply start >> %LOG%
 schtasks /change /tn "keiba-ai\JrdbSupplyDaily" /disable >> %LOG% 2>&1
 schtasks /change /tn "keiba-ai\JvlinkSupplyDaily" /disable >> %LOG% 2>&1
-schtasks /change /tn "Keiba-AM3FireCheck" /disable >> %LOG% 2>&1
-schtasks /change /tn "Keiba-AM6FireCheck" /disable >> %LOG% 2>&1
+rem 8/15 å–æ¨ç¢ºå®šã§ AM3/AM6 ã¯ disable æ¸ˆã¿ (äºŒé‡é©ç”¨é˜²æ­¢ã®ãŸã‚å‰Šé™¤)
 schtasks /change /tn "Keiba-AM8FireCheck" /disable >> %LOG% 2>&1
 schtasks /change /tn "Keiba-MorningDigest" /disable >> %LOG% 2>&1
 schtasks /change /tn "keiba-ai\DataFreshnessMonitor" /disable >> %LOG% 2>&1
 schtasks /change /tn "Keiba-TybPublishMonitor" /disable >> %LOG% 2>&1
 schtasks /change /tn "Keiba-JrdbRetryAm9_Sat" /disable >> %LOG% 2>&1
 schtasks /change /tn "Keiba-JrdbRetryAm9_Sun" /disable >> %LOG% 2>&1
-echo [%date% %time%] phase1 apply done (denied ‚Í disable_legacy_audit_admin.bat ‚ÅŠÇ—ŽÒŽÀs) >> %LOG%
+echo [%date% %time%] phase1 apply done (denied ï¿½ï¿½ disable_legacy_audit_admin.bat ï¿½ÅŠÇ—ï¿½ï¿½ÒŽï¿½ï¿½s) >> %LOG%

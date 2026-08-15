@@ -31,8 +31,11 @@ CUMUL_PATH = os.path.join(BASE_DIR, "data", "cumulative_results.csv")
 ALERT_LOG_PATH = os.path.join(BASE_DIR, "data", "roi_alerts.json")
 
 # 閾値
-CONSERVATIVE_ROI_OVERALL = 142.6
+CONSERVATIVE_ROI_OVERALL = 142.6  # 旧v12基準 (現状と乖離した誤DANGER源、9月ゲートで改定予定)
 ROI_DANGER_THRESHOLD = 100.0
+
+# 2026-08-15 取捨確定: 9月ゲート開始まで Discord 通知停止 (ログ/JSON記録は継続)
+DISCORD_NOTIFY_ENABLED = False
 SHORT_TERM_WINDOW = 30
 SHORT_TERM_ROI_THRESHOLD = 80.0
 MAX_LOSING_STREAK = 20
@@ -200,7 +203,10 @@ def run_monitor(dry_run=False):
             print(f"  [{a['level']}] {a['message']}")
 
         # Discord通知
-        if not dry_run:
+        # 2026-08-15 取捨確定: 旧142.6%基準(v12保守的ROI)由来の恒常DANGERが誤報のため、
+        # 9月の事前登録ゲート判定開始まで Discord 送信を停止 (console/roi_alerts.json は継続)。
+        # 再開時は DISCORD_NOTIFY_ENABLED=True に戻す。基準改定はゲート判定と併せて行う。
+        if DISCORD_NOTIFY_ENABLED and not dry_run:
             _send_alert_discord(alerts, info, n, roi)
     else:
         print(f"\n  全指標正常")

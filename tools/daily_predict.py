@@ -849,12 +849,16 @@ if __name__ == "__main__":
         pass
 
     # 整形済み買い目通知（Discord #買い目）
-    try:
-        from notify_bets_formatted import notify_formatted
-        sent = notify_formatted(date_str, mode='morning', channel='bets')
-        print(f"[daily_predict] 整形済み買い目通知送信: {sent} messages")
-    except Exception as e:
-        print(f"[WARN] 整形済み買い目通知失敗: {e}")
+    # 2026-08-15 取捨確定: #買い目 は 09:30 MorningBatchNotify (朝一括) に一本化。
+    # 8/11 再整備インベントリの「レース別買い目送信なし」が実態と違った取り残しで、
+    # 06:30/08:00 の先行送信が朝一括と二重になっていたため停止。復活は下の if を True に。
+    if False:
+        try:
+            from notify_bets_formatted import notify_formatted
+            sent = notify_formatted(date_str, mode='morning', channel='bets')
+            print(f"[daily_predict] 整形済み買い目通知送信: {sent} messages")
+        except Exception as e:
+            print(f"[WARN] 整形済み買い目通知失敗: {e}")
 
     # 全馬スコア HTML 生成 → Discord 添付 (bets チャンネル)
     try:
