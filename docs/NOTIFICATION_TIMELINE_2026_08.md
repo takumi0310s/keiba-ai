@@ -41,7 +41,7 @@ docs/NOTIFICATION_INVENTORY_2026.md (8/11) の後継。**インベントリと�
 | 07:30 | DataFreshnessMonitor | updates | 鮮度警告 (OK時は無送信) | 異常時のみ | 異常時 | P1停止 |
 | 07:30 | JrdbHealthCheck_Sat/Sun | updates | JRDB 6ファイル健全性 (正常時は無送信=ログのみ確認) | 異常時のみ(推定) | 異常時 | 残存 |
 | 08:00 | DailyPredict → daily_predict.py | **bets**+updates | **整形済み買い目8通(bets)** + paper shadow stats(updates推定) + 取り漏れ警告(updates)。T1v2 BLOCKフラグで停止 | 8+1通 | 本命(朝予測) | 残存 |
-| 08:45 | RaceAutoNotify_Sat/Sun | bets | 5分前レース毎通知 — **bat 不在で完全無音** (8/11停止措置。「スタブ化」でなく実体は bat 消失) | 停止中 | レガシー | 停止中 (9月GO時に復活判断) |
+| 08:45 | RaceAutoNotify_Sat/Sun | bets | 5分前レース毎通知 — repo直下の `race_auto_notify.bat` が 8/11 no-op スタブで無音 (8/16訂正: 初版の「bat不在」は tools\ 側を見たパス誤認) | 停止中 | レガシー | 停止中 (9月GO時に復活判断) |
 | 08:50 | Keiba-AM8FireCheck | updates | DailyPredict 発火確認 | 1回 | 成功報告系 | P1停止 |
 | 08:50 | T1v2Audit (土日=dump監査) | updates | CRITICAL時のみ通知 + BLOCK_NEXT.flag 生成 | 異常時のみ | **本命 (fail-closed)** | 残存 |
 | 09:00 | PaperS2BPredict → paper_trade_s2b | TEST1 | s2b 全R embed (検証用) | 1バッチ(35R) | 検証用 | 残存 |
@@ -95,7 +95,7 @@ docs/NOTIFICATION_INVENTORY_2026.md (8/11) の後継。**インベントリと�
 
 1. **★Stage2 33通/日が #買い目 に出ている (インベントリ未記載)**。`Keiba-PreRacePredict_Watchdog_5_9` (土日 09:00 起動・30分毎リピート) が `pre_race_predict_runner.bat` を実行。この bat は「main には stage2_predict.py が無いので no-op スタブ」という Session #77 設計だが、**research/ruiji ブランチには tools/stage2_predict.py が存在するため毎30分フル動作**し、`channel="bets"` で送信している。5分前通知 (RaceAutoNotify) を止めても「レース毎通知」が別経路で生きていた。
 2. **★Morning_Sat の実体はインベントリと違う**。記載は「morning_go_check」だが実際は `morning_top_races.bat` (v17 11R/12R 自動パイプライン) で、JRDB 取得後に **daily_predict を内部実行して買い目8通を 08:00 より前に送信**。08:00 DailyPredict と二重。
-3. RaceAutoNotify_Sat/Sun は「bat スタブ化」ではなく **bat ファイル自体が不在** (発火→即失敗で無音。結果は同じだが状態表記の訂正)。
+3. ~~RaceAutoNotify の bat 不在~~ **8/16 訂正: 誤りだった**。repo直下 `race_auto_notify.bat` は 8/11 no-op スタブとして存在 (インベントリ記載どおり)。初版調査は tools\ 側パスを見た誤認。なお 8/16 push 時に pre-push 回帰テストがこのスタブの PYTHONIOENCODING 欠落を検出 → env 2行を追加 (no-op のまま)。
 4. RaceDayReport_Sat 18:00 は daily_results と同時刻起動のため**毎回「該当なし」で不発** (4月から全日不発をログで確認)。
 5. ROI Monitor の DANGER (累積88.9%<100% 等10件) は既知の旧 142.6% 基準誤報のまま送信継続。
 
