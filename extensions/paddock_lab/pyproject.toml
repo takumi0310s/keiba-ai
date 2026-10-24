@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paddock-lab"
+version = "0.1.0"
+description = "Evidence-first paddock comparison and paired prospective evaluation"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools]
+py-modules = ["paddock_lab"]
+
+[project.scripts]
+paddock-lab = "paddock_lab:main"

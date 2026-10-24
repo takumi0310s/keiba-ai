@@ -1,0 +1,127 @@
+{
+  "warning": "SYNTHETIC INPUT SHAPES ONLY; NOT RACING FORECASTS",
+  "race": {
+    "race_id": "202608040811",
+    "scheduled_start": "2026-10-24T15:30:00+09:00",
+    "entry_source_url": "https://race.sp.netkeiba.com/?pid=paddock&race_id=202608040811",
+    "runners": [
+      {
+        "horse_id": "1",
+        "number": 1,
+        "name": "馬1"
+      },
+      {
+        "horse_id": "2",
+        "number": 2,
+        "name": "馬2"
+      },
+      {
+        "horse_id": "3",
+        "number": 3,
+        "name": "馬3"
+      },
+      {
+        "horse_id": "4",
+        "number": 4,
+        "name": "馬4"
+      }
+    ]
+  },
+  "observation_envelope": {
+    "race_id": "202608040811",
+    "observation": {
+      "horse_id": "1",
+      "horse_name": "馬1",
+      "kind": "current",
+      "identity_verified": true,
+      "video_race_id": "202608040811",
+      "video_horse_number": 1,
+      "video_race_start": "2026-10-24T15:30:00+09:00",
+      "observed_at": "2026-10-24T15:10:00+09:00",
+      "source_url": "https://race.sp.netkeiba.com/?pid=paddock&race_id=202608040811",
+      "playback_confirmed": true,
+      "mode": "continuous",
+      "view": "side",
+      "visibility": "clear",
+      "continuous_seconds": 10,
+      "segments": [
+        [
+          10,
+          20
+        ]
+      ],
+      "equipment": "same_recorded_equipment",
+      "weather": "cloudy",
+      "observer_id": "analyst-1",
+      "facts": [
+        "side walk observed"
+      ],
+      "interpretations": [],
+      "features": {
+        "outline": 2,
+        "walk_rhythm": 2
+      },
+      "feature_evidence": {
+        "outline": "human_ordinal",
+        "walk_rhythm": "human_ordinal"
+      }
+    }
+  },
+  "forecast_envelope": {
+    "race_id": "202608040811",
+    "stage": "before",
+    "probabilities": {
+      "1": 0.75,
+      "2": 0.75,
+      "3": 0.75,
+      "4": 0.75
+    },
+    "model": {
+      "version": "SYNTHETIC-base",
+      "target": "finish_top3",
+      "baseline_input_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  "result_envelope": {
+    "race_id": "202608040811",
+    "finish": {
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4
+    },
+    "confirmed_at": "2026-10-24T15:40:00+09:00",
+    "source_url": "https://race.sp.netkeiba.com/?pid=paddock&race_id=202608040811"
+  },
+  "plan_envelope": {
+    "race": {
+      "race_id": "202608040811",
+      "scheduled_start": "2026-10-24T15:30:00+09:00",
+      "entry_source_url": "https://race.sp.netkeiba.com/?pid=paddock&race_id=202608040811",
+      "runners": [
+        {
+          "horse_id": "1",
+          "number": 1,
+          "name": "馬1"
+        },
+        {
+          "horse_id": "2",
+          "number": 2,
+          "name": "馬2"
+        },
+        {
+          "horse_id": "3",
+          "number": 3,
+          "name": "馬3"
+        },
+        {
+          "horse_id": "4",
+          "number": 4,
+          "name": "馬4"
+        }
+      ]
+    },
+    "catalog": [],
+    "as_of": "2026-10-24T15:00:00+09:00"
+  }
+}
