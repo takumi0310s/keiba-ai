@@ -112,6 +112,9 @@ class TestStore(unittest.TestCase):
     def test_future_model_excluded(self):
         self.freeze();self.coverage();self.after(trained_through='2026-10-24T15:01:00+09:00')
         self.assertIn('paddock_training_cutoff_missing_or_leaked',self.store.audit(RID)['exclusions'])
+    def test_model_cannot_be_frozen_before_training_end(self):
+        self.freeze();self.coverage();self.after(frozen_at='2026-08-31T00:00:00+09:00')
+        self.assertIn('model_frozen_before_training_finished',self.store.audit(RID)['exclusions'])
     def test_tamper_detection(self):
         self.store.db.execute("UPDATE events SET payload='{}'");self.store.db.commit()
         with self.assertRaises(ValueError):self.store.verify()

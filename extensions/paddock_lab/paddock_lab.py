@@ -339,7 +339,7 @@ class Store:
             available = [e['payload'] for e in obs if e['payload']['horse_id'] == h['horse_id']
                          and after and moment(e['at']) < moment(after['at'])
                          and moment(e['payload']['observed_at']) < moment(after['at'])]
-            current = sorted([o for o in available if o['kind'] == 'current'], key=lambda o:o['observed_at'])
+            current = sorted([o for o in available if o['kind'] == 'current'], key=lambda o:moment(o['observed_at']))
             past = select_past(available, after['at']) if after else []
             comparisons = [compare(current[-1], p) for p in past] if current else []
             usable = any(any(v['status'] == 'comparable' for v in c['features'].values()) for c in comparisons)
@@ -368,6 +368,8 @@ class Store:
                 reasons.append('paddock_training_cutoff_missing_or_leaked')
             if not model.get('frozen_at') or moment(model['frozen_at']) >= moment(before['at']):
                 reasons.append('paddock_model_not_frozen_before_baseline')
+            if model.get('trained_through') and model.get('frozen_at') and moment(model['trained_through']) > moment(model['frozen_at']):
+                reasons.append('model_frozen_before_training_finished')
         return {'race_id': rid, 'eligible_paired_evaluation': not reasons, 'exclusions': reasons,
                 'coverage': coverage, 'head_hash': self.verify(),
                 'trust_limit': 'self-declared exposures/identity/model provenance; local hash chain is not external timestamp attestation'}
